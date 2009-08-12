@@ -1,8 +1,6 @@
 #!/bin/bash
 
-./stop-tmwserv-account.sh &
-sleep 1
-./stop-tmwserv-game.sh &
+./stop-tmwserv.sh
 sleep 1
 ./start-tmwserv-account.sh &
 sleep 5
