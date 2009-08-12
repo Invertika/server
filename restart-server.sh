@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./stop-tmwserv.sh
+pkill -SIGTERM tmwserv
 sleep 1
 ./start-tmwserv-account.sh &
 sleep 5
