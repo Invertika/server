@@ -11,7 +11,7 @@
  <option name="net_gameServerAddress" value="server.invertika.org"/>
  <option name="net_gameServerPort" value="9604"/>
  <option name="net_maxClients" value="1000"/>
- <option name="net_password" value="P@s$w0rd"/>
+ <option name="net_password" value="ivkstdpw123"/>
  
  <!-- Accounteinstellungen -->
  <option name="account_minEmailLength" value="7"/>
