@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- Konfigurationsdatei fuer den Invertika Server -->
-<!-- http://wiki.themanaworld.org/index.php/Configuration_file:tmwserv.xml -->
+<!-- http://wiki.themanaworld.org/index.php/Tmwserv.xml -->
 <configuration>
  <!-- Datenbankeinstellungen -->
  <option name="sqlite_database" value="tmw.db"/>
@@ -11,6 +11,7 @@
  <option name="net_gameServerAddress" value="server.invertika.org"/>
  <option name="net_gameServerPort" value="9604"/>
  <option name="net_maxClients" value="1000"/>
+ <option name="net_password" value="P@s$w0rd"/>
  
  <!-- Accounteinstellungen -->
  <option name="account_minEmailLength" value="7"/>
@@ -35,7 +36,7 @@
  <option name="char_startY" value="640"/>
  
  <!-- Gameplay Einstellungen -->
- <option name="visualRange" value="320"/>
+ <option name="visualRange" value="550"/>
  <option name="respawnMap" value="19001"/>
  <option name="respawnX" value="3200"/>
  <option name="respawnY" value="2800"/> 
