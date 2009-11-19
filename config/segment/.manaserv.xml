@@ -3,7 +3,7 @@
 <!-- http://wiki.themanaworld.org/index.php/Tmwserv.xml -->
 <configuration>
  <!-- Datenbankeinstellungen -->
- <option name="sqlite_database" value="tmw.db"/>
+ <option name="sqlite_database" value="invertika.db"/>
  
  <!-- Netzwerkeinstellungen -->
  <option name="net_accountServerAddress" value="server.invertika.org"/>
