@@ -1,7 +1,7 @@
 #!/bin/bash
 
-pkill -SIGTERM tmwserv
+pkill -SIGTERM manaserv
 sleep 1
-./start-tmwserv-account.sh &
+./start-manaserv-account.sh &
 sleep 5
-./start-tmwserv-game.sh &
+./start-manaserv-game.sh &

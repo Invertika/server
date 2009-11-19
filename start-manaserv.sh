@@ -1,5 +1,5 @@
 #!/bin/bash
 
-./start-tmwserv-account.sh &
+./start-manaserv-account.sh &
 sleep 5
-./start-tmwserv-game.sh &
+./start-manaserv-game.sh &

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-pkill -SIGTERM tmwserv
+pkill -SIGTERM manaserv
