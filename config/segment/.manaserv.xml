@@ -13,6 +13,8 @@
  <option name="net_maxClients" value="1000"/>
  <option name="net_password" value="ivkstdpw123"/>
  
+ <option name="defaultUpdateHost" value="http://update.invertika.org"/>
+ 
  <!-- Accounteinstellungen -->
  <option name="account_minEmailLength" value="7"/>
  <option name="account_maxEmailLength" value="128"/>
