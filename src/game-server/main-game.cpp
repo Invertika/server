@@ -38,6 +38,7 @@
 #include "common/configuration.hpp"
 #include "game-server/accountconnection.hpp"
 #include "game-server/gamehandler.hpp"
+#include "game-server/skillmanager.hpp"
 #include "game-server/itemmanager.hpp"
 #include "game-server/mapmanager.hpp"
 #include "game-server/monstermanager.hpp"
@@ -60,9 +61,12 @@ using utils::Logger;
 #define DEFAULT_LOG_FILE        "manaserv-game.log"
 #define DEFAULT_CONFIG_FILE     "manaserv.xml"
 #define DEFAULT_ITEMSDB_FILE    "items.xml"
+#define DEFAULT_SKILLSDB_FILE   "mana-skills.xml"
 #define DEFAULT_MAPSDB_FILE     "maps.xml"
 #define DEFAULT_MONSTERSDB_FILE "monsters.xml"
 #define DEFAULT_STATUSDB_FILE   "mana-status-effect.xml"
+
+static int const WORLD_TICK_SKIP = 2; /** tolerance for lagging behind in world calculation) **/
 
 utils::Timer worldTimer(100, false);   /**< Timer for world tics set to 100 ms */
 int worldTime = 0;              /**< Current world time in 100ms ticks */
@@ -161,6 +165,7 @@ void initialize()
       LOG_FATAL("The Game Server can't find any valid/available maps.");
       exit(2);
     }
+    SkillManager::initialize(DEFAULT_SKILLSDB_FILE);
     ItemManager::initialize(DEFAULT_ITEMSDB_FILE);
     MonsterManager::initialize(DEFAULT_MONSTERSDB_FILE);
     StatusManager::initialize(DEFAULT_STATUSDB_FILE);
@@ -339,16 +344,18 @@ int main(int argc, char *argv[])
     while (running)
     {
         elapsedWorldTicks = worldTimer.poll();
-        if (elapsedWorldTicks > 0)
-        {
-            worldTime += elapsedWorldTicks;
+        if (elapsedWorldTicks == 0) worldTimer.sleep();
 
-            if (elapsedWorldTicks > 1)
+        while (elapsedWorldTicks > 0)
+        {
+            if (elapsedWorldTicks > WORLD_TICK_SKIP)
             {
-                LOG_WARN("Not enough time to calculate "<< elapsedWorldTicks -1
-                        << " World Tick(s) - skipping. Please buy a faster "
-                        "machine ;-)");
-            };
+                LOG_WARN("Skipped "<< elapsedWorldTicks - 1
+                        << " world tick due to insufficient CPU time.");
+                elapsedWorldTicks = 1;
+            }
+            worldTime++;
+            elapsedWorldTicks--;
 
             // Print world time at 10 second intervals to show we're alive
             if (worldTime % 100 == 0) {
@@ -399,10 +406,6 @@ int main(int argc, char *argv[])
             GameState::update(worldTime);
             // Send potentially urgent outgoing messages
             gameHandler->flush();
-        }
-        else
-        {
-            worldTimer.sleep();
         }
     }
 
