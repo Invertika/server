@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!-- Konfigurationsdatei fuer den Invertika Server -->
+<!-- http://wiki.invertika.org/Manaserv.xml -->
+<configuration>
+ <!-- Datenbankeinstellungen -->
+ <option name="sqlite_database" value="invertika.db"/>
+ 
+ <!-- Netzwerkeinstellungen -->
+ <option name="net_accountServerAddress" value="localhost"/>
+ <option name="net_accountServerPort" value="9601"/>
+ <option name="net_gameServerAddress" value="localhost"/>
+ <option name="net_gameServerPort" value="9604"/>
+ <option name="net_maxClients" value="1000"/>
+ <option name="net_password" value="ivkstdpw123"/>
+ 
+ <option name="defaultUpdateHost" value=""/>
+ 
+ <!-- Accounteinstellungen -->
+ <option name="account_minEmailLength" value="7"/>
+ <option name="account_maxEmailLength" value="128"/>
+ <option name="account_minNameLength" value="3"/>
+ <option name="account_maxNameLength" value="16"/>
+ <option name="account_minPasswordLength" value="6"/>
+ <option name="account_maxPasswordLength" value="25"/>
+ 
+ <!-- Charakter Erstellungseinstellungen -->
+ <!--  <option name="char_numHairStyles" value="15"/> -->
+ <!--  <option name="char_numHairColors" value="9"/> -->
+ <!--  <option name="char_numGenders" value="2"/> -->
+ <option name="char_minNameLength" value="3"/>
+ <option name="char_maxNameLength" value="30"/>
+ <option name="char_maxCharacters" value="7"/>
+ <option name="char_startingPoints" value="60"/>
+ 
+ <!-- Charakter Einstellungen -->
+ <option name="char_startMap" value="19002"/>
+ <option name="char_startX" value="4128"/>
+ <option name="char_startY" value="640"/>
+ 
+ <!-- Gameplay Einstellungen -->
+ <option name="visualRange" value="550"/>
+ <option name="respawnMap" value="19001"/>
+ <option name="respawnX" value="3200"/>
+ <option name="respawnY" value="2800"/> 
+ <option name="defaultPvp" value="free"/> 
+ 
+ <!-- Post System Einstellungen -->
+ <option name="mail_maxAttachments" value="3"/>
+ <option name="mail_maxLetters" value="10"/> 
+</configuration>
