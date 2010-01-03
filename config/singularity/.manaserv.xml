@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- Konfigurationsdatei fuer den Invertika Server -->
-<!-- http://wiki.themanaworld.org/index.php/Tmwserv.xml -->
+<!-- http://wiki.invertika.org/Manaserv.xml -->
 <configuration>
  <!-- Datenbankeinstellungen -->
  <option name="sqlite_database" value="invertika.db"/>
