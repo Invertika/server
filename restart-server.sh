@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pkill -SIGTERM manaserv
+./stop-server.sh
 sleep 1
 ./start-manaserv-account.sh &
 sleep 5
