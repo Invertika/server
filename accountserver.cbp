@@ -117,6 +117,7 @@
 		<Unit filename="src\net\netcomputer.cpp" />
 		<Unit filename="src\net\netcomputer.hpp" />
 		<Unit filename="src\point.h" />
+		<Unit filename="src\serialize\characterdata.hpp" />
 		<Unit filename="src\utils\base64.cpp" />
 		<Unit filename="src\utils\base64.h" />
 		<Unit filename="src\utils\encryption.cpp" />
