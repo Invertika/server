@@ -32,15 +32,86 @@
 #include "game-server/monstermanager.hpp"
 #include "game-server/state.hpp"
 
+#include "common/permissionmanager.hpp"
 #include "common/transaction.hpp"
 
 #include "utils/string.hpp"
+
+struct CmdRef
+{
+    const char *cmd;
+    const char *usage;
+    const char *help;
+    void (*func)(Character*, std::string&) ;
+};
+
+static void handleHelp(Character*, std::string&);
+static void handleReport(Character*, std::string&);
+static void handleWhere(Character*, std::string&);
+static void handleRights(Character*, std::string&);
+static void handleWarp(Character*, std::string&);
+static void handleGoto(Character*, std::string&);
+static void handleRecall(Character*, std::string&);
+static void handleBan(Character*, std::string&);
+static void handleItem(Character*, std::string&);
+static void handleDrop(Character*, std::string&);
+static void handleMoney(Character*, std::string&);
+static void handleSpawn(Character*, std::string&);
+static void handleAttribute(Character*, std::string&);
+static void handleReload(Character*, std::string&);
+static void handleGivePermission(Character*, std::string&);
+static void handleTakePermission(Character*, std::string&);
+static void handleAnnounce(Character*, std::string&);
+static void handleHistory(Character*, std::string&);
+
+static CmdRef const cmdRef[] =
+{
+    {"help",   "[command]" ,
+        "Lists all available commands or a detailed help for a command", &handleHelp },
+    {"report", "<bug>"     ,
+        "Sends a bug or abuse reports a bug to the server administration", &handleReport},
+    {"where",  ""          ,
+        "Tells you your location in the game world", &handleWhere},
+    {"rights", ""          ,
+        "Tells you your current permissions", &handleRights},
+    {"warp",   "<character> <map> <x> <y>",
+        "Teleports your character to a different location in the game world", &handleWarp},
+    {"goto", "<character>",
+        "Teleports you to the location of another character", &handleGoto},
+    {"recall", "<character>",
+        "Teleports another character to your location", &handleRecall},
+    {"ban", "<character> <length of time>",
+        "Bans the character and all characters on the same account from the game", &handleBan},
+    {"item", "<character> <item id> <amount>",
+        "Creates a number of items in the inventory of a character", &handleItem},
+    {"drop", "<item id> <amount>",
+        "Drops a stack of items on the ground at your current location", &handleDrop},
+    {"money", "<character> <amount>",
+        "Changes the money a character possesses", &handleMoney},
+    {"spawn", "<monster id> <number>",
+        "Creates a number of monsters near your location", &handleSpawn},
+    {"attribute", "<character> <attribute> <value>",
+        "Changes the character attributes of a character", &handleAttribute},
+    {"reload", "",
+        "Makes the server reload all configuration files", &handleReload},
+    {"givepermission", "<character> <permission class>",
+        "Gives a permission class to the account a character belongs to", &handleGivePermission},
+    {"takepermission", "<character> <permission class>",
+        "Takes a permission class from the account a character belongs to", &handleTakePermission},
+    {"announce", "<message>",
+        "Sends a chat message to all characters in the game", &handleAnnounce},
+    {"history", "<number of transactions>",
+        "Shows the last transactions", &handleHistory},
+    {NULL, NULL, NULL, NULL}
+
+};
 
 static void say(const std::string error, Character *player)
 {
     GameState::sayTo(player, NULL, error);
 }
 
+/*
 static bool checkPermission(Character *player, unsigned int permissions)
 {
     if (player->getAccountLevel() & permissions)
@@ -51,7 +122,7 @@ static bool checkPermission(Character *player, unsigned int permissions)
     say("Invalid permissions", player);
 
     return false;
-}
+}*/
 
 static std::string getArgument(std::string &args)
 {
@@ -92,51 +163,38 @@ static void handleHelp(Character *player, std::string &args)
 {
     if (args == "")
     {
-        if (player->getAccountLevel() & AL_PLAYER)
+        // short list of all commands
+        say("=Available Commands=", player);
+        std::list<std::string> commands = PermissionManager::getPermissionList(player);
+        for (std::list<std::string>::iterator i = commands.begin();
+             i != commands.end();
+             i++)
         {
-            say("=General Commands=", player);
-            say("@help [command]", player);
-            say("@report <bug>", player);
-            say("@where", player);
-            say("@rights", player);
+            say((*i), player);
         }
-
-        if (player->getAccountLevel() & AL_TESTER)
+    } else {
+        // don't show help for commands the player may not use
+        if (PermissionManager::checkPermission(player, "@"+args) == PermissionManager::PMR_DENIED)
         {
-            say("=Tester Commands=", player);
-            say("@warp <character> <map> <x> <y>", player);
-            say("@goto <character>", player);
+            say("Why do you want to know? You can't use it anyway!", player);
+            return;
         }
-
-        if (player->getAccountLevel() & AL_GM)
+        // detailed description of single command
+        for (size_t j = 0; cmdRef[j].cmd != NULL; j++)
         {
-            say("=Game Master Commands=", player);
-            say("@recall <character>", player);
-            say("@ban <character> <length of time>", player);
+            if (cmdRef[j].cmd == args)
+            {
+                std::string msg;
+                msg.append("@");
+                msg.append(cmdRef[j].cmd);
+                msg.append(" ");
+                msg.append(cmdRef[j].usage);
+                say(msg, player);
+                say(cmdRef[j].help, player);
+                return;
+            }
         }
-
-        if (player->getAccountLevel() & AL_DEV)
-        {
-            say("=Developer Commands=", player);
-            say("@item <character> <item id> <amount>", player);
-            say("@drop <item id> <amount>", player);
-            say("@money <character> <amount>", player);
-            say("@spawn <monster id> <number>", player);
-            say("@attribute <character> <attribute> <value>", player);
-        }
-
-        if (player->getAccountLevel() & AL_ADMIN)
-        {
-            say("=Administrator Commands=", player);
-            say("@reload", player);
-            say("@setgroup <character> <AL level>", player);
-            say("@announce <message>", player);
-            say("@history <number of transactions>", player);
-        }
-    }
-    else
-    {
-
+        say("There is no command @"+args, player);
     }
 }
 
@@ -534,7 +592,7 @@ static void handleRecall(Character *player, std::string &args)
     GameState::warp(other, map, pos.x, pos.y);
 }
 
-static void handleReload(Character *player)
+static void handleReload(Character *player, std::string &args)
 {
     // reload the items and monsters
     ItemManager::reload();
@@ -590,20 +648,20 @@ static void handleBan(Character *player, std::string &args)
     accountHandler->sendTransaction(player->getDatabaseID(), TRANS_CMD_BAN, msg);
 }
 
-static void handleSetGroup(Character *player, std::string &args)
+static void handleGivePermission(Character *player, std::string &args)
 {
     Character *other;
     int level = 0;
 
     // get the arguments
     std::string character = getArgument(args);
-    std::string levelstr = getArgument(args);
+    std::string strPermission = getArgument(args);
 
     // check all arguments are there
-    if (character == "" || levelstr == "")
+    if (character == "" || strPermission == "")
     {
         say("Invalid number of arguments given.", player);
-        say("Usage: @setgroup <character> <level>", player);
+        say("Usage: @givepermission <character> <permission class>", player);
         return;
     }
 
@@ -623,42 +681,88 @@ static void handleSetGroup(Character *player, std::string &args)
         }
     }
 
-    // check which level they should be
-    // refer to defines.h for level info
-    if (levelstr == "AL_PLAYER")
-    {
-        level = AL_PLAYER;
-    }
-    else if (levelstr == "AL_TESTER")
-    {
-        level = AL_PLAYER | AL_TESTER;
-    }
-    else if (levelstr == "AL_GM")
-    {
-        level = AL_PLAYER | AL_TESTER | AL_GM;
-    }
-    else if (levelstr == "AL_DEV")
-    {
-        level = AL_PLAYER | AL_TESTER | AL_DEV;
-    }
-    else if (levelstr == "AL_ADMIN")
-    {
-        level = 255;
-    }
+    unsigned char permission = PermissionManager::getMaskFromAlias(strPermission);
 
-    if (level == 0)
+    if (permission == 0x00)
     {
-        say("Invalid group", player);
+        say ("Unknown permission class: "+strPermission, player);
         return;
     }
 
-    // change the player's account level
-    accountHandler->changeAccountLevel(other, level);
+    if (permission & other->getAccountLevel())
+    {
+        say(player->getName()+" already has the permission "+strPermission, player);
+    } else {
+        permission += other->getAccountLevel();
+        // change the player's account level
+        other->setAccountLevel(permission);
+        accountHandler->changeAccountLevel(other, permission);
 
-    // log transaction
-    std::string msg = "User changed account level of " + other->getName() + " to " + levelstr;
-    accountHandler->sendTransaction(player->getDatabaseID(), TRANS_CMD_SETGROUP, msg);
+        // log transaction
+        std::string msg = "User gave right " + strPermission + " to " + other->getName();
+        accountHandler->sendTransaction(player->getDatabaseID(), TRANS_CMD_SETGROUP, msg);
+        say("Congratulations, "+player->getName()+" gave you the rights of a "+strPermission, other);
+    }
 }
+
+static void handleTakePermission(Character *player, std::string &args)
+{
+    Character *other;
+    int level = 0;
+
+    // get the arguments
+    std::string character = getArgument(args);
+    std::string strPermission = getArgument(args);
+
+    // check all arguments are there
+    if (character == "" || strPermission == "")
+    {
+        say("Invalid number of arguments given.", player);
+        say("Usage: @takepermission <character> <permission class>", player);
+        return;
+    }
+
+    // check if its to effect the player
+    if (character == "#")
+    {
+        other = player;
+    }
+    else
+    {
+        // check for valid player
+        other = getPlayer(character);
+        if (!other)
+        {
+            say("Invalid character", player);
+            return;
+        }
+    }
+
+    unsigned char permission = PermissionManager::getMaskFromAlias(strPermission);
+
+    if (permission == 0x00)
+    {
+        say("Unknown permission class: "+strPermission, player);
+        return;
+    }
+
+
+    if (!(permission & other->getAccountLevel()))
+    {
+        say(player->getName()+" hasn't got the permission "+strPermission, player);
+    } else {
+        permission = other->getAccountLevel() - permission;
+        // change the player's account level
+        other->setAccountLevel(permission);
+        accountHandler->changeAccountLevel(other, permission);
+
+        // log transaction
+        std::string msg = "User took right " + strPermission + " to " + other->getName();
+        accountHandler->sendTransaction(player->getDatabaseID(), TRANS_CMD_SETGROUP, msg);
+        say("Sorry, "+player->getName()+" revoked your rights of a "+strPermission, other);
+    }
+}
+
 
 static void handleAttribute(Character *player, std::string &args)
 {
@@ -749,7 +853,7 @@ static void handleAnnounce(Character *player, std::string &msg)
     GameState::sayToAll(msg);
 }
 
-static void handleWhere(Character *player)
+static void handleWhere(Character *player, std::string &args)
 {
     std::stringstream str;
     str << "Your current location is map "
@@ -762,26 +866,32 @@ static void handleWhere(Character *player)
     say (str.str(), player);
 }
 
-static void handleRights(Character *player)
+static void handleRights(Character *player, std::string &args)
 {
+    std::list<std::string>classes;
+    classes = PermissionManager::getClassList(player);
+
     std::stringstream str;
     str << "Your rights level is: "
-        << player->getAccountLevel()
-        << " (AL_PLAYER";
-    if (player->getAccountLevel() &  AL_TESTER)
-        str << ", AL_TESTER";
-    if (player->getAccountLevel() &  AL_GM)
-        str << ", AL_GM";
-    if (player->getAccountLevel() &  AL_ADMIN)
-        str << ", AL_ADMIN";
+        << (unsigned int)player->getAccountLevel()
+        << " ( ";
+
+    for (std::list<std::string>::iterator i = classes.begin();
+         i != classes.end();
+         i++)
+    {
+        str << (*i) << " ";
+    }
     str << ")";
+
     say(str.str(), player);
 }
 
-static void handleHistory(Character *player, std::string args)
+static void handleHistory(Character *player, std::string &args)
 {
     // TODO: Get args number of transactions and show them to the player
 }
+
 
 void CommandHandler::handleCommand(Character *player,
                                    const std::string &command)
@@ -792,94 +902,27 @@ void CommandHandler::handleCommand(Character *player,
     std::string type(command, 1, pos == std::string::npos ? pos : pos - 1);
     std::string args(command, pos == std::string::npos ? command.size() : pos + 1);
 
-    // handle the command
-    if (type == "help")
+    PermissionManager::Result r = PermissionManager::checkPermission(player, "@"+type);
+    switch (r)
     {
-        if (checkPermission(player, AL_PLAYER))
-            handleHelp(player, args);
-    }
-    else if (type == "where" || type == "location")
-    {
-        if (checkPermission(player, AL_PLAYER))
-            handleWhere(player);
-    }
-    else if (type == "rights" || type == "right" || type == "permission")
-    {
-        if (checkPermission(player, AL_PLAYER))
-            handleRights(player);
-    }
-    else if (type == "warp")
-    {
-        if (checkPermission(player, AL_TESTER))
-            handleWarp(player, args);
-    }
-    else if (type == "item")
-    {
-        if (checkPermission(player, AL_DEV))
-            handleItem(player, args);
-    }
-    else if (type == "drop")
-    {
-        if (checkPermission(player, AL_DEV))
-            handleDrop(player, args);
-    }
-    else if (type == "money")
-    {
-        if (checkPermission(player, AL_DEV))
-            handleMoney(player, args);
-    }
-    else if (type == "spawn")
-    {
-        if (checkPermission(player, AL_DEV))
-            handleSpawn(player, args);
-    }
-    else if (type == "goto")
-    {
-        if (checkPermission(player, AL_TESTER))
-            handleGoto(player, args);
-    }
-    else if (type == "recall")
-    {
-        if (checkPermission(player, AL_GM))
-            handleRecall(player, args);
-    }
-    else if (type == "reload")
-    {
-        if (checkPermission(player, AL_ADMIN))
-            handleReload(player);
-    }
-    else if (type == "ban")
-    {
-        if (checkPermission(player, AL_GM))
-            handleBan(player, args);
-    }
-    else if (type == "setgroup")
-    {
-        if (checkPermission(player, AL_ADMIN))
-            handleSetGroup(player, args);
-    }
-    else if (type == "attribute")
-    {
-        if (checkPermission(player, AL_DEV))
-            handleAttribute(player, args);
-    }
-    else if (type == "report")
-    {
-        if (checkPermission(player, AL_PLAYER))
-            handleReport(player, args);
-    }
-    else if (type == "announce")
-    {
-        if (checkPermission(player, AL_ADMIN))
-            handleAnnounce(player, args);
-    }
-    else if (type == "history")
-    {
-        if (checkPermission(player, AL_ADMIN))
-            handleHistory(player, args);
-    }
-    else
-    {
-        say("Command not found. Enter @help to view the list of available commands.", player);
+    case PermissionManager::PMR_DENIED:
+        say("Permissions denied!", player);
+        break;
+    case PermissionManager::PMR_UNKNOWN:
+        say("Unknown command. Enter @help to view the list of available commands.", player);
+        break;
+    case PermissionManager::PMR_ALLOWED:
+        // handle the command
+        for (size_t i = 0; cmdRef[i].cmd != NULL; i++)
+        {
+            if (cmdRef[i].cmd == type)
+            {
+                cmdRef[i].func(player,args);
+                return;
+            };
+        }
+
+        say("Command not implemented.", player);
+        break;
     }
 }

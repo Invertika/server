@@ -49,6 +49,8 @@ extern "C" {
 #include "scripting/luascript.hpp"
 #include "utils/logger.h"
 
+#include <string.h>
+
 /*
  * This file includes all script bindings available to LUA scripts.
  * When you add or change a script binding please document it on
@@ -925,9 +927,14 @@ static int chr_set_quest(lua_State *s)
     Character *q = getCharacter(s, 1);
     const char *m = lua_tostring(s, 2);
     const char *n = lua_tostring(s, 3);
-    if (!m || !n || m[0] == 0)
+    if (!m || !n || m[0] == 0 || strlen(m) == 0)
     {
         raiseScriptError(s, "chr_set_quest called with incorrect parameters.");
+        return 0;
+    }
+    if (!q)
+    {
+        raiseScriptError(s, "chr_set_quest called for nonexistent character.");
         return 0;
     }
     setQuestVar(q, m, n);
