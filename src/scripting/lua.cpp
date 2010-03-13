@@ -564,6 +564,38 @@ static int being_set_status_time(lua_State *s)
     return 1;
 }
 
+/**
+* Returns the current speed of a being
+* mana.being_get_speed(Being *being, int id)
+*/
+static int being_get_speed(lua_State *s)
+{
+    if (!lua_isuserdata(s, 1) || !lua_isnumber(s, 2))
+        {
+            raiseScriptError(s, "being_get_speed called with incorrect parameters.");
+            return 0;
+        }
+    Being *being = getBeing(s, 1);
+    lua_pushnumber(s, being->getSpeed();
+    return 1;
+}
+
+/**
+* Sets the time left on the given status effect
+* mana.being_set_speed(Being *being)
+*/
+static int being_set_speed(lua_State *s)
+{
+    if (!lua_isuserdata(s, 1) || !lua_isnumber(s, 2))
+        {
+            raiseScriptError(s, "being_set_speed called with incorrect parameters.");
+            return 0;
+        }
+    Being *being = getBeing(s, 1);
+    being->setSpeed(lua_tonumber(s,2));
+    return 1;
+}
+
 
 /**
  * Returns the Thing type of the given Being
