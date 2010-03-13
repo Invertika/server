@@ -1572,6 +1572,8 @@ LuaScript::LuaScript():
         { "being_has_status",       &being_has_status     },
         { "being_set_status_time",  &being_set_status_time},
         { "being_get_status_time",  &being_get_status_time},
+        { "being_set_speed",        &being_set_speed      },
+        { "being_get_speed",        &being_get_speed      },
         { "being_type",             &being_type           },
         { "being_walk",             &being_walk           },
         { "being_say",              &being_say            },
