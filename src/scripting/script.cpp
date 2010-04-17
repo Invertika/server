@@ -23,12 +23,14 @@
 
 #include "scripting/script.hpp"
 
+#include "game-server/being.hpp"
 #include "game-server/resourcemanager.hpp"
 #include "utils/logger.h"
 
 typedef std::map< std::string, Script::Factory > Engines;
 
 static Engines *engines = NULL;
+Script *Script::global_event_script = NULL;
 
 Script::Script():
     mMap(NULL),
@@ -93,4 +95,20 @@ void Script::loadNPC(const std::string &name, int id, int x, int y,
     push(x);
     push(y);
     execute();
+}
+
+bool Script::execute_global_event_function(const std::string &function, Being* obj)
+{
+    bool isScriptHandled = false;
+    Script *script = Script::global_event_script;
+    if (script)
+    {
+        script->setMap(obj->getMap());
+        script->prepare(function);
+        script->push(obj);
+        script->execute();
+        script->setMap(NULL);
+        isScriptHandled = true; // TODO: don't set to true when execution failed
+    }
+    return isScriptHandled;
 }
