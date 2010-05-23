@@ -26,6 +26,7 @@ extern "C" {
 #include <lauxlib.h>
 }
 
+#include "common/resourcemanager.hpp"
 #include "game-server/accountconnection.hpp"
 #include "game-server/buysell.hpp"
 #include "game-server/character.hpp"
@@ -55,7 +56,7 @@ extern "C" {
  * This file includes all script bindings available to LUA scripts.
  * When you add or change a script binding please document it on
  *
- * http://wiki.themanaworld.org/index.php/Scripting
+ * http://doc.manasource.org/scripting
  */
 
 
@@ -566,11 +567,11 @@ static int being_set_status_time(lua_State *s)
 
 /**
 * Returns the current speed of the being
-* mana.being_get_speed(Being *being, int id)
+* mana.being_get_speed(Being *being)
 */
 static int being_get_speed(lua_State *s)
 {
-    if (!lua_isuserdata(s, 1) || !lua_isnumber(s, 2))
+    if (!lua_isuserdata(s, 1))
     {
         raiseScriptError(s, "being_get_speed called with incorrect parameters.");
         return 0;
@@ -582,7 +583,7 @@ static int being_get_speed(lua_State *s)
 
 /**
 * Sets the speed of the being
-* mana.being_set_speed(Being *being)
+* mana.being_set_speed(Being *being, float speed)
 */
 static int being_set_speed(lua_State *s)
 {
@@ -1535,11 +1536,35 @@ static int item_drop(lua_State *s)
 }
 
 
+static int require_loader(lua_State *s)
+{
+    // Add .lua extension (maybe only do this when it doesn't have it already)
+    std::string filename = luaL_checkstring(s, 1);
+    filename.append(".lua");
+
+    const std::string path = ResourceManager::resolve(filename);
+    if (!path.empty())
+        luaL_loadfile(s, path.c_str());
+    else
+        lua_pushstring(s, "File not found");
+
+    return 1;
+}
+
+
 LuaScript::LuaScript():
     nbArgs(-1)
 {
     mState = luaL_newstate();
     luaL_openlibs(mState);
+
+    // Register package loader that goes through the resource manager
+    // table.insert(package.loaders, 2, require_loader)
+    lua_getglobal(mState, "package");
+    lua_getfield(mState, -1, "loaders");
+    lua_pushcfunction(mState, require_loader);
+    lua_rawseti(mState, -2, 2);
+    lua_pop(mState, 2);
 
     // Put some callback functions in the scripting environment.
     static luaL_reg const callbacks[] = {
