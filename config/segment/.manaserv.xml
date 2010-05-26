@@ -15,6 +15,10 @@
  
  <option name="defaultUpdateHost" value="http://update.invertika.org"/>
  
+ <!-- Data localisation -->
+ <option name="clientDataPath" value="data"/>
+ <option name="serverDataPath" value="data"/>
+ 
  <!-- Accounteinstellungen -->
  <option name="account_minEmailLength" value="7"/>
  <option name="account_maxEmailLength" value="128"/>
@@ -43,6 +47,7 @@
  <option name="respawnX" value="3200"/>
  <option name="respawnY" value="2800"/> 
  <option name="defaultPvp" value="free"/> 
+ <option name="floorItemDecayTime" value="0"/> 
  
  <!-- Post System Einstellungen -->
  <option name="mail_maxAttachments" value="3"/>
