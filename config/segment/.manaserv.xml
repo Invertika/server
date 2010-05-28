@@ -16,7 +16,7 @@
  <option name="defaultUpdateHost" value="http://update.invertika.org"/>
  
  <!-- Data localisation -->
- <option name="clientDataPath" value="data"/>
+ <option name="clientDataPath" value=""/>
  <option name="serverDataPath" value="data"/>
  
  <!-- Accounteinstellungen -->
