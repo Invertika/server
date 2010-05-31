@@ -9,14 +9,14 @@ ftp_server = "invertika.org"
 ftp_user = "nutzername"
 ftp_password = "geheim"
 
-path_tmw_db = "/home/manaserv/invertika.db"
+path_mana_db = "/home/manaserv/invertika.db"
 path_server_file = "server.txt"
 path_rrd_file = "invertika.rrd"
 
 # Daten in die Datei schreiben
 server_file = open(path_server_file, 'w')
 
-connection = sqlite3.connect(path_tmw_db)
+connection = sqlite3.connect(path_mana_db)
 cursor = connection.cursor()
 
 server_file.write(str(time.time()) + '\n')
