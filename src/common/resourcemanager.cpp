@@ -41,11 +41,14 @@ void ResourceManager::initialize()
 {
     PHYSFS_permitSymbolicLinks(1);
 
+    const std::string serverPath =
+            Configuration::getValue("serverPath", ".");
     const std::string clientDataPath =
             Configuration::getValue("clientDataPath", "example/clientdata");
     const std::string serverDataPath =
             Configuration::getValue("serverDataPath", "example/serverdata");
 
+    PHYSFS_addToSearchPath(serverPath.c_str(), 1);
     PHYSFS_addToSearchPath(clientDataPath.c_str(), 1);
     PHYSFS_addToSearchPath(serverDataPath.c_str(), 1);
 }
@@ -64,11 +67,10 @@ std::string ResourceManager::resolve(const std::string &path)
     return std::string();
 }
 
-char *ResourceManager::loadFile(const std::string &fileName, int &fileSize,
-                                bool removeBOM)
+char *ResourceManager::loadFile(const std::string &fileName, int &fileSize)
 {
     // Attempt to open the specified file using PhysicsFS
-    PHYSFS_file* file = PHYSFS_openRead(fileName.c_str());
+    PHYSFS_file *file = PHYSFS_openRead(fileName.c_str());
 
     // If the handler is an invalid pointer indicate failure
     if (file == NULL)
@@ -80,30 +82,6 @@ char *ResourceManager::loadFile(const std::string &fileName, int &fileSize,
 
     // Get the size of the file
     fileSize = PHYSFS_fileLength(file);
-
-    if (removeBOM)
-    {
-        // Inspired by BOMstrip from Peter Pentchev, 2008, public domain.
-        const char utf8Bom[] = "\xef\xbb\xbf";
-        const int bomLength = sizeof(utf8Bom);
-        char bomBuffer[bomLength];
-        PHYSFS_read(file, bomBuffer, 1, bomLength);
-
-        std::istringstream iss(std::string(bomBuffer, bomLength));
-        std::string line;
-
-        // if we find a BOM, then we remove it from the buffer
-        if (std::getline(iss, line) && !line.substr(0, 3).compare(utf8Bom))
-        {
-            LOG_INFO("Found a Byte Order Mask (BOM) in '" << fileName);
-            fileSize = fileSize - bomLength;
-        }
-        else
-        {
-            // No BOM, we get back to the file start.
-            PHYSFS_seek(file, 0);
-        }
-    }
 
     // Allocate memory and load the file
     char *buffer = (char *) malloc(fileSize + 1);

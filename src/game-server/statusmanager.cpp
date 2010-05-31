@@ -42,42 +42,27 @@ void StatusManager::initialize(const std::string &file)
 
 void StatusManager::reload()
 {
-    int size;
-    // Note: The file is checked for UTF-8 BOM.
-    char *data = ResourceManager::loadFile(statusReferenceFile, size, true);
-
-    if (!data) {
+    std::string absPathFile = ResourceManager::resolve(statusReferenceFile);
+    if (absPathFile.empty()) {
         LOG_ERROR("Status Manager: Could not find " << statusReferenceFile << "!");
-        free(data);
         return;
     }
 
-    xmlDocPtr doc = xmlParseMemory(data, size);
-    free(data);
+    XML::Document doc(absPathFile, false);
+    xmlNodePtr rootNode = doc.rootNode();
 
-    if (!doc)
+    if (!rootNode || !xmlStrEqual(rootNode->name, BAD_CAST "status-effects"))
     {
         LOG_ERROR("Status Manager: Error while parsing status database ("
-                  << statusReferenceFile << ")!");
+                  << absPathFile << ")!");
         return;
     }
 
-    xmlNodePtr node = xmlDocGetRootElement(doc);
-    if (!node || !xmlStrEqual(node->name, BAD_CAST "status-effects"))
-    {
-        LOG_ERROR("Status Manager: " << statusReferenceFile
-                  << " is not a valid database file!");
-        xmlFreeDoc(doc);
-        return;
-    }
-
-    LOG_INFO("Loading status reference...");
-    for (node = node->xmlChildrenNode; node != NULL; node = node->next)
+    LOG_INFO("Loading status reference: " << absPathFile);
+    for_each_xml_child_node(node, rootNode)
     {
         if (!xmlStrEqual(node->name, BAD_CAST "status-effect"))
-        {
             continue;
-        }
 
         int id = XML::getProperty(node, "id", 0);
         if (id == 0)
@@ -113,18 +98,18 @@ void StatusManager::reload()
                 s->loadFile(filename.str());
                 statusEffect->setScript(s);
             } else {
-                LOG_WARN("Could not find script file \"" << filename.str() << "\" for status #"<<id);
+                LOG_WARN("Could not find script file \"" << filename.str()
+                         << "\" for status #"<<id);
             }
         }
         statusEffects[id] = statusEffect;
     }
-
-    xmlFreeDoc(doc);
 }
 
 void StatusManager::deinitialize()
 {
-    for (StatusEffects::iterator i = statusEffects.begin(), i_end = statusEffects.end(); i != i_end; ++i)
+    for (StatusEffects::iterator i = statusEffects.begin(),
+           i_end = statusEffects.end(); i != i_end; ++i)
     {
         delete i->second;
     }

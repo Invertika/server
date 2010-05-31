@@ -45,8 +45,9 @@ void SkillManager::reload()
     */
 
     int size;
-    // Note: The file is checked for UTF-8 BOM.
-    char *data = ResourceManager::loadFile(skillReferenceFile, size, true);
+    char *data = ResourceManager::loadFile(skillReferenceFile, size);
+
+    std::string absPathFile = ResourceManager::resolve(skillReferenceFile);
 
     if (!data) {
         LOG_ERROR("Item Manager: Could not find " << skillReferenceFile << "!");
@@ -60,20 +61,20 @@ void SkillManager::reload()
     if (!doc)
     {
         LOG_ERROR("Skill Manager: Error while parsing skill database ("
-                  << skillReferenceFile << ")!");
+                  << absPathFile << ")!");
         return;
     }
 
     xmlNodePtr node = xmlDocGetRootElement(doc);
     if (!node || !xmlStrEqual(node->name, BAD_CAST "skills"))
     {
-        LOG_ERROR("Skill Manager: " << skillReferenceFile
+        LOG_ERROR("Skill Manager: " << absPathFile
                   << " is not a valid database file!");
         xmlFreeDoc(doc);
         return;
     }
 
-    LOG_INFO("Loading skill reference...");
+    LOG_INFO("Loading skill reference: " << absPathFile);
 
     for_each_xml_child_node(setnode, node)
     {
@@ -97,21 +98,20 @@ void SkillManager::reload()
     LOG_DEBUG("skill map:");
     for (SkillMap::iterator i = skillMap.begin(); i != skillMap.end(); i++)
     {
-        LOG_DEBUG("  "<<i->first<<" : "<<i->second);
+        LOG_DEBUG("  " << i->first << " : " << i->second);
     }
 }
 
-int SkillManager::getIdFromString(std::string name)
+int SkillManager::getIdFromString(const std::string &name)
 {
     //check if already an integer, if yes just return it
     int val;
     val = atoi(name.c_str());
-    if (val) return val;
+    if (val)
+        return val;
 
     // convert to upper case for easier finding
-    name = utils::toupper(name);
-    // find it
-    SkillMap::iterator i = skillMap.find(name);
+    SkillMap::iterator i = skillMap.find(utils::toupper(name));
     if (i == skillMap.end())
     {
         return 0;

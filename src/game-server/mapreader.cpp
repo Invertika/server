@@ -39,12 +39,10 @@
 
 static std::vector< int > tilesetFirstGids;
 
-bool MapReader::readMap(const std::string &filename, MapComposite
-*composite)
+bool MapReader::readMap(const std::string &filename, MapComposite *composite)
 {
     int fileSize;
-    // Note: The file is checked for UTF-8 BOM.
-    char *buffer = ResourceManager::loadFile(filename, fileSize, true);
+    char *buffer = ResourceManager::loadFile(filename, fileSize);
 
     if (buffer == NULL)
     {
@@ -542,15 +540,11 @@ void MapReader::setTileWithGid(Map *map, int x, int y, int gid)
          i_end = ::tilesetFirstGids.end(); i != i_end; ++i)
     {
         if (gid < *i)
-        {
             break;
-        }
+
         set = *i;
     }
 
     if (gid!=set)
-    {
         map->blockTile(x, y, Map::BLOCKTYPE_WALL);
-    }
-
 }

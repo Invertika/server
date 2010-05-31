@@ -37,7 +37,7 @@ namespace ResourceManager
 
     /**
      * Returns the real file-system path of the resource with the given
-     * resource path.
+     * resource path, or an empty string when no such resource exists.
      */
     std::string resolve(const std::string &path);
 
@@ -52,8 +52,7 @@ namespace ResourceManager
      *         or <code>NULL</code> on failure.
      * @note The array contains an extra \0 character at position fileSize.
      */
-    char *loadFile(const std::string &fileName, int &fileSize,
-                   bool removeBOM = false);
+    char *loadFile(const std::string &fileName, int &fileSize);
 }
 
 #endif
