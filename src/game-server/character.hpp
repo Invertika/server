@@ -269,7 +269,7 @@ class Character : public Being
         /**
          * Updates base Being attributes.
          */
-        void modifiedAttribute(int);
+        void updateDerivedAttributes(int);
 
         /**
          * Calls all the "disconnected" listener.
@@ -481,7 +481,7 @@ class Character : public Being
         unsigned char mAccountLevel; /**< Account level of the user. */
         int mParty;                  /**< Party id of the character */
         TransactionType mTransaction; /**< Trade/buy/sell action the character is involved in. */
-        std::map<int, int> mKillCount;  /**< how many monsters the character has slayn of each type */
+        std::map<int, int> mKillCount;  /**< How many monsters the character has slain of each type */
 
     protected:
         /**
