@@ -1,7 +1,7 @@
 pkgname=invertika-server-svn
 pkgver=1682
 pkgrel=1
-pkgdesc=""
+pkgdesc="Server for Invertika, based on The Mana World (tmwserv)"
 arch=('any')
 url="http://invertika.org/"
 license=('GPL2')
@@ -30,10 +30,6 @@ build() {
   #
   # BUILD
   #
-#  autoreconf -i
-#  ./configure --prefix=/usr
-#  make || return 1
-#  make DESTDIR="$pkgdir/" install
   cmake -G "Unix Makefiles"
   make
   make DESTDIR="$pkgdir/" install
