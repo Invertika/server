@@ -1,6 +1,7 @@
 /*
  *  The Mana Server
  *  Copyright (C) 2004-2010  The Mana World Development Team
+ *  Copyright (C) 2010  The Mana Developers
  *
  *  This file is part of The Mana Server.
  *
@@ -39,6 +40,7 @@
 #include "common/permissionmanager.hpp"
 #include "common/resourcemanager.hpp"
 #include "game-server/accountconnection.hpp"
+#include "game-server/attributemanager.hpp"
 #include "game-server/gamehandler.hpp"
 #include "game-server/skillmanager.hpp"
 #include "game-server/itemmanager.hpp"
@@ -63,7 +65,9 @@ using utils::Logger;
 #define DEFAULT_LOG_FILE                    "manaserv-game.log"
 #define DEFAULT_CONFIG_FILE                 "manaserv.xml"
 #define DEFAULT_ITEMSDB_FILE                "items.xml"
+#define DEFAULT_EQUIPDB_FILE                "equip.xml"
 #define DEFAULT_SKILLSDB_FILE               "mana-skills.xml"
+#define DEFAULT_ATTRIBUTEDB_FILE            "attributes.xml"
 #define DEFAULT_MAPSDB_FILE                 "maps.xml"
 #define DEFAULT_MONSTERSDB_FILE             "monsters.xml"
 #define DEFAULT_STATUSDB_FILE               "mana-status-effect.xml"
@@ -79,6 +83,10 @@ bool running = true;            /**< Determines if server keeps running */
 
 utils::StringFilter *stringFilter; /**< Slang's Filter */
 
+AttributeManager *attributeManager = new AttributeManager(DEFAULT_ATTRIBUTEDB_FILE);
+ItemManager *itemManager = new ItemManager(DEFAULT_ITEMSDB_FILE, DEFAULT_EQUIPDB_FILE);
+MonsterManager *monsterManager = new MonsterManager(DEFAULT_MONSTERSDB_FILE);
+
 /** Core game message handler */
 GameHandler *gameHandler;
 
@@ -92,43 +100,53 @@ PostMan *postMan;
 BandwidthMonitor *gBandwidth;
 
 /** Callback used when SIGQUIT signal is received. */
-void closeGracefully(int)
+static void closeGracefully(int)
 {
     running = false;
 }
 
-/**
- * Initialize the configuration
- */
-void initConfig()
+static void initializeConfiguration(std::string configPath = std::string())
 {
-    /*
-     * If the path values aren't defined, we set the default
-     * depending on the platform.
-     */
-    // The config path
-#if defined CONFIG_FILE
-    std::string configPath = CONFIG_FILE;
-#else
+    if (configPath.empty())
+        configPath = DEFAULT_CONFIG_FILE;
 
-#if (defined __USE_UNIX98 || defined __FreeBSD__)
-    std::string configPath = getenv("HOME");
-    configPath += "/.";
-    configPath += DEFAULT_CONFIG_FILE;
-#else // Win32, ...
-    std::string configPath = DEFAULT_CONFIG_FILE;
-#endif
-#endif // defined CONFIG_FILE
+    bool configFound = true;
+    if (!Configuration::initialize(configPath))
+    {
+        configFound = false;
 
-    Configuration::initialize(configPath);
+        // If the config file isn't the default and fail to load,
+        // we try the default one with a warning.
+        if (configPath.compare(DEFAULT_CONFIG_FILE))
+        {
+            LOG_WARN("Invalid config path: " << configPath
+                     << ". Trying default value: " << DEFAULT_CONFIG_FILE ".");
+            configPath = DEFAULT_CONFIG_FILE;
+            configFound = true;
+
+            if (!Configuration::initialize(configPath))
+                  configFound = false;
+        }
+
+        if (!configFound)
+        {
+            LOG_FATAL("Refusing to run without configuration!" << std::endl
+            << "Invalid config path: " << configPath << ".");
+            exit(1);
+        }
+    }
+
     LOG_INFO("Using config file: " << configPath);
 
+    // Check inter-server password.
+    if (Configuration::getValue("net_password", "") == "")
+    {
+        LOG_FATAL("SECURITY WARNING: 'net_password' not set!");
+        exit(3);
+    }
 }
 
-/**
- * Initializes the server.
- */
-void initialize()
+static void initializeServer()
 {
     // Reset to default segmentation fault handling for debugging purposes
     signal(SIGSEGV, SIG_DFL);
@@ -140,39 +158,22 @@ void initialize()
     signal(SIGINT, closeGracefully);
     signal(SIGTERM, closeGracefully);
 
-    /*
-     * If the path values aren't defined, we set the default
-     * depending on the platform.
-     */
-    // The log path
-#if defined LOG_FILE
-    std::string logPath = LOG_FILE;
-#else
-
-#if (defined __USE_UNIX98 || defined __FreeBSD__)
-    std::string logPath = getenv("HOME");
-    logPath += "/.";
-    logPath += DEFAULT_LOG_FILE;
-#else // Win32, ...
-    std::string logPath = DEFAULT_LOG_FILE;
-#endif
-
-#endif // defined LOG_FILE
+    std::string logFile = Configuration::getValue("log_gameServerFile",
+                                                  DEFAULT_LOG_FILE);
 
     // Initialize PhysicsFS
     PHYSFS_init("");
 
     // Initialize the logger.
-    using namespace utils;
-    Logger::setLogFile(logPath);
+    Logger::setLogFile(logFile);
 
     // Write the messages to both the screen and the log file.
     Logger::setTeeMode(true);
-    LOG_INFO("Using log file: " << logPath);
+    LOG_INFO("Using log file: " << logFile);
 
     // --- Initialize the managers
     // Initialize the slang's and double quotes filter.
-    stringFilter = new StringFilter;
+    stringFilter = new utils::StringFilter;
 
     ResourceManager::initialize();
     if (MapManager::initialize(DEFAULT_MAPSDB_FILE) < 1)
@@ -180,15 +181,15 @@ void initialize()
         LOG_FATAL("The Game Server can't find any valid/available maps.");
         exit(2);
     }
+    attributeManager->initialize();
     SkillManager::initialize(DEFAULT_SKILLSDB_FILE);
-    ItemManager::initialize(DEFAULT_ITEMSDB_FILE);
-    MonsterManager::initialize(DEFAULT_MONSTERSDB_FILE);
+    itemManager->initialize();
+    monsterManager->initialize();
     StatusManager::initialize(DEFAULT_STATUSDB_FILE);
     PermissionManager::initialize(DEFAULT_PERMISSION_FILE);
-    // Initialize global event script
-    LuaScript::load_global_event_script(DEFAULT_GLOBAL_EVENT_SCRIPT_FILE);
-    // Initialize special action script
-    LuaScript::load_special_actions_script(DEFAULT_SPECIAL_ACTIONS_SCRIPT_FILE);
+
+    LuaScript::loadGlobalEventScript(DEFAULT_GLOBAL_EVENT_SCRIPT_FILE);
+    LuaScript::loadSpecialActionsScript(DEFAULT_SPECIAL_ACTIONS_SCRIPT_FILE);
 
     // --- Initialize the global handlers
     // FIXME: Make the global handlers global vars or part of a bigger
@@ -199,7 +200,8 @@ void initialize()
     gBandwidth = new BandwidthMonitor;
 
     // --- Initialize enet.
-    if (enet_initialize() != 0) {
+    if (enet_initialize() != 0)
+    {
         LOG_FATAL("An error occurred while initializing ENet");
         exit(2);
     }
@@ -218,10 +220,7 @@ void initialize()
 }
 
 
-/**
- * Deinitializes the server.
- */
-void deinitialize()
+static void deinitializeServer()
 {
     // Write configuration file
     Configuration::deinitialize();
@@ -237,8 +236,8 @@ void deinitialize()
 
     // Destroy Managers
     delete stringFilter;
-    MonsterManager::deinitialize();
-    ItemManager::deinitialize();
+    monsterManager->deinitialize();
+    itemManager->deinitialize();
     MapManager::deinitialize();
     StatusManager::deinitialize();
 
@@ -247,13 +246,15 @@ void deinitialize()
 
 
 /**
- * Show command line arguments
+ * Show command line arguments.
  */
-void printHelp()
+static void printHelp()
 {
     std::cout << "manaserv" << std::endl << std::endl
               << "Options: " << std::endl
               << "  -h --help          : Display this help" << std::endl
+              << "     --config <path> : Set the config path to use."
+              << " (Default: ./manaserv.xml)" << std::endl
               << "     --verbosity <n> : Set the verbosity level" << std::endl
               << "                        - 0. Fatal Errors only." << std::endl
               << "                        - 1. All Errors." << std::endl
@@ -268,48 +269,67 @@ void printHelp()
 struct CommandLineOptions
 {
     CommandLineOptions():
+        configPath(DEFAULT_CONFIG_FILE),
+        configPathChanged(false),
         verbosity(Logger::Warn),
-        port(DEFAULT_SERVER_PORT + 3)
+        verbosityChanged(false),
+        port(DEFAULT_SERVER_PORT + 3),
+        portChanged(false)
     {}
 
+    std::string configPath;
+    bool configPathChanged;
+
     Logger::Level verbosity;
+    bool verbosityChanged;
+
     int port;
+    bool portChanged;
 };
 
 /**
  * Parse the command line arguments
  */
-void parseOptions(int argc, char *argv[], CommandLineOptions &options)
+static void parseOptions(int argc, char *argv[], CommandLineOptions &options)
 {
-    const char *optstring = "h";
+    const char *optString = "h";
 
-    const struct option long_options[] =
+    const struct option longOptions[] =
     {
-        { "help",       no_argument, 0, 'h' },
+        { "help",       no_argument,       0, 'h' },
+        { "config",     required_argument, 0, 'c' },
         { "verbosity",  required_argument, 0, 'v' },
         { "port",       required_argument, 0, 'p' },
-        { 0 }
+        { 0, 0, 0, 0 }
     };
 
     while (optind < argc)
     {
-        int result = getopt_long(argc, argv, optstring, long_options, NULL);
+        int result = getopt_long(argc, argv, optString, longOptions, NULL);
 
         if (result == -1)
             break;
 
-        switch (result) {
-            default: // Unknown option
+        switch (result)
+        {
+            default: // Unknown option.
             case 'h':
-                // Print help
+                // Print help.
                 printHelp();
+                break;
+            case 'c':
+                // Change config filename and path.
+                options.configPath = optarg;
+                options.configPathChanged = true;
                 break;
             case 'v':
                 options.verbosity = static_cast<Logger::Level>(atoi(optarg));
+                options.verbosityChanged = true;
                 LOG_INFO("Using log verbosity level " << options.verbosity);
                 break;
             case 'p':
                 options.port = atoi(optarg);
+                options.portChanged = true;
                 break;
         }
     }
@@ -326,20 +346,24 @@ int main(int argc, char *argv[])
     LOG_INFO("The Mana Game Server v" << PACKAGE_VERSION);
 #endif
 
-    initConfig();
-
     // Parse command line options
     CommandLineOptions options;
-    options.verbosity = static_cast<Logger::Level>(
-                          Configuration::getValue("log_gameServerLogLevel",
-                                                  options.verbosity) );
-    options.port = Configuration::getValue("net_gameServerPort", options.port);
     parseOptions(argc, argv, options);
 
+    initializeConfiguration(options.configPath);
+
+    if (!options.verbosityChanged)
+        options.verbosity = static_cast<Logger::Level>(
+                               Configuration::getValue("log_gameServerLogLevel",
+                                                       options.verbosity) );
     Logger::setVerbosity(options.verbosity);
 
+    if (!options.portChanged)
+        options.port = Configuration::getValue("net_gameServerPort",
+                                               options.port);
+
     // General initialization
-    initialize();
+    initializeServer();
 
     // Make an initial attempt to connect to the account server
     // Try again after longer and longer intervals when connection fails.
@@ -438,5 +462,5 @@ int main(int argc, char *argv[])
     LOG_INFO("Received: Quit signal, closing down...");
     gameHandler->stopListen();
     accountHandler->stop();
-    deinitialize();
+    deinitializeServer();
 }

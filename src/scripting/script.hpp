@@ -61,8 +61,11 @@ class Script
         /**
          * Loads a chunk of text into script context and executes its global
          * statements.
+         *
+         * @param prog the program text to load
+         * @param name the name of the text, used for error reporting
          */
-        virtual void load(const char *) = 0;
+        virtual void load(const char *prog, const char *name) = 0;
 
         /**
          * Loads a text file into script context and executes its global
@@ -128,21 +131,21 @@ class Script
         EventListener *getScriptListener()
         { return &mEventListener; }
 
-        virtual void processDeathEvent(Being* thing) = 0;
+        virtual void processDeathEvent(Being *thing) = 0;
 
-        virtual void processRemoveEvent(Thing* thing) = 0;
+        virtual void processRemoveEvent(Thing *thing) = 0;
 
         /**
          * Runs a function from the global event script file
          */
-        static bool execute_global_event_function(const std::string &function, Being *obj);
+        static bool executeGlobalEventFunction(const std::string &function, Being *obj);
         static void addDataToSpecial(int specialId, Special *special);
-        static bool perform_special_action(int specialId, Being *caster);
+        static bool performSpecialAction(int specialId, Being *caster);
 
 
     protected:
-        static Script* global_event_script; // the global event script
-        static Script* special_actions_script; // the special actions script
+        static Script *globalEventScript;
+        static Script *specialActionsScript;
         std::string mScriptFile;
 
     private:

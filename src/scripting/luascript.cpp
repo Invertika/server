@@ -1,6 +1,7 @@
 /*
  *  The Mana Server
  *  Copyright (C) 2007-2010  The Mana World Development Team
+ *  Copyright (C) 2010  The Mana Developers
  *
  *  This file is part of The Mana Server.
  *
@@ -18,13 +19,13 @@
  *  along with The Mana Server.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cassert>
-
 #include "luascript.hpp"
 
 #include "game-server/being.hpp"
-
 #include "utils/logger.h"
+
+#include <cassert>
+#include <cstring>
 
 LuaScript::~LuaScript()
 {
@@ -63,11 +64,11 @@ void LuaScript::push(Thing *v)
 int LuaScript::execute()
 {
     assert(nbArgs >= 0);
-    int res = lua_pcall(mState, nbArgs, 1, 0);
+    int res = lua_pcall(mState, nbArgs, 1, 1);
     nbArgs = -1;
-    if (res || !(lua_isnil(mState, 1) || lua_isnumber(mState, 1)))
+    if (res || !(lua_isnil(mState, -1) || lua_isnumber(mState, -1)))
     {
-        const char *s = lua_tostring(mState, 1);
+        const char *s = lua_tostring(mState, -1);
 
         LOG_WARN("Lua Script Error" << std::endl
                  << "     Script  : " << mScriptFile << std::endl
@@ -76,31 +77,34 @@ int LuaScript::execute()
         lua_pop(mState, 1);
         return 0;
     }
-    res = lua_tointeger(mState, 1);
+    res = lua_tointeger(mState, -1);
     lua_pop(mState, 1);
     return res;
     mCurFunction = "";
 }
 
-void LuaScript::load(const char *prog)
+void LuaScript::load(const char *prog, const char *name)
 {
-    int res = luaL_loadstring(mState, prog);
-
-    if (res == LUA_ERRSYNTAX)
-    {
-        LOG_ERROR("Syntax error while loading Lua script.");
-        return;
-    }
-
-    // A Lua chunk is like a function, so "execute" it in order to initialize
-    // it.
-    res = lua_pcall(mState, 0, 0, 0);
+    int res = luaL_loadbuffer(mState, prog, std::strlen(prog), name);
     if (res)
+    {
+        switch (res) {
+        case LUA_ERRSYNTAX:
+            LOG_ERROR("Syntax error while loading Lua script: "
+                      << lua_tostring(mState, -1));
+            break;
+        case LUA_ERRMEM:
+            LOG_ERROR("Memory allocation error while loading Lua script");
+            break;
+        }
+
+        lua_pop(mState, 1);
+    }
+    else if (lua_pcall(mState, 0, 0, 1))
     {
         LOG_ERROR("Failure while initializing Lua script: "
                   << lua_tostring(mState, -1));
-        lua_settop(mState, 0);
-        return;
+        lua_pop(mState, 1);
     }
 }
 
@@ -157,23 +161,23 @@ void LuaScript::getPostCallback(Character *q, const std::string &sender,
     s->execute();
 }
 
-bool LuaScript::load_global_event_script(const std::string &file)
+bool LuaScript::loadGlobalEventScript(const std::string &file)
 {
-    Script::global_event_script = new LuaScript();
-    if (!Script::global_event_script->loadFile(file))
+    Script::globalEventScript = new LuaScript();
+    if (!Script::globalEventScript->loadFile(file))
     {
-        Script::global_event_script = NULL;
+        Script::globalEventScript = NULL;
         return false;
     }
     return true;
 }
 
-bool LuaScript::load_special_actions_script(const std::string &file)
+bool LuaScript::loadSpecialActionsScript(const std::string &file)
 {
-    Script::special_actions_script = new LuaScript();
-    if (!Script::special_actions_script->loadFile(file))
+    Script::specialActionsScript = new LuaScript();
+    if (!Script::specialActionsScript->loadFile(file))
     {
-        Script::special_actions_script = NULL;
+        Script::specialActionsScript = NULL;
         return false;
     }
     return true;

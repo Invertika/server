@@ -29,16 +29,20 @@
 #include "account-server/serverhandler.hpp"
 #include "chat-server/chathandler.hpp"
 #include "common/configuration.hpp"
+#include "common/resourcemanager.hpp"
 #include "common/transaction.hpp"
 #include "net/connectionhandler.hpp"
 #include "net/messagein.hpp"
 #include "net/messageout.hpp"
 #include "net/netcomputer.hpp"
+#include "utils/functors.h"
 #include "utils/logger.h"
 #include "utils/stringfilter.h"
 #include "utils/tokencollector.hpp"
 #include "utils/tokendispenser.hpp"
 #include "utils/sha256.h"
+#include "utils/string.hpp"
+#include "utils/xml.hpp"
 
 static void addUpdateHost(MessageOut *msg)
 {
@@ -46,13 +50,27 @@ static void addUpdateHost(MessageOut *msg)
     msg->writeString(updateHost);
 }
 
+// List of attributes that the client can send at account creation.
+static std::vector< int > initAttr;
+
+// Character's starting points
+static int startPoints, attributesMinimum, attributesMaximum = 0;
+
+/*
+ * Map attribute ids to values that they need to be initialised to at account
+ * creation.
+ * The pair contains two elements of the same value (the default) so that the
+ * iterators can be used to copy a range.
+ */
+static std::map< unsigned int, std::pair< double, double> > defAttr;
+
 class AccountHandler : public ConnectionHandler
 {
 public:
     /**
      * Constructor.
      */
-    AccountHandler();
+    AccountHandler(const std::string &attrFile);
 
     /**
      * Called by the token collector in order to associate a client to its
@@ -76,6 +94,9 @@ public:
      * without having to provide username and password a second time.
      */
     TokenCollector<AccountHandler, AccountClient *, int> mTokenCollector;
+
+    static void sendCharacterData(AccountClient &client, int slot,
+                              const Character &ch);
 
 protected:
     /**
@@ -106,14 +127,97 @@ private:
 
 static AccountHandler *accountHandler;
 
-AccountHandler::AccountHandler():
+AccountHandler::AccountHandler(const std::string &attrFile):
     mTokenCollector(this)
 {
+    // In case of reloading...
+    initAttr.clear();
+
+    std::string absPathFile = ResourceManager::resolve(attrFile);
+    if (absPathFile.empty())
+    {
+        LOG_FATAL("Account handler: Could not find " << attrFile << "!");
+        exit(3);
+    }
+
+    XML::Document doc(absPathFile, int());
+    xmlNodePtr node = doc.rootNode();
+    if (!node || !xmlStrEqual(node->name, BAD_CAST "attributes"))
+    {
+        LOG_FATAL("Account handler: " << attrFile << ": "
+                  << " is not a valid database file!");
+        exit(3);
+    }
+
+    for_each_xml_child_node(attributenode, node)
+    {
+        if (xmlStrEqual(attributenode->name, BAD_CAST "attribute"))
+        {
+            int id = XML::getProperty(attributenode, "id", 0);
+            if (!id)
+            {
+                LOG_WARN("Account handler: " << attrFile << ": "
+                         << "An invalid attribute id value (0) has been found "
+                         << "and will be ignored.");
+                continue;
+            }
+
+            if (XML::getBoolProperty(attributenode, "modifiable", false))
+                initAttr.push_back(id);
+
+            // Store as string initially to check
+            // that the property is defined.
+            std::string defStr = XML::getProperty(attributenode, "default", "");
+            if (!defStr.empty())
+            {
+                double val = string_to<double>()(defStr);
+                defAttr.insert(std::make_pair(id,std::make_pair(val, val)));
+            }
+        }
+        else if (xmlStrEqual(attributenode->name, BAD_CAST "points"))
+        {
+            startPoints = XML::getProperty(attributenode, "start", 0);
+            attributesMinimum = XML::getProperty(attributenode, "minimum", 0);
+            attributesMaximum = XML::getProperty(attributenode, "maximum", 0);
+
+            // Stops if not all the values are given.
+            if (!startPoints || !attributesMinimum || !attributesMaximum)
+            {
+                LOG_FATAL("Account handler: " << attrFile << ": "
+                          << " The characters starting points "
+                          << "are incomplete or not set!");
+                exit(3);
+            }
+        }
+    } // End for each XML nodes
+
+    // Sanity checks on attributes.
+    if (initAttr.empty())
+    {
+        LOG_FATAL("Account handler: " << attrFile << ": "
+                  << "No modifiable attributes found!");
+        exit(3);
+    }
+
+    // Sanity checks on starting points.
+    int modifiableAttributeCount = (int) initAttr.size();
+    if (modifiableAttributeCount * attributesMaximum < startPoints ||
+        modifiableAttributeCount * attributesMinimum > startPoints)
+    {
+        LOG_FATAL("Account handler: " << attrFile << ": "
+                  << "Character's point values make "
+                  << "the character's creation impossible!");
+        exit(3);
+    }
+
+    LOG_DEBUG("Character start points: " << startPoints << " (Min: "
+              << attributesMinimum << ", Max: " << attributesMaximum << ")");
 }
 
-bool AccountClientHandler::initialize(int port, const std::string &host)
+bool AccountClientHandler::initialize(const std::string &configFile, int port,
+                                      const std::string &host)
 {
-    accountHandler = new AccountHandler;
+    accountHandler = new AccountHandler(configFile);
     LOG_INFO("Account handler started:");
 
     return accountHandler->startListen(port, host);
@@ -151,7 +255,7 @@ void AccountHandler::computerDisconnected(NetComputer *comp)
     delete client; // ~AccountClient unsets the account
 }
 
-static void sendCharacterData(AccountClient &client, int slot,
+void AccountHandler::sendCharacterData(AccountClient &client, int slot,
                               const Character &ch)
 {
     MessageOut charInfo(APMSG_CHAR_INFO);
@@ -163,11 +267,16 @@ static void sendCharacterData(AccountClient &client, int slot,
     charInfo.writeShort(ch.getLevel());
     charInfo.writeShort(ch.getCharacterPoints());
     charInfo.writeShort(ch.getCorrectionPoints());
-    charInfo.writeLong(ch.getPossessions().money);
 
-    for (int j = CHAR_ATTR_BEGIN; j < CHAR_ATTR_END; ++j)
+    for (AttributeMap::const_iterator it = ch.mAttributes.begin(),
+                                      it_end = ch.mAttributes.end();
+        it != it_end;
+        ++it)
     {
-        charInfo.writeShort(ch.getAttribute(j));
+        // {id, base value in 256ths, modified value in 256ths }*
+        charInfo.writeLong(it->first);
+        charInfo.writeLong((int) (it->second.first * 256));
+        charInfo.writeLong((int) (it->second.second * 256));
     }
 
     client.send(charInfo);
@@ -248,7 +357,7 @@ void AccountHandler::handleLoginMessage(AccountClient &client, MessageIn &msg)
         return;
     }
 
-    // The client succesfully logged in
+    // The client successfully logged in
 
     // set lastLogin date of the account
     time_t login;
@@ -298,7 +407,8 @@ void AccountHandler::handleLogoutMessage(AccountClient &client)
     client.send(reply);
 }
 
-void AccountHandler::handleReconnectMessage(AccountClient &client, MessageIn &msg)
+void AccountHandler::handleReconnectMessage(AccountClient &client,
+                                            MessageIn &msg)
 {
     if (client.status != CLIENT_LOGIN)
     {
@@ -318,14 +428,14 @@ bool checkCaptcha(AccountClient &client, std::string captcha)
     return true;
 }
 
-void AccountHandler::handleRegisterMessage(AccountClient &client, MessageIn &msg)
+void AccountHandler::handleRegisterMessage(AccountClient &client,
+                                           MessageIn &msg)
 {
     int clientVersion = msg.readLong();
     std::string username = msg.readString();
     std::string password = msg.readString();
     std::string email = msg.readString();
     std::string captcha = msg.readString();
-    std::string allowed = Configuration::getValue("account_allowRegister", "1");
     int minClientVersion = Configuration::getValue("clientVersion", 0);
     unsigned minNameLength = Configuration::getValue("account_minNameLength", 4);
     unsigned maxNameLength = Configuration::getValue("account_maxNameLength", 15);
@@ -336,7 +446,7 @@ void AccountHandler::handleRegisterMessage(AccountClient &client, MessageIn &msg
     {
         reply.writeByte(ERRMSG_FAILURE);
     }
-    else if (allowed == "0" or allowed == "false")
+    else if (!Configuration::getBoolValue("account_allowRegister", true))
     {
         reply.writeByte(ERRMSG_FAILURE);
     }
@@ -413,7 +523,8 @@ void AccountHandler::handleRegisterMessage(AccountClient &client, MessageIn &msg
     client.send(reply);
 }
 
-void AccountHandler::handleUnregisterMessage(AccountClient &client, MessageIn &msg)
+void AccountHandler::handleUnregisterMessage(AccountClient &client,
+                                             MessageIn &msg)
 {
     LOG_DEBUG("AccountHandler::handleUnregisterMessage");
     std::string username = msg.readString();
@@ -435,7 +546,7 @@ void AccountHandler::handleUnregisterMessage(AccountClient &client, MessageIn &m
         return;
     }
 
-    // See if the account exists
+    // See whether the account exists
     Account *acc = storage->getAccount(username);
 
     if (!acc || acc->getPassword() != password)
@@ -455,17 +566,19 @@ void AccountHandler::handleUnregisterMessage(AccountClient &client, MessageIn &m
     client.send(reply);
 }
 
-void AccountHandler::handleRequestRegisterInfoMessage(AccountClient &client, MessageIn &msg)
+void AccountHandler::handleRequestRegisterInfoMessage(AccountClient &client,
+                                                      MessageIn &msg)
 {
     LOG_INFO("AccountHandler::handleRequestRegisterInfoMessage");
     MessageOut reply(APMSG_REGISTER_INFO_RESPONSE);
-    std::string allowed = Configuration::getValue("account_allowRegister", "1");
-    if (allowed == "0" or allowed == "false")
+    if (!Configuration::getBoolValue("account_allowRegister", true))
     {
         reply.writeByte(false);
         reply.writeString(Configuration::getValue(
-            "account_denyRegisterReason", ""));
-    } else {
+                                             "account_denyRegisterReason", ""));
+    }
+    else
+    {
         reply.writeByte(true);
         reply.writeByte(Configuration::getValue("account_minNameLength", 4));
         reply.writeByte(Configuration::getValue("account_maxNameLength", 16));
@@ -475,7 +588,8 @@ void AccountHandler::handleRequestRegisterInfoMessage(AccountClient &client, Mes
     client.send(reply);
 }
 
-void AccountHandler::handleEmailChangeMessage(AccountClient &client, MessageIn &msg)
+void AccountHandler::handleEmailChangeMessage(AccountClient &client,
+                                              MessageIn &msg)
 {
     MessageOut reply(APMSG_EMAIL_CHANGE_RESPONSE);
 
@@ -512,7 +626,8 @@ void AccountHandler::handleEmailChangeMessage(AccountClient &client, MessageIn &
     client.send(reply);
 }
 
-void AccountHandler::handlePasswordChangeMessage(AccountClient &client, MessageIn &msg)
+void AccountHandler::handlePasswordChangeMessage(AccountClient &client,
+                                                 MessageIn &msg)
 {
     std::string oldPassword = sha256(msg.readString());
     std::string newPassword = sha256(msg.readString());
@@ -543,7 +658,8 @@ void AccountHandler::handlePasswordChangeMessage(AccountClient &client, MessageI
     client.send(reply);
 }
 
-void AccountHandler::handleCharacterCreateMessage(AccountClient &client, MessageIn &msg)
+void AccountHandler::handleCharacterCreateMessage(AccountClient &client,
+                                                  MessageIn &msg)
 {
     std::string name = msg.readString();
     int hairStyle = msg.readByte();
@@ -552,11 +668,9 @@ void AccountHandler::handleCharacterCreateMessage(AccountClient &client, Message
     int numHairStyles = Configuration::getValue("char_numHairStyles", 17);
     int numHairColors = Configuration::getValue("char_numHairColors", 11);
     int numGenders = Configuration::getValue("char_numGenders", 2);
-    unsigned minNameLength = Configuration::getValue("char_minNameLength", 4);
-    unsigned maxNameLength = Configuration::getValue("char_maxNameLength", 25);
-    unsigned maxCharacters = Configuration::getValue("char_maxCharacters", 3);
-    unsigned startingPoints = Configuration::getValue("char_startingPoints", 60);
-
+    unsigned int minNameLength = Configuration::getValue("char_minNameLength", 4);
+    unsigned int maxNameLength = Configuration::getValue("char_maxNameLength", 25);
+    unsigned int maxCharacters = Configuration::getValue("char_maxCharacters", 3);
 
     MessageOut reply(APMSG_CHAR_CREATE_RESPONSE);
 
@@ -611,38 +725,43 @@ void AccountHandler::handleCharacterCreateMessage(AccountClient &client, Message
         // LATER_ON: Add race, face and maybe special attributes.
 
         // Customization of character's attributes...
-        int attributes[CHAR_ATTR_NB];
-        for (int i = 0; i < CHAR_ATTR_NB; ++i)
+        std::vector<int> attributes = std::vector<int>(initAttr.size(), 0);
+        for (unsigned int i = 0; i < initAttr.size(); ++i)
             attributes[i] = msg.readShort();
 
-        unsigned int totalAttributes = 0;
-        bool validNonZeroAttributes = true;
-        for (int i = 0; i < CHAR_ATTR_NB; ++i)
+        int totalAttributes = 0;
+        for (unsigned int i = 0; i < initAttr.size(); ++i)
         {
             // For good total attributes check.
-            totalAttributes += attributes[i];
+            totalAttributes += attributes.at(i);
 
-            // For checking if all stats are at least > 0
-            if (attributes[i] <= 0) validNonZeroAttributes = false;
+            // For checking if all stats are >= min and <= max.
+            if (attributes.at(i) < attributesMinimum
+                || attributes.at(i) > attributesMaximum)
+            {
+                reply.writeByte(CREATE_ATTRIBUTES_OUT_OF_RANGE);
+                client.send(reply);
+                return;
+            }
         }
 
-        if (totalAttributes > startingPoints)
+        if (totalAttributes > startPoints)
         {
             reply.writeByte(CREATE_ATTRIBUTES_TOO_HIGH);
         }
-        else if (totalAttributes < startingPoints)
+        else if (totalAttributes < startPoints)
         {
             reply.writeByte(CREATE_ATTRIBUTES_TOO_LOW);
-        }
-        else if (!validNonZeroAttributes)
-        {
-            reply.writeByte(CREATE_ATTRIBUTES_EQUAL_TO_ZERO);
         }
         else
         {
             Character *newCharacter = new Character(name);
-            for (int i = CHAR_ATTR_BEGIN; i < CHAR_ATTR_END; ++i)
-                newCharacter->setAttribute(i, attributes[i - CHAR_ATTR_BEGIN]);
+            for (unsigned int i = 0; i < initAttr.size(); ++i)
+                newCharacter->mAttributes.insert(std::make_pair(
+                        (unsigned int) (initAttr.at(i)),
+                        std::make_pair((double) (attributes[i]),
+                                       (double) (attributes[i]))));
+            newCharacter->mAttributes.insert(defAttr.begin(), defAttr.end());
             newCharacter->setAccount(acc);
             newCharacter->setLevel(1);
             newCharacter->setCharacterPoints(0);
@@ -682,7 +801,8 @@ void AccountHandler::handleCharacterCreateMessage(AccountClient &client, Message
     client.send(reply);
 }
 
-void AccountHandler::handleCharacterSelectMessage(AccountClient &client, MessageIn &msg)
+void AccountHandler::handleCharacterSelectMessage(AccountClient &client,
+                                                  MessageIn &msg)
 {
     MessageOut reply(APMSG_CHAR_SELECT_RESPONSE);
 
@@ -747,7 +867,8 @@ void AccountHandler::handleCharacterSelectMessage(AccountClient &client, Message
     storage->addTransaction(trans);
 }
 
-void AccountHandler::handleCharacterDeleteMessage(AccountClient &client, MessageIn &msg)
+void AccountHandler::handleCharacterDeleteMessage(AccountClient &client,
+                                                  MessageIn &msg)
 {
     MessageOut reply(APMSG_CHAR_DELETE_RESPONSE);
 

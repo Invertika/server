@@ -1,6 +1,7 @@
 /*
  *  The Mana Server
  *  Copyright (C) 2004-2010  The Mana World Development Team
+ *  Copyright (C) 2010  The Mana Developers
  *
  *  This file is part of The Mana Server.
  *
@@ -50,13 +51,16 @@
 using utils::Logger;
 
 // Default options that automake should be able to override.
-#define DEFAULT_LOG_FILE        "manaserv-account.log"
-#define DEFAULT_STATS_FILE      "manaserv.stats"
-#define DEFAULT_CONFIG_FILE     "manaserv.xml"
+#define DEFAULT_LOG_FILE          "manaserv-account.log"
+#define DEFAULT_STATS_FILE        "manaserv.stats"
+#define DEFAULT_CONFIG_FILE       "manaserv.xml"
+#define DEFAULT_ATTRIBUTEDB_FILE  "attributes.xml"
 
 static bool running = true;        /**< Determines if server keeps running */
 
 utils::StringFilter *stringFilter; /**< Slang's Filter */
+
+static std::string statisticsFile = std::string();
 
 /** Database handler. */
 Storage *storage;
@@ -75,33 +79,44 @@ static void closeGracefully(int)
     running = false;
 }
 
-static void initConfig()
+static void initializeConfiguration(std::string configPath = std::string())
 {
-    /*
-     * If the path values aren't defined, we set the default
-     * depending on the platform.
-     */
-    // The config path
-#if defined CONFIG_FILE
-    std::string configPath = CONFIG_FILE;
-#else
+    if (configPath.empty())
+        configPath = DEFAULT_CONFIG_FILE;
 
-#if (defined __USE_UNIX98 || defined __FreeBSD__)
-    std::string configPath = getenv("HOME");
-    configPath += "/.";
-    configPath += DEFAULT_CONFIG_FILE;
-#else // Win32, ...
-    std::string configPath = DEFAULT_CONFIG_FILE;
-#endif
+    bool configFound = true;
+    if (!Configuration::initialize(configPath))
+    {
+        configFound = false;
 
-#endif // defined CONFIG_FILE
-    Configuration::initialize(configPath);
+        // If the config file isn't the default and fail to load,
+        // we try the default one with a warning.
+        if (configPath.compare(DEFAULT_CONFIG_FILE))
+        {
+            LOG_WARN("Invalid config path: " << configPath
+                     << ". Trying default value: " << DEFAULT_CONFIG_FILE ".");
+            configPath = DEFAULT_CONFIG_FILE;
+            configFound = true;
+
+            if (!Configuration::initialize(configPath))
+                  configFound = false;
+        }
+
+        if (!configFound)
+        {
+            LOG_FATAL("Refusing to run without configuration!" << std::endl
+            << "Invalid config path: " << configPath << ".");
+            exit(1);
+        }
+    }
+
     LOG_INFO("Using config file: " << configPath);
-    // check inter-server password
+
+    // Check inter-server password.
     if (Configuration::getValue("net_password", "") == "")
     {
-        LOG_WARN("SECURITY WARNING: No 'net_password' set in " << configPath <<
-                 " - set one ASAP or this server WILL get h4x0rd!!");
+        LOG_FATAL("SECURITY WARNING: 'net_password' not set!");
+        exit(3);
     }
 }
 
@@ -123,50 +138,42 @@ static void initialize()
     // Set enet to quit on exit.
     atexit(enet_deinitialize);
 
-    /*
-     * If the path values aren't defined, we set the default
-     * depending on the platform.
-     */
-    // The log path
-#if defined LOG_FILE
-    std::string logPath = LOG_FILE;
-#else
-
-#if (defined __USE_UNIX98 || defined __FreeBSD__)
-    std::string logPath = getenv("HOME");
-    logPath += "/.";
-    logPath += DEFAULT_LOG_FILE;
-#else // Win32, ...
-    std::string logPath = DEFAULT_LOG_FILE;
-#endif
-
-#endif // defined LOG_FILE
+    std::string logFile = Configuration::getValue("log_accountServerFile",
+                                                  DEFAULT_LOG_FILE);
 
     // Initialize PhysicsFS
     PHYSFS_init("");
 
     // Initialize the logger.
-    using namespace utils;
-    Logger::setLogFile(logPath);
+    Logger::setLogFile(logFile);
 
     // write the messages to both the screen and the log file.
     Logger::setTeeMode(true);
 
-    LOG_INFO("Using log file: " << logPath);
+    LOG_INFO("Using log file: " << logFile);
+
+    // Indicate in which file the statistics are put.
+    statisticsFile = Configuration::getValue("log_statisticsFile",
+                                             DEFAULT_STATS_FILE);
+
+    LOG_INFO("Using statistics file: " << statisticsFile);
 
     ResourceManager::initialize();
 
     // Open database
-    try {
+    try
+    {
         storage = new Storage;
         storage->open();
-    } catch (std::string &error) {
+    }
+    catch (std::string &error)
+    {
         LOG_FATAL("Error opening the database: " << error);
         exit(1);
     }
 
     // --- Initialize the managers
-    stringFilter = new StringFilter;  // The slang's and double quotes filter.
+    stringFilter = new utils::StringFilter;  // The slang's and double quotes filter.
     chatChannelManager = new ChatChannelManager;
     guildManager = new GuildManager;
     postalManager = new PostManager;
@@ -178,7 +185,8 @@ static void initialize()
     chatHandler = new ChatHandler;
 
     // --- Initialize enet.
-    if (enet_initialize() != 0) {
+    if (enet_initialize() != 0)
+    {
         LOG_FATAL("An error occurred while initializing ENet");
         exit(2);
     }
@@ -194,7 +202,7 @@ static void initialize()
 /**
  * Deinitializes the server.
  */
-static void deinitialize()
+static void deinitializeServer()
 {
     // Write configuration file
     Configuration::deinitialize();
@@ -226,21 +234,7 @@ static void deinitialize()
  */
 static void dumpStatistics()
 {
-#if defined STATS_FILE
-    std::string path = STATS_FILE;
-#else
-
-#if (defined __USE_UNIX98 || defined __FreeBSD__)
-    std::string path = getenv("HOME");
-    path += "/.";
-    path += DEFAULT_STATS_FILE;
-#else // Win32, ...
-    std::string path = DEFAULT_STATS_FILE;
-#endif
-
-#endif
-
-    std::ofstream os(path.c_str());
+    std::ofstream os(statisticsFile.c_str());
     os << "<statistics>\n";
     GameServerHandler::dumpStatistics(os);
     os << "</statistics>\n";
@@ -254,6 +248,8 @@ static void printHelp()
     std::cout << "manaserv" << std::endl << std::endl
               << "Options: " << std::endl
               << "  -h --help          : Display this help" << std::endl
+              << "     --config <path> : Set the config path to use."
+              << " (Default: ./manaserv.xml)" << std::endl
               << "     --verbosity <n> : Set the verbosity level" << std::endl
               << "                        - 0. Fatal Errors only." << std::endl
               << "                        - 1. All Errors." << std::endl
@@ -267,12 +263,22 @@ static void printHelp()
 struct CommandLineOptions
 {
     CommandLineOptions():
+        configPath(DEFAULT_CONFIG_FILE),
+        configPathChanged(false),
         verbosity(Logger::Warn),
-        port(DEFAULT_SERVER_PORT)
+        verbosityChanged(false),
+        port(DEFAULT_SERVER_PORT),
+        portChanged(false)
     {}
 
+    std::string configPath;
+    bool configPathChanged;
+
     Logger::Level verbosity;
+    bool verbosityChanged;
+
     int port;
+    bool portChanged;
 };
 
 /**
@@ -280,11 +286,12 @@ struct CommandLineOptions
  */
 static void parseOptions(int argc, char *argv[], CommandLineOptions &options)
 {
-    const char *optstring = "h";
+    const char *optString = "h";
 
-    const struct option long_options[] =
+    const struct option longOptions[] =
     {
-        { "help",       no_argument, 0, 'h' },
+        { "help",       no_argument,       0, 'h' },
+        { "config",     required_argument, 0, 'c' },
         { "verbosity",  required_argument, 0, 'v' },
         { "port",       required_argument, 0, 'p' },
         { 0, 0, 0, 0 }
@@ -292,23 +299,31 @@ static void parseOptions(int argc, char *argv[], CommandLineOptions &options)
 
     while (optind < argc)
     {
-        int result = getopt_long(argc, argv, optstring, long_options, NULL);
+        int result = getopt_long(argc, argv, optString, longOptions, NULL);
 
         if (result == -1)
             break;
 
-        switch (result) {
-            default: // Unknown option
+        switch (result)
+        {
+            default: // Unknown option.
             case 'h':
-                // Print help
+                // Print help.
                 printHelp();
+                break;
+            case 'c':
+                // Change config filename and path.
+                options.configPath = optarg;
+                options.configPathChanged = true;
                 break;
             case 'v':
                 options.verbosity = static_cast<Logger::Level>(atoi(optarg));
+                options.verbosityChanged = true;
                 LOG_INFO("Using log verbosity level " << options.verbosity);
                 break;
             case 'p':
                 options.port = atoi(optarg);
+                options.portChanged = true;
                 break;
         }
     }
@@ -323,23 +338,29 @@ int main(int argc, char *argv[])
 #ifdef PACKAGE_VERSION
     LOG_INFO("The Mana Account+Chat Server v" << PACKAGE_VERSION);
 #endif
-    initConfig();
 
     // Parse command line options
     CommandLineOptions options;
-    options.verbosity = static_cast<Logger::Level>(
-                          Configuration::getValue("log_accountServerLogLevel",
-                                                  options.verbosity) );
-    options.port = Configuration::getValue("net_accountServerPort",
-                                           options.port);
     parseOptions(argc, argv, options);
+
+    initializeConfiguration(options.configPath);
+
+    if (!options.verbosityChanged)
+        options.verbosity = static_cast<Logger::Level>(
+                            Configuration::getValue("log_accountServerLogLevel",
+                                                    options.verbosity) );
     Logger::setVerbosity(options.verbosity);
+
+    if (!options.portChanged)
+        options.port = Configuration::getValue("net_accountServerPort",
+                                               options.port);
 
     // General initialization
     initialize();
 
     std::string host = Configuration::getValue("net_listenHost", std::string());
-    if (!AccountClientHandler::initialize(options.port, host) ||
+    if (!AccountClientHandler::initialize(DEFAULT_ATTRIBUTEDB_FILE,
+                                          options.port, host) ||
         !GameServerHandler::initialize(options.port + 1, host) ||
         !chatHandler->startListen(options.port + 2, host))
     {
@@ -379,7 +400,7 @@ int main(int argc, char *argv[])
 
     LOG_INFO("Received: Quit signal, closing down...");
     chatHandler->stopListen();
-    deinitialize();
+    deinitializeServer();
 
     return 0;
 }

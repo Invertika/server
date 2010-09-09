@@ -1,6 +1,7 @@
 /*
  *  The Mana Server
  *  Copyright (C) 2004-2010  The Mana World Development Team
+ *  Copyright (C) 2010  The Mana Developers
  *
  *  This file is part of The Mana Server.
  *
@@ -18,8 +19,8 @@
  *  along with The Mana Server.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __INIREAD_H
-#define __INIREAD_H
+#ifndef CONFIGURATION_H
+#define CONFIGURATION_H
 
 #include <string>
 
@@ -28,8 +29,9 @@ namespace Configuration
     /**
      * Loads the configuration options into memory.
      * @param filename path to the configuration file .
+     * @return whether the configuration file could be read
      */
-    void initialize(const std::string &filename);
+    bool initialize(const std::string &filename);
 
     void deinitialize();
 
@@ -41,14 +43,22 @@ namespace Configuration
     std::string getValue(const std::string &key, const std::string &deflt);
 
     /**
-     * Gets an option as a string.
+     * Gets an option as an integer.
      * @param key option identifier.
      * @param deflt default value.
      */
     int getValue(const std::string &key, int deflt);
+
+    /**
+     * Gets an option as a boolean.
+     * @param key option identifier.
+     * @param deflt default value.
+     */
+    bool getBoolValue(const std::string &key, bool deflt);
 }
 
 #ifndef DEFAULT_SERVER_PORT
 #define DEFAULT_SERVER_PORT 9601
 #endif
-#endif
+
+#endif // CONFIGURATION_H

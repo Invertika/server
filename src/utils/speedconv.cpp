@@ -1,6 +1,6 @@
 /*
  *  The Mana Server
- *  Copyright (C) 2007-2010  The Mana World Development Team
+ *  Copyright (C) 2004-2010  The Mana World Development Team
  *
  *  This file is part of The Mana Server.
  *
@@ -18,33 +18,14 @@
  *  along with The Mana Server.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UTILS_TRIM_HPP
-#define UTILS_TRIM_HPP
+#include "utils/speedconv.hpp"
 
-#include <string>
-
-/**
- * Trims spaces off the end and the beginning of the given string.
- *
- * @param str the string to trim spaces off
- */
-inline void trim(std::string &str)
+double utils::tpsToSpeed(double tps)
 {
-    std::string::size_type pos = str.find_last_not_of(" \n\t");
-    if (pos != std::string::npos)
-    {
-        str.erase(pos + 1);
-        pos = str.find_first_not_of(" \n\t");
-        if (pos != std::string::npos)
-        {
-            str.erase(0, pos);
-        }
-    }
-    else
-    {
-        // There is nothing else but whitespace in the string
-        str.clear();
-    }
+    return (32000 / (tps   * DEFAULT_TILE_LENGTH));
 }
 
-#endif
+double utils::speedToTps(double speed)
+{
+    return (32000 / (speed * DEFAULT_TILE_LENGTH));
+}

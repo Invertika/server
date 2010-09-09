@@ -100,6 +100,12 @@ manaserv_game_SOURCES = \
 	game-server/accountconnection.cpp \
 	game-server/actor.hpp \
 	game-server/actor.cpp \
+	game-server/attribute.hpp \
+	game-server/attribute.cpp \
+	game-server/attributemanager.hpp \
+	game-server/attributemanager.cpp \
+	game-server/autoattack.hpp \
+	game-server/autoattack.cpp \
 	game-server/being.hpp \
 	game-server/being.cpp \
 	game-server/buysell.hpp \
@@ -180,11 +186,12 @@ manaserv_game_SOURCES = \
 	utils/processorutils.cpp \
 	utils/string.hpp \
 	utils/string.cpp \
+	utils/speedconv.hpp \
+	utils/speedconv.cpp \
 	utils/stringfilter.h \
 	utils/stringfilter.cpp \
 	utils/timer.h \
 	utils/timer.cpp \
-	utils/trim.hpp \
 	utils/tokencollector.hpp \
 	utils/tokencollector.cpp \
 	utils/tokendispenser.hpp \
