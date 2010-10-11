@@ -39,6 +39,7 @@
 #include "utils/processorutils.hpp"
 #include "utils/stringfilter.h"
 #include "utils/timer.h"
+#include "defines.h"
 
 #include <cstdlib>
 #include <getopt.h>
@@ -106,7 +107,7 @@ static void initializeConfiguration(std::string configPath = std::string())
         {
             LOG_FATAL("Refusing to run without configuration!" << std::endl
             << "Invalid config path: " << configPath << ".");
-            exit(1);
+            exit(EXIT_CONFIG_NOT_FOUND);
         }
     }
 
@@ -116,7 +117,7 @@ static void initializeConfiguration(std::string configPath = std::string())
     if (Configuration::getValue("net_password", "") == "")
     {
         LOG_FATAL("SECURITY WARNING: 'net_password' not set!");
-        exit(3);
+        exit(EXIT_BAD_CONFIG_PARAMETER);
     }
 }
 
@@ -147,9 +148,10 @@ static void initialize()
     // Initialize the logger.
     Logger::setLogFile(logFile);
 
-    // write the messages to both the screen and the log file.
-    Logger::setTeeMode(true);
-
+    // Write the messages to both the screen and the log file.
+    Logger::setTeeMode(
+                      Configuration::getBoolValue("log_accountToStandardOutput",
+                                                  true));
     LOG_INFO("Using log file: " << logFile);
 
     // Indicate in which file the statistics are put.
@@ -157,6 +159,16 @@ static void initialize()
                                              DEFAULT_STATS_FILE);
 
     LOG_INFO("Using statistics file: " << statisticsFile);
+
+    // Set up the options related to log rotation.
+    Logger::enableLogRotation(Configuration::getBoolValue("log_enableRotation",
+                                                          false));
+
+    Logger::setMaxLogfileSize(Configuration::getValue("log_maxFileSize",
+                                                      1024));
+
+    Logger::setSwitchLogEachDay(Configuration::getBoolValue("log_perDay",
+                                                            false));
 
     ResourceManager::initialize();
 
@@ -169,7 +181,7 @@ static void initialize()
     catch (std::string &error)
     {
         LOG_FATAL("Error opening the database: " << error);
-        exit(1);
+        exit(EXIT_DB_EXCEPTION);
     }
 
     // --- Initialize the managers
@@ -188,7 +200,7 @@ static void initialize()
     if (enet_initialize() != 0)
     {
         LOG_FATAL("An error occurred while initializing ENet");
-        exit(2);
+        exit(EXIT_NET_EXCEPTION);
     }
 
     // Initialize the processor utility functions
@@ -257,7 +269,7 @@ static void printHelp()
               << "                        - 3. Plus standard information." << std::endl
               << "                        - 4. Plus debugging information." << std::endl
               << "     --port <n>      : Set the default port to listen on" << std::endl;
-    exit(0);
+    exit(EXIT_NORMAL);
 }
 
 struct CommandLineOptions
@@ -335,15 +347,20 @@ static void parseOptions(int argc, char *argv[], CommandLineOptions &options)
  */
 int main(int argc, char *argv[])
 {
-#ifdef PACKAGE_VERSION
-    LOG_INFO("The Mana Account+Chat Server v" << PACKAGE_VERSION);
-#endif
-
     // Parse command line options
     CommandLineOptions options;
     parseOptions(argc, argv, options);
 
     initializeConfiguration(options.configPath);
+
+    // General initialization
+    initialize();
+
+#ifdef PACKAGE_VERSION
+    LOG_INFO("The Mana Account+Chat Server v" << PACKAGE_VERSION);
+#else
+    LOG_INFO("The Mana Account+Chat Server (unknown version)");
+#endif
 
     if (!options.verbosityChanged)
         options.verbosity = static_cast<Logger::Level>(
@@ -355,9 +372,6 @@ int main(int argc, char *argv[])
         options.port = Configuration::getValue("net_accountServerPort",
                                                options.port);
 
-    // General initialization
-    initialize();
-
     std::string host = Configuration::getValue("net_listenHost", std::string());
     if (!AccountClientHandler::initialize(DEFAULT_ATTRIBUTEDB_FILE,
                                           options.port, host) ||
@@ -365,7 +379,7 @@ int main(int argc, char *argv[])
         !chatHandler->startListen(options.port + 2, host))
     {
         LOG_FATAL("Unable to create an ENet server host.");
-        return 3;
+        return EXIT_NET_EXCEPTION;
     }
 
     // Dump statistics every 10 seconds.
@@ -402,5 +416,5 @@ int main(int argc, char *argv[])
     chatHandler->stopListen();
     deinitializeServer();
 
-    return 0;
+    return EXIT_NORMAL;
 }

@@ -132,7 +132,7 @@ static void initializeConfiguration(std::string configPath = std::string())
         {
             LOG_FATAL("Refusing to run without configuration!" << std::endl
             << "Invalid config path: " << configPath << ".");
-            exit(1);
+            exit(EXIT_CONFIG_NOT_FOUND);
         }
     }
 
@@ -142,7 +142,7 @@ static void initializeConfiguration(std::string configPath = std::string())
     if (Configuration::getValue("net_password", "") == "")
     {
         LOG_FATAL("SECURITY WARNING: 'net_password' not set!");
-        exit(3);
+        exit(EXIT_BAD_CONFIG_PARAMETER);
     }
 }
 
@@ -168,8 +168,20 @@ static void initializeServer()
     Logger::setLogFile(logFile);
 
     // Write the messages to both the screen and the log file.
-    Logger::setTeeMode(true);
+    Logger::setTeeMode(Configuration::getBoolValue("log_gameToStandardOutput",
+                                                   true));
+
     LOG_INFO("Using log file: " << logFile);
+
+    // Set up the options related to log rotation.
+    Logger::enableLogRotation(Configuration::getBoolValue("log_enableRotation",
+                                                          false));
+
+    Logger::setMaxLogfileSize(Configuration::getValue("log_maxFileSize",
+                                                      1024));
+
+    Logger::setSwitchLogEachDay(Configuration::getBoolValue("log_perDay",
+                                                            false));
 
     // --- Initialize the managers
     // Initialize the slang's and double quotes filter.
@@ -179,7 +191,7 @@ static void initializeServer()
     if (MapManager::initialize(DEFAULT_MAPSDB_FILE) < 1)
     {
         LOG_FATAL("The Game Server can't find any valid/available maps.");
-        exit(2);
+        exit(EXIT_MAP_FILE_NOT_FOUND);
     }
     attributeManager->initialize();
     SkillManager::initialize(DEFAULT_SKILLSDB_FILE);
@@ -203,7 +215,7 @@ static void initializeServer()
     if (enet_initialize() != 0)
     {
         LOG_FATAL("An error occurred while initializing ENet");
-        exit(2);
+        exit(EXIT_NET_EXCEPTION);
     }
 
     // Set enet to quit on exit.
@@ -263,7 +275,7 @@ static void printHelp()
               << "                        - 4. Plus debugging information." << std::endl
               << "     --port <n>      : Set the default port to listen on."
               << std::endl;
-    exit(0);
+    exit(EXIT_NORMAL);
 }
 
 struct CommandLineOptions
@@ -341,16 +353,20 @@ static void parseOptions(int argc, char *argv[], CommandLineOptions &options)
  */
 int main(int argc, char *argv[])
 {
-    int elapsedWorldTicks;
-#ifdef PACKAGE_VERSION
-    LOG_INFO("The Mana Game Server v" << PACKAGE_VERSION);
-#endif
-
     // Parse command line options
     CommandLineOptions options;
     parseOptions(argc, argv, options);
 
     initializeConfiguration(options.configPath);
+
+    // General initialization
+    initializeServer();
+
+#ifdef PACKAGE_VERSION
+    LOG_INFO("The Mana Game Server v" << PACKAGE_VERSION);
+#else
+    LOG_INFO("The Mana Game Server (unknown version)");
+#endif
 
     if (!options.verbosityChanged)
         options.verbosity = static_cast<Logger::Level>(
@@ -361,9 +377,6 @@ int main(int argc, char *argv[])
     if (!options.portChanged)
         options.port = Configuration::getValue("net_gameServerPort",
                                                options.port);
-
-    // General initialization
-    initializeServer();
 
     // Make an initial attempt to connect to the account server
     // Try again after longer and longer intervals when connection fails.
@@ -383,7 +396,7 @@ int main(int argc, char *argv[])
     if (!gameHandler->startListen(options.port))
     {
         LOG_FATAL("Unable to create an ENet server host.");
-        return 3;
+        return EXIT_NET_EXCEPTION;
     }
 
     // Initialize world timer
@@ -391,6 +404,7 @@ int main(int argc, char *argv[])
 
     // Account connection lost flag
     bool accountServerLost = false;
+    int elapsedWorldTicks = 0;
 
     while (running)
     {
@@ -463,4 +477,6 @@ int main(int argc, char *argv[])
     gameHandler->stopListen();
     accountHandler->stop();
     deinitializeServer();
+
+    return EXIT_NORMAL;
 }
