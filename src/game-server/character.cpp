@@ -412,8 +412,8 @@ void Character::updateDerivedAttributes(unsigned int attr)
         break;
     case ATTR_HP_REGEN:
         {
-            double temp = getModifiedAttribute(ATTR_VIT) * 0.05;
-            newBase = (temp * TICKS_PER_HP_REGENERATION);
+            double hpPerSec = getModifiedAttribute(ATTR_VIT) * 0.05;
+            newBase = (hpPerSec * TICKS_PER_HP_REGENERATION / 10);
         }
         break;
     case ATTR_HP:
@@ -652,8 +652,11 @@ Character::~Character()
 {
     if (getMap())
     {
+        Map *map = getMap()->getMap();
+        int tileWidth = map->getTileWidth();
+        int tileHeight = map->getTileHeight();
         Point oldP = getPosition();
-        getMap()->getMap()->freeTile(oldP.x / 32, oldP.y / 32, getBlockType());
+        map->freeTile(oldP.x / tileWidth, oldP.y / tileHeight, getBlockType());
     }
 }
 
