@@ -3,8 +3,6 @@
 -- table and copy the data over.
 --
 
-BEGIN TRANSACTION;
-
 CREATE TEMPORARY TABLE mana_characters_backup
 (
    id           INTEGER     PRIMARY KEY,
@@ -105,4 +103,3 @@ UPDATE mana_world_states
        moddate    = strftime('%s','now')
  WHERE state_name = 'database_version';
 
-COMMIT;
