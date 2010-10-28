@@ -12,8 +12,7 @@
  <option name="net_gameServerPort" value="9604"/>
  <option name="net_maxClients" value="1000"/>
  <option name="net_password" value="ivkstdpw123"/>
- 
- <option name="defaultUpdateHost" value="http://update.invertika.org"/>
+ <option name="net_defaultUpdateHost" value="http://update.invertika.org"/>
  
  <!-- Data localisation -->
  <option name="clientDataPath" value=""/>
