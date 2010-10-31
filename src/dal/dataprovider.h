@@ -30,6 +30,8 @@
 namespace dal
 {
 
+class DataProvider;
+
 /**
  * Enumeration type for the database backends.
  */
@@ -39,6 +41,27 @@ typedef enum {
     DB_BKEND_POSTGRESQL
 } DbBackends;
 
+/**
+ * Begins a transaction on a given data provider. When the transaction is
+ * complete, commit() should be called. When the destructor is called before
+ * commit() is called, the transaction is rolled back.
+ *
+ * This avoids having to remember to call rollback in a lot of places, and
+ * makes exception handling easier.
+ */
+class PerformTransaction
+{
+public:
+    PerformTransaction(DataProvider *dataProvider);
+    ~PerformTransaction();
+
+    void commit();
+
+private:
+    DataProvider *mDataProvider;
+    bool mTransactionStarted;
+    bool mCommitted;
+};
 
 /**
  * An abstract data provider.
@@ -132,6 +155,11 @@ class DataProvider
          */
         virtual void rollbackTransaction()
             throw (std::runtime_error) = 0;
+
+        /**
+         * Returns whether the data provider is currently in a transaction.
+         */
+        virtual bool inTransaction() const = 0;
 
         /**
          * Returns the number of changed rows by the last executed SQL

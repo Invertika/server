@@ -25,6 +25,33 @@
 namespace dal
 {
 
+PerformTransaction::PerformTransaction(DataProvider *dataProvider)
+    : mDataProvider(dataProvider)
+    , mTransactionStarted(false)
+    , mCommitted(false)
+{
+    if (!mDataProvider->inTransaction()) {
+        mDataProvider->beginTransaction();
+        mTransactionStarted = true;
+    }
+}
+
+PerformTransaction::~PerformTransaction()
+{
+    if (mTransactionStarted && !mCommitted)
+        mDataProvider->rollbackTransaction();
+}
+
+void PerformTransaction::commit()
+{
+    if (mTransactionStarted) {
+        mDataProvider->commitTransaction();
+        mCommitted = true;
+        mTransactionStarted = false;
+    }
+}
+
+
 /**
  * Constructor.
  */
