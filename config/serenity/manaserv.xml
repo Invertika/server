@@ -6,16 +6,16 @@
  <option name="sqlite_database" value="invertika.db"/>
  
  <!-- Netzwerkeinstellungen -->
- <option name="net_accountServerAddress" value="localhost"/>
+ <option name="net_accountServerAddress" value="serenity.invertika.org"/>
  <option name="net_accountServerPort" value="9601"/>
- <option name="net_gameServerAddress" value="localhost"/>
+ <option name="net_gameServerAddress" value="serenity.invertika.org"/>
  <option name="net_gameServerPort" value="9604"/>
  <option name="net_maxClients" value="1000"/>
  <option name="net_password" value="ivkstdpw123"/>
- <option name="net_defaultUpdateHost" value="http://localhost"/>
- <option name="net_clientDataUrl" value="http://localhost" />
+ <option name="net_defaultUpdateHost" value="http://update.serenity.invertika.org"/>
+ <option name="net_clientDataUrl" value="http://data.serenity.invertika.org" />
  
-  <!-- Data localisation -->
+ <!-- Data localisation -->
  <option name="clientDataPath" value=""/>
  <option name="serverDataPath" value="data"/>
  
