@@ -22,7 +22,6 @@
 
 #include "game-server/state.h"
 
-#include "point.h"
 #include "common/configuration.h"
 #include "game-server/accountconnection.h"
 #include "game-server/gamehandler.h"
@@ -39,6 +38,7 @@
 #include "net/messageout.h"
 #include "scripting/script.h"
 #include "utils/logger.h"
+#include "utils/point.h"
 #include "utils/speedconv.h"
 
 enum
@@ -270,6 +270,7 @@ static void informPlayer(MapComposite *map, Character *p)
             enterMsg.writeInt8(static_cast< Being *>(o)->getAction());
             enterMsg.writeInt16(opos.x);
             enterMsg.writeInt16(opos.y);
+            enterMsg.writeInt8(o->getDirection());
             switch (otype)
             {
                 case OBJECT_CHARACTER:

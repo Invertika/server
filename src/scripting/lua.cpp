@@ -661,7 +661,7 @@ static int being_walk(lua_State *s)
     if (lua_isnumber(s, 4))
     {
         being->setAttribute(ATTR_MOVE_SPEED_TPS, lua_tonumber(s, 4));
-        being->setAttribute(ATTR_MOVE_SPEED_RAW, utils::tpsToSpeed(
+        being->setAttribute(ATTR_MOVE_SPEED_RAW, utils::tpsToRawSpeed(
                 being->getModifiedAttribute(ATTR_MOVE_SPEED_TPS)));
     }
 
@@ -822,7 +822,7 @@ static int being_set_action(lua_State *s)
 
     if (being)
     {
-        being->setAction((Being::Action) act);
+        being->setAction((BeingAction) act);
     }
 
     return 0;
@@ -852,7 +852,7 @@ static int being_set_direction(lua_State *s)
 {
     Being *being = getBeing(s, 1);
 
-    int dir = lua_tointeger(s, 2);
+    BeingDirection dir = (BeingDirection) lua_tointeger(s, 2);
 
     if (being)
     {

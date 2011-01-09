@@ -136,7 +136,7 @@ static Actor *findActorNear(Actor *p, int id)
     MapComposite *map = p->getMap();
     const Point &ppos = p->getPosition();
     // See map.h for tiles constants
-    const int pixelDist = DEFAULT_TILE_WIDTH * TILES_TO_BE_NEAR;
+    const int pixelDist = DEFAULT_TILE_LENGTH * TILES_TO_BE_NEAR;
     for (ActorIterator i(map->getAroundPointIterator(ppos, pixelDist)); i; ++i)
     {
         Actor *a = *i;
@@ -152,7 +152,7 @@ static Character *findCharacterNear(Actor *p, int id)
     MapComposite *map = p->getMap();
     const Point &ppos = p->getPosition();
     // See map.h for tiles constants
-    const int pixelDist = DEFAULT_TILE_WIDTH * TILES_TO_BE_NEAR;
+    const int pixelDist = DEFAULT_TILE_LENGTH * TILES_TO_BE_NEAR;
     for (CharacterIterator i(map->getAroundPointIterator(ppos,
                                                          pixelDist)); i; ++i)
     {
@@ -363,7 +363,7 @@ void GameHandler::processMessage(NetComputer *comp, MessageIn &message)
             {
                 Being *being = static_cast<Being*>(o);
                 computer.character->setTarget(being);
-                computer.character->setAction(Being::ATTACK);
+                computer.character->setAction(ATTACK);
             }
         } break;
 
@@ -377,25 +377,25 @@ void GameHandler::processMessage(NetComputer *comp, MessageIn &message)
 
         case PGMSG_ACTION_CHANGE:
         {
-            Being::Action action = (Being::Action)message.readInt8();
-            Being::Action current = (Being::Action)computer.character->getAction();
+            BeingAction action = (BeingAction)message.readInt8();
+            BeingAction current = (BeingAction)computer.character->getAction();
             bool logActionChange = true;
 
             switch (action)
             {
-                case Being::STAND:
+                case STAND:
                 {
-                    if (current == Being::SIT)
+                    if (current == SIT)
                     {
-                        computer.character->setAction(Being::STAND);
+                        computer.character->setAction(STAND);
                         logActionChange = false;
                     }
                 } break;
-                case Being::SIT:
+                case SIT:
                 {
-                    if (current == Being::STAND)
+                    if (current == STAND)
                     {
-                        computer.character->setAction(Being::SIT);
+                        computer.character->setAction(SIT);
                         logActionChange = false;
                     }
                 } break;
@@ -419,7 +419,8 @@ void GameHandler::processMessage(NetComputer *comp, MessageIn &message)
 
         case PGMSG_DIRECTION_CHANGE:
         {
-            computer.character->setDirection(message.readInt8());
+            computer.character->setDirection(
+                (BeingDirection)message.readInt8());
         } break;
 
         case PGMSG_DISCONNECT:

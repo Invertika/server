@@ -25,24 +25,9 @@
 #include <map>
 #include <string>
 
-const unsigned int DEFAULT_TILE_WIDTH = 32;
-const unsigned int DEFAULT_TILE_HEIGHT = 32;
+#include "utils/point.h"
 
-/**
- * A position along a being's path.
- * Used to compute each Path Nodes of the path.
- */
-struct Position
-{
-    Position(int x, int y):
-        x(x), y(y)
-    { }
-
-    int x;
-    int y;
-};
-
-typedef std::list<Position> Path;
+typedef std::list<Point> Path;
 typedef Path::iterator PathIterator;
 
 /**
@@ -106,8 +91,8 @@ class Map
         /**
          * Constructor that takes initial map size as parameters.
          */
-        Map(int width = 0, int height = 0,
-            int twidth = DEFAULT_TILE_WIDTH, int theight = DEFAULT_TILE_HEIGHT);
+        Map(int width, int height,
+            int twidth, int theight);
 
         /**
          * Destructor.

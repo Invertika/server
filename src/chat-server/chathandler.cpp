@@ -23,7 +23,7 @@
 #include <string>
 #include <sstream>
 
-#include "protocol.h"
+#include "manaserv_protocol.h"
 #include "account-server/character.h"
 #include "account-server/storage.h"
 #include "chat-server/guildmanager.h"
@@ -38,6 +38,8 @@
 #include "utils/logger.h"
 #include "utils/stringfilter.h"
 #include "utils/tokendispenser.h"
+
+using namespace ManaServ;
 
 void registerChatClient(const std::string &token,
                         const std::string &name,

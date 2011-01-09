@@ -21,7 +21,8 @@
 #ifndef THING_H
 #define THING_H
 
-#include "protocol.h"
+#include "manaserv_protocol.h"
+using namespace ManaServ;
 
 #include <set>
 

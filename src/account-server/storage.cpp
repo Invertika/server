@@ -23,7 +23,6 @@
 
 #include "account-server/storage.h"
 
-#include "point.h"
 #include "account-server/account.h"
 #include "chat-server/chatchannel.h"
 #include "chat-server/guild.h"
@@ -32,6 +31,7 @@
 #include "dal/dalexcept.h"
 #include "dal/dataproviderfactory.h"
 #include "utils/functors.h"
+#include "utils/point.h"
 #include "utils/throwerror.h"
 #include "utils/xml.h"
 
@@ -39,7 +39,7 @@ static const char *DEFAULT_ITEM_FILE = "items.xml";
 
 // Defines the supported db version
 static const char *DB_VERSION_PARAMETER = "database_version";
-static const char *SUPPORTED_DB_VERSION = "12";
+static const char *SUPPORTED_DB_VERSION = "14";
 
 /*
  * MySQL specificities:
@@ -182,6 +182,10 @@ Account *Storage::getAccountBySQL()
         }
         account->setLevel(level);
 
+        // Correct on-the-fly the old 0 slot characters
+        // NOTE: Will be deprecated and removed at some point.
+        fixCharactersSlot(id);
+
         // Load the characters associated with the account.
         std::ostringstream sql;
         sql << "select id from " << CHARACTERS_TBL_NAME << " where user_id = '"
@@ -205,10 +209,14 @@ Account *Storage::getAccountBySQL()
             for (int k = 0; k < size; ++k)
             {
                 if (Character *ptr = getCharacter(characterIDs[k], account))
-                    characters.push_back(ptr);
+                {
+                    characters[ptr->getCharacterSlot()] = ptr;
+                }
                 else
+                {
                     LOG_ERROR("Failed to get character " << characterIDs[k]
                               << " for account " << id << '.');
+                }
             }
 
             account->setCharacters(characters);
@@ -223,6 +231,75 @@ Account *Storage::getAccountBySQL()
     }
 
     return 0;
+}
+
+void Storage::fixCharactersSlot(int accountId)
+{
+    try
+    {
+        // Obtain all the characters slots from an account.
+        std::ostringstream sql;
+        sql << "SELECT id, slot FROM " << CHARACTERS_TBL_NAME
+            << " where user_id = " << accountId;
+        const dal::RecordSet &charInfo = mDb->execSql(sql.str());
+
+        // If the account is not even in the database then
+        // we can quit now.
+        if (charInfo.isEmpty())
+            return;
+
+        // Specialize the string_to functor to convert
+        // a string to an unsigned int.
+        string_to< unsigned > toUint;
+        std::map<unsigned, unsigned> slotsToUpdate;
+
+        int characterNumber = charInfo.rows();
+        unsigned currentSlot = 1;
+
+        // We parse all the characters slots to see how many are to be
+        // corrected.
+        for (int k = 0; k < characterNumber; ++k)
+        {
+            // If the slot found is equal to 0.
+            if (toUint(charInfo(k, 1)) == 0)
+            {
+                // Find the new slot number to assign.
+                for (int l = 0; l < characterNumber; ++l)
+                {
+                    if (toUint(charInfo(l, 1)) == currentSlot)
+                        currentSlot++;
+                }
+                slotsToUpdate.insert(std::make_pair(toUint(charInfo(k, 0)),
+                                                    currentSlot));
+            }
+        }
+
+        if (slotsToUpdate.size() > 0)
+        {
+            dal::PerformTransaction transaction(mDb);
+
+            // Update the slots in database.
+            for (std::map<unsigned, unsigned>::iterator i =
+                                                          slotsToUpdate.begin(),
+                i_end = slotsToUpdate.end(); i != i_end; ++i)
+            {
+                // Update the character slot.
+                sql.clear();
+                sql.str("");
+                sql << "UPDATE " << CHARACTERS_TBL_NAME
+                    << " SET slot = " << i->second
+                    << " where id = " << i->first;
+                mDb->execSql(sql.str());
+            }
+
+            transaction.commit();
+        }
+    }
+    catch (const dal::DbSqlQueryExecFailure &e)
+    {
+        utils::throwError("(DALStorage::fixCharactersSlots) "
+                          "SQL query failure: ", e);
+    }
 }
 
 Account *Storage::getAccount(const std::string &userName)
@@ -256,6 +333,7 @@ Character *Storage::getCharacterBySQL(Account *owner)
     // Specialize the string_to functor to convert
     // a string to an unsigned int.
     string_to< unsigned > toUint;
+    string_to< int > toInt;
 
     try
     {
@@ -278,7 +356,7 @@ Character *Storage::getCharacterBySQL(Account *owner)
         character->setLevel(toUshort(charInfo(0, 6)));
         character->setCharacterPoints(toUshort(charInfo(0, 7)));
         character->setCorrectionPoints(toUshort(charInfo(0, 8)));
-        Point pos(toUshort(charInfo(0, 9)), toUshort(charInfo(0, 10)));
+        Point pos(toInt(charInfo(0, 9)), toInt(charInfo(0, 10)));
         character->setPosition(pos);
 
         int mapId = toUint(charInfo(0, 11));
@@ -292,6 +370,8 @@ Character *Storage::getCharacterBySQL(Account *owner)
             // Default map is to be 1, as not found return value will be 0.
             character->setMapId(Configuration::getValue("char_defaultMap", 1));
         }
+
+        character->setCharacterSlot(toUint(charInfo(0, 12)));
 
         // Fill the account-related fields. Last step, as it may require a new
         // SQL query.
@@ -598,7 +678,8 @@ bool Storage::updateCharacter(Character *character)
             << "correct_pts = '"<< character->getCorrectionPoints() << "', "
             << "x = '"          << character->getPosition().x << "', "
             << "y = '"          << character->getPosition().y << "', "
-            << "map_id = '"     << character->getMapId() << "' "
+            << "map_id = '"     << character->getMapId() << "', "
+            << "slot = '"     << character->getCharacterSlot() << "' "
             << "where id = '"   << character->getDatabaseID() << "';";
 
         mDb->execSql(sqlUpdateCharacterInfo.str());
@@ -875,9 +956,10 @@ void Storage::flush(Account *account)
         for (Characters::const_iterator it = characters.begin(),
              it_end = characters.end(); it != it_end; ++it)
         {
-            if ((*it)->getDatabaseID() >= 0)
+            Character *character = (*it).second;
+            if (character->getDatabaseID() >= 0)
             {
-                updateCharacter(*it);
+                updateCharacter(character);
             }
             else
             {
@@ -889,42 +971,43 @@ void Storage::flush(Account *account)
                      << "insert into " << CHARACTERS_TBL_NAME
                      << " (user_id, name, gender, hair_style, hair_color,"
                      << " level, char_pts, correct_pts,"
-                     << " x, y, map_id) values ("
+                     << " x, y, map_id, slot) values ("
                      << account->getID() << ", \""
-                     << (*it)->getName() << "\", "
-                     << (*it)->getGender() << ", "
-                     << (int)(*it)->getHairStyle() << ", "
-                     << (int)(*it)->getHairColor() << ", "
-                     << (int)(*it)->getLevel() << ", "
-                     << (int)(*it)->getCharacterPoints() << ", "
-                     << (int)(*it)->getCorrectionPoints() << ", "
-                     << (*it)->getPosition().x << ", "
-                     << (*it)->getPosition().y << ", "
-                     << (*it)->getMapId()
+                     << character->getName() << "\", "
+                     << character->getGender() << ", "
+                     << (int)character->getHairStyle() << ", "
+                     << (int)character->getHairColor() << ", "
+                     << (int)character->getLevel() << ", "
+                     << (int)character->getCharacterPoints() << ", "
+                     << (int)character->getCorrectionPoints() << ", "
+                     << character->getPosition().x << ", "
+                     << character->getPosition().y << ", "
+                     << character->getMapId() << ", "
+                     << character->getCharacterSlot()
                      << ");";
 
                 mDb->execSql(sqlInsertCharactersTable.str());
 
                 // Update the character ID.
-                (*it)->setDatabaseID(mDb->getLastId());
+                character->setDatabaseID(mDb->getLastId());
 
                 // Update all attributes.
                 AttributeMap::const_iterator attr_it, attr_end;
-                for (attr_it =  (*it)->mAttributes.begin(),
-                     attr_end = (*it)->mAttributes.end();
+                for (attr_it =  character->mAttributes.begin(),
+                     attr_end = character->mAttributes.end();
                      attr_it != attr_end; ++attr_it)
                 {
-                    updateAttribute((*it)->getDatabaseID(), attr_it->first,
+                    updateAttribute(character->getDatabaseID(), attr_it->first,
                                     attr_it->second.first,
                                     attr_it->second.second);
                 }
 
                 // Update the characters skill
                 std::map<int, int>::const_iterator skill_it;
-                for (skill_it = (*it)->mExperience.begin();
-                     skill_it != (*it)->mExperience.end(); skill_it++)
+                for (skill_it = character->mExperience.begin();
+                     skill_it != character->mExperience.end(); skill_it++)
                 {
-                    updateExperience((*it)->getDatabaseID(),
+                    updateExperience(character->getDatabaseID(),
                                      skill_it->first, skill_it->second);
                 }
             }
@@ -955,7 +1038,7 @@ void Storage::flush(Account *account)
             for (Characters::const_iterator it = characters.begin(),
                  it_end = characters.end(); it != it_end; ++it) // In memory
             {
-                if (charInMemInfo(i, 0) == (*it)->getName())
+                if (charInMemInfo(i, 0) == (*it).second->getName())
                 {
                     charFound = true;
                     break;

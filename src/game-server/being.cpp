@@ -39,7 +39,7 @@ Being::Being(ThingType type):
     Actor(type),
     mAction(STAND),
     mTarget(NULL),
-    mDirection(0)
+    mDirection(DOWN)
 {
     const AttributeScopes &attr = attributeManager->getAttributeInfoForType(ATTR_BEING);
     LOG_DEBUG("Being creation: initialisation of " << attr.size() << " attributes.");
@@ -202,6 +202,89 @@ Path Being::findPath()
     return map->findPath(startX, startY, destX, destY, getWalkMask());
 }
 
+void Being::updateDirection(const Point &currentPos, const Point &destPos)
+{
+    // We update the being direction on each tile to permit other beings
+    // entering in range to always see the being with a direction value.
+
+    // We first handle simple cases
+
+    // If the character has reached its destination,
+    // don't update the direction since it's only a matter of keeping
+    // the previous one.
+    if (currentPos == destPos)
+        return;
+
+    if (currentPos.x == destPos.x)
+    {
+        if (currentPos.y > destPos.y)
+            setDirection(UP);
+        else
+            setDirection(DOWN);
+        return;
+    }
+
+    if (currentPos.y == destPos.y)
+    {
+        if (currentPos.x > destPos.x)
+            setDirection(LEFT);
+        else
+            setDirection(RIGHT);
+        return;
+    }
+
+    // Now let's handle diagonal cases
+    // First, find the lower angle:
+    if (currentPos.x < destPos.x)
+    {
+        // Up-right direction
+        if (currentPos.y > destPos.y)
+        {
+            // Compute tan of the angle
+            if ((currentPos.y - destPos.y) / (destPos.x - currentPos.x) < 1)
+                // The angle is less than 45°, we look to the right
+                setDirection(RIGHT);
+            else
+                setDirection(UP);
+            return;
+        }
+        else // Down-right
+        {
+            // Compute tan of the angle
+            if ((destPos.y - currentPos.y) / (destPos.x - currentPos.x) < 1)
+                // The angle is less than 45°, we look to the right
+                setDirection(RIGHT);
+            else
+                setDirection(DOWN);
+            return;
+        }
+    }
+    else
+    {
+        // Up-left direction
+        if (currentPos.y > destPos.y)
+        {
+            // Compute tan of the angle
+            if ((currentPos.y - destPos.y) / (currentPos.x - destPos.x) < 1)
+                // The angle is less than 45°, we look to the right
+                setDirection(LEFT);
+            else
+                setDirection(UP);
+            return;
+        }
+        else // Down-left
+        {
+            // Compute tan of the angle
+            if ((destPos.y - currentPos.y) / (currentPos.x - destPos.x) < 1)
+                // The angle is less than 45°, we look to the right
+                setDirection(LEFT);
+            else
+                setDirection(DOWN);
+            return;
+        }
+    }
+}
+
 void Being::move()
 {
     // Immobile beings cannot move.
@@ -211,10 +294,10 @@ void Being::move()
 
     mOld = getPosition();
 
-    if (mActionTime > 100)
+    if (mMoveTime > WORLD_TICK_MS)
     {
         // Current move has not yet ended
-        mActionTime -= 100;
+        mMoveTime -= WORLD_TICK_MS;
         return;
     }
 
@@ -229,8 +312,10 @@ void Being::move()
         if (mAction == WALK)
             setAction(STAND);
         // Moving while staying on the same tile is free
+        // We only update the direction in that case.
+        updateDirection(mOld, mDst);
         setPosition(mDst);
-        mActionTime = 0;
+        mMoveTime = 0;
         return;
     }
 
@@ -264,22 +349,26 @@ void Being::move()
             setAction(STAND);
         // no path was found
         mDst = mOld;
-        mActionTime = 0;
+        mMoveTime = 0;
         return;
     }
 
     setAction(WALK);
 
-    Position prev(tileSX, tileSY);
+    Point prev(tileSX, tileSY);
     Point pos;
     do
     {
-        Position next = mPath.front();
+        Point next = mPath.front();
         mPath.pop_front();
         // SQRT2 is used for diagonal movement.
-        mActionTime += (prev.x == next.x || prev.y == next.y) ?
+        mMoveTime += (prev.x == next.x || prev.y == next.y) ?
                        getModifiedAttribute(ATTR_MOVE_SPEED_RAW) :
                        getModifiedAttribute(ATTR_MOVE_SPEED_RAW) * SQRT2;
+
+        // Update the being direction also
+        updateDirection(prev, next);
+
         if (mPath.empty())
         {
             // skip last tile center
@@ -291,21 +380,21 @@ void Being::move()
         pos.x = next.x * tileWidth + (tileWidth / 2);
         pos.y = next.y * tileHeight + (tileHeight / 2);
     }
-    while (mActionTime < 100);
+    while (mMoveTime < WORLD_TICK_MS);
     setPosition(pos);
 
-    mActionTime = mActionTime > 100 ? mActionTime - 100 : 0;
+    mMoveTime = mMoveTime > WORLD_TICK_MS ? mMoveTime - WORLD_TICK_MS : 0;
 }
 
 int Being::directionToAngle(int direction)
 {
     switch (direction)
     {
-        case DIRECTION_UP:    return  90;
-        case DIRECTION_DOWN:  return 270;
-        case DIRECTION_RIGHT: return 180;
-        case DIRECTION_LEFT:
-        default:              return   0;
+        case UP:    return  90;
+        case DOWN:  return 270;
+        case RIGHT: return 180;
+        case LEFT:
+        default:    return   0;
     }
 }
 
@@ -316,7 +405,7 @@ int Being::performAttack(Being *target, const Damage &damage) {
 int Being::performAttack(Being *target, unsigned range, const Damage &damage)
 {
     // check target legality
-    if (!target || target == this || target->getAction() == Being::DEAD
+    if (!target || target == this || target->getAction() == DEAD
         || !target->canFight())
             return -1;
     if (getMap()->getPvP() == PVP_NONE && target->getType() == OBJECT_CHARACTER
@@ -331,16 +420,16 @@ int Being::performAttack(Being *target, unsigned range, const Damage &damage)
     if (maxDist * maxDist < distSquare)
         return -1;
 
-    //mActionTime += 1000; // No tick. Auto-attacks should have their own, built-in delays.
+    // Note: The auto-attack system will handle the delay between two attacks.
 
     return (mTarget->damage(this, damage));
 }
 
-void Being::setAction(Action action)
+void Being::setAction(BeingAction action)
 {
     mAction = action;
-    if (action != Being::ATTACK && // The players are informed about these actions
-        action != Being::WALK)     // by other messages
+    if (action != ATTACK && // The players are informed about these actions
+        action != WALK)     // by other messages
     {
         raiseUpdateFlags(UPDATEFLAG_ACTIONCHANGE);
     }
@@ -432,7 +521,8 @@ bool Being::recalculateBaseAttribute(unsigned int attr)
         newBase = 3.0 + getModifiedAttribute(ATTR_AGI) * 0.08; // Provisional.
         break;
     case ATTR_MOVE_SPEED_RAW:
-        newBase = utils::tpsToSpeed(getModifiedAttribute(ATTR_MOVE_SPEED_TPS));
+        newBase = utils::tpsToRawSpeed(
+                      getModifiedAttribute(ATTR_MOVE_SPEED_TPS));
         break;
     case ATTR_INV_CAPACITY:
         // Provisional

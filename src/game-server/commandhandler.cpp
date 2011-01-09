@@ -68,6 +68,10 @@ static void handleAnnounce(Character*, std::string&);
 static void handleHistory(Character*, std::string&);
 static void handleMute(Character*, std::string&);
 static void handleDie(Character*, std::string&);
+static void handleKill(Character*, std::string&);
+static void handleKick(Character*, std::string&);
+static void handleLog(Character*, std::string&);
+static void handleLogsay(Character*, std::string&);
 
 static CmdRef const cmdRef[] =
 {
@@ -113,6 +117,14 @@ static CmdRef const cmdRef[] =
         "Prevents the character from talking for the specified number of seconds. Use 0 seconds to unmute.", &handleMute},
     {"die", "",
         "Kills you.", &handleDie},
+    {"kill", "<character>",
+        "Kills the character.", &handleKill},
+    {"kick", "<character>",
+        "Disconnects the client of character.", &handleKick},
+    {"log", "<message>",
+        "Logs a message to the transaction log.", &handleLog},
+    {"logsay", "<message>",
+        "Says something in public chat while logging it to the transaction log.", &handleLogsay},
     {NULL, NULL, NULL, NULL}
 
 };
@@ -705,6 +717,11 @@ static void handleGoto(Character *player, std::string &args)
     MapComposite *map = other->getMap();
     const Point &pos = other->getPosition();
     GameState::warp(player, map, pos.x, pos.y);
+
+    // log transaction
+    std::stringstream msg;
+    msg << "User warped own character to " << other->getName();
+    accountHandler->sendTransaction(player->getDatabaseID(), TRANS_CMD_GOTO, msg.str());
 }
 
 static void handleRecall(Character *player, std::string &args)
@@ -901,7 +918,7 @@ static void handleTakePermission(Character *player, std::string &args)
         accountHandler->changeAccountLevel(other, permission);
 
         // log transaction
-        std::string msg = "User took right " + strPermission + " to " + other->getName();
+        std::string msg = "User took right " + strPermission + " from " + other->getName();
         accountHandler->sendTransaction(player->getDatabaseID(), TRANS_CMD_SETGROUP, msg);
         say("Sorry, "+player->getName()+" revoked your rights of a "+strPermission, other);
     }
@@ -969,6 +986,12 @@ static void handleAttribute(Character *player, std::string &args)
 
     // change the player's attribute
     other->setAttribute(attr, value);
+
+    // log transaction
+    std::stringstream msg;
+    msg << "User changed attribute " << attr << " of player " << other->getName()
+        << " to " << value;
+    accountHandler->sendTransaction(player->getDatabaseID(), TRANS_CMD_ATTRIBUTE, msg.str());
 }
 
 static void handleReport(Character *player, std::string &args)
@@ -995,6 +1018,9 @@ static void handleAnnounce(Character *player, std::string &msg)
     }
 
     GameState::sayToAll(msg);
+
+    // log transaction
+    accountHandler->sendTransaction(player->getDatabaseID(), TRANS_CMD_ANNOUNCE, msg);
 }
 
 static void handleWhere(Character *player, std::string &)
@@ -1085,15 +1111,126 @@ static void handleMute(Character *player, std::string &args)
         targetMsg << player->getName() << " unmuted you.";
         userMsg << "You unmuted " << other->getName() << ".";
     }
-    GameState::sayTo(other, NULL, targetMsg.str());
-    GameState::sayTo(player, NULL, userMsg.str());
+    say(targetMsg.str(), other);
+    say(userMsg.str(), player);
+
+    // log transaction
+    std::stringstream msg;
+    if (length > 0)
+    {
+        msg << "User muted " << other->getName() << " for " << length << " seconds.";
+    } else {
+        msg << "User unmuted " << other->getName();
+    }
+    accountHandler->sendTransaction(player->getDatabaseID(), TRANS_CMD_MUTE, msg.str());
 }
 
 static void handleDie(Character *player, std::string &args)
 {
     player->setAttribute(ATTR_HP, 0);
-    GameState::sayTo(player, NULL, "You've killed yourself.");
+    say("You've killed yourself.", player);
 }
+
+static void handleKill(Character *player, std::string &args)
+{
+    Character *other;
+
+    // get arguments
+    std::string character = getArgument(args);
+
+    // check for valid player
+    other = getPlayer(character);
+    if (!other)
+    {
+        say("Invalid character", player);
+        return;
+    }
+
+    // kill the player
+    player->setAttribute(ATTR_HP, 0);
+
+    // feedback
+    std::stringstream targetMsg;
+    std::stringstream userMsg;
+    targetMsg << "You were killed by server command from "<< player->getName() << ".";
+    userMsg << "You killed " << other->getName() << ".";
+    say(targetMsg.str(), other);
+    say(userMsg.str(), player);
+
+    // log transaction
+    std::stringstream logMsg;
+    logMsg << "User killed " << other->getName();
+    accountHandler->sendTransaction(player->getDatabaseID(), TRANS_CMD_KILL, logMsg.str());
+}
+
+static void handleKick(Character *player, std::string &args)
+{
+    Character *other;
+
+    // get arguments
+    std::string character = getArgument(args);
+
+    // check for valid player
+    other = getPlayer(character);
+    if (!other)
+    {
+        say("Invalid character", player);
+        return;
+    }
+
+    // send feedback
+    std::stringstream userMsg;
+    userMsg << "You kicked " << other->getName() << ".";
+    say(userMsg.str(), player);
+
+    // disconnect the client
+    MessageOut msg(GPMSG_CONNECT_RESPONSE);
+    msg.writeInt8(ERRMSG_ADMINISTRATIVE_LOGOFF);
+    other->getClient()->disconnect(msg);
+
+    // log transaction
+    std::stringstream logMsg;
+    logMsg << "User kicked " << other->getName();
+    accountHandler->sendTransaction(player->getDatabaseID(), TRANS_CMD_KICK, logMsg.str());
+}
+
+
+static void handleLog(Character *player, std::string &msg)
+{
+    if (msg == "")
+    {
+        say("Invalid number of arguments given.", player);
+        say("Usage: @log <message>", player);
+        return;
+    }
+
+    // log transaction
+    std::string logmsg = "[silent] " + msg;
+    accountHandler->sendTransaction(player->getDatabaseID(), TRANS_CMD_LOG, logmsg);
+
+    // send feedback
+    say("Message logged", player);
+}
+
+static void handleLogsay(Character *player, std::string &msg)
+{
+    if (msg == "")
+    {
+        say("Invalid number of arguments given.", player);
+        say("Usage: @logsay <message>", player);
+        return;
+    }
+
+    GameState::sayAround(player, msg);
+
+    // log transaction
+    std::string logmsg = "[public] " + msg;
+    accountHandler->sendTransaction(player->getDatabaseID(), TRANS_CMD_LOG, logmsg);
+
+    // send feedback
+    say("Message logged", player);
+}
+
 
 void CommandHandler::handleCommand(Character *player,
                                    const std::string &command)

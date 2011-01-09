@@ -55,6 +55,7 @@ CREATE TABLE mana_characters
    x            INTEGER     NOT NULL,
    y            INTEGER     NOT NULL,
    map_id       INTEGER     NOT NULL,
+   slot         INTEGER     NOT NULL,
    --
    FOREIGN KEY (user_id) REFERENCES mana_accounts(id)
 );
@@ -405,7 +406,7 @@ AS
 
 INSERT INTO mana_world_states VALUES('accountserver_startup',NULL,NULL, strftime('%s','now'));
 INSERT INTO mana_world_states VALUES('accountserver_version',NULL,NULL, strftime('%s','now'));
-INSERT INTO mana_world_states VALUES('database_version',     NULL,'12', strftime('%s','now'));
+INSERT INTO mana_world_states VALUES('database_version',     NULL,'14', strftime('%s','now'));
 
 -- all known transaction codes
 
@@ -441,3 +442,25 @@ INSERT INTO mana_transaction_codes VALUES ( 29, 'Trade money',              'Act
 INSERT INTO mana_transaction_codes VALUES ( 30, 'Trade items',              'Actions' );
 INSERT INTO mana_transaction_codes VALUES ( 31, 'Attribute increased',      'Character' );
 INSERT INTO mana_transaction_codes VALUES ( 32, 'Attribute decreased',      'Character' );
+INSERT INTO mana_transaction_codes VALUES ( 33, 'Command MUTE',             'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 34, 'Command EXP',              'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 35, 'Command INVISIBLE',        'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 36, 'Command COMBAT',           'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 37, 'Command ANNOUNCE',         'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 38, 'Command ANNOUNCE_LOCAL',   'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 39, 'Command KILL',             'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 40, 'Command FX',               'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 41, 'Command LOG',              'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 42, 'Command KILLMONSTER',      'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 43, 'Command GOTO',             'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 44, 'Command GONEXT',           'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 45, 'Command GOPREV',           'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 46, 'Command IPBAN',            'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 47, 'Command WIPE_ITEMS',       'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 48, 'Command WIPE_LEVEL',       'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 49, 'Command SHUTDOWN_THIS',    'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 50, 'Command SHUTDOWN_ALL',     'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 51, 'Command RESTART_THIS',     'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 52, 'Command RESTART_ALL',      'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 53, 'Command ATTRIBUTE',        'Commands' );
+INSERT INTO mana_transaction_codes VALUES ( 54, 'Command KICK',             'Commands' );

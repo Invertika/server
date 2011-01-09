@@ -107,15 +107,15 @@ Monster::Monster(MonsterClass *specy):
 
     // Set the speed in tiles per second.
     setAttribute(ATTR_MOVE_SPEED_RAW,
-                 utils::tpsToSpeed(getAttribute(ATTR_MOVE_SPEED_TPS)));
+                 utils::tpsToRawSpeed(getAttribute(ATTR_MOVE_SPEED_TPS)));
     setSize(specy->getSize());
 
     // Set positions relative to target from which the monster can attack
     int dist = specy->getAttackDistance();
-    mAttackPositions.push_back(AttackPosition(dist, 0, DIRECTION_LEFT));
-    mAttackPositions.push_back(AttackPosition(-dist, 0, DIRECTION_RIGHT));
-    mAttackPositions.push_back(AttackPosition(0, -dist, DIRECTION_DOWN));
-    mAttackPositions.push_back(AttackPosition(0, dist, DIRECTION_UP));
+    mAttackPositions.push_back(AttackPosition(dist, 0, LEFT));
+    mAttackPositions.push_back(AttackPosition(-dist, 0, RIGHT));
+    mAttackPositions.push_back(AttackPosition(0, -dist, DOWN));
+    mAttackPositions.push_back(AttackPosition(0, dist, UP));
 
     // Load default script
     loadScript(specy->getScript());
@@ -224,7 +224,7 @@ void Monster::update()
     Being *bestAttackTarget = mTarget = NULL;
     int bestTargetPriority = 0;
     Point bestAttackPosition;
-    Direction bestAttackDirection = DIRECTION_DOWN;
+    BeingDirection bestAttackDirection = DOWN;
 
     // Iterate through objects nearby
     int aroundArea = Configuration::getValue("game_visualRange", 448);

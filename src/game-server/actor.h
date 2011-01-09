@@ -21,9 +21,9 @@
 #ifndef ACTOR_H
 #define ACTOR_H
 
-#include "point.h"
 #include "game-server/map.h"
 #include "game-server/thing.h"
+#include "utils/point.h"
 
 /**
  * Flags that are raised as necessary. They trigger messages that are sent to
@@ -52,7 +52,7 @@ class Actor : public Thing
          */
         Actor(ThingType type)
           : Thing(type),
-            mActionTime(0),
+            mMoveTime(0),
             mUpdateFlags(0),
             mPublicID(65535),
             mSize(0)
@@ -130,7 +130,8 @@ class Actor : public Thing
         virtual Map::BlockType getBlockType() const
         { return Map::BLOCKTYPE_NONE; }
 
-        unsigned short mActionTime; /**< Delay until next action. */
+        /** Delay until move to next tile in miliseconds. */
+        unsigned short mMoveTime;
 
     private:
         char mUpdateFlags;          /**< Changes in actor status. */

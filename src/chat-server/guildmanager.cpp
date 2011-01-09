@@ -20,11 +20,13 @@
 
 #include "guildmanager.h"
 #include "guild.h"
-#include "protocol.h"
+#include "manaserv_protocol.h"
 #include "defines.h"
 #include "account-server/storage.h"
 #include "chat-server/chatclient.h"
 #include "chat-server/chathandler.h"
+
+using namespace ManaServ;
 
 GuildManager::GuildManager()
 {
