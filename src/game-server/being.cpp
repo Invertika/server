@@ -266,7 +266,7 @@ void Being::updateDirection(const Point &currentPos, const Point &destPos)
         {
             // Compute tan of the angle
             if ((currentPos.y - destPos.y) / (currentPos.x - destPos.x) < 1)
-                // The angle is less than 45°, we look to the right
+                // The angle is less than 45°, we look to the left
                 setDirection(LEFT);
             else
                 setDirection(UP);
@@ -276,7 +276,7 @@ void Being::updateDirection(const Point &currentPos, const Point &destPos)
         {
             // Compute tan of the angle
             if ((destPos.y - currentPos.y) / (currentPos.x - destPos.x) < 1)
-                // The angle is less than 45°, we look to the right
+                // The angle is less than 45°, we look to the left
                 setDirection(LEFT);
             else
                 setDirection(DOWN);
@@ -366,9 +366,6 @@ void Being::move()
                        getModifiedAttribute(ATTR_MOVE_SPEED_RAW) :
                        getModifiedAttribute(ATTR_MOVE_SPEED_RAW) * SQRT2;
 
-        // Update the being direction also
-        updateDirection(prev, next);
-
         if (mPath.empty())
         {
             // skip last tile center
@@ -384,6 +381,9 @@ void Being::move()
     setPosition(pos);
 
     mMoveTime = mMoveTime > WORLD_TICK_MS ? mMoveTime - WORLD_TICK_MS : 0;
+
+    // Update the being direction also
+    updateDirection(mOld, pos);
 }
 
 int Being::directionToAngle(int direction)
