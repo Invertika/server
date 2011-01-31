@@ -27,6 +27,10 @@
 #include "utils/logger.h"
 #include "utils/xml.h"
 
+#define MAX_MUTATION 99
+#define DEFAULT_MONSTER_SIZE 16
+#define DEFAULT_MONSTER_SPEED 4.0f
+
 Element elementFromString (const std::string &name)
 {
     static std::map<const std::string, Element> table;
@@ -58,7 +62,8 @@ void MonsterManager::reload()
 {
     std::string absPathFile = ResourceManager::resolve(mMonsterReferenceFile);
     if (absPathFile.empty()) {
-        LOG_ERROR("Monster Manager: Could not find " << mMonsterReferenceFile << "!");
+        LOG_ERROR("Monster Manager: Could not find "
+                  << mMonsterReferenceFile << "!");
         return;
     }
 
@@ -85,7 +90,7 @@ void MonsterManager::reload()
         if (id < 1)
         {
             LOG_WARN("Monster Manager: There is a monster ("
-                     << name << ") without ID in "
+                     << name << ") without Id in "
                      << mMonsterReferenceFile << "! It has been ignored.");
             continue;
         }
@@ -111,12 +116,13 @@ void MonsterManager::reload()
             if (xmlStrEqual(subnode->name, BAD_CAST "drop"))
             {
                 MonsterDrop drop;
-                drop.item = itemManager->getItem(XML::getProperty(subnode, "item", 0));
-                drop.probability = XML::getProperty(subnode, "percent", 0) * 100;
+                drop.item = itemManager->getItem(
+                                          XML::getProperty(subnode, "item", 0));
+                drop.probability = XML::getProperty(subnode, "percent", 0)
+                                   * 100;
+
                 if (drop.item && drop.probability)
-                {
                     drops.push_back(drop);
-                }
             }
             else if (xmlStrEqual(subnode->name, BAD_CAST "attributes"))
             {
@@ -131,53 +137,71 @@ void MonsterManager::reload()
                     XML::getProperty(subnode, "attack-magic", -1));
                 monster->setAttribute(ATTR_DODGE,
                     XML::getProperty(subnode, "evade", -1));
+                monster->setAttribute(ATTR_MAGIC_DODGE,
+                    XML::getProperty(subnode, "magic-evade", -1));
                 monster->setAttribute(ATTR_ACCURACY,
                     XML::getProperty(subnode, "hit", -1));
                 monster->setAttribute(ATTR_DEFENSE,
                     XML::getProperty(subnode, "physical-defence", -1));
                 monster->setAttribute(ATTR_MAGIC_DEFENSE,
                     XML::getProperty(subnode, "magical-defence", -1));
-                monster->setSize(XML::getProperty(subnode, "size", 0));
+                monster->setSize(XML::getProperty(subnode, "size", -1));
                 float speed = (XML::getFloatProperty(subnode, "speed", -1.0f));
                 monster->setMutation(XML::getProperty(subnode, "mutation", 0));
 
-                //checking attributes for completeness and plausibility
-                if (monster->getMutation() > 99)
+                // Checking attributes for completeness and plausibility
+                if (monster->getMutation() > MAX_MUTATION)
                 {
                     LOG_WARN(mMonsterReferenceFile
-                    <<": Mutation of monster #"<<id
-                    <<" more than 99% - ignored");
+                    << ": Mutation of monster Id:" << id << " more than "
+                    << MAX_MUTATION << "%. Defaulted to 0.");
                     monster->setMutation(0);
                 }
 
                 bool attributesComplete = true;
-                const AttributeScopes &mobAttr = attributeManager->getAttributeInfoForType(ATTR_MOB);
+                const AttributeScopes &mobAttr =
+                            attributeManager->getAttributeInfoForType(ATTR_MOB);
 
                 for (AttributeScopes::const_iterator it = mobAttr.begin(),
-                     it_end = mobAttr.end();
-                it != it_end;
-                ++it)
+                     it_end = mobAttr.end(); it != it_end; ++it)
                 {
                     if (!monster->mAttributes.count(it->first))
                     {
+                        LOG_WARN(mMonsterReferenceFile << ": No attribute "
+                                 << it->first << " for monster Id: "
+                                 << id << ". Defaulted to 0.");
                         attributesComplete = false;
                         monster->setAttribute(it->first, 0);
                     }
                 }
 
-                if (monster->getSize() == 0)
+                if (monster->getSize() == -1)
                 {
-                    monster->setSize(16);
-                    attributesComplete = false;
-                }
-                if (speed == -1.0f)
-                {
-                    speed = 4.0f;
+                    LOG_WARN(mMonsterReferenceFile
+                             << ": No size set for monster Id:" << id << ". "
+                             << "Defaulted to " << DEFAULT_MONSTER_SIZE
+                             << " pixels.");
+                    monster->setSize(DEFAULT_MONSTER_SIZE);
                     attributesComplete = false;
                 }
 
-                if (!attributesComplete) LOG_WARN(mMonsterReferenceFile
-                    << ": Attributes incomplete for monster #" << id);
+                if (speed == -1.0f)
+                {
+                    LOG_WARN(mMonsterReferenceFile
+                             << ": No speed set for monster Id:" << id << ". "
+                             << "Defaulted to " << DEFAULT_MONSTER_SPEED
+                             << " tiles/second.");
+                    speed = DEFAULT_MONSTER_SPEED;
+                    attributesComplete = false;
+                }
+                monster->setAttribute(ATTR_MOVE_SPEED_TPS, speed);
+
+                if (!attributesComplete)
+                {
+                    LOG_WARN(mMonsterReferenceFile
+                             << ": Attributes incomplete for monster Id:" << id
+                             << ". Defaults values may have been applied!");
+                }
 
             }
             else if (xmlStrEqual(subnode->name, BAD_CAST "exp"))
@@ -189,27 +213,33 @@ void MonsterManager::reload()
             else if (xmlStrEqual(subnode->name, BAD_CAST "behavior"))
             {
                 behaviorSet = true;
-                if (XML::getProperty(subnode, "aggressive", "") == "true")
-                {
+                if (XML::getBoolProperty(subnode, "aggressive", false))
                     monster->setAggressive(true);
-                }
-                monster->setTrackRange(XML::getProperty(subnode, "track-range", 1));
-                monster->setStrollRange(XML::getProperty(subnode, "stroll-range", 0));
-                monster->setAttackDistance(XML::getProperty(subnode, "attack-distance", 0));
+
+                monster->setTrackRange(
+                               XML::getProperty(subnode, "track-range", 1));
+                monster->setStrollRange(
+                               XML::getProperty(subnode, "stroll-range", 0));
+                monster->setAttackDistance(
+                               XML::getProperty(subnode, "attack-distance", 0));
             }
             else if (xmlStrEqual(subnode->name, BAD_CAST "attack"))
             {
                 MonsterAttack *att = new MonsterAttack;
                 att->id = XML::getProperty(subnode, "id", 0);
                 att->priority = XML::getProperty(subnode, "priority", 1);
-                att->damageFactor = XML::getFloatProperty(subnode, "damage-factor", 1.0f);
+                att->damageFactor = XML::getFloatProperty(subnode,
+                                                         "damage-factor", 1.0f);
                 att->preDelay = XML::getProperty(subnode, "pre-delay", 1);
                 att->aftDelay = XML::getProperty(subnode, "aft-delay", 0);
                 att->range = XML::getProperty(subnode, "range", 0);
-                att->scriptFunction = XML::getProperty(subnode, "script-function", "");
-                std::string sElement = XML::getProperty(subnode, "element", "neutral");
+                att->scriptFunction = XML::getProperty(subnode,
+                                                       "script-function", "");
+                std::string sElement = XML::getProperty(subnode,
+                                                        "element", "neutral");
                 att->element = elementFromString(sElement);
-                std::string sType = XML::getProperty(subnode, "type", "physical");
+                std::string sType = XML::getProperty(subnode,
+                                                     "type", "physical");
 
                 bool validMonsterAttack = true;
                 if (sType == "physical")
@@ -228,12 +258,13 @@ void MonsterManager::reload()
                 {
                     LOG_WARN("Monster manager " << mMonsterReferenceFile
                               <<  ": unknown damage type '" << sType << "'.");
+                    validMonsterAttack = false;
                 }
 
                 if (att->id < 1)
                 {
                     LOG_WARN(mMonsterReferenceFile
-                             << ": Attack without ID for monster #"
+                             << ": Attack without ID for monster Id:"
                              << id << " (" << name << ") - attack ignored");
                     validMonsterAttack = false;
                 }
@@ -241,7 +272,7 @@ void MonsterManager::reload()
                 {
                     LOG_WARN(mMonsterReferenceFile
                              << ": Attack with unknown element \""
-                             << sElement << "\" for monster #" << id
+                             << sElement << "\" for monster Id:" << id
                              << " (" << name << ") - attack ignored");
                     validMonsterAttack = false;
                 }
@@ -249,7 +280,8 @@ void MonsterManager::reload()
                 {
                     LOG_WARN(mMonsterReferenceFile
                              << ": Attack with unknown type \"" << sType << "\""
-                             << " for monster #" << id << " (" << name << ")");
+                             << " for monster Id:" << id
+                             << " (" << name << ")");
                     validMonsterAttack = false;
                 }
 
@@ -273,17 +305,23 @@ void MonsterManager::reload()
         }
 
         monster->setDrops(drops);
-        if (!attributesSet) LOG_WARN(mMonsterReferenceFile
-                                    << ": No attributes defined for monster #"
-                                    << id << " (" << name << ")");
-        if (!behaviorSet) LOG_WARN(mMonsterReferenceFile
-                            << ": No behavior defined for monster #"
-                            << id << " (" << name << ")");
+        if (!attributesSet)
+        {
+            LOG_WARN(mMonsterReferenceFile
+                     << ": No attributes defined for monster Id:" << id
+                     << " (" << name << ")");
+        }
+        if (!behaviorSet)
+        {
+            LOG_WARN(mMonsterReferenceFile
+                << ": No behavior defined for monster Id:" << id
+                << " (" << name << ")");
+        }
         if (monster->getExp() == -1)
         {
             LOG_WARN(mMonsterReferenceFile
-                    << ": No experience defined for monster #"
-                    << id << " (" << name << ")");
+                    << ": No experience defined for monster Id:" << id
+                    << " (" << name << ")");
             monster->setExp(0);
         }
         ++nbMonsters;
