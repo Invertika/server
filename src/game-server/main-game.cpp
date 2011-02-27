@@ -149,9 +149,6 @@ static void initializeConfiguration(std::string configPath = std::string())
 
 static void initializeServer()
 {
-    // Reset to default segmentation fault handling for debugging purposes
-    signal(SIGSEGV, SIG_DFL);
-
     // Used to close via process signals
 #if (defined __USE_UNIX98 || defined __FreeBSD__)
     signal(SIGQUIT, closeGracefully);
@@ -219,9 +216,6 @@ static void initializeServer()
         exit(EXIT_NET_EXCEPTION);
     }
 
-    // Set enet to quit on exit.
-    atexit(enet_deinitialize);
-
     // Pre-calculate the needed trigomic function values
     utils::math::init();
 
@@ -240,6 +234,9 @@ static void deinitializeServer()
 
     // Stop world timer
     worldTimer.stop();
+
+    // Quit ENet
+    enet_deinitialize();
 
     // Destroy message handlers
     delete gameHandler;
@@ -283,7 +280,6 @@ struct CommandLineOptions
 {
     CommandLineOptions():
         configPath(DEFAULT_CONFIG_FILE),
-        configPathChanged(false),
         verbosity(Logger::Warn),
         verbosityChanged(false),
         port(DEFAULT_SERVER_PORT + 3),
@@ -291,7 +287,6 @@ struct CommandLineOptions
     {}
 
     std::string configPath;
-    bool configPathChanged;
 
     Logger::Level verbosity;
     bool verbosityChanged;
@@ -333,7 +328,6 @@ static void parseOptions(int argc, char *argv[], CommandLineOptions &options)
             case 'c':
                 // Change config filename and path.
                 options.configPath = optarg;
-                options.configPathChanged = true;
                 break;
             case 'v':
                 options.verbosity = static_cast<Logger::Level>(atoi(optarg));

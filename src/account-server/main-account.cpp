@@ -128,18 +128,12 @@ static void initializeConfiguration(std::string configPath = std::string())
  */
 static void initialize()
 {
-    // Reset to default segmentation fault handling for debugging purposes
-    signal(SIGSEGV, SIG_DFL);
-
     // Used to close via process signals
 #if (defined __USE_UNIX98 || defined __FreeBSD__)
     signal(SIGQUIT, closeGracefully);
 #endif
     signal(SIGINT, closeGracefully);
     signal(SIGTERM, closeGracefully);
-
-    // Set enet to quit on exit.
-    atexit(enet_deinitialize);
 
     std::string logFile = Configuration::getValue("log_accountServerFile",
                                                   DEFAULT_LOG_FILE);
@@ -287,7 +281,6 @@ struct CommandLineOptions
 {
     CommandLineOptions():
         configPath(DEFAULT_CONFIG_FILE),
-        configPathChanged(false),
         verbosity(Logger::Warn),
         verbosityChanged(false),
         port(DEFAULT_SERVER_PORT),
@@ -295,7 +288,6 @@ struct CommandLineOptions
     {}
 
     std::string configPath;
-    bool configPathChanged;
 
     Logger::Level verbosity;
     bool verbosityChanged;
@@ -337,7 +329,6 @@ static void parseOptions(int argc, char *argv[], CommandLineOptions &options)
             case 'c':
                 // Change config filename and path.
                 options.configPath = optarg;
-                options.configPathChanged = true;
                 break;
             case 'v':
                 options.verbosity = static_cast<Logger::Level>(atoi(optarg));
