@@ -1,6 +1,6 @@
 /*
  *  The Mana Server
- *  Copyright (C) 2004-2010  The Mana World Development Team
+ *  Copyright (C) 2004-2011  The Mana World Development Team
  *
  *  This file is part of The Mana Server.
  *
@@ -22,64 +22,95 @@
 #include <queue>
 #include <cassert>
 #include <cstring>
+#include <limits.h>
 
 #include "game-server/map.h"
 
 #include "defines.h"
 
-// Basic cost for moving from one tile to another.
-// Used in findPath() function when computing the A* path algorithm.
-static int const basicCost = 100;
-
-MetaTile::MetaTile():
-    whichList(0),
-    blockmask(0)
-{ }
-
-Location::Location(int x, int y, MetaTile *tile):
-    x(x), y(y), tile(tile)
-{ }
-
-bool Location::operator< (const Location &loc) const
+/**
+ * Stores information used during path finding for each tile of a map.
+ */
+class PathInfo
 {
-   return tile->Fcost > loc.tile->Fcost;
-}
+    public:
+        PathInfo()
+            : whichList(0)
+        {}
 
-Map::Map(int width, int height, int twidth, int theight):
+        int Fcost;              /**< Estimation of total path cost */
+        int Gcost;              /**< Cost from start to this location */
+        int Hcost;              /**< Estimated cost to goal */
+        unsigned whichList;     /**< No list, open list or closed list */
+        int parentX;            /**< X coordinate of parent tile */
+        int parentY;            /**< Y coordinate of parent tile */
+};
+
+/**
+ * A helper class for finding a path on a map, functor style.
+ */
+class FindPath
+{
+    public:
+        FindPath() :
+            mWidth(0),
+            mOnClosedList(1),
+            mOnOpenList(2)
+        {}
+
+        Path operator() (int startX, int startY,
+                         int destX, int destY,
+                         unsigned char walkmask, int maxCost,
+                         const Map *map);
+
+    private:
+        PathInfo *getInfo(int x, int y)
+        { return &mPathInfos.at(x + y * mWidth); }
+
+        void prepare(const Map *map);
+
+        int mWidth;
+        std::vector<PathInfo> mPathInfos;
+        unsigned mOnClosedList, mOnOpenList;
+};
+
+static FindPath findPath;
+
+
+/**
+ * A location on a tile map. Used for pathfinding, open list.
+ */
+class Location
+{
+    public:
+        Location(int x, int y, PathInfo *info):
+            x(x), y(y), info(info)
+        {}
+
+        /**
+         * Comparison operator.
+         */
+        bool operator< (const Location &loc) const
+        { return info->Fcost > loc.info->Fcost; }
+
+        int x, y;
+        PathInfo *info;
+};
+
+
+Map::Map(int width, int height, int tileWidth, int tileHeight):
     mWidth(width), mHeight(height),
-    mTileWidth(twidth), mTileHeight(theight),
-    onClosedList(1), onOpenList(2)
+    mTileWidth(tileWidth), mTileHeight(tileHeight),
+    mMetaTiles(width * height)
 {
-    mMetaTiles = new MetaTile[mWidth * mHeight];
-    for (int i=0; i < NB_BLOCKTYPES; i++)
-    {
-        mOccupation[i] = new int[mWidth * mHeight];
-        memset(mOccupation[i], 0, mWidth * mHeight * sizeof(int));
-    }
-}
-
-Map::~Map()
-{
-    delete[] mMetaTiles;
-    for (int i=0; i < NB_BLOCKTYPES; i++)
-    {
-        delete[] mOccupation[i];
-    }
 }
 
 void Map::setSize(int width, int height)
 {
-    this->mWidth = width;
-    this->mHeight = height;
+    mWidth = width;
+    mHeight = height;
 
-    delete[] mMetaTiles;
-    mMetaTiles = new MetaTile[mWidth * mHeight];
-
-    for (int i=0; i < NB_BLOCKTYPES; i++)
-    {
-        delete[] mOccupation[i];
-        mOccupation[i] = new int[mWidth * mHeight];
-    }
+    mMetaTiles.resize(width * height);
 }
 
 const std::string &Map::getProperty(const std::string &key) const
@@ -94,28 +125,27 @@ const std::string &Map::getProperty(const std::string &key) const
 
 void Map::blockTile(int x, int y, BlockType type)
 {
-    if (type == BLOCKTYPE_NONE || x < 0 || y < 0 || x >= mWidth || y >= mHeight)
-    {
+    if (type == BLOCKTYPE_NONE || !contains(x, y))
         return;
-    }
 
-    int tileNum = x + y * mWidth;
+    MetaTile &metaTile = mMetaTiles[x + y * mWidth];
 
-    if (++mOccupation[type][tileNum])
+    if (metaTile.occupation[type] < UINT_MAX &&
+        (++metaTile.occupation[type]) > 0)
     {
         switch (type)
         {
             case BLOCKTYPE_WALL:
-                mMetaTiles[tileNum].blockmask |= BLOCKMASK_WALL;
+                metaTile.blockmask |= BLOCKMASK_WALL;
                 break;
             case BLOCKTYPE_CHARACTER:
-                mMetaTiles[tileNum].blockmask |= BLOCKMASK_CHARACTER;
+                metaTile.blockmask |= BLOCKMASK_CHARACTER;
                 break;
             case BLOCKTYPE_MONSTER:
-                mMetaTiles[tileNum].blockmask |= BLOCKMASK_MONSTER;
+                metaTile.blockmask |= BLOCKMASK_MONSTER;
                 break;
             default:
-                // shut up!
+                // Nothing to do.
                 break;
         }
     }
@@ -123,25 +153,24 @@ void Map::blockTile(int x, int y, BlockType type)
 
 void Map::freeTile(int x, int y, BlockType type)
 {
-    if (type == BLOCKTYPE_NONE || x < 0 || y < 0 || x >= mWidth || y >= mHeight)
-    {
+    if (type == BLOCKTYPE_NONE || !contains(x, y))
         return;
-    }
 
-    int tileNum = x + y * mWidth;
+    MetaTile &metaTile = mMetaTiles[x + y * mWidth];
+    assert(metaTile.occupation[type] > 0);
 
-    if (!(--mOccupation[type][tileNum]))
+    if (!(--metaTile.occupation[type]))
     {
         switch (type)
         {
             case BLOCKTYPE_WALL:
-                mMetaTiles[tileNum].blockmask &= (BLOCKMASK_WALL xor 0xff);
+                metaTile.blockmask &= (BLOCKMASK_WALL xor 0xff);
                 break;
             case BLOCKTYPE_CHARACTER:
-                mMetaTiles[tileNum].blockmask &= (BLOCKMASK_CHARACTER xor 0xff);
+                metaTile.blockmask &= (BLOCKMASK_CHARACTER xor 0xff);
                 break;
             case BLOCKTYPE_MONSTER:
-                mMetaTiles[tileNum].blockmask &= (BLOCKMASK_MONSTER xor 0xff);
+                metaTile.blockmask &= (BLOCKMASK_MONSTER xor 0xff);
                 break;
             default:
                 // nothing
@@ -154,83 +183,44 @@ bool Map::getWalk(int x, int y, char walkmask) const
 {
     // You can't walk outside of the map
     if (!contains(x, y))
-    {
         return false;
-    }
 
     // Check if the tile is walkable
     return !(mMetaTiles[x + y * mWidth].blockmask & walkmask);
 }
 
-MetaTile *Map::getMetaTile(int x, int y)
-{
-    return &mMetaTiles[x + y * mWidth];
-}
-
-bool Map::contains(int x, int y) const
-{
-    return x >= 0 && y >= 0 && x < mWidth && y < mHeight;
-}
-
-Path Map::findSimplePath(int startX, int startY,
-                                         int destX, int destY,
-                                         unsigned char walkmask)
-{
-    // Path to be built up (empty by default)
-    Path path;
-    int positionX = startX, positionY = startY;
-    int directionX, directionY;
-    // Checks our path up to 1 tiles, if a blocking tile is found
-    // We go to the last good tile, and break out of the loop
-    while(true)
-    {
-        directionX = destX - positionX;
-        directionY = destY - positionY;
-
-        if (directionX > 0)
-            directionX = 1;
-        else if(directionX < 0)
-            directionX = -1;
-
-        if (directionY > 0)
-            directionY = 1;
-        else if(directionY < 0)
-            directionY = -1;
-
-        positionX += directionX;
-        positionY += directionY;
-
-        if (getWalk(positionX, positionY, walkmask))
-        {
-            path.push_back(Point(positionX, positionY));
-
-            if ((positionX == destX) && (positionY == destY))
-            {
-                return path;
-            }
-        }
-        else
-        {
-            return path;
-        }
-    }
-}
-
 Path Map::findPath(int startX, int startY,
-                                   int destX, int destY,
-                                   unsigned char walkmask, int maxCost)
+                   int destX, int destY,
+                   unsigned char walkmask, int maxCost) const
 {
+    return ::findPath(startX, startY,
+                      destX, destY,
+                      walkmask, maxCost,
+                      this);
+}
+
+Path FindPath::operator() (int startX, int startY,
+                           int destX, int destY,
+                           unsigned char walkmask, int maxCost,
+                           const Map *map)
+{
+    // Basic cost for moving from one tile to another.
+    static int const basicCost = 100;
+
     // Path to be built up (empty by default)
     Path path;
+
+    // Return when destination not walkable
+    if (!map->getWalk(destX, destY, walkmask))
+        return path;
+
+    prepare(map);
 
     // Declare open list, a list with open tiles sorted on F cost
     std::priority_queue<Location> openList;
 
-    // Return when destination not walkable
-    if (!getWalk(destX, destY, walkmask)) return path;
-
     // Reset starting tile's G cost to 0
-    MetaTile *startTile = getMetaTile(startX, startY);
+    PathInfo *startTile = getInfo(startX, startY);
     startTile->Gcost = 0;
 
     // Add the start point to the open list
@@ -248,11 +238,11 @@ Path Map::findPath(int startX, int startY,
 
         // If the tile is already on the closed list, this means it has already
         // been processed with a shorter path to the start point (lower G cost)
-        if (curr.tile->whichList == onClosedList)
+        if (curr.info->whichList == mOnClosedList)
             continue;
 
         // Put the current tile on the closed list
-        curr.tile->whichList = onClosedList;
+        curr.info->whichList = mOnClosedList;
 
         // Check the adjacent tiles
         for (int dy = -1; dy <= 1; dy++)
@@ -265,28 +255,27 @@ Path Map::findPath(int startX, int startY,
 
                 // Skip if if we're checking the same tile we're leaving from,
                 // or if the new location falls outside of the map boundaries
-                if ((dx == 0 && dy == 0) || !contains(x, y))
+                if ((dx == 0 && dy == 0) || !map->contains(x, y))
                     continue;
 
-                MetaTile *newTile = getMetaTile(x, y);
+                PathInfo *newTile = getInfo(x, y);
 
                 // Skip if the tile is on the closed list or is not walkable
-                if (newTile->whichList == onClosedList || newTile->blockmask & walkmask)
+                if (newTile->whichList == mOnClosedList
+                        || !map->getWalk(x, y, walkmask))
                     continue;
 
                 // When taking a diagonal step, verify that we can skip the
                 // corner.
                 if (dx != 0 && dy != 0)
                 {
-                    MetaTile *t1 = getMetaTile(curr.x, curr.y + dy);
-                    MetaTile *t2 = getMetaTile(curr.x + dx, curr.y);
-
-                    if ((t1->blockmask | t2->blockmask) & walkmask)
+                    if (!map->getWalk(curr.x, curr.y + dy, walkmask)
+                            || !map->getWalk(curr.x + dx, curr.y, walkmask))
                         continue;
                 }
 
                 // Calculate G cost for this route, ~sqrt(2) for moving diagonal
-                int Gcost = curr.tile->Gcost +
+                int Gcost = curr.info->Gcost +
                     (dx == 0 || dy == 0 ? basicCost : basicCost * 362 / 256);
 
                 /* Demote an arbitrary direction to speed pathfinding by
@@ -308,7 +297,7 @@ Path Map::findPath(int startX, int startY,
                 if (Gcost > maxCost * basicCost)
                     continue;
 
-                if (newTile->whichList != onOpenList)
+                if (newTile->whichList != mOnOpenList)
                 {
                     // Found a new tile (not on open nor on closed list)
 
@@ -328,9 +317,10 @@ Path Map::findPath(int startX, int startY,
                     newTile->Gcost = Gcost;
                     newTile->Fcost = newTile->Gcost + newTile->Hcost;
 
-                    if (x != destX || y != destY) {
+                    if (x != destX || y != destY)
+                    {
                         // Add this tile to the open list
-                        newTile->whichList = onOpenList;
+                        newTile->whichList = mOnOpenList;
                         openList.push(Location(x, y, newTile));
                     }
                     else
@@ -358,11 +348,6 @@ Path Map::findPath(int startX, int startY,
         }
     }
 
-    // Two new values to indicate whether a tile is on the open or closed list,
-    // this way we don't have to clear all the values between each pathfinding.
-    onClosedList += 2;
-    onOpenList += 2;
-
     // If a path has been found, iterate backwards using the parent locations
     // to extract it.
     if (foundPath)
@@ -376,11 +361,37 @@ Path Map::findPath(int startX, int startY,
             path.push_front(Point(pathX, pathY));
 
             // Find out the next parent
-            MetaTile *tile = getMetaTile(pathX, pathY);
+            PathInfo *tile = getInfo(pathX, pathY);
             pathX = tile->parentX;
             pathY = tile->parentY;
         }
     }
 
     return path;
+}
+
+void FindPath::prepare(const Map *map)
+{
+    // Two new values to indicate whether a tile is on the open or closed list,
+    // this way we don't have to clear all the values between each pathfinding.
+    if (mOnOpenList < UINT_MAX - 2)
+    {
+        mOnClosedList += 2;
+        mOnOpenList += 2;
+    }
+    else
+    {
+        // Reset closed and open list IDs and clear the whichList values
+        mOnClosedList = 1;
+        mOnOpenList = 2;
+        for (unsigned i = 0, end = mPathInfos.size(); i < end; ++i)
+            mPathInfos[i].whichList = 0;
+    }
+
+    // Make sure we have enough room to cover this map with path information
+    const unsigned size = map->getWidth() * map->getHeight();
+    if (mPathInfos.size() < size)
+        mPathInfos.resize(size);
+
+    mWidth = map->getWidth();
 }

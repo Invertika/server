@@ -1011,11 +1011,7 @@ static int monster_create(lua_State *s)
     Monster *q = new Monster(spec);
     q->setMap(m);
     q->setPosition(Point(x, y));
-    if (!GameState::insertSafe(q))
-    {
-        LOG_WARN("Monster_Create failed to insert monster");
-        return 0;
-    }
+    GameState::enqueueInsert(q);
 
     lua_pushlightuserdata(s, q);
     return 1;
@@ -1085,7 +1081,7 @@ static int chr_get_quest(lua_State *s)
  * gets the value of a persistent map variable.
  * mana.getvar_map(string): string
  */
- static int getvar_map(lua_State *s)
+static int getvar_map(lua_State *s)
 {
     const char *m = luaL_checkstring(s, 1);
     if (m[0] == 0)
@@ -1107,7 +1103,7 @@ static int chr_get_quest(lua_State *s)
  * sets the value of a persistent map variable.
  * mana.setvar_map(string, string)
  */
- static int setvar_map(lua_State *s)
+static int setvar_map(lua_State *s)
 {
     const char *m = luaL_checkstring(s, 1);
     if (m[0] == 0)
@@ -1130,7 +1126,7 @@ static int chr_get_quest(lua_State *s)
  * gets the value of a persistent global variable.
  * mana.getvar_world(string): string
  */
- static int getvar_world(lua_State *s)
+static int getvar_world(lua_State *s)
 {
     const char *m = luaL_checkstring(s, 1);
     if (m[0] == 0)
@@ -1149,7 +1145,7 @@ static int chr_get_quest(lua_State *s)
  * sets the value of a persistent global variable.
  * mana.setvar_world(string, string)
  */
- static int setvar_world(lua_State *s)
+static int setvar_world(lua_State *s)
 {
     const char *m = luaL_checkstring(s, 1);
     if (m[0] == 0)
@@ -1747,7 +1743,7 @@ static int item_drop(lua_State *s)
     i->setMap(map);
     Point pos(x, y);
     i->setPosition(pos);
-    GameState::insertSafe(i);
+    GameState::insertOrDelete(i);
 
     return 0;
 }

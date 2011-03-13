@@ -230,14 +230,7 @@ class Monster : public Being
         /** Time in game ticks until ownership of a monster can change. */
         static const int KILLSTEAL_PROTECTION_TIME = 100;
 
-        /**
-         * Constructor.
-         */
         Monster(MonsterClass *);
-
-        /**
-         * Destructor.
-         */
         ~Monster();
 
         /**
@@ -308,8 +301,8 @@ class Monster : public Being
         /**
          * Returns the way the actor blocks pathfinding for other objects.
          */
-        virtual Map::BlockType getBlockType() const
-        { return Map::BLOCKTYPE_MONSTER; }
+        virtual BlockType getBlockType() const
+        { return BLOCKTYPE_MONSTER; }
 
     private:
         static const int DECAY_TIME = 50;

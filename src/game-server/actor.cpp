@@ -25,34 +25,45 @@
 
 #include <cassert>
 
-void Actor::setPosition(const Point &p)
+Actor::~Actor()
 {
-    mPos = p;
-
-    // Update blockmap
-    if (getMap())
+    // Free the map position
+    if (MapComposite *mapComposite = getMap())
     {
-        Map *map = getMap()->getMap();
+        Map *map = mapComposite->getMap();
         int tileWidth = map->getTileWidth();
         int tileHeight = map->getTileHeight();
-        const Point &oldP = getPosition();
-        if ((oldP.x / tileWidth != p.x / tileWidth
-            || oldP.y / tileHeight != p.y / tileHeight))
+        Point oldP = getPosition();
+        map->freeTile(oldP.x / tileWidth, oldP.y / tileHeight, getBlockType());
+    }
+}
+
+void Actor::setPosition(const Point &p)
+{
+    // Update blockmap
+    if (MapComposite *mapComposite = getMap())
+    {
+        Map *map = mapComposite->getMap();
+        int tileWidth = map->getTileWidth();
+        int tileHeight = map->getTileHeight();
+        if ((mPos.x / tileWidth != p.x / tileWidth
+            || mPos.y / tileHeight != p.y / tileHeight))
         {
-            map->freeTile(oldP.x / tileWidth, oldP.y / tileHeight,
+            map->freeTile(mPos.x / tileWidth, mPos.y / tileHeight,
                           getBlockType());
             map->blockTile(p.x / tileWidth, p.y / tileHeight, getBlockType());
         }
     }
+
+    mPos = p;
 }
 
 void Actor::setMap(MapComposite *mapComposite)
 {
-    assert (mapComposite);
-    MapComposite *oldMapComposite = getMap();
-    Point p = getPosition();
+    assert(mapComposite);
+    const Point p = getPosition();
 
-    if (oldMapComposite)
+    if (MapComposite *oldMapComposite = getMap())
     {
         Map *oldMap = oldMapComposite->getMap();
         int oldTileWidth = oldMap->getTileWidth();

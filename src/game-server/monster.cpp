@@ -1,6 +1,6 @@
 /*
  *  The Mana Server
- *  Copyright (C) 2004-2010  The Mana World Development Team
+ *  Copyright (C) 2004-2011  The Mana World Development Team
  *
  *  This file is part of The Mana Server.
  *
@@ -132,16 +132,6 @@ Monster::~Monster()
          i_end = mAnger.end(); i != i_end; ++i)
     {
         i->first->removeListener(&mTargetListener);
-    }
-
-    // Free the map position
-    if (getMap())
-    {
-        Point oldP = getPosition();
-        Map *map = getMap()->getMap();
-        int tileWidth = map->getTileWidth();
-        int tileHeight = map->getTileHeight();
-        map->freeTile(oldP.x / tileWidth, oldP.y / tileHeight, getBlockType());
     }
 }
 
@@ -325,7 +315,7 @@ void Monster::update()
     else
     {
         // We have no target - let's wander around
-        if (getPosition() == getDestination())
+        if (!isTimerRunning(T_M_STROLL) && getPosition() == getDestination())
         {
             if (!isTimerRunning(T_M_KILLSTEAL_PROTECTED))
             {

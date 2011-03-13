@@ -47,9 +47,6 @@ enum
 class Actor : public Thing
 {
     public:
-        /**
-         * Constructor.
-         */
         Actor(ThingType type)
           : Thing(type),
             mMoveTime(0),
@@ -57,6 +54,8 @@ class Actor : public Thing
             mPublicID(65535),
             mSize(0)
         {}
+
+        ~Actor();
 
         /**
          * Sets the coordinates. Also updates the walkmap of the map the actor
@@ -127,8 +126,8 @@ class Actor : public Thing
         /**
          * Gets the way the actor blocks pathfinding for other actors.
          */
-        virtual Map::BlockType getBlockType() const
-        { return Map::BLOCKTYPE_NONE; }
+        virtual BlockType getBlockType() const
+        { return BLOCKTYPE_NONE; }
 
         /** Delay until move to next tile in miliseconds. */
         unsigned short mMoveTime;

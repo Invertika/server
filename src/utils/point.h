@@ -1,6 +1,6 @@
 /*
  *  The Mana Server
- *  Copyright (C) 2004-2010  The Mana World Development Team
+ *  Copyright (C) 2004-2011  The Mana World Development Team
  *
  *  This file is part of The Mana Server.
  *
@@ -22,6 +22,7 @@
 #define POINT_H
 
 #include <algorithm>
+#include <ostream>
 
 /**
  * A point in positive space. Usually represents pixel coordinates on a map.
@@ -86,5 +87,18 @@ class Rectangle
                    y + h > r.y;
         }
 };
+
+inline std::ostream &operator <<(std::ostream &os, const Point &point)
+{
+    os << '(' << point.x << ", " << point.y << ')';
+    return os;
+}
+
+inline std::ostream &operator <<(std::ostream &os, const Rectangle &rect)
+{
+    os << '(' << rect.x << ',' << rect.y
+       << ' ' << rect.w << 'x' << rect.h << ')';
+    return os;
+}
 
 #endif // POINT_H

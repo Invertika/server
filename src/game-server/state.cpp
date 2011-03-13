@@ -508,7 +508,7 @@ void GameState::update(int worldTime)
                 break;
 
             case EVENT_INSERT:
-                insertSafe(o);
+                insertOrDelete(o);
                 break;
 
             case EVENT_WARP:
@@ -611,7 +611,7 @@ bool GameState::insert(Thing *ptr)
     return true;
 }
 
-bool GameState::insertSafe(Thing *ptr)
+bool GameState::insertOrDelete(Thing *ptr)
 {
     if (insert(ptr)) return true;
     delete ptr;
@@ -819,13 +819,12 @@ void GameState::sayToAll(const std::string &text)
 
 std::string GameState::getVariable(const std::string &key)
 {
-    std::map<std::string, std::string>::iterator iValue = mScriptVariables.find(key);
+    std::map<std::string, std::string>::iterator iValue =
+                                                     mScriptVariables.find(key);
     if (iValue != mScriptVariables.end())
-    {
         return iValue->second;
-    } else {
+    else
         return std::string();
-    }
 }
 
 void GameState::setVariable(const std::string &key, const std::string &value)
@@ -834,7 +833,8 @@ void GameState::setVariable(const std::string &key, const std::string &value)
     accountHandler->updateWorldVar(key, value);
 }
 
-void GameState::setVariableFromDbserver(const std::string &key, const std::string &value)
+void GameState::setVariableFromDbserver(const std::string &key,
+                                        const std::string &value)
 {
     mScriptVariables[key] = value ;
 }
