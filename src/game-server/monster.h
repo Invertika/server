@@ -53,7 +53,7 @@ struct MonsterAttack
     int priority;
     float damageFactor;
     int element;
-    DMG_TY type;
+    DamageType type;
     int preDelay;
     int aftDelay;
     int range;
@@ -70,6 +70,7 @@ class MonsterClass
     public:
         MonsterClass(int id):
             mId(id),
+            mName("unnamed"),
             mSpeed(1),
             mSize(16),
             mExp(-1),
@@ -78,8 +79,7 @@ class MonsterClass
             mStrollRange(0),
             mMutation(0),
             mAttackDistance(0),
-            mOptimalLevel(0),
-            mScript("")
+            mOptimalLevel(0)
         {}
 
         /**
@@ -87,6 +87,18 @@ class MonsterClass
          */
         int getId() const
         { return mId; }
+
+        /**
+         * Returns the name of the monster type
+         */
+        const std::string &getName() const
+        { return mName; }
+
+        /**
+         * Sets the name of the monster type
+         */
+        void setName(const std::string &name)
+        { mName = name; }
 
         /**
          * Sets monster drops. These are the items the monster drops when it
@@ -186,6 +198,8 @@ class MonsterClass
 
     private:
         unsigned short mId;
+        std::string mName;
+
         MonsterDrops mDrops;
         std::map<int, double> mAttributes; /**< Base attributes of the monster. */
         float mSpeed; /**< The monster class speed in tiles per second */

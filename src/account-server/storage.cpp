@@ -693,11 +693,10 @@ bool Storage::updateCharacter(Character *character)
     // Character attributes.
     try
     {
-        std::ostringstream sqlAttr;
         for (AttributeMap::const_iterator it = character->mAttributes.begin(),
              it_end = character->mAttributes.end(); it != it_end; ++it)
             updateAttribute(character->getDatabaseID(), it->first,
-                            it->second.first, it->second.second);
+                            it->second.base, it->second.modified);
     }
     catch (const dal::DbSqlQueryExecFailure &e)
     {
@@ -998,8 +997,8 @@ void Storage::flush(Account *account)
                      attr_it != attr_end; ++attr_it)
                 {
                     updateAttribute(character->getDatabaseID(), attr_it->first,
-                                    attr_it->second.first,
-                                    attr_it->second.second);
+                                    attr_it->second.base,
+                                    attr_it->second.modified);
                 }
 
                 // Update the characters skill
@@ -1650,6 +1649,7 @@ void Storage::banCharacter(int id, int duration)
 {
     try
     {
+        // check the account of the character
         std::ostringstream query;
         query << "select user_id from " << CHARACTERS_TBL_NAME
               << " where id = '" << id << "';";
@@ -1660,10 +1660,12 @@ void Storage::banCharacter(int id, int duration)
             return;
         }
 
+        uint64_t bantime = (uint64_t)time(0) + (uint64_t)duration * 60u;
+        // ban the character
         std::ostringstream sql;
         sql << "update " << ACCOUNTS_TBL_NAME
             << " set level = '" << AL_BANNED << "', banned = '"
-            << time(0) + duration * 60
+            << bantime
             << "' where id = '" << info(0, 0) << "';";
         mDb->execSql(sql.str());
     }
@@ -1982,12 +1984,13 @@ void Storage::syncDatabase()
                 continue;
 
             int weight = XML::getProperty(node, "weight", 0);
-            std::string type = XML::getProperty(node, "type", "");
-            std::string name = XML::getProperty(node, "name", "");
-            std::string desc = XML::getProperty(node, "description", "");
-            std::string eff  = XML::getProperty(node, "effect", "");
-            std::string image = XML::getProperty(node, "image", "");
-            std::string dye("");
+            std::string type = XML::getProperty(node, "type", std::string());
+            std::string name = XML::getProperty(node, "name", std::string());
+            std::string desc = XML::getProperty(node, "description",
+                                                std::string());
+            std::string eff  = XML::getProperty(node, "effect", std::string());
+            std::string image = XML::getProperty(node, "image", std::string());
+            std::string dye;
 
             // Split image name and dye string
             size_t pipe = image.find("|");

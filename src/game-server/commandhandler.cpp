@@ -92,7 +92,7 @@ static CmdRef const cmdRef[] =
         "Teleports you to the location of another character", &handleGoto},
     {"recall", "<character>",
         "Teleports another character to your location", &handleRecall},
-    {"ban", "<character> <length of time>",
+    {"ban", "<character> <length of time>(m|h|d|w|y)",
         "Bans the character and all characters on the same account from the game", &handleBan},
     {"item", "<character> <item id> <amount>",
         "Creates a number of items in the inventory of a character", &handleItem},
@@ -155,12 +155,12 @@ static bool checkPermission(Character *player, unsigned int permissions)
  */
 static std::string getArgument(std::string &args)
 {
-    std::string argument = "";
+    std::string argument;
     std::string::size_type pos = std::string::npos;
     bool doubleQuotes = false;
 
     // Finds out if the next argument is between double-quotes
-    if (args.substr(0, 1).compare("\""))
+    if (args.empty() || args.at(0) != '"')
     {
         // No double-quotes, we then search an ending space.
         pos = args.find(' ');
@@ -193,7 +193,7 @@ static std::string getArgument(std::string &args)
     else
     {
         argument = args.substr(0);
-        args = "";
+        args = std::string();
     }
     return argument;
 }
@@ -218,7 +218,7 @@ static Character* getPlayer(const std::string &player)
 
 static void handleHelp(Character *player, std::string &args)
 {
-    if (args == "")
+    if (args.empty())
     {
         // short list of all commands
         say("=Available Commands=", player);
@@ -266,7 +266,7 @@ static void handleWarp(Character *player, std::string &args)
     std::string ystr = getArgument(args);
 
     // if any of them are empty strings, no argument was given
-    if (mapstr == "" || xstr == "" || ystr == "")
+    if (mapstr.empty() || xstr.empty() || ystr.empty())
     {
         say("Invalid number of arguments given.", player);
         say("Usage: @warp <map> <x> <y>", player);
@@ -352,7 +352,7 @@ static void handleCharWarp(Character *player, std::string &args)
     std::string ystr = getArgument(args);
 
     // if any of them are empty strings, no argument was given
-    if (character == "" || mapstr == "" || xstr == "" || ystr == "")
+    if (character.empty() || mapstr.empty() || xstr.empty() || ystr.empty())
     {
         say("Invalid number of arguments given.", player);
         say("Usage: @warp <character> <map> <x> <y>", player);
@@ -446,8 +446,7 @@ static void handleItem(Character *player, std::string &args)
 {
     Character *other;
     ItemClass *ic;
-    int value;
-    int id;
+    int value = 0;
 
     // get arguments
     std::string character = getArgument(args);
@@ -455,10 +454,10 @@ static void handleItem(Character *player, std::string &args)
     std::string valuestr = getArgument(args);
 
     // check all arguments are there
-    if (character == "" || itemclass == "" || valuestr == "")
+    if (character.empty() || itemclass.empty())
     {
         say("Invalid number of arguments given.", player);
-        say("Usage: @item <character> <itemID> <amount>", player);
+        say("Usage: @item <character> <item> [amount]", player);
         return;
     }
 
@@ -478,36 +477,35 @@ static void handleItem(Character *player, std::string &args)
         }
     }
 
-    // check we have a valid item
-    if (!utils::isNumeric(itemclass))
+    // identify the item type
+    if (utils::isNumeric(itemclass))
     {
-        say("Invalid item", player);
-        return;
+        int id = utils::stringToInt(itemclass);
+        ic = itemManager->getItem(id);
     }
-
-    // put the itemclass id into an integer
-    id = utils::stringToInt(itemclass);
-
-    // check for valid item class
-    ic = itemManager->getItem(id);
-
+    else
+    {
+        ic = itemManager->getItemByName(itemclass);
+    }
     if (!ic)
     {
         say("Invalid item", player);
         return;
     }
 
-    if (!utils::isNumeric(valuestr))
+    //identify the amount
+    if  (valuestr.empty())
     {
-        say("Invalid value", player);
-        return;
+        value = 1;
     }
-
-    value = utils::stringToInt(valuestr);
-
-    if (value < 0)
+    else if (utils::isNumeric(valuestr))
     {
-        say("Invalid amount", player);
+        value = utils::stringToInt(valuestr);
+    }
+    // check for valid amount
+    if (value <= 0)
+    {
+        say("Invalid number of items", player);
         return;
     }
 
@@ -523,44 +521,49 @@ static void handleItem(Character *player, std::string &args)
 static void handleDrop(Character *player, std::string &args)
 {
     ItemClass *ic;
-    int value, id;
+    int value = 0;
 
     // get arguments
     std::string itemclass = getArgument(args);
     std::string valuestr = getArgument(args);
 
     // check all arguments are there
-    if (itemclass == "" || valuestr == "")
+    if (itemclass.empty())
     {
         say("Invalid number of arguments given.", player);
-        say("Usage: @drop <itemID> <amount]>", player);
+        say("Usage: @drop <item> [amount]", player);
         return;
     }
 
-    // check that itemclass id and value are really integers
-    if (!utils::isNumeric(itemclass) || !utils::isNumeric(valuestr))
+    // identify the item type
+    if (utils::isNumeric(itemclass))
     {
-        say("Invalid arguments passed.", player);
-        return;
+        int id = utils::stringToInt(itemclass);
+        ic = itemManager->getItem(id);
     }
-
-    // put the item class id into an integer
-    id = utils::stringToInt(itemclass);
-
-    // check for valid item
-    ic = itemManager->getItem(id);
+    else
+    {
+        ic = itemManager->getItemByName(itemclass);
+    }
     if (!ic)
     {
         say("Invalid item", player);
         return;
     }
 
-    // put the value into an integer
-    value = utils::stringToInt(valuestr);
-
-    if (value < 0)
+    //identify the amount
+    if  (valuestr.empty())
     {
-        say("Invalid amount", player);
+        value = 1;
+    }
+    else if (utils::isNumeric(valuestr))
+    {
+        value = utils::stringToInt(valuestr);
+    }
+    // check for valid amount
+    if (value <= 0)
+    {
+        say("Invalid number of items", player);
         return;
     }
 
@@ -586,7 +589,7 @@ static void handleMoney(Character *player, std::string &args)
     std::string valuestr = getArgument(args);
 
     // check all arguments are there
-    if (character == "" || valuestr == "")
+    if (character.empty() || valuestr.empty())
     {
         say("Invalid number of arguments given", player);
         say("Usage: @money <character> <amount>", player);
@@ -633,44 +636,50 @@ static void handleSpawn(Character *player, std::string &args)
     MonsterClass *mc;
     MapComposite *map = player->getMap();
     const Point &pos = player->getPosition();
-    int value, id;
+    int value = 0;
 
     // get the arguments
     std::string monsterclass = getArgument(args);
     std::string valuestr = getArgument(args);
 
     // check all arguments are there
-    if (monsterclass == "" || valuestr == "")
+    if (monsterclass.empty())
     {
         say("Invalid amount of arguments given.", player);
-        say("Usage: @spawn <monsterID> <number>", player);
+        say("Usage: @spawn <monster> [number]", player);
         return;
     }
 
-    // check they are really numbers
-    if (!utils::isNumeric(monsterclass) || !utils::isNumeric(valuestr))
+    // identify the monster type
+    if (utils::isNumeric(monsterclass))
     {
-        say("Invalid arguments", player);
-        return;
+        int id = utils::stringToInt(monsterclass);
+        mc = monsterManager->getMonster(id);
     }
-
-    // put the monster class id into an integer
-    id = utils::stringToInt(monsterclass);
-
+    else
+    {
+        mc = monsterManager->getMonsterByName(monsterclass);
+    }
     // check for valid monster
-    mc = monsterManager->getMonster(id);
     if (!mc)
     {
         say("Invalid monster", player);
         return;
     }
 
-    // put the amount into an integer
-    value = utils::stringToInt(valuestr);
-
-    if (value < 0)
+    //identify the amount
+    if  (valuestr.empty())
     {
-        say("Invalid amount", player);
+        value = 1;
+    }
+    else if (utils::isNumeric(valuestr))
+    {
+        value = utils::stringToInt(valuestr);
+    }
+    // check for valid amount
+    if (value <= 0)
+    {
+        say("Invalid number of monsters", player);
         return;
     }
 
@@ -701,7 +710,7 @@ static void handleGoto(Character *player, std::string &args)
     std::string character = getArgument(args);
 
     // check all arguments are there
-    if (character == "")
+    if (character.empty())
     {
         say("Invalid amount of arguments given.", player);
         say("Usage: @goto <character>", player);
@@ -735,7 +744,7 @@ static void handleRecall(Character *player, std::string &args)
     std::string character = getArgument(args);
 
     // check all arguments are there
-    if (character == "")
+    if (character.empty())
     {
         say("Invalid amount of arguments given.", player);
         say("Usage: @recall <character>", player);
@@ -767,13 +776,14 @@ static void handleBan(Character *player, std::string &args)
 {
     Character *other;
     int length;
+    int lengthMutiplier = 0;
 
     // get arguments
     std::string character = getArgument(args);
     std::string valuestr = getArgument(args);
 
     // check all arguments are there
-    if (character == "" || valuestr == "")
+    if (character.empty() || valuestr.empty())
     {
         say("Invalid number of arguments given.", player);
         say("Usage: @ban <character> <duration>", player);
@@ -788,27 +798,50 @@ static void handleBan(Character *player, std::string &args)
         return;
     }
 
-    // check the length is really an integer
-    if (!utils::isNumeric(valuestr))
+    // get the unit
+    char unit = valuestr.at(valuestr.length()-1);
+    switch (unit)
     {
-        say("Invalid argument", player);
-        return;
+        case 'm':
+            lengthMutiplier = 1;
+            break;
+        case 'h':
+            lengthMutiplier = 60;
+            break;
+        case 'd':
+            lengthMutiplier = 60 * 24;
+            break;
+        case 'w':
+            lengthMutiplier = 60 * 24 * 7;
+            break;
+        case 'y':
+            lengthMutiplier = 60 * 24 * 365;
+            break;
     }
-
-    // change the length to an integer
-    length = utils::stringToInt(valuestr);
-
-    if (length < 0)
+    length = utils::stringToInt(valuestr.substr(0, valuestr.length()-1));
+    length = length * lengthMutiplier;
+    if (length <= 0)
     {
-        say("Invalid length", player);
+        std::string errmsg;
+        errmsg += "Invalid length. Please enter a positive number ";
+        errmsg += "followed by the letter m, h, d, w or y for minutes ";
+        errmsg += ", hours, days, weeks or years.";
+        say(errmsg , player);
         return;
     }
 
     // ban the player
     accountHandler->banCharacter(other, length);
+    // disconnect the player
+    MessageOut kickmsg(GPMSG_CONNECT_RESPONSE);
+    kickmsg.writeInt8(ERRMSG_ADMINISTRATIVE_LOGOFF);
+    other->getClient()->disconnect(kickmsg);
 
+    // feedback for command user
+    std::string msg = "You've banned " + other->getName() + " for " + utils::toString(length) + " minutes";
+    say(msg.c_str(), player);
     // log transaction
-    std::string msg = "User banned " + other->getName();
+    msg = "User banned " + other->getName() + " for " + utils::toString(length) + " minutes";
     accountHandler->sendTransaction(player->getDatabaseID(), TRANS_CMD_BAN, msg);
 }
 
@@ -821,7 +854,7 @@ static void handleGivePermission(Character *player, std::string &args)
     std::string strPermission = getArgument(args);
 
     // check all arguments are there
-    if (character == "" || strPermission == "")
+    if (character.empty() || strPermission.empty())
     {
         say("Invalid number of arguments given.", player);
         say("Usage: @givepermission <character> <permission class>", player);
@@ -879,7 +912,7 @@ static void handleTakePermission(Character *player, std::string &args)
     std::string strPermission = getArgument(args);
 
     // check all arguments are there
-    if (character == "" || strPermission == "")
+    if (character.empty() || strPermission.empty())
     {
         say("Invalid number of arguments given.", player);
         say("Usage: @takepermission <character> <permission class>", player);
@@ -939,7 +972,7 @@ static void handleAttribute(Character *player, std::string &args)
     std::string valuestr = getArgument(args);
 
     // check all arguments are there
-    if (character == "" || valuestr == "" || attrstr == "")
+    if (character.empty() || valuestr.empty() || attrstr.empty())
     {
         say("Invalid number of arguments given.", player);
         say("Usage: @attribute <character> <attribute> <value>", player);
@@ -1001,7 +1034,7 @@ static void handleReport(Character *player, std::string &args)
 {
     std::string bugReport = getArgument(args);
 
-    if (bugReport == "")
+    if (bugReport.empty())
     {
         say("Invalid number of arguments given.", player);
         say("Usage: @report <message>", player);
@@ -1013,7 +1046,7 @@ static void handleReport(Character *player, std::string &args)
 
 static void handleAnnounce(Character *player, std::string &msg)
 {
-    if (msg == "")
+    if (msg.empty())
     {
         say("Invalid number of arguments given.", player);
         say("Usage: @announce <message>", player);
@@ -1200,7 +1233,7 @@ static void handleKick(Character *player, std::string &args)
 
 static void handleLog(Character *player, std::string &msg)
 {
-    if (msg == "")
+    if (msg.empty())
     {
         say("Invalid number of arguments given.", player);
         say("Usage: @log <message>", player);
@@ -1217,7 +1250,7 @@ static void handleLog(Character *player, std::string &msg)
 
 static void handleLogsay(Character *player, std::string &msg)
 {
-    if (msg == "")
+    if (msg.empty())
     {
         say("Invalid number of arguments given.", player);
         say("Usage: @logsay <message>", player);

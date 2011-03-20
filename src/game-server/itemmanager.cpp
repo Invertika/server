@@ -27,6 +27,7 @@
 #include "game-server/skillmanager.h"
 #include "scripting/script.h"
 #include "utils/logger.h"
+#include "utils/string.h"
 #include "utils/xml.h"
 
 #include <map>
@@ -72,8 +73,9 @@ void ItemManager::reload()
         {
             if (xmlStrEqual(node->name, BAD_CAST "slot"))
             {
-                std::string name = XML::getProperty(node, "name", "");
-                int count = XML::getProperty(node, "count", 0);
+                const std::string name = XML::getProperty(node, "name",
+                                                          std::string());
+                const int count = XML::getProperty(node, "count", 0);
                 if (name.empty() || !count || count < 0)
                     LOG_WARN("Item Manager: equip slot has no name or zero count");
                 else
@@ -136,7 +138,7 @@ void ItemManager::reload()
 
         // Type is mostly unused, but still serves for
         // hairsheets and race sheets.
-        std::string sItemType = XML::getProperty(node, "type", "");
+        std::string sItemType = XML::getProperty(node, "type", std::string());
         if (sItemType == "hairsprite" || sItemType == "racesprite")
             continue;
 
@@ -162,6 +164,9 @@ void ItemManager::reload()
             item = i->second;
         }
 
+        std::string name = XML::getProperty(node, "name", "unnamed");
+        item->setName(name);
+
         int value = XML::getProperty(node, "value", 0);
         // Should have multiple value definitions for multiple currencies?
         item->mCost = value;
@@ -174,7 +179,8 @@ void ItemManager::reload()
                 for_each_xml_child_node(equipnode, subnode)
                     if (xmlStrEqual(equipnode->name, BAD_CAST "slot"))
                     {
-                        std::string slot = XML::getProperty(equipnode, "type", "");
+                        std::string slot = XML::getProperty(equipnode, "type",
+                                                            std::string());
                         if (slot.empty())
                         {
                             LOG_WARN("Item Manager: empty equip slot definition!");
@@ -196,8 +202,10 @@ void ItemManager::reload()
             {
                 std::pair< ItemTriggerType, ItemTriggerType> triggerTypes;
                 {
-                    std::string triggerName = XML::getProperty(subnode, "trigger", ""),
-                             dispellTrigger = XML::getProperty(subnode, "dispell", "");
+                    const std::string triggerName = XML::getProperty(
+                                subnode, "trigger", std::string());
+                    const std::string dispellTrigger = XML::getProperty(
+                                subnode, "dispell", std::string());
                     // label -> { trigger (apply), trigger (cancel (default)) }
                     // The latter can be overridden.
                     static std::map<const std::string,
@@ -251,7 +259,7 @@ void ItemManager::reload()
                 {
                     if (xmlStrEqual(effectnode->name, BAD_CAST "modifier"))
                     {
-                        std::string tag = XML::getProperty(effectnode, "attribute", "");
+                        std::string tag = XML::getProperty(effectnode, "attribute", std::string());
                         if (tag.empty())
                         {
                             LOG_WARN("Item Manager: Warning, modifier found "
@@ -288,13 +296,13 @@ void ItemManager::reload()
                         item->addEffect(new ItemEffectConsumes(), triggerTypes.first);
                     else if (xmlStrEqual(effectnode->name, BAD_CAST "script"))
                     {
-                        std::string src = XML::getProperty(effectnode, "src", "");
+                        std::string src = XML::getProperty(effectnode, "src", std::string());
                         if (src.empty())
                         {
                             LOG_WARN("Item Manager: Empty src definition for script effect, skipping!");
                             continue;
                         }
-                        std::string func = XML::getProperty(effectnode, "function", "");
+                        std::string func = XML::getProperty(effectnode, "function", std::string());
                         if (func.empty())
                         {
                             LOG_WARN ("Item Manager: Empty func definition for script effect, skipping!");
@@ -304,7 +312,7 @@ void ItemManager::reload()
                         {
                             // TODO: Load variables from variable subnodes
                         }
-                        std::string dfunc = XML::getProperty(effectnode, "dispell-function", "");
+                        std::string dfunc = XML::getProperty(effectnode, "dispell-function", std::string());
                         // STUB
                         item->addEffect(new ItemEffectScript(), triggerTypes.first, triggerTypes.second);
                     }
@@ -332,6 +340,20 @@ ItemClass *ItemManager::getItem(int itemId) const
 {
     ItemClasses::const_iterator i = itemClasses.find(itemId);
     return i != itemClasses.end() ? i->second : NULL;
+}
+
+ItemClass *ItemManager::getItemByName(std::string name) const
+{
+    name = utils::toLower(name);
+    for (ItemClasses::const_iterator i = itemClasses.begin(),
+         i_end = itemClasses.end(); i != i_end; ++i)
+    {
+        if(utils::toLower(i->second->getName()) == name)
+        {
+            return i->second;
+        }
+    }
+    return 0;
 }
 
 unsigned int ItemManager::getDatabaseVersion() const
