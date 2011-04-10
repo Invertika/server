@@ -31,7 +31,8 @@
 #include "net/messagein.h"
 #include "net/messageout.h"
 
-#include "manaserv_protocol.h"
+#include "common/manaserv_protocol.h"
+
 using namespace ManaServ;
 
 void ChatHandler::sendGuildInvite(const std::string &invitedName,
@@ -131,8 +132,7 @@ void ChatHandler::sendGuildListUpdate(const std::string &guildName,
     }
 }
 
-void ChatHandler::handleGuildCreation(ChatClient &client,
-                                      MessageIn &msg)
+void ChatHandler::handleGuildCreate(ChatClient &client, MessageIn &msg)
 {
     MessageOut reply(CPMSG_GUILD_CREATE_RESPONSE);
 
@@ -167,8 +167,7 @@ void ChatHandler::handleGuildCreation(ChatClient &client,
     client.send(reply);
 }
 
-void ChatHandler::handleGuildInvitation(ChatClient &client,
-                                        MessageIn &msg)
+void ChatHandler::handleGuildInvite(ChatClient &client, MessageIn &msg)
 {
     MessageOut reply(CPMSG_GUILD_INVITE_RESPONSE);
     MessageOut invite(CPMSG_GUILD_INVITED);
@@ -255,8 +254,7 @@ void ChatHandler::handleGuildAcceptInvite(ChatClient &client,
     client.send(reply);
 }
 
-void ChatHandler::handleGuildRetrieveMembers(ChatClient &client,
-                                             MessageIn &msg)
+void ChatHandler::handleGuildGetMembers(ChatClient &client, MessageIn &msg)
 {
     MessageOut reply(CPMSG_GUILD_GET_MEMBERS_RESPONSE);
     short guildId = msg.readInt16();
@@ -317,7 +315,7 @@ void ChatHandler::handleGuildMemberLevelChange(ChatClient &client,
     client.send(reply);
 }
 
-void ChatHandler::handleGuildMemberKick(ChatClient &client, MessageIn &msg)
+void ChatHandler::handleGuildKickMember(ChatClient &client, MessageIn &msg)
 {
     MessageOut reply(CPMSG_GUILD_KICK_MEMBER_RESPONSE);
     short guildId = msg.readInt16();

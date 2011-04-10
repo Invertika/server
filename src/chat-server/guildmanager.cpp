@@ -20,8 +20,8 @@
 
 #include "guildmanager.h"
 #include "guild.h"
-#include "manaserv_protocol.h"
-#include "defines.h"
+#include "common/defines.h"
+#include "common/manaserv_protocol.h"
 #include "account-server/storage.h"
 #include "chat-server/chatclient.h"
 #include "chat-server/chathandler.h"
@@ -95,8 +95,10 @@ void GuildManager::removeGuildMember(Guild *guild, int playerId)
     while (itr != itr_end)
     {
         if ((*itr) == playerId)
+        {
             mOwners.remove(playerId);
-
+            break;
+        }
         ++itr;
     }
 }

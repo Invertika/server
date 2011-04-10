@@ -36,8 +36,15 @@
 #include "utils/tokendispenser.h"
 #include "utils/tokencollector.h"
 
+/** Maximum size of sync buffer in bytes. */
+const unsigned SYNC_BUFFER_SIZE = 1024;
+
+/** Maximum number of messages in sync buffer. */
+const int SYNC_BUFFER_LIMIT = 20;
+
 AccountConnection::AccountConnection():
-    mSyncBuffer(0)
+    mSyncBuffer(0),
+    mSyncMessages(0)
 {
 }
 
@@ -89,8 +96,8 @@ bool AccountConnection::start(int gameServerPort)
     send(msg);
 
     // initialize sync buffer
-    mSyncBuffer = new MessageOut(GAMSG_PLAYER_SYNC);
-    mSyncMessages = 0;
+    if (!mSyncBuffer)
+        mSyncBuffer = new MessageOut(GAMSG_PLAYER_SYNC);
 
     return true;
 }
@@ -396,10 +403,8 @@ void AccountConnection::syncChanges(bool force)
         LOG_DEBUG("Sending GAMSG_PLAYER_SYNC with "
                 << mSyncMessages << " messages." );
 
-        // attach end-of-buffer flag
-        mSyncBuffer->writeInt8(SYNC_END_OF_BUFFER);
         send(*mSyncBuffer);
-        delete (mSyncBuffer);
+        delete mSyncBuffer;
 
         mSyncBuffer = new MessageOut(GAMSG_PLAYER_SYNC);
         mSyncMessages = 0;
@@ -413,7 +418,7 @@ void AccountConnection::syncChanges(bool force)
 void AccountConnection::updateCharacterPoints(int charId, int charPoints,
                                               int corrPoints)
 {
-    mSyncMessages++;
+    ++mSyncMessages;
     mSyncBuffer->writeInt8(SYNC_CHARACTER_POINTS);
     mSyncBuffer->writeInt32(charId);
     mSyncBuffer->writeInt32(charPoints);
@@ -436,7 +441,7 @@ void AccountConnection::updateAttributes(int charId, int attrId, double base,
 void AccountConnection::updateExperience(int charId, int skillId,
                                          int skillValue)
 {
-    mSyncMessages++;
+    ++mSyncMessages;
     mSyncBuffer->writeInt8(SYNC_CHARACTER_SKILL);
     mSyncBuffer->writeInt32(charId);
     mSyncBuffer->writeInt8(skillId);
@@ -446,10 +451,10 @@ void AccountConnection::updateExperience(int charId, int skillId,
 
 void AccountConnection::updateOnlineStatus(int charId, bool online)
 {
-    mSyncMessages++;
+    ++mSyncMessages;
     mSyncBuffer->writeInt8(SYNC_ONLINE_STATUS);
     mSyncBuffer->writeInt32(charId);
-    mSyncBuffer->writeInt8(online ? 0x01 : 0x00);
+    mSyncBuffer->writeInt8(online ? 1 : 0);
     syncChanges();
 }
 

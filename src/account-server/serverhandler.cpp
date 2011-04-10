@@ -29,26 +29,26 @@
 #include "account-server/character.h"
 #include "account-server/storage.h"
 #include "chat-server/post.h"
-#include "common/transaction.h"
 #include "common/configuration.h"
+#include "common/manaserv_protocol.h"
+#include "common/transaction.h"
 #include "net/connectionhandler.h"
 #include "net/messageout.h"
 #include "net/netcomputer.h"
 #include "serialize/characterdata.h"
 #include "utils/logger.h"
 #include "utils/tokendispenser.h"
-#include "manaserv_protocol.h"
 
 using namespace ManaServ;
 
 struct MapStatistics
 {
-  std::vector< int > players;
+  std::vector<int> players;
   unsigned short nbThings;
   unsigned short nbMonsters;
 };
 
-typedef std::map< unsigned short, MapStatistics > ServerStatistics;
+typedef std::map<unsigned short, MapStatistics> ServerStatistics;
 
 /**
  * Stores address, maps, and statistics, of a connected game server.
@@ -171,7 +171,7 @@ void GameServerHandler::registerClient(const std::string &token,
 void ServerHandler::processMessage(NetComputer *comp, MessageIn &msg)
 {
     MessageOut result;
-    GameServer *server = static_cast< GameServer * >(comp);
+    GameServer *server = static_cast<GameServer *>(comp);
 
     switch (msg.getId())
     {
@@ -603,9 +603,9 @@ void GameServerHandler::syncDatabase(MessageIn &msg)
     // It is safe to perform the following updates in a transaction
     dal::PerformTransaction transaction(storage->database());
 
-    int msgType = msg.readInt8();
-    while (msgType != SYNC_END_OF_BUFFER && msg.getUnreadLength() > 0)
+    while (msg.getUnreadLength() > 0)
     {
+        int msgType = msg.readInt8();
         switch (msgType)
         {
             case SYNC_CHARACTER_POINTS:
@@ -640,14 +640,10 @@ void GameServerHandler::syncDatabase(MessageIn &msg)
             {
                 LOG_DEBUG("received SYNC_ONLINE_STATUS");
                 int charId = msg.readInt32();
-                bool online;
-                msg.readInt8() == 0x00 ? online = false : online = true;
+                bool online = (msg.readInt8() == 1);
                 storage->setOnlineStatus(charId, online);
             }
         }
-
-        // read next message type from buffer
-        msgType = msg.readInt8();
     }
 
     transaction.commit();

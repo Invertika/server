@@ -21,6 +21,9 @@
 #ifndef ITEMMANAGER_H
 #define ITEMMANAGER_H
 
+#include "utils/xml.h"
+#include "utils/string.h"
+
 #include <string>
 #include <map>
 #include <vector>
@@ -31,9 +34,12 @@ class ItemManager
 {
     public:
         ItemManager(const std::string &itemFile, const std::string &equipFile) :
-                mItemReferenceFile(itemFile),
-                mEquipCharSlotReferenceFile(equipFile),
-                mItemDatabaseVersion(0) {}
+            mItemsFile(itemFile),
+            mEquipSlotsFile(equipFile),
+            mVisibleEquipSlotCount(0),
+            mItemDatabaseVersion(0)
+        {}
+
         /**
          * Loads item reference file.
          */
@@ -60,7 +66,7 @@ class ItemManager
          * Returns null when there is no item with such
          * a name.
          */
-        ItemClass *getItemByName(std::string name) const;
+        ItemClass *getItemByName(const std::string &name) const;
 
         /**
          * Gets the version of the loaded item database.
@@ -78,21 +84,32 @@ class ItemManager
         bool isEquipSlotVisible(unsigned int id) const;
 
     private:
+        /** Loads the equip slots that a character has available to them. */
+        void readEquipSlotsFile();
+
+        /** Loads the main item database. */
+        void readItemsFile();
+        void readItemNode(xmlNodePtr itemNode);
+        void readEquipNode(xmlNodePtr equipNode, ItemClass *item);
+        void readEffectNode(xmlNodePtr effectNode, ItemClass *item);
+
         typedef std::map< int, ItemClass * > ItemClasses;
         // Map a string (name of slot) with (str-id, max-per-equip-slot)
         typedef std::vector< std::pair< std::string, unsigned int > > EquipSlots;
         // Reference to the vector position of equipSlots
         typedef std::vector< unsigned int > VisibleEquipSlots;
 
-        ItemClasses itemClasses; /**< Item reference */
-        EquipSlots equipSlots;
-        VisibleEquipSlots visibleEquipSlots;
+        ItemClasses mItemClasses; /**< Item reference */
+        utils::NameMap<ItemClass*> mItemClassesByName;
+        EquipSlots mEquipSlots;
+        VisibleEquipSlots mVisibleEquipSlots;
 
-        std::string mItemReferenceFile;
-        std::string mEquipCharSlotReferenceFile;
+        std::string mItemsFile;
+        std::string mEquipSlotsFile;
         mutable unsigned int mVisibleEquipSlotCount; // Cache
 
-        unsigned int mItemDatabaseVersion; /**< Version of the loaded items database file.*/
+        /** Version of the loaded items database file.*/
+        unsigned int mItemDatabaseVersion;
 };
 
 extern ItemManager *itemManager;

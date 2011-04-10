@@ -28,7 +28,7 @@
 #include "net/messagein.h"
 #include "net/messageout.h"
 
-#include "manaserv_protocol.h"
+#include "common/manaserv_protocol.h"
 
 #include <algorithm>
 
@@ -174,7 +174,7 @@ void ChatHandler::handlePartyQuit(ChatClient &client)
     updateInfo(&client, 0);
 }
 
-void ChatHandler::handlePartyRejection(ChatClient &client, MessageIn &msg)
+void ChatHandler::handlePartyRejectInvite(ChatClient &client, MessageIn &msg)
 {
     MessageOut out(CPMSG_PARTY_REJECTED);
 

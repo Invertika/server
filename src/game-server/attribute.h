@@ -21,18 +21,23 @@
 #ifndef ATTRIBUTE_H
 #define ATTRIBUTE_H
 
-#include "defines.h"
+#include "common/defines.h"
 #include <vector>
 #include <list>
 
 class AttributeModifierState
 {
     public:
-        AttributeModifierState(unsigned short duration, double value,
+        AttributeModifierState(unsigned short duration,
+                               double value,
                                unsigned int id)
-                : mDuration(duration), mValue(value), mId(id) {}
-        ~AttributeModifierState() {}
+            : mDuration(duration)
+            , mValue(value)
+            , mId(id)
+        {}
+
         bool tick() { return mDuration ? !--mDuration : false; }
+
     private:
         /** Number of ticks (0 means permanent, e.g. equipment). */
         unsigned short mDuration;
@@ -48,10 +53,13 @@ class AttributeModifierState
         friend class AttributeModifiersEffect;
 };
 
-class AttributeModifiersEffect {
+class AttributeModifiersEffect
+{
     public:
-        AttributeModifiersEffect(AT_TY sType, AME_TY eType);
+        AttributeModifiersEffect(StackableType stackableType,
+                                 ModifierEffectType effectType);
         ~AttributeModifiersEffect();
+
         /**
          * Recalculates the value for this level.
          * @returns True if the value changed, false if it did not change.
@@ -66,7 +74,6 @@ class AttributeModifiersEffect {
         /**
          * remove() - as with Attribute::remove().
          */
-
         bool remove(double value, unsigned int id, bool fullCheck);
 
         /**
@@ -102,7 +109,7 @@ class AttributeModifiersEffect {
 
     private:
         /** List of all modifications present at this level */
-        std::list< AttributeModifierState * > mStates;
+        std::list<AttributeModifierState *> mStates;
         /**
          * Stores the value that results from mStates. This takes into
          * account all previous layers.
@@ -113,10 +120,14 @@ class AttributeModifiersEffect {
          * 0 for additive modifiers and 1 for multiplicative modifiers.
          */
         double mMod;
-        const AT_TY  mSType;
-        const AME_TY mEType;
+        const StackableType mStackableType;
+        const ModifierEffectType mEffectType;
 };
 
+/**
+ * Represents some attribute of a being. Is has a base value and a modified
+ * value, subject to modifiers that can be added and removed.
+ */
 class Attribute
 {
     public:
@@ -132,7 +143,7 @@ class Attribute
         { return mMods.empty() ? mBase :
                                  (*mMods.rbegin())->getCachedModifiedValue(); }
 
-        /**
+        /*
          * add() and remove() are the standard functions used to add and
          * remove modifiers while keeping track of the modifier state.
          */
@@ -147,7 +158,6 @@ class Attribute
          * @param id Used to identify this effect.
          * @return Whether the modified attribute value was changed.
          */
-
         bool add(unsigned short duration, double value, unsigned int layer, int id = 0);
 
         /**
@@ -167,18 +177,16 @@ class Attribute
         /**
          * clearMods() removes *all* modifications present in this Attribute (!)
          */
-
         void clearMods();
 
         /**
          * tick() processes all timers associated with modifiers for this attribute.
          */
-
         bool tick();
 
     private:
         double mBase;
-        std::vector< AttributeModifiersEffect * > mMods;
+        std::vector<AttributeModifiersEffect *> mMods;
 };
 
 #endif // ATTRIBUTE_H
