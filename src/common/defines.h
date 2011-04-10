@@ -30,7 +30,7 @@
 /**
  * Exit value codes are thrown back at servers exit to reflect their exit state.
  */
-enum exitValue
+enum ExitValue
 {
     EXIT_NORMAL = 0,
     EXIT_CONFIG_NOT_FOUND, // The main configuration file wasn't found.
@@ -51,7 +51,7 @@ enum exitValue
  * A gm would have permissions of 11 (AL_PLAYER | AL_TESTER | AL_GM)
  * A admin would have permissions of 255 (*)
  */
-enum accessLevel
+enum AccessLevel
 {
     AL_BANNED =   0,     /**< This user is currently banned. */
     AL_PLAYER =   1,     /**< User has regular rights. */
@@ -62,14 +62,14 @@ enum accessLevel
 };
 
 /**
-     * Guild member permissions
-     * Members with NONE cannot invite users or set permissions
-     * Members with TOPIC_CHANGE can change the guild channel topic
-     * Members with INVITE can invite other users
-     * Memeber with KICK can remove other users
-     * Members with OWNER can invite users and set permissions
-     */
-enum  guildAccessLevel
+ * Guild member permissions
+ * Members with NONE cannot invite users or set permissions
+ * Members with TOPIC_CHANGE can change the guild channel topic
+ * Members with INVITE can invite other users
+ * Memeber with KICK can remove other users
+ * Members with OWNER can invite users and set permissions
+ */
+enum GuildAccessLevel
 {
     GAL_NONE = 0,
     GAL_TOPIC_CHANGE = 1,
@@ -173,36 +173,35 @@ enum
 };
 
 /**
- * Attribute types. Can be one of stackable, non stackable,
- * or non stackable bonus.
+ * Stackable types.
  * @todo non-stackable malus layers
  */
-enum AT_TY
+enum StackableType
 {
-    TY_ST,
-    TY_NST,
-    TY_NSTB,
-    TY_NONE // Should only be used on types
-            // that have not yet been properly defined.
+    Stackable,
+    NonStackable,
+    NonStackableBonus
 };
 
 /**
  * Attribute augmentation methods.
- * Can be additive or multiplicative.
  */
-enum AME_TY
+enum ModifierEffectType
 {
-    AME_MULT,
-    AME_ADD
+    Multiplicative,
+    Additive
 };
-
 
 struct AttributeInfoType
 {
-        AT_TY sType;
-        AME_TY eType;
-        AttributeInfoType(AT_TY s, AME_TY e) : sType(s), eType(e)
-        {}
+    StackableType stackableType;
+    ModifierEffectType effectType;
+
+    AttributeInfoType(StackableType s,
+                      ModifierEffectType effect) :
+        stackableType(s),
+        effectType(effect)
+    {}
 };
 
 #endif // DEFINES_H
