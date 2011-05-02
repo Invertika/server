@@ -292,6 +292,9 @@ void Being::move()
         || !getModifiedAttribute(ATTR_MOVE_SPEED_RAW))
           return;
 
+    // Remember the current position before moving. This is used by
+    // MapComposite::update() to determine whether a being has moved from one
+    // zone to another.
     mOld = getPosition();
 
     if (mMoveTime > WORLD_TICK_MS)
@@ -473,7 +476,12 @@ void Being::setAttribute(unsigned int id, double value)
 double Being::getAttribute(unsigned int id) const
 {
     AttributeMap::const_iterator ret = mAttributes.find(id);
-    if (ret == mAttributes.end()) return 0;
+    if (ret == mAttributes.end())
+    {
+        LOG_DEBUG("Being::getAttribute: Attribute "
+                  << id << " not found! Returning 0.");
+        return 0;
+    }
     return ret->second.getBase();
 }
 
@@ -481,7 +489,12 @@ double Being::getAttribute(unsigned int id) const
 double Being::getModifiedAttribute(unsigned int id) const
 {
     AttributeMap::const_iterator ret = mAttributes.find(id);
-    if (ret == mAttributes.end()) return 0;
+    if (ret == mAttributes.end())
+    {
+        LOG_DEBUG("Being::getModifiedAttribute: Attribute "
+                  << id << " not found! Returning 0.");
+        return 0;
+    }
     return ret->second.getModifiedAttribute();
 }
 
@@ -494,9 +507,13 @@ void Being::setModAttribute(unsigned int, double)
 
 bool Being::recalculateBaseAttribute(unsigned int attr)
 {
-    LOG_DEBUG("Received update attribute recalculation request at Being for "
+    LOG_DEBUG("Being: Received update attribute recalculation request for "
               << attr << ".");
-    if (!mAttributes.count(attr)) return false;
+    if (!mAttributes.count(attr))
+    {
+        LOG_DEBUG("Being::recalculateBaseAttribute: " << attr << " not found!");
+        return false;
+    }
     double newBase = getAttribute(attr);
 
     switch (attr)
@@ -532,15 +549,15 @@ bool Being::recalculateBaseAttribute(unsigned int attr)
     if (newBase != getAttribute(attr))
     {
         setAttribute(attr, newBase);
-        updateDerivedAttributes(attr);
         return true;
     }
-    LOG_DEBUG("No changes to sync for attribute '" << attr << "'.");
+    LOG_DEBUG("Being: No changes to sync for attribute '" << attr << "'.");
     return false;
 }
 
 void Being::updateDerivedAttributes(unsigned int attr)
 {
+    LOG_DEBUG("Being: Updating derived attribute(s) of: " << attr);
     switch (attr)
     {
     case ATTR_MAX_HP:
@@ -549,7 +566,12 @@ void Being::updateDerivedAttributes(unsigned int attr)
         raiseUpdateFlags(UPDATEFLAG_HEALTHCHANGE);
         break;
     case ATTR_MOVE_SPEED_TPS:
-        updateDerivedAttributes(ATTR_MOVE_SPEED_RAW);
+        if (getAttribute(attr) > 0.0f)
+            setAttribute(ATTR_MOVE_SPEED_RAW, utils::tpsToRawSpeed(
+                         getModifiedAttribute(ATTR_MOVE_SPEED_TPS)));
+        break;
+    default:
+        // Do nothing
         break;
     }
 }
@@ -658,6 +680,15 @@ void Being::update()
     // Check if being died
     if (getModifiedAttribute(ATTR_HP) <= 0 && mAction != DEAD)
         died();
+}
+
+void Being::inserted()
+{
+    Actor::inserted();
+
+    // Reset the old position, since after insertion it is important that it is
+    // in sync with the zone that we're currently present in.
+    mOld = getPosition();
 }
 
 void Being::setTimerSoft(TimerID id, int value)

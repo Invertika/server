@@ -490,7 +490,8 @@ Character *Storage::getCharacterBySQL(Account *owner)
     try
     {
         std::ostringstream sql;
-        sql << " select * from " << CHAR_EQUIPS_TBL_NAME
+        sql << " select slot_type, inventory_slot from "
+            << CHAR_EQUIPS_TBL_NAME
             << " where owner_id = '"
             << character->getDatabaseID() << "' order by slot_type desc;";
 
@@ -498,8 +499,8 @@ Character *Storage::getCharacterBySQL(Account *owner)
         if (!equipInfo.isEmpty())
             for (int k = 0, size = equipInfo.rows(); k < size; ++k)
                 poss.equipSlots.insert(std::pair<unsigned int, unsigned int>(
-                                        toUint(equipInfo(k, 3)),
-                                        toUint(equipInfo(k, 2))));
+                                        toUint(equipInfo(k, 0)),
+                                        toUint(equipInfo(k, 1))));
     }
     catch (const dal::DbSqlQueryExecFailure &e)
     {
@@ -770,9 +771,15 @@ bool Storage::updateCharacter(Character *character)
     }
 
     // Character's inventory
-    // Delete the old inventory first
+    // Delete the old inventory and equipment table first
     try
     {
+        std::ostringstream sqlDeleteCharacterEquipment;
+        sqlDeleteCharacterEquipment
+            << "delete from " << CHAR_EQUIPS_TBL_NAME
+            << " where owner_id = '" << character->getDatabaseID() << "';";
+        mDb->execSql(sqlDeleteCharacterEquipment.str());
+
         std::ostringstream sqlDeleteCharacterInventory;
         sqlDeleteCharacterInventory
             << "delete from " << INVENTORIES_TBL_NAME

@@ -66,14 +66,15 @@ using utils::Logger;
 #define DEFAULT_CONFIG_FILE                 "manaserv.xml"
 #define DEFAULT_ITEMSDB_FILE                "items.xml"
 #define DEFAULT_EQUIPDB_FILE                "equip.xml"
-#define DEFAULT_SKILLSDB_FILE               "mana-skills.xml"
+#define DEFAULT_SKILLSDB_FILE               "skills.xml"
 #define DEFAULT_ATTRIBUTEDB_FILE            "attributes.xml"
 #define DEFAULT_MAPSDB_FILE                 "maps.xml"
 #define DEFAULT_MONSTERSDB_FILE             "monsters.xml"
-#define DEFAULT_STATUSDB_FILE               "mana-status-effect.xml"
+#define DEFAULT_STATUSDB_FILE               "status-effects.xml"
 #define DEFAULT_PERMISSION_FILE             "permissions.xml"
 #define DEFAULT_GLOBAL_EVENT_SCRIPT_FILE    "scripts/global_events.lua"
 #define DEFAULT_SPECIAL_ACTIONS_SCRIPT_FILE "scripts/special_actions.lua"
+#define DEFAULT_CRAFT_SCRIPT_FILE           "scripts/crafting.lua"
 
 static int const WORLD_TICK_SKIP = 2; /** tolerance for lagging behind in world calculation) **/
 
@@ -200,6 +201,7 @@ static void initializeServer()
 
     LuaScript::loadGlobalEventScript(DEFAULT_GLOBAL_EVENT_SCRIPT_FILE);
     LuaScript::loadSpecialActionsScript(DEFAULT_SPECIAL_ACTIONS_SCRIPT_FILE);
+    LuaScript::loadCraftScript(DEFAULT_CRAFT_SCRIPT_FILE);
 
     // --- Initialize the global handlers
     // FIXME: Make the global handlers global vars or part of a bigger
@@ -354,6 +356,12 @@ int main(int argc, char *argv[])
 
     initializeConfiguration(options.configPath);
 
+    if (!options.verbosityChanged)
+        options.verbosity = static_cast<Logger::Level>(
+                               Configuration::getValue("log_gameServerLogLevel",
+                                                       options.verbosity) );
+    Logger::setVerbosity(options.verbosity);
+
     // General initialization
     initializeServer();
 
@@ -365,12 +373,6 @@ int main(int argc, char *argv[])
     LOG_INFO("Manaserv Protocol version " << ManaServ::PROTOCOL_VERSION
              << ", " << "Enet version " << ENET_VERSION_MAJOR << "."
              << ENET_VERSION_MINOR << "." << ENET_VERSION_PATCH);
-
-    if (!options.verbosityChanged)
-        options.verbosity = static_cast<Logger::Level>(
-                               Configuration::getValue("log_gameServerLogLevel",
-                                                       options.verbosity) );
-    Logger::setVerbosity(options.verbosity);
 
     // When the gameListenToClientPort is set, we use it.
     // Otherwise, we use the accountListenToClientPort + 3 if the option is set.
