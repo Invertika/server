@@ -42,8 +42,6 @@ void updateInfo(ChatClient *client, int partyId)
 
 bool ChatHandler::handlePartyJoin(const std::string &invited, const std::string &inviter)
 {
-    MessageOut out(CPMSG_PARTY_INVITE_RESPONSE);
-
     // Get inviting client
     ChatClient *c1 = getClient(inviter);
     if (c1)
@@ -52,12 +50,15 @@ bool ChatHandler::handlePartyJoin(const std::string &invited, const std::string 
         if (!c1->party)
         {
             c1->party = new Party();
+            // add inviter to the party
+            c1->party->addUser(inviter);
+            MessageOut out(CPMSG_PARTY_NEW_MEMBER);
+            out.writeInt32(c1->characterId);
+            out.writeString(inviter);
+            c1->send(out);
             // tell game server to update info
             updateInfo(c1, c1->party->getId());
         }
-
-        // add inviter to the party
-        c1->party->addUser(inviter);
 
         // Get invited client
         ChatClient *c2 = getClient(invited);
@@ -67,6 +68,7 @@ bool ChatHandler::handlePartyJoin(const std::string &invited, const std::string 
             c1->party->addUser(invited);
             c2->party = c1->party;
             // was successful so return success to inviter
+            MessageOut out(CPMSG_PARTY_INVITE_RESPONSE);
             out.writeString(invited);
             out.writeInt8(ERRMSG_OK);
             c1->send(out);
@@ -85,43 +87,41 @@ bool ChatHandler::handlePartyJoin(const std::string &invited, const std::string 
 
 }
 
-void ChatHandler::handlePartyInvite(ChatClient &client, MessageIn &msg)
+void ChatHandler::handlePartyInvite(MessageIn &msg)
 {
-    //TODO: Handle errors
-    MessageOut out(CPMSG_PARTY_INVITED);
+    std::string inviterName = msg.readString();
+    std::string inviteeName = msg.readString();
+    ChatClient *inviter = getClient(inviterName);
 
-    out.writeString(client.characterName);
+    if (!inviter)
+        return;
 
-    const std::string invited = msg.readString();
-    if (invited == client.characterName)
+    ChatClient *invitee = getClient(inviteeName);
+
+    if (!invitee)
     {
+        // TODO: Send error message
         return;
     }
-    if (!invited.empty())
-    {
-        // Get client and send it the invite
-        ChatClient *c = getClient(invited);
-        if (c)
-        {
-            ++client.numInvites;
 
-            // TODO: Check number of invites
-            // and do something if too many in a short time
+    ++invitee->numInvites;
+    // TODO: Check number of invites
+    // and do something if too many in a short time
 
-            // store the invite
-            PartyInvite invite;
-            invite.mInvited = invited;
-            invite.mInviter = client.characterName;
-            if (client.party)
-                invite.mPartyId = client.party->getId();
-            else
-                invite.mPartyId = 0;
+    // store the invite
+    PartyInvite invite;
+    invite.mInvited = inviteeName;
+    invite.mInviter = inviterName;
+    if (inviter->party)
+        invite.mPartyId = inviter->party->getId();
+    else
+        invite.mPartyId = 0;
 
-            mPartyInvitedUsers.push_back(invite);
+    mPartyInvitedUsers.push_back(invite);
 
-            c->send(out);
-        }
-    }
+    MessageOut out(CPMSG_PARTY_INVITED);
+    out.writeString(inviterName);
+    invitee->send(out);
 }
 
 void ChatHandler::handlePartyAcceptInvite(ChatClient &client, MessageIn &msg)
@@ -146,6 +146,11 @@ void ChatHandler::handlePartyAcceptInvite(ChatClient &client, MessageIn &msg)
             if (handlePartyJoin(client.characterName, inviter))
             {
                 out.writeInt8(ERRMSG_OK);
+                Party::PartyUsers users = client.party->getUsers();
+                const unsigned usersSize = users.size();
+                for (unsigned i = 0; i < usersSize; i++)
+                    out.writeString(users[i]);
+
                 mPartyInvitedUsers.erase(itr);
                 found = true;
                 break;
@@ -239,7 +244,7 @@ void ChatHandler::informPartyMemberQuit(ChatClient &client)
         if (itr->second->party == client.party)
         {
             MessageOut out(CPMSG_PARTY_MEMBER_LEFT);
-            out.writeInt16(client.characterId);
+            out.writeInt32(client.characterId);
             itr->second->send(out);
         }
     }
@@ -255,7 +260,7 @@ void ChatHandler::informPartyMemberJoined(ChatClient &client)
         if (itr->second->party == client.party)
         {
             MessageOut out(CPMSG_PARTY_NEW_MEMBER);
-            out.writeInt16(client.characterId);
+            out.writeInt32(client.characterId);
             out.writeString(client.characterName);
             itr->second->send(out);
         }

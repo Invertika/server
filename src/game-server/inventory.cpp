@@ -355,12 +355,23 @@ unsigned int Inventory::insert(unsigned int itemId, unsigned int amount)
     for (it = mPoss->inventory.begin(); it != it_end; ++it)
         if (it->second.itemId == itemId)
         {
+            // If the slot is full, try the next slot
             if (it->second.amount >= maxPerSlot)
                 continue;
-            unsigned short additions = std::min(amount, maxPerSlot)
-                                       - it->second.amount;
-            amount -= additions;
-            it->second.amount += additions;
+
+            // Add everything that'll fit to the stack
+            unsigned short spaceleft = maxPerSlot - it->second.amount;
+            if (spaceleft >= amount)
+            {
+                it->second.amount += amount;
+                amount = 0;
+            }
+            else
+            {
+                it->second.amount += spaceleft;
+                amount -= spaceleft;
+            }
+
             mInvMsg.writeInt16(it->first);
             mInvMsg.writeInt16(itemId);
             mInvMsg.writeInt16(it->second.amount);
@@ -754,19 +765,27 @@ bool Inventory::unequip(unsigned int slot, EquipData::iterator *itp)
     EquipData::iterator it = itp ? *itp : mPoss->equipSlots.begin(),
                         it_end = mPoss->equipSlots.end();
     bool changed = false;
-    for (it = mPoss->equipSlots.begin();
-         it != it_end;
-         ++it)
+
+    // Erase all equip entries that point to the given inventory slot
+    while (it != it_end)
+    {
         if (it->second == slot)
         {
             changed = true;
-            mPoss->equipSlots.erase(it);
+            mPoss->equipSlots.erase(it++);
         }
+        else
+        {
+            ++it;
+        }
+    }
+
     if (changed && !mDelayed)
     {
-        changeEquipment(mPoss->inventory.at(it->second).itemId, 0);
+        changeEquipment(mPoss->inventory.at(slot).itemId, 0);
         mEqmMsg.writeInt16(slot);
         mEqmMsg.writeInt8(0);
     }
+
     return changed;
 }

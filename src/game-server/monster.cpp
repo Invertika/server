@@ -34,21 +34,6 @@
 
 #include <cmath>
 
-ItemClass *MonsterClass::getRandomDrop() const
-{
-    int p = rand() / (RAND_MAX / 10000);
-    for (MonsterDrops::const_iterator i = mDrops.begin(),
-         i_end = mDrops.end(); i != i_end; ++i)
-    {
-        p -= i->probability;
-        if (p < 0)
-        {
-            return i->item;
-        }
-    }
-    return NULL;
-}
-
 struct MonsterTargetEventDispatch: EventDispatch
 {
     MonsterTargetEventDispatch()
@@ -324,7 +309,10 @@ void Monster::update()
                                     - range + getPosition().x,
                                     rand() % (range * 2 + 1)
                                     - range + getPosition().y);
-                    setDestination(randomPos);
+                    // Don't allow negative destinations, to avoid rounding
+                    // problems when divided by tile size
+                    if (randomPos.x >= 0 && randomPos.y >= 0)
+                        setDestination(randomPos);
                 }
                 setTimerHard(T_M_STROLL, 10 + rand() % 10);
             }
@@ -463,13 +451,18 @@ void Monster::died()
 
     if (mExpReceivers.size() > 0)
     {
-        // If the monster was killed by players, randomly drop an item.
-        if (ItemClass *drop = mSpecy->getRandomDrop())
+        // If the monster was killed by players, randomly drop items.
+        const unsigned size = mSpecy->mDrops.size();
+        for (unsigned i = 0; i < size; i++)
         {
-            Item *item = new Item(drop, 1);
-            item->setMap(getMap());
-            item->setPosition(getPosition());
-            GameState::enqueueInsert(item);
+            const int p = rand() / (RAND_MAX / 10000);
+            if (p <= mSpecy->mDrops[i].probability)
+            {
+                Item *item = new Item(mSpecy->mDrops[i].item, 1);
+                item->setMap(getMap());
+                item->setPosition(getPosition());
+                GameState::enqueueInsert(item);
+            }
         }
 
         // Distribute exp reward.
