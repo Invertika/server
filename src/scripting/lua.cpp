@@ -63,8 +63,8 @@ extern "C" {
  */
 
 /**
+ * mana.npc_message(NPC*, Character*, string): void
  * Callback for sending a NPC_MESSAGE.
- * mana.npc_message(npc, character, string)
  */
 static int npc_message(lua_State *s)
 {
@@ -85,8 +85,8 @@ static int npc_message(lua_State *s)
 }
 
 /**
+ * mana.npc_choice(NPC*, Character*, string...): void
  * Callback for sending a NPC_CHOICE.
- * mana.npc_choice(npc, character, string...)
  */
 static int npc_choice(lua_State *s)
 {
@@ -115,7 +115,8 @@ static int npc_choice(lua_State *s)
                 }
                 else
                 {
-                    raiseScriptError(s, "npc_choice called with incorrect parameters.");
+                    raiseScriptError(s, "npc_choice called "
+                                     "with incorrect parameters.");
                     return 0;
                 }
                 lua_pop(s, 1);
@@ -132,8 +133,8 @@ static int npc_choice(lua_State *s)
 }
 
 /**
+ * mana.npc_integer(NPC*, Character*, int min, int max, int defaut = min): void
  * Callback for sending a NPC_INTEGER.
- * mana.npc_integer(npc, character, min, max, defaut)
  */
 static int npc_ask_integer(lua_State *s)
 {
@@ -141,7 +142,8 @@ static int npc_ask_integer(lua_State *s)
     Character *q = getCharacter(s, 2);
     if (!p || !q)
     {
-        raiseScriptError(s, "npc_integer called with incorrect parameters.");
+        raiseScriptError(s, "npc_ask_integer called "
+                         "with incorrect parameters.");
         return 0;
     }
     MessageOut msg(GPMSG_NPC_NUMBER);
@@ -162,8 +164,8 @@ static int npc_ask_integer(lua_State *s)
 }
 
 /**
+ * mana.npc_ask_string(NPC*, Character*): void
  * Callback for sending a NPC_STRING.
- * mana.npc_ask_string(npc, character)
  */
 static int npc_ask_string(lua_State *s)
 {
@@ -171,7 +173,7 @@ static int npc_ask_string(lua_State *s)
     Character *q = getCharacter(s, 2);
     if (!p || !q)
     {
-        raiseScriptError(s, "npc_string called with incorrect parameters.");
+        raiseScriptError(s, "npc_ask_string called with incorrect parameters.");
         return 0;
     }
     MessageOut msg(GPMSG_NPC_STRING);
@@ -182,8 +184,8 @@ static int npc_ask_string(lua_State *s)
 }
 
 /**
+ * mana.npc_create(string name, int id, int x, int y): NPC*
  * Callback for creating a NPC on the current map with the current script.
- * mana.npc_create(string name, int id, int x, int y): npc
  */
 static int npc_create(lua_State *s)
 {
@@ -212,6 +214,10 @@ static int npc_create(lua_State *s)
     return 1;
 }
 
+/**
+ * mana.npc_end(NPC*, Character*): void
+ * Callback for ending a NPC conversation with the given character.
+ */
 static int npc_end(lua_State *s)
 {
     NPC *p = getNPC(s, 1);
@@ -229,8 +235,8 @@ static int npc_end(lua_State *s)
 }
 
 /**
+ * mana.npc_post(NPC*, Character*): void
  * Callback for sending a NPC_POST.
- * mana.npc_post(npc, character)
  */
 static int npc_post(lua_State *s)
 {
@@ -239,7 +245,7 @@ static int npc_post(lua_State *s)
 
     if (!p || !q)
     {
-        raiseScriptError(s, "npc_Choice called with incorrect parameters.");
+        raiseScriptError(s, "npc_post called with incorrect parameters.");
         return 0;
     }
 
@@ -251,8 +257,8 @@ static int npc_post(lua_State *s)
 }
 
 /**
+ * mana.npc_enable(NPC*): void
  * Enable a NPC if it has previously disabled
- * mana.npc_enable(npc)
  */
 static int npc_enable(lua_State *s)
 {
@@ -267,8 +273,8 @@ static int npc_enable(lua_State *s)
 }
 
 /**
- * Disable a NPC
- * mana.npc_disable(npc)
+ * mana.npc_disable(NPC*): void
+ * Disable a NPC.
  */
 static int npc_disable(lua_State *s)
 {
@@ -283,8 +289,8 @@ static int npc_disable(lua_State *s)
 }
 
 /**
+ * mana.chr_warp(Character*, nil/int map, int x, int y): void
  * Callback for warping a player to another place.
- * mana.chr_warp(character, nil/int map, int x, int y)
  */
 static int chr_warp(lua_State *s)
 {
@@ -337,6 +343,8 @@ static int chr_warp(lua_State *s)
 }
 
 /**
+ * mana.chr_inv_change(Character*, (int id || string name,
+ *                     int nb)...): bool success
  * Callback for inserting/removing items in inventory.
  * The function can be called several times in a row, but it is better to
  * perform all the changes at once, so as to reduce bandwidth. Removals
@@ -348,7 +356,6 @@ static int chr_warp(lua_State *s)
  * however currency is now handled through attributes. This breaks backwards
  * compatibility with old scripts, and so logs a warning.
  * Note: If an insertion fails, extra items are dropped on the floor.
- * mana.chr_inv_change(character, (int id, int nb)...): bool success
  */
 static int chr_inv_change(lua_State *s)
 {
@@ -362,20 +369,40 @@ static int chr_inv_change(lua_State *s)
     Inventory inv(q, true);
     for (int i = 0; i < nb_items; ++i)
     {
-        if (!lua_isnumber(s, i * 2 + 2) || !lua_isnumber(s, i * 2 + 3))
+        if (!(lua_isnumber(s, i * 2 + 2) || lua_isstring(s, i * 2 + 2)) ||
+            !lua_isnumber(s, i * 2 + 3))
         {
-            raiseScriptError(s, "chr_inv_change called with incorrect parameters.");
+            raiseScriptError(s, "chr_inv_change called with "
+                             "incorrect parameters.");
             return 0;
         }
 
-        int id = lua_tointeger(s, i * 2 + 2);
         int nb = lua_tointeger(s, i * 2 + 3);
-        if (id == 0)
+        ItemClass *ic;
+        int id;
+        if (lua_isnumber(s, i * 2 + 2))
         {
-            LOG_WARN("mana.chr_inv_change() called with id 0! "
-                     "Currency is now handled through attributes!");
+            int id = lua_tointeger(s, i * 2 + 2);
+            if (id == 0)
+            {
+                LOG_WARN("chr_inv_change called with id 0! "
+                         "Currency is now handled through attributes!");
+                continue;
+            }
+            ic = itemManager->getItem(id);
         }
-        else if (nb < 0)
+        else
+        {
+            ic = itemManager->getItemByName(lua_tostring(s, i * 2 + 2));
+        }
+
+        if (!ic)
+        {
+            raiseScriptError(s, "chr_inv_change called with an unknown item.");
+            continue;
+        }
+        id = ic->getDatabaseID();
+        if (nb < 0)
         {
             nb = inv.remove(id, -nb);
             if (nb)
@@ -387,12 +414,6 @@ static int chr_inv_change(lua_State *s)
         }
         else
         {
-            ItemClass *ic = itemManager->getItem(id);
-            if (!ic)
-            {
-                raiseScriptError(s, "chr_inv_change called with an unknown item.");
-                continue;
-            }
             nb = inv.insert(id, nb);
             if (nb)
             {
@@ -408,8 +429,8 @@ static int chr_inv_change(lua_State *s)
 }
 
 /**
+ * mana.chr_inv_count(Character*, int item_id...): int count...
  * Callback for counting items in inventory.
- * mana.chr_inv_count(character, int id...): int count...
  */
 static int chr_inv_count(lua_State *s)
 {
@@ -426,10 +447,22 @@ static int chr_inv_count(lua_State *s)
     int id, nb = 0;
     for (int i = 2; i <= nb_items + 1; ++i)
     {
-        id = luaL_checkint(s, i);
+        ItemClass *it;
+        if (lua_isnumber(s, i))
+            it = itemManager->getItem(lua_tointeger(s, i));
+        else
+            it = itemManager->getItemByName(lua_tostring(s, i));
+
+        if (!it)
+        {
+            raiseScriptError(s, "chr_inv_count called with invalid "
+                             "item id or name.");
+            return 0;
+        }
+        id = it->getDatabaseID();
         if (id == 0)
         {
-            LOG_WARN("mana.chr_inv_count() called with id 0! "
+            LOG_WARN("chr_inv_count called with id 0! "
                      "Currency is now handled through attributes!");
         }
         else
@@ -442,8 +475,8 @@ static int chr_inv_count(lua_State *s)
 }
 
 /**
+ * mana.npc_trade(NPC*, Character*, bool sell, table items): int
  * Callback for trading between a player and an NPC.
- * mana.npc_trade(npc, character, bool sell, table items)
  * Let the player buy or sell only a subset of predeterminded items.
  * @param table items: a subset of buyable/sellable items.
  * When selling, if the 4 parameter is omitted or invalid,
@@ -489,7 +522,8 @@ static int npc_trade(lua_State *s)
         }
         else
         {
-            raiseWarning(s, "npc_trade[Buy] called with invalid or empty items table parameter.");
+            raiseWarning(s, "npc_trade[Buy] called with invalid "
+                         "or empty items table parameter.");
             t->cancel();
             lua_pushinteger(s, 2);
             return 1;
@@ -503,7 +537,8 @@ static int npc_trade(lua_State *s)
     {
         if (!lua_istable(s, -1))
         {
-            raiseWarning(s, "npc_trade called with invalid or empty items table parameter.");
+            raiseWarning(s, "npc_trade called with invalid "
+                         "or empty items table parameter.");
             t->cancel();
             lua_pushinteger(s, 2);
             return 1;
@@ -513,14 +548,36 @@ static int npc_trade(lua_State *s)
         for (int i = 0; i < 3; ++i)
         {
             lua_rawgeti(s, -1, i + 1);
-            if (!lua_isnumber(s, -1))
+            if (i == 0) // item id or name
             {
-                raiseWarning(s, "npc_trade called with incorrect parameters in item table.");
+                ItemClass *it;
+                if (lua_isnumber(s, -1))
+                    it = itemManager->getItem(lua_tointeger(s, -1));
+                else
+                    it = itemManager->getItemByName(lua_tostring(s, -1));
+
+                if (!it)
+                {
+                    raiseWarning(s, "npc_trade called with incorrect "
+                                 "item id or name.");
+                    t->cancel();
+                    lua_pushinteger(s, 2);
+                    return 1;
+                }
+                v[0] = it->getDatabaseID();
+            }
+            else if (!lua_isnumber(s, -1))
+            {
+                raiseWarning(s, "npc_trade called with incorrect parameters "
+                             "in item table.");
                 t->cancel();
                 lua_pushinteger(s, 2);
                 return 1;
             }
-            v[i] = lua_tointeger(s, -1);
+            else
+            {
+                v[i] = lua_tointeger(s, -1);
+            }
             lua_pop(s, 1);
         }
         if (t->registerItem(v[0], v[1], v[2]))
@@ -547,10 +604,9 @@ static int npc_trade(lua_State *s)
 }
 
 /**
- * Applies a status effect with id to the being given for a amount of time
- * mana.being_apply_status(Being *being, int id, int time)
+ * mana.being_apply_status(Being*, int id, int time): void
+ * Applies a status effect with id to the being given for a amount of time.
  */
-
 static int being_apply_status(lua_State *s)
 {
     const int id = luaL_checkint(s, 2);
@@ -558,7 +614,8 @@ static int being_apply_status(lua_State *s)
 
     if (!lua_isuserdata(s, 1))
     {
-        raiseScriptError(s, "being_apply_status called with incorrect parameters.");
+        raiseScriptError(s, "being_apply_status called "
+                         "with incorrect parameters.");
         return 0;
     }
     Being *being = getBeing(s, 1);
@@ -567,8 +624,8 @@ static int being_apply_status(lua_State *s)
 }
 
 /**
- * Removes the given status effect
- * mana.being_remove_status(Being *being, int id)
+ * mana.being_remove_status(Being*, int id): void
+ * Removes the given status effect.
  */
 static int being_remove_status(lua_State *s)
 {
@@ -576,7 +633,8 @@ static int being_remove_status(lua_State *s)
 
     if (!lua_isuserdata(s, 1))
     {
-        raiseScriptError(s, "being_remove_status called with incorrect parameters.");
+        raiseScriptError(s, "being_remove_status called "
+                         "with incorrect parameters.");
         return 0;
     }
     Being *being = getBeing(s, 1);
@@ -585,8 +643,8 @@ static int being_remove_status(lua_State *s)
 }
 
 /**
- * Returns true if a being has the given status effect
- * mana.being_has_status(Being *being, int id)
+ * mana.being_has_status(Being*, int id): bool
+ * Returns whether a being has the given status effect.
  */
 static int being_has_status(lua_State *s)
 {
@@ -594,7 +652,8 @@ static int being_has_status(lua_State *s)
 
     if (!lua_isuserdata(s, 1))
     {
-        raiseScriptError(s, "being_has_status called with incorrect parameters.");
+        raiseScriptError(s, "being_has_status called "
+                         "with incorrect parameters.");
         return 0;
     }
     Being *being = getBeing(s, 1);
@@ -603,8 +662,8 @@ static int being_has_status(lua_State *s)
 }
 
 /**
- * Returns the time left on the given status effect
- * mana.being_get_status_time(Being *being, int id)
+ * mana.being_get_status_time(Being*, int id): int
+ * Returns the time left on the given status effect.
  */
 static int being_get_status_time(lua_State *s)
 {
@@ -612,7 +671,8 @@ static int being_get_status_time(lua_State *s)
 
     if (!lua_isuserdata(s, 1))
     {
-        raiseScriptError(s, "being_time_status called with incorrect parameters.");
+        raiseScriptError(s, "being_get_status_time called "
+                         "with incorrect parameters.");
         return 0;
     }
     Being *being = getBeing(s, 1);
@@ -621,8 +681,8 @@ static int being_get_status_time(lua_State *s)
 }
 
 /**
- * Sets the time left on the given status effect
- * mana.being_set_status_time(Being *being, int id, int time)
+ * mana.being_set_status_time(Being*, int id, int time): void
+ * Sets the time left on the given status effect.
  */
 static int being_set_status_time(lua_State *s)
 {
@@ -631,7 +691,8 @@ static int being_set_status_time(lua_State *s)
 
     if (!lua_isuserdata(s, 1))
     {
-        raiseScriptError(s, "being_time_status called with incorrect parameters.");
+        raiseScriptError(s, "being_set_status_time called "
+                         "with incorrect parameters.");
         return 0;
     }
     Being *being = getBeing(s, 1);
@@ -640,8 +701,8 @@ static int being_set_status_time(lua_State *s)
 }
 
 /**
- * Returns the Thing type of the given Being
- * mana.being_type(Being *being)
+ * mana.being_type(Being*): ThingType
+ * Returns the Thing type of the given being.
  */
 static int being_type(lua_State *s)
 {
@@ -660,9 +721,9 @@ static int being_type(lua_State *s)
 
 
 /**
- * Function for making a being walk to a position
- * being_walk(Being *being, int x, int y[, float speed])
- * The speed is in tile per second
+ * being_walk(Being *, int x, int y[, float speed]): void
+ * Function for making a being walk to a position.
+ * The speed is in tile per second.
  */
 static int being_walk(lua_State *s)
 {
@@ -683,8 +744,8 @@ static int being_walk(lua_State *s)
 }
 
 /**
- * Makes the being say something
- * mana.being_say(source, message)
+ * mana.being_say(Being* source, string message): void
+ * Makes the being say something.
  */
 static int being_say(lua_State *s)
 {
@@ -713,8 +774,9 @@ static int being_say(lua_State *s)
 
 
 /**
- * Applies combat damage to a being
- * mana.being_damage(victim, value, delta, cth, type, element)
+ * mana.being_damage(Being* victim, int value, int delta, int cth, int type,
+ *                   int element): void
+ * Applies combat damage to a being.
  */
 static int being_damage(lua_State *s)
 {
@@ -723,20 +785,20 @@ static int being_damage(lua_State *s)
     if (!being->canFight())
         return 0;
 
-    Damage dmg((unsigned short)    lua_tointeger(s, 2), /* base */
-               (unsigned short) lua_tointeger(s, 3),    /* delta */
-               (unsigned short) lua_tointeger(s, 4),    /* cth */
-               (unsigned char)  lua_tointeger(s, 6),    /* element */
-               DAMAGE_PHYSICAL);                        /* type */
+    Damage dmg((unsigned short) lua_tointeger(s, 2), /* base */
+               (unsigned short) lua_tointeger(s, 3), /* delta */
+               (unsigned short) lua_tointeger(s, 4), /* cth */
+               (unsigned char)  lua_tointeger(s, 6), /* element */
+               DAMAGE_PHYSICAL);                     /* type */
     being->damage(NULL, dmg);
 
     return 0;
 }
 
 /**
- * Restores hit points of a being
- * mana.being_heal(being[, value])
- * Without a value it heals fully.
+ * mana.being_heal(Being* [, int value]): void
+ * Restores hit points of a being.
+ * Without a value the being is fully healed.
  */
 static int being_heal(lua_State *s)
 {
@@ -766,8 +828,8 @@ static int being_heal(lua_State *s)
 }
 
 /**
- * Gets the base attribute of a being
- * mana.being_get_base_attribute(being, attribute)
+ * mana.being_get_base_attribute(Being*, int attribute): int
+ * Gets the base attribute of a being.
  */
 static int being_get_base_attribute(lua_State *s)
 {
@@ -789,8 +851,8 @@ static int being_get_base_attribute(lua_State *s)
 }
 
 /**
- * Gets the modified attribute of a being
- * mana.being_get_modified_attribute(being, attribute)
+ * mana.being_get_modified_attribute(Being*, int attribute): int
+ * Gets the modified attribute of a being.
  */
 static int being_get_modified_attribute(lua_State *s)
 {
@@ -812,8 +874,8 @@ static int being_get_modified_attribute(lua_State *s)
 }
 
 /**
- * Sets the base attribute of a being
- * mana.being_set_base_attribute(being, attribute, value)
+ * mana.being_set_base_attribute(Being*, int attribute, double value): void
+ * Sets the base attribute of a being.
  */
 static int being_set_base_attribute(lua_State *s)
 {
@@ -830,9 +892,9 @@ static int being_set_base_attribute(lua_State *s)
 }
 
 /**
+ * mana.being_apply_attribute_modifier(Being*, int attribute, double value,
+ *     int layer, int [duration, int [effect-id]]): void
  * Applies an attribute modifier to a being.
- * mana.being_apply_attribute_modifier(
- *     attribute, value, layer, [duration, [effect-id]])
  */
 static int being_apply_attribute_modifier(lua_State *s)
 {
@@ -857,6 +919,11 @@ static int being_apply_attribute_modifier(lua_State *s)
     return 0;
 }
 
+/**
+ * mana.being_remove_attribute_modifier(Being*, int attribute, double value,
+ *     int layer, int [effect-id]]): void
+ * Removes an attribute modifier to a being.
+ */
 static int being_remove_attribute_modifier(lua_State *s)
 {
     Being *being = getBeing(s, 1);
@@ -876,8 +943,8 @@ static int being_remove_attribute_modifier(lua_State *s)
 }
 
 /**
- * Gets the being's name
- * mana.being_get_name(being)
+ * mana.being_get_name(Being*): string
+ * Gets the being's name.
  */
 static int being_get_name(lua_State *s)
 {
@@ -892,8 +959,8 @@ static int being_get_name(lua_State *s)
 }
 
 /**
- * Gets the being's current action
- * mana.being_get_action(being)
+ * mana.being_get_action(Being*): BeingAction
+ * Gets the being's current action.
  */
 static int being_get_action(lua_State *s)
 {
@@ -908,8 +975,8 @@ static int being_get_action(lua_State *s)
 }
 
 /**
- * Sets the being's current action
- * mana.being_set_action(being, action)
+ * mana.being_set_action(Being*, BeingAction): void
+ * Sets the being's current action.
  */
 static int being_set_action(lua_State *s)
 {
@@ -926,8 +993,8 @@ static int being_set_action(lua_State *s)
 }
 
 /**
- * Gets the being's current direction
- * mana.being_get_direction(being)
+ * mana.being_get_direction(Being*): BeingDirection
+ * Gets the being's current direction.
  */
 static int being_get_direction(lua_State *s)
 {
@@ -942,8 +1009,8 @@ static int being_get_direction(lua_State *s)
 }
 
 /**
- * Sets the being's current direction
- * mana.being_set_direction(being, direction)
+ * mana.being_set_direction(Being*, BeingDirection): void
+ * Sets the being's current direction.
  */
 static int being_set_direction(lua_State *s)
 {
@@ -960,7 +1027,8 @@ static int being_set_direction(lua_State *s)
 }
 
 /**
- * Function for getting the x-coordinate of the position of a being
+ * mana.posX(Being*): int xcoord
+ * Function for getting the x-coordinate of the position of a being.
  */
 static int posX(lua_State *s)
 {
@@ -971,7 +1039,8 @@ static int posX(lua_State *s)
 }
 
 /**
- * Function for getting the y-coordinate of the position of a being
+ * mana.posY(Being*): int ycoord
+ * Function for getting the y-coordinate of the position of a being.
  */
 static int posY(lua_State *s)
 {
@@ -982,12 +1051,11 @@ static int posY(lua_State *s)
 }
 
 /**
+ * mana.monster_create(int id || string name, int x, int y): Monster*
  * Callback for creating a monster on the current map.
- * mana.monster_create(int type, int x, int y)
  */
 static int monster_create(lua_State *s)
 {
-    const int monsterId = luaL_checkint(s, 1);
     const int x = luaL_checkint(s, 2);
     const int y = luaL_checkint(s, 3);
 
@@ -1001,12 +1069,31 @@ static int monster_create(lua_State *s)
         return 0;
     }
 
-    MonsterClass *spec = monsterManager->getMonster(monsterId);
-    if (!spec)
+    MonsterClass *spec;
+    if (lua_isnumber(s, 1))
     {
-        raiseScriptError(s, "monster_create called with invalid monster ID: %d", monsterId);
-        //LOG_WARN("LuaMonster_Create invalid monster ID: " << monsterId);
-        return 0;
+        int monsterId = luaL_checkint(s, 1);
+        spec = monsterManager->getMonster(monsterId);
+        if (!spec)
+        {
+            raiseScriptError(s, "monster_create called with invalid "
+                             "monster ID: %d", monsterId);
+            //LOG_WARN("LuaMonster_Create invalid monster ID: " << monsterId);
+            return 0;
+        }
+    }
+    else
+    {
+        std::string monsterName = lua_tostring(s, 1);
+        spec = monsterManager->getMonsterByName(monsterName);
+        if (!spec)
+        {
+            raiseScriptError(s, "monster_create called with "
+                             "invalid monster name: %s", monsterName.c_str());
+            //LOG_WARN("LuaMonster_Create invalid monster name: "
+            // << monsterName);
+            return 0;
+         }
     }
 
     Monster *q = new Monster(spec);
@@ -1019,22 +1106,66 @@ static int monster_create(lua_State *s)
 }
 
 /**
- * mana.monster_load_script(mob, scriptfilename)
- * loads a LUA script given for mob
+ * mana.monster_get_name(int monster_id): string monster_name
+ * Returns the name of the monster with the given id.
+ */
+static int monster_get_name(lua_State *s)
+{
+    const int id = luaL_checkint(s, 1);
+    MonsterClass *spec = monsterManager->getMonster(id);
+    if (!spec)
+    {
+        raiseScriptError(s, "monster_get_name "
+                         "called with unknown monster id.");
+        return 0;
+    }
+    lua_pushstring(s, spec->getName().c_str());
+    return 1;
+}
+
+/**
+ * mana.monster_remove(Monster*): bool success
+ * Remove a monster object without kill event.
+ * return whether the monster was enqueued for removal.
+ */
+static int monster_remove(lua_State *s)
+{
+    if (!lua_islightuserdata(s, 1))
+    {
+        lua_pushboolean(s, false);
+        return 1;
+    }
+
+    bool monsterEnqueued = false;
+    Monster *m = dynamic_cast<Monster *>((Thing *)lua_touserdata(s, 1));
+    if (m)
+    {
+        GameState::enqueueRemove(m);
+        monsterEnqueued = true;
+    }
+    lua_pushboolean(s, monsterEnqueued);
+    return 1;
+}
+
+/**
+ * mana.monster_load_script(Monster*, string script_filename): void
+ * loads a LUA script for the given monster.
  */
 static int monster_load_script(lua_State *s)
 {
     Monster *m = static_cast< Monster* >(getBeing(s, 1));
     if (!m)
     {
-         raiseScriptError(s, "monster_load_script called for a nonexistance monster.");
+         raiseScriptError(s, "monster_load_script called "
+                          "for a nonexistent monster.");
          return 0;
     }
 
     const char *scriptName = luaL_checkstring(s, 2);
     if (scriptName[0] == 0)
     {
-        raiseScriptError(s, "monster_load_script called with empty script file name.");
+        raiseScriptError(s, "monster_load_script called "
+                         "with empty script file name.");
         return 0;
     }
 
@@ -1042,18 +1173,18 @@ static int monster_load_script(lua_State *s)
     return 0;
 }
 
-
 /**
+ * mana.chr_get_chest(Character*, string): nil or string
  * Callback for getting a quest variable. Starts a recovery and returns
  * immediatly, if the variable is not known yet.
- * mana.chr_get_chest(character, string): nil or string
  */
 static int chr_get_quest(lua_State *s)
 {
     Character *q = getCharacter(s, 1);
     if (!q)
     {
-        raiseScriptError(s, "chr_get_quest called for nonexistent character.");
+        raiseScriptError(s, "chr_get_quest "
+                         "called for nonexistent character.");
     }
 
     const char *m = luaL_checkstring(s, 2);
@@ -1077,10 +1208,9 @@ static int chr_get_quest(lua_State *s)
     return 0;
 }
 
-
 /**
- * gets the value of a persistent map variable.
  * mana.getvar_map(string): string
+ * Gets the value of a persistent map variable.
  */
 static int getvar_map(lua_State *s)
 {
@@ -1101,15 +1231,15 @@ static int getvar_map(lua_State *s)
 }
 
 /**
- * sets the value of a persistent map variable.
- * mana.setvar_map(string, string)
+ * mana.setvar_map(string, string): void
+ * Sets the value of a persistent map variable.
  */
 static int setvar_map(lua_State *s)
 {
     const char *m = luaL_checkstring(s, 1);
     if (m[0] == 0)
     {
-        raiseScriptError(s, "getvar_map called for unnamed variable.");
+        raiseScriptError(s, "setvar_map called for unnamed variable.");
         return 0;
     }
 
@@ -1124,8 +1254,8 @@ static int setvar_map(lua_State *s)
 }
 
 /**
- * gets the value of a persistent global variable.
  * mana.getvar_world(string): string
+ * Gets the value of a persistent global variable.
  */
 static int getvar_world(lua_State *s)
 {
@@ -1143,8 +1273,8 @@ static int getvar_world(lua_State *s)
 }
 
 /**
- * sets the value of a persistent global variable.
- * mana.setvar_world(string, string)
+ * mana.setvar_world(string, string): void
+ * Sets the value of a persistent global variable.
  */
 static int setvar_world(lua_State *s)
 {
@@ -1162,10 +1292,9 @@ static int setvar_world(lua_State *s)
     return 0;
 }
 
-
 /**
+ * mana.chr_set_chest(Character*, string, string): void
  * Callback for setting a quest variable.
- * mana.chr_set_chest(character, string, string)
  */
 static int chr_set_quest(lua_State *s)
 {
@@ -1187,9 +1316,10 @@ static int chr_set_quest(lua_State *s)
 }
 
 /**
+ * mana.trigger_create(int x, int y, int width, int height,
+ *                     string function, int id)
  * Creates a trigger area. Whenever an actor enters this area, a Lua function
  * is called.
- * mana.trigger_create (x, y, width, height, function, id)
  */
 static int trigger_create(lua_State *s)
 {
@@ -1197,6 +1327,7 @@ static int trigger_create(lua_State *s)
     const int y = luaL_checkint(s, 2);
     const int width = luaL_checkint(s, 3);
     const int height = luaL_checkint(s, 4);
+    //TODO: Turn the function string to a lua function pointer
     const char *function = luaL_checkstring(s, 5);
     const int id = luaL_checkint(s, 6);
 
@@ -1233,11 +1364,11 @@ static int trigger_create(lua_State *s)
 }
 
 /**
- * Creates a chat message in the users chatlog(s)
- * global message: mana.chatmessage (message)
- * private massage: mana.chatmessage (recipent, message)
+ * private message: mana.chat_message(Being* recipent, string message): void
+ * @todo global message: mana.chat_message(string message): void
+ * Creates a chat message in the users chatlog(s).
  */
-static int chatmessage(lua_State *s)
+static int chat_message(lua_State *s)
 {
     if (lua_gettop(s) == 2 && lua_isuserdata(s, 1) && lua_isstring(s, 2) )
     {
@@ -1255,7 +1386,7 @@ static int chatmessage(lua_State *s)
     }
     else
     {
-        raiseScriptError(s, "being_say called with incorrect parameters.");
+        raiseScriptError(s, "chat_message called with incorrect parameters.");
         return 0;
     }
 
@@ -1263,9 +1394,9 @@ static int chatmessage(lua_State *s)
 }
 
 /**
- * Gets a LUA table with the being IDs of all beings
+ * mana.get_beings_in_circle(int x, int y, int radius): table of Being*
+ * Gets a LUA table with the Being* pointers of all beings
  * inside of a circular area of the current map.
- * mana.get_beings_in_circle (x, y, radius)
  */
 static int get_beings_in_circle(lua_State *s)
 {
@@ -1303,9 +1434,10 @@ static int get_beings_in_circle(lua_State *s)
 }
 
 /**
- * Gets a LUA table with the being IDs of all beings
- * inside of a recangular area of the current map.
- * mana.get_beings_in_rectangle (x, y, width, height)
+ * mana.get_beings_in_rectangle(int x, int y, int width,
+ *                              int height): table of Being*
+ * Gets a LUA table with the Being* pointers of all beings
+ * inside of a rectangular area of the current map.
  */
 static int get_beings_in_rectangle(lua_State *s)
 {
@@ -1341,7 +1473,8 @@ static int get_beings_in_rectangle(lua_State *s)
  }
 
 /**
- * Gets the post for the character
+ * mana.chr_get_post(Character*): void
+ * Gets the post for the character.
  */
 static int chr_get_post(lua_State *s)
 {
@@ -1363,10 +1496,10 @@ static int chr_get_post(lua_State *s)
 }
 
 /**
+ * mana.being_register(Being*): void
  * Makes the server call the lua functions deathEvent
  * and removeEvent when the being dies or is removed
  * from the map.
- * mana.being_register (being)
  */
 static int being_register(lua_State *s)
 {
@@ -1390,11 +1523,10 @@ static int being_register(lua_State *s)
     return 0;
 }
 
-
 /**
- * Triggers a special effect from the clients effects.xml
- * mana.effect_create (id, x, y)
- * mana.effect_create (id, being)
+ * mana.effect_create (int id, int x, int y): void
+ * mana.effect_create (int id, Being*): void
+ * Triggers a special effect from the clients effects.xml.
  */
 static int effect_create(lua_State *s)
 {
@@ -1434,17 +1566,18 @@ static int effect_create(lua_State *s)
     return 0;
 }
 
-
 /**
- *
- * mana.chr_shake_screen(
+ * mana.chr_shake_screen(Character*, int x, int y[, float strength,
+ *                       int radius]): void
+ * Shake the screen for a given character.
  */
 static int chr_shake_screen(lua_State *s)
 {
     Character *c = getCharacter(s, 1);
     if (!c)
     {
-        raiseScriptError(s, "lua chr_shake_screen called for nonexistent character.");
+        raiseScriptError(s, "chr_shake_screen called "
+                         "for nonexistent character.");
         return 0;
     }
 
@@ -1467,15 +1600,15 @@ static int chr_shake_screen(lua_State *s)
 
 
 /**
+ * mana.chr_get_exp(Character*, int skill): int
  * Gets the exp total in a skill of a specific character
- * mana.chr_get_exp (being, skill)
  */
 static int chr_get_exp(lua_State *s)
 {
     Character *c = getCharacter(s, 1);
     if (!c)
     {
-        raiseScriptError(s, "luaChr_GetExp called for nonexistent character.");
+        raiseScriptError(s, "chr_get_exp called for nonexistent character.");
         return 0;
     }
 
@@ -1486,19 +1619,19 @@ static int chr_get_exp(lua_State *s)
     return 1;
 }
 
-
 /**
+ * mana.chr_give_exp(Character*, int skill,
+ *                   int amount[, int optimal_level]): void
  * Gives the character a certain amount of experience points
  * in a skill. Can also be used to reduce the exp amount when
  * desired.
- * mana.chr_give_exp (being, skill, amount)
  */
 static int chr_give_exp(lua_State *s)
 {
     Character *c = getCharacter(s, 1);
     if (!c)
     {
-        raiseScriptError(s, "luaChr_GiveExp called for nonexistent character.");
+        raiseScriptError(s, "chr_give_exp called for nonexistent character.");
         return 0;
     }
 
@@ -1512,22 +1645,24 @@ static int chr_give_exp(lua_State *s)
 }
 
 /**
- * Sets the given character's hair style to the given style id
- * mana.chr_set_hair_style (character, styleid)
+ * mana.chr_set_hair_style(Character*, int style_id): void
+ * Sets the given character's hair style to the given style id.
  */
 static int chr_set_hair_style(lua_State *s)
 {
     Character *c = getCharacter(s, 1);
     if (!c)
     {
-        raiseScriptError(s, "chr_set_hair_style called for nonexistent character.");
+        raiseScriptError(s, "chr_set_hair_style called "
+                         "for nonexistent character.");
         return 0;
     }
 
     const int style = luaL_checkint(s, 2);
     if (style < 0)
     {
-        raiseScriptError(s, "chr_set_hair_style called for nonexistent style id %d.", style);
+        raiseScriptError(s, "chr_set_hair_style called "
+                         "for nonexistent style id %d.", style);
         return 0;
     }
 
@@ -1538,15 +1673,16 @@ static int chr_set_hair_style(lua_State *s)
 }
 
 /**
- * Gets the hair style of the given character
- * mana.chr_get_hair_style (character)
+ * mana.chr_get_hair_style(Character*): int hair_style
+ * Gets the hair style of the given character.
  */
 static int chr_get_hair_style(lua_State *s)
 {
     Character *c = getCharacter(s, 1);
     if (!c)
     {
-        raiseScriptError(s, "chr_get_hair_style called for nonexistent character.");
+        raiseScriptError(s, "chr_get_hair_style called "
+                         "for nonexistent character.");
         return 0;
     }
 
@@ -1555,22 +1691,24 @@ static int chr_get_hair_style(lua_State *s)
 }
 
 /**
- * Set the hair color of the given character to the given color id
- * mana.chr_set_hair_color (character, colorid)
+ * mana.chr_set_hair_color(Character*, int color_id): void
+ * Set the hair color of the given character to the given color id.
  */
 static int chr_set_hair_color(lua_State *s)
 {
     Character *c = getCharacter(s, 1);
     if (!c)
     {
-        raiseScriptError(s, "chr_set_hair_color called for nonexistent character.");
+        raiseScriptError(s, "chr_set_hair_color called "
+                         "for nonexistent character.");
         return 0;
     }
 
     const int color = luaL_checkint(s, 2);
     if (color < 0)
     {
-        raiseScriptError(s, "chr_set_hair_color called for nonexistent style id %d.", color);
+        raiseScriptError(s, "chr_set_hair_color called "
+                         "for nonexistent style id %d.", color);
         return 0;
     }
 
@@ -1581,15 +1719,16 @@ static int chr_set_hair_color(lua_State *s)
 }
 
 /**
- * Get the hair color of the given character
- * mana.chr_get_hair_color (character)
+ * mana.chr_get_hair_color(Character*): int hair_color
+ * Get the hair color of the given character.
  */
 static int chr_get_hair_color(lua_State *s)
 {
     Character *c = getCharacter(s, 1);
     if (!c)
     {
-        raiseScriptError(s, "chr_get_hair_color called for nonexistent character.");
+        raiseScriptError(s, "chr_get_hair_color called "
+                         "for nonexistent character.");
         return 0;
     }
 
@@ -1598,15 +1737,16 @@ static int chr_get_hair_color(lua_State *s)
 }
 
 /**
- * Get the number of monsters the player killed of a type
- * mana.chr_get_kill_count (character, monsterType)
+ * mana.chr_get_kill_count(Character*, int monster_type): int
+ * Get the number of monsters the player killed of a type.
  */
 static int chr_get_kill_count(lua_State *s)
 {
     Character *c = getCharacter(s, 1);
     if (!c)
     {
-        raiseScriptError(s, "chr_get_kill_count called for nonexistent character.");
+        raiseScriptError(s, "chr_get_kill_count called "
+                         "for nonexistent character.");
         return 0;
     }
 
@@ -1617,8 +1757,8 @@ static int chr_get_kill_count(lua_State *s)
 }
 
 /**
- * Get the gender of the character
- * mana.chr_get_gender (character)
+ * mana.chr_get_gender(Character*): int
+ * Get the gender of the character.
  */
 static int chr_get_gender(lua_State *s)
 {
@@ -1634,8 +1774,8 @@ static int chr_get_gender(lua_State *s)
 }
 
 /**
- * Enables a special for a character
- * mana.chr_give_special (character, special)
+ * mana.chr_give_special(Character*, int special): void
+ * Enables a special for a character.
  */
 static int chr_give_special(lua_State *s)
 {
@@ -1643,7 +1783,8 @@ static int chr_give_special(lua_State *s)
     Character *c = getCharacter(s, 1);
     if (!c)
     {
-        raiseScriptError(s, "chr_give_special called for nonexistent character.");
+        raiseScriptError(s, "chr_give_special called "
+                         "for nonexistent character.");
         return 0;
     }
     const int special = luaL_checkint(s, 2);
@@ -1653,8 +1794,8 @@ static int chr_give_special(lua_State *s)
 }
 
 /**
- * Checks if a character has a special and returns true or false
- * mana.chr_has_special (character, special)
+ * mana.chr_has_special(Character*, int special): bool
+ * Checks whether a character has a given special.
  */
 static int chr_has_special(lua_State *s)
 {
@@ -1671,8 +1812,8 @@ static int chr_has_special(lua_State *s)
 }
 
 /**
- * Removes a special from a character
- * mana.chr_take_special (character, special)
+ * mana.chr_take_special(Character*, int special): bool success
+ * Removes a special from a character.
  */
 static int chr_take_special(lua_State *s)
 {
@@ -1689,11 +1830,9 @@ static int chr_take_special(lua_State *s)
     return 1;
 }
 
-
-
 /**
+ * mana.chr_get_rights(Character*): int
  * Returns the rights level of a character.
- * mana.chr_get_rights (being)
  */
 static int chr_get_rights(lua_State *s)
 {
@@ -1708,8 +1847,8 @@ static int chr_get_rights(lua_State *s)
 }
 
 /**
+ * mana.exp_for_level(int level): int
  * Returns the exp total necessary to reach a specific skill level.
- * mana.exp_for_level (level)
  */
 static int exp_for_level(lua_State *s)
 {
@@ -1776,7 +1915,8 @@ static int test_tableget(lua_State *s)
 }
 
 /**
- * Returns the ID of the current map
+ * mana.get_map_id(): int
+ * Returns the id of the current map.
  */
 static int get_map_id(lua_State *s)
 {
@@ -1789,20 +1929,78 @@ static int get_map_id(lua_State *s)
 }
 
 /**
- * Creates an item stack on the floor
- * mana.drop_item(x, y, id[, number])
+ * mana.get_map_property(string property): string
+ * Returns the value of a map property.
+ */
+static int get_map_property(lua_State *s)
+{
+    const char *property = luaL_checkstring(s, 1);
+    lua_pushlightuserdata(s, (void *)&registryKey);
+    lua_gettable(s, LUA_REGISTRYINDEX);
+    Script *t = static_cast<Script *>(lua_touserdata(s, -1));
+    MapComposite *m = t->getMap();
+    if (!m)
+    {
+        raiseScriptError(s, "get_map_property called outside a map.");
+        return 0;
+    }
+    Map *map = m->getMap();
+    std::string value = map->getProperty(property);
+    const char *v = &value[0];
+
+    lua_pushstring(s, v);
+    return 1;
+}
+
+/**
+ * mana.is_walkable(int x, int y): bool
+ * Returns whether the pixel on the map is walkable.
+ */
+static int is_walkable(lua_State *s)
+{
+    const int x = luaL_checkint(s, 1);
+    const int y = luaL_checkint(s, 2);
+
+    lua_pushlightuserdata(s, (void *)&registryKey);
+    lua_gettable(s, LUA_REGISTRYINDEX);
+    Script *t = static_cast<Script *>(lua_touserdata(s, -1));
+    MapComposite *m = t->getMap();
+    if (!m)
+    {
+        raiseScriptError(s, "is_walkable called outside a map.");
+        return 0;
+    }
+    Map *map = m->getMap();
+
+    // If the wanted warp place is unwalkable
+    if (map->getWalk(x / map->getTileWidth(), y / map->getTileHeight()))
+        lua_pushboolean(s, 1);
+    else
+        lua_pushboolean(s, 0);
+
+    return 1;
+}
+
+/**
+ * mana.drop_item(int x, int y, int id || string name[, int number]): void
+ * Creates an item stack on the floor.
  */
 static int item_drop(lua_State *s)
 {
     const int x = luaL_checkint(s, 1);
     const int y = luaL_checkint(s, 2);
-    const int type = luaL_checkint(s, 3);
     const int number = luaL_optint(s, 4, 1);
 
-    ItemClass *ic = itemManager->getItem(type);
+    ItemClass *ic;
+    if (lua_isnumber(s, 3))
+        ic = itemManager->getItem(lua_tointeger(s, 3));
+    else
+        ic = itemManager->getItemByName(lua_tostring(s, 3));
+
     if (!ic)
     {
-        raiseScriptError(s, "item_drop called with unknown item ID");
+        raiseScriptError(s, "item_drop called with unknown item id or name.");
+        return 0;
     }
     Item *i = new Item(ic, number);
 
@@ -1820,7 +2018,25 @@ static int item_drop(lua_State *s)
 }
 
 /**
- * Logs the given message to the log
+ * mana.item_get_name(int item_id): string item_name
+ * Returns the name of the item with the given id.
+ */
+static int item_get_name(lua_State *s)
+{
+    const int id = luaL_checkint(s, 1);
+    ItemClass *it = itemManager->getItem(id);
+    if (!it)
+    {
+        raiseScriptError(s, "item_get_name called with unknown item id.");
+        return 0;
+    }
+    lua_pushstring(s, it->getName().c_str());
+    return 1;
+}
+
+/**
+ * mana.log(int log_level, string log_message): void
+ * Logs the given message to the log.
  */
 static int log(lua_State *s)
 {
@@ -1836,7 +2052,9 @@ static int log(lua_State *s)
 }
 
 /**
- * Gets the distance between two beings or two points
+ * mana.get_distance(Being*, Being*): int
+ * mana.get_distance(int x1, int y1, int x2, int y2): int
+ * Gets the distance between two beings or two points.
  */
 static int get_distance(lua_State *s)
 {
@@ -1928,6 +2146,8 @@ LuaScript::LuaScript():
         { "chr_take_special",                &chr_take_special                },
         { "exp_for_level",                   &exp_for_level                   },
         { "monster_create",                  &monster_create                  },
+        { "monster_get_name",                &monster_get_name                },
+        { "monster_remove",                  &monster_remove                  },
         { "monster_load_script",             &monster_load_script             },
         { "being_apply_status",              &being_apply_status              },
         { "being_remove_status",             &being_remove_status             },
@@ -1952,7 +2172,7 @@ LuaScript::LuaScript():
         { "posX",                            &posX                            },
         { "posY",                            &posY                            },
         { "trigger_create",                  &trigger_create                  },
-        { "chatmessage",                     &chatmessage                     },
+        { "chat_message",                    &chat_message                    },
         { "get_beings_in_circle",            &get_beings_in_circle            },
         { "get_beings_in_rectangle",         &get_beings_in_rectangle         },
         { "being_register",                  &being_register                  },
@@ -1960,7 +2180,10 @@ LuaScript::LuaScript():
         { "chr_shake_screen",                &chr_shake_screen                },
         { "test_tableget",                   &test_tableget                   },
         { "get_map_id",                      &get_map_id                      },
+        { "get_map_property",                &get_map_property                },
+        { "is_walkable",                     &is_walkable                     },
         { "item_drop",                       &item_drop                       },
+        { "item_get_name",                   &item_get_name                   },
         { "npc_ask_integer",                 &npc_ask_integer                 },
         { "npc_end",                         &npc_end                         },
         { "npc_ask_string",                  &npc_ask_string                  },
