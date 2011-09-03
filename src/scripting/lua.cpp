@@ -299,7 +299,7 @@ static int chr_warp(lua_State *s)
 
     Character *q = getCharacter(s, 1);
     bool b = lua_isnil(s, 2);
-    if (!q || !(b || lua_isnumber(s, 2)))
+    if (!q || !(b || lua_isnumber(s, 2) || lua_isstring(s, 2)))
     {
         raiseScriptError(s, "chr_warp called with incorrect parameters.");
         return 0;
@@ -312,9 +312,13 @@ static int chr_warp(lua_State *s)
         Script *t = static_cast<Script *>(lua_touserdata(s, -1));
         m = t->getMap();
     }
-    else
+    else if (lua_isnumber(s, 2))
     {
         m = MapManager::getMap(lua_tointeger(s, 2));
+    }
+    else
+    {
+        m = MapManager::getMap(lua_tostring(s, 2));
     }
     if (!m)
     {
@@ -1124,20 +1128,38 @@ static int monster_get_name(lua_State *s)
 }
 
 /**
+ * mana.monster_change_anger(Monster*, Being*, int anger)
+ * Makes a monster angry at a being
+ */
+static int monster_change_anger(lua_State *s)
+{
+    const int anger = luaL_checkint(s, 3);
+    Monster *m = getMonster(s, 1);
+    if (!m)
+    {
+        raiseScriptError(s, "monster_change_anger called "
+                         "for a nonexisting monster");
+        return 0;
+    }
+    Being *being = getBeing(s, 2);
+    if (!being)
+    {
+        raiseScriptError(s, "monster_change_anger called "
+                         "for a nonexisting being");
+    }
+    m->changeAnger(being, anger);
+    return 0;
+}
+
+/**
  * mana.monster_remove(Monster*): bool success
  * Remove a monster object without kill event.
  * return whether the monster was enqueued for removal.
  */
 static int monster_remove(lua_State *s)
 {
-    if (!lua_islightuserdata(s, 1))
-    {
-        lua_pushboolean(s, false);
-        return 1;
-    }
-
     bool monsterEnqueued = false;
-    Monster *m = dynamic_cast<Monster *>((Thing *)lua_touserdata(s, 1));
+    Monster *m = getMonster(s, 1);
     if (m)
     {
         GameState::enqueueRemove(m);
@@ -1153,7 +1175,7 @@ static int monster_remove(lua_State *s)
  */
 static int monster_load_script(lua_State *s)
 {
-    Monster *m = static_cast< Monster* >(getBeing(s, 1));
+    Monster *m = getMonster(s, 1);
     if (!m)
     {
          raiseScriptError(s, "monster_load_script called "
@@ -2147,6 +2169,7 @@ LuaScript::LuaScript():
         { "exp_for_level",                   &exp_for_level                   },
         { "monster_create",                  &monster_create                  },
         { "monster_get_name",                &monster_get_name                },
+        { "monster_change_anger",            &monster_change_anger            },
         { "monster_remove",                  &monster_remove                  },
         { "monster_load_script",             &monster_load_script             },
         { "being_apply_status",              &being_apply_status              },
