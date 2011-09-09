@@ -42,6 +42,7 @@
  <option name="char_startY" value="640"/>
  
  <!-- Gameplay Einstellungen -->
+ <option name="hpRegenBreakAfterHit" value="7"/>
  <option name="visualRange" value="550"/>
  <option name="respawnMap" value="19001"/>
  <option name="respawnX" value="3200"/>
