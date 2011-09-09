@@ -201,7 +201,7 @@
  Set how much time the auto-regeneration is stopped when hurt.
  (in 1/10th seconds.)
  -->
- <option name="game_hpRegenBreakAfterHit" value="0" />
+ <option name="game_hpRegenBreakAfterHit" value="7" />
 
  <!--
  Default PVP (Player-versus-player) rule on a map not setting this property.
