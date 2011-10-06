@@ -76,6 +76,7 @@ static void handleLog(Character*, std::string&);
 static void handleLogsay(Character*, std::string&);
 static void handleKillMonsters(Character*, std::string&);
 static void handleCraft(Character*, std::string&);
+static void handleGetPos(Character*, std::string&);
 
 static CmdRef const cmdRef[] =
 {
@@ -133,6 +134,8 @@ static CmdRef const cmdRef[] =
         "Kills all monsters on the map.", &handleKillMonsters},
     {"craft", "{ <item> <amount> }",
         "Crafts something.", &handleCraft},
+    {"getpos", "<character>",
+        "Gets the position of a character.", &handleGetPos},
     {NULL, NULL, NULL, NULL}
 
 };
@@ -186,7 +189,15 @@ static std::string getArgument(std::string &args)
             // Jumps to the next parameter,
             // after the ending double-quote and space,
             // and remove the two double-quotes before returning.
-            args = args.substr(pos + 2);
+            if (pos + 2 < args.size())
+            {
+                args = args.substr(pos + 2);
+            }
+            else
+            {
+                // This was the last argument
+                args.clear();
+            }
             argument = argument.substr(1, pos - 1);
         }
         else
@@ -1367,6 +1378,36 @@ static void handleCraft(Character *player, std::string &args)
         // outputting an error message when the recipe is invalid.
         Script::performCraft(player, recipe);
     }
+}
+
+static void handleGetPos(Character *player, std::string &args)
+{
+    std::string character = getArgument(args);
+    if (character.empty())
+    {
+        say("Invalid amount of arguments given.", player);
+        say("Usage: @getpos <character>", player);
+        return;
+    }
+    Character *other;
+    other = getPlayer(character);
+    if (!other)
+    {
+        say("Invalid character, or they are offline.", player);
+        return;
+    }
+    const Point &pos = other->getPosition();
+    std::stringstream str;
+    str << "The current location of "
+        << character
+        << " is map "
+        << other->getMapId()
+        << " ["
+        << pos.x
+        << ":"
+        << pos.y
+        << "]";
+    say(str.str(), player);
 }
 
 void CommandHandler::handleCommand(Character *player,

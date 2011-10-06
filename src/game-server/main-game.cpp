@@ -88,6 +88,7 @@ utils::StringFilter *stringFilter; /**< Slang's Filter */
 AttributeManager *attributeManager = new AttributeManager(DEFAULT_ATTRIBUTEDB_FILE);
 ItemManager *itemManager = new ItemManager(DEFAULT_ITEMSDB_FILE, DEFAULT_EQUIPDB_FILE);
 MonsterManager *monsterManager = new MonsterManager(DEFAULT_MONSTERSDB_FILE);
+SkillManager *skillManager = new SkillManager(DEFAULT_SKILLSDB_FILE);
 
 /** Core game message handler */
 GameHandler *gameHandler;
@@ -193,7 +194,7 @@ static void initializeServer()
         exit(EXIT_MAP_FILE_NOT_FOUND);
     }
     attributeManager->initialize();
-    SkillManager::initialize(DEFAULT_SKILLSDB_FILE);
+    skillManager->initialize();
     itemManager->initialize();
     monsterManager->initialize();
     StatusManager::initialize(DEFAULT_STATUSDB_FILE);
@@ -241,15 +242,16 @@ static void deinitializeServer()
     enet_deinitialize();
 
     // Destroy message handlers
-    delete gameHandler;
-    delete accountHandler;
-    delete postMan;
-    delete gBandwidth;
+    delete gameHandler; gameHandler = 0;
+    delete accountHandler; accountHandler = 0;
+    delete postMan; postMan = 0;
+    delete gBandwidth; gBandwidth = 0;
 
     // Destroy Managers
-    delete stringFilter;
-    monsterManager->deinitialize();
-    itemManager->deinitialize();
+    delete stringFilter; stringFilter = 0;
+    delete monsterManager; monsterManager = 0;
+    delete skillManager; skillManager = 0;
+    delete itemManager; itemManager = 0;
     MapManager::deinitialize();
     StatusManager::deinitialize();
 
