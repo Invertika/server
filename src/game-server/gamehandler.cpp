@@ -472,11 +472,22 @@ void GameHandler::handlePickup(GameClient &client, MessageIn &message)
             {
                 Item *item = static_cast< Item * >(o);
                 ItemClass *ic = item->getItemClass();
+                int amount = item->getAmount();
                 if (!Inventory(client.character).insert(ic->getDatabaseID(),
-                                                       item->getAmount()))
+                                                       amount))
                 {
-
                     GameState::remove(item);
+
+                    // We only do this when items are to be kept in memory
+                    // between two server restart.
+                    if (!Configuration::getValue("game_floorItemDecayTime", 0))
+                    {
+                        // Remove the floor item from map
+                        accountHandler->removeFloorItems(map->getID(),
+                                                        ic->getDatabaseID(),
+                                                        amount, x, y);
+                    }
+
                     // log transaction
                     std::stringstream str;
                     str << "User picked up item " << ic->getDatabaseID()
@@ -494,7 +505,7 @@ void GameHandler::handlePickup(GameClient &client, MessageIn &message)
 
 void GameHandler::handleUseItem(GameClient &client, MessageIn &message)
 {
-    const int slot = message.readInt8();
+    const int slot = message.readInt16();
     Inventory inv(client.character);
 
     if (ItemClass *ic = itemManager->getItem(inv.getItem(slot)))
@@ -514,8 +525,8 @@ void GameHandler::handleUseItem(GameClient &client, MessageIn &message)
 
 void GameHandler::handleDrop(GameClient &client, MessageIn &message)
 {
-    const int slot = message.readInt8();
-    const int amount = message.readInt8();
+    const int slot = message.readInt16();
+    const int amount = message.readInt16();
     Inventory inv(client.character);
 
     if (ItemClass *ic = itemManager->getItem(inv.getItem(slot)))
@@ -531,8 +542,20 @@ void GameHandler::handleDrop(GameClient &client, MessageIn &message)
             delete item;
             return;
         }
-        // log transaction
+
         Point pt = client.character->getPosition();
+
+        // We store the item in database only when the floor items are meant
+        // to be persistent between two server restarts.
+        if (!Configuration::getValue("game_floorItemDecayTime", 0))
+        {
+            // Create the floor item on map
+            accountHandler->createFloorItems(client.character->getMap()->getID(),
+                                            ic->getDatabaseID(),
+                                            amount, pt.x, pt.y);
+        }
+
+        // log transaction
         std::stringstream str;
         str << "User dropped item " << ic->getDatabaseID()
             << " at " << pt.x << "x" << pt.y;
@@ -552,22 +575,33 @@ void GameHandler::handleWalk(GameClient &client, MessageIn &message)
 
 void GameHandler::handleEquip(GameClient &client, MessageIn &message)
 {
-    const int slot = message.readInt8();
-    Inventory(client.character).equip(slot);
+    const int slot = message.readInt16();
+    if (!Inventory(client.character).equip(slot))
+    {
+        MessageOut msg(GPMSG_SAY);
+        msg.writeInt16(0); // From the server
+        msg.writeString("Unable to equip.");
+        client.send(msg);
+    }
 }
 
 void GameHandler::handleUnequip(GameClient &client, MessageIn &message)
 {
-    const int slot = message.readInt8();
-    if (slot >= 0 && slot < INVENTORY_SLOTS)
-        Inventory(client.character).unequip(slot);
+    const int itemInstance = message.readInt16();
+    if (!Inventory(client.character).unequip(itemInstance))
+    {
+        MessageOut msg(GPMSG_SAY);
+        msg.writeInt16(0); // From the server
+        msg.writeString("Unable to unequip.");
+        client.send(msg);
+    }
 }
 
 void GameHandler::handleMoveItem(GameClient &client, MessageIn &message)
 {
-    const int slot1 = message.readInt8();
-    const int slot2 = message.readInt8();
-    const int amount = message.readInt8();
+    const int slot1 = message.readInt16();
+    const int slot2 = message.readInt16();
+    const int amount = message.readInt16();
 
     Inventory(client.character).move(slot1, slot2, amount);
     // log transaction

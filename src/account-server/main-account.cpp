@@ -56,7 +56,6 @@ using utils::Logger;
 // Default options that automake should be able to override.
 #define DEFAULT_LOG_FILE          "manaserv-account.log"
 #define DEFAULT_STATS_FILE        "manaserv.stats"
-#define DEFAULT_CONFIG_FILE       "manaserv.xml"
 #define DEFAULT_ATTRIBUTEDB_FILE  "attributes.xml"
 
 static bool running = true;        /**< Determines if server keeps running */
@@ -82,47 +81,6 @@ static void closeGracefully(int)
     running = false;
 }
 
-static void initializeConfiguration(std::string configPath = std::string())
-{
-    if (configPath.empty())
-        configPath = DEFAULT_CONFIG_FILE;
-
-    bool configFound = true;
-    if (!Configuration::initialize(configPath))
-    {
-        configFound = false;
-
-        // If the config file isn't the default and fail to load,
-        // we try the default one with a warning.
-        if (configPath.compare(DEFAULT_CONFIG_FILE))
-        {
-            LOG_WARN("Invalid config path: " << configPath
-                     << ". Trying default value: " << DEFAULT_CONFIG_FILE ".");
-            configPath = DEFAULT_CONFIG_FILE;
-            configFound = true;
-
-            if (!Configuration::initialize(configPath))
-                  configFound = false;
-        }
-
-        if (!configFound)
-        {
-            LOG_FATAL("Refusing to run without configuration!" << std::endl
-            << "Invalid config path: " << configPath << ".");
-            exit(EXIT_CONFIG_NOT_FOUND);
-        }
-    }
-
-    LOG_INFO("Using config file: " << configPath);
-
-    // Check inter-server password.
-    if (Configuration::getValue("net_password", std::string()).empty())
-    {
-        LOG_FATAL("SECURITY WARNING: 'net_password' not set!");
-        exit(EXIT_BAD_CONFIG_PARAMETER);
-    }
-}
-
 /**
  * Initializes the server.
  */
@@ -141,30 +99,13 @@ static void initialize()
     // Initialize PhysicsFS
     PHYSFS_init("");
 
-    // Initialize the logger.
-    Logger::setLogFile(logFile, true);
-
-    // Write the messages to both the screen and the log file.
-    Logger::setTeeMode(
-                      Configuration::getBoolValue("log_accountToStandardOutput",
-                                                  true));
-    LOG_INFO("Using log file: " << logFile);
+    Logger::initialize(logFile);
 
     // Indicate in which file the statistics are put.
     statisticsFile = Configuration::getValue("log_statisticsFile",
                                              DEFAULT_STATS_FILE);
 
     LOG_INFO("Using statistics file: " << statisticsFile);
-
-    // Set up the options related to log rotation.
-    Logger::enableLogRotation(Configuration::getBoolValue("log_enableRotation",
-                                                          false));
-
-    Logger::setMaxLogfileSize(Configuration::getValue("log_maxFileSize",
-                                                      1024));
-
-    Logger::setSwitchLogEachDay(Configuration::getBoolValue("log_perDay",
-                                                            false));
 
     ResourceManager::initialize();
 
@@ -280,7 +221,6 @@ static void printHelp()
 struct CommandLineOptions
 {
     CommandLineOptions():
-        configPath(DEFAULT_CONFIG_FILE),
         verbosity(Logger::Warn),
         verbosityChanged(false),
         port(DEFAULT_SERVER_PORT),
@@ -353,7 +293,18 @@ int main(int argc, char *argv[])
     CommandLineOptions options;
     parseOptions(argc, argv, options);
 
-    initializeConfiguration(options.configPath);
+    if (!Configuration::initialize(options.configPath))
+    {
+        LOG_FATAL("Refusing to run without configuration!");
+        exit(EXIT_CONFIG_NOT_FOUND);
+    }
+
+    // Check inter-server password.
+    if (Configuration::getValue("net_password", std::string()).empty())
+    {
+        LOG_FATAL("SECURITY WARNING: 'net_password' not set!");
+        exit(EXIT_BAD_CONFIG_PARAMETER);
+    }
 
     // General initialization
     initialize();
@@ -364,8 +315,9 @@ int main(int argc, char *argv[])
     LOG_INFO("The Mana Account+Chat Server (unknown version)");
 #endif
     LOG_INFO("Manaserv Protocol version " << ManaServ::PROTOCOL_VERSION
-             << ", " << "Enet version " << ENET_VERSION_MAJOR << "."
-             << ENET_VERSION_MINOR << "." << ENET_VERSION_PATCH);
+             << ", Enet version " << ENET_VERSION_MAJOR << "."
+             << ENET_VERSION_MINOR << "." << ENET_VERSION_PATCH
+             << ", Database version " << ManaServ::SUPPORTED_DB_VERSION);
 
     if (!options.verbosityChanged)
         options.verbosity = static_cast<Logger::Level>(
@@ -406,6 +358,9 @@ int main(int argc, char *argv[])
     utils::Timer statTimer(10000);
     // Check for expired bans every 30 seconds
     utils::Timer banTimer(30000);
+
+    statTimer.start();
+    banTimer.start();
 
     // -------------------------------------------------------------------------
     // FIXME: for testing purposes only...

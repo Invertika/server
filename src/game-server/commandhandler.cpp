@@ -60,10 +60,11 @@ static void handleRecall(Character*, std::string&);
 static void handleBan(Character*, std::string&);
 static void handleItem(Character*, std::string&);
 static void handleDrop(Character*, std::string&);
-//static void handleMoney(Character*, std::string&);
+static void handleMoney(Character*, std::string&);
 static void handleSpawn(Character*, std::string&);
 static void handleAttribute(Character*, std::string&);
 static void handleReload(Character*, std::string&);
+static void handlePermissions(Character*, std::string&);
 static void handleGivePermission(Character*, std::string&);
 static void handleTakePermission(Character*, std::string&);
 static void handleAnnounce(Character*, std::string&);
@@ -102,14 +103,16 @@ static CmdRef const cmdRef[] =
         "Creates a number of items in the inventory of a character", &handleItem},
     {"drop", "<item id> <amount>",
         "Drops a stack of items on the ground at your current location", &handleDrop},
-/*    {"money", "<character> <amount>",
-        "Changes the money a character possesses", &handleMoney},*/
+    {"money", "<character> <amount>",
+        "Changes the money a character possesses", &handleMoney},
     {"spawn", "<monster id> <number>",
         "Creates a number of monsters near your location", &handleSpawn},
     {"attribute", "<character> <attribute> <value>",
         "Changes the character attributes of a character", &handleAttribute},
     {"reload", "",
         "Makes the server reload all configuration files", &handleReload},
+    {"permissions", "",
+        "Tells you the permissions of another player", &handlePermissions},
     {"givepermission", "<character> <permission class>",
         "Gives a permission class to the account a character belongs to", &handleGivePermission},
     {"takepermission", "<character> <permission class>",
@@ -161,6 +164,24 @@ static bool checkPermission(Character *player, unsigned int permissions)
 /**
  * Returns the next argument, and remove it from the given string.
  */
+
+static std::string playerRights(Character *ch)
+{
+    std::stringstream str;
+    str << (unsigned int)ch->getAccountLevel();
+    str << " ( ";
+    std::list<std::string> classes =
+        PermissionManager::getClassList(ch);
+    for (std::list<std::string>::iterator i = classes.begin();
+         i != classes.end();
+         i++)
+    {
+        str << (*i) << " ";
+    }
+    str << ")";
+    return str.str();
+}
+
 static std::string getArgument(std::string &args)
 {
     std::string argument;
@@ -594,7 +615,7 @@ static void handleDrop(Character *player, std::string &args)
     str << "User created item " << ic->getDatabaseID();
     accountHandler->sendTransaction(player->getDatabaseID(), TRANS_CMD_DROP, str.str());
 }
-/*
+
 static void handleMoney(Character *player, std::string &args)
 {
     Character *other;
@@ -639,13 +660,12 @@ static void handleMoney(Character *player, std::string &args)
     value = utils::stringToInt(valuestr);
 
     // change how much money the player has
-    Inventory(other).changeMoney(value);
+    other->setAttribute(ATTR_GP , other->getAttribute(ATTR_GP) + value);
 
     // log transaction
     std::string msg = "User created " + valuestr + " money";
     accountHandler->sendTransaction(player->getDatabaseID(), TRANS_CMD_MONEY, msg);
 }
-*/
 
 static void handleSpawn(Character *player, std::string &args)
 {
@@ -861,6 +881,27 @@ static void handleBan(Character *player, std::string &args)
     accountHandler->sendTransaction(player->getDatabaseID(), TRANS_CMD_BAN, msg);
 }
 
+static void handlePermissions(Character *player, std::string &args)
+{
+    std::string character = getArgument(args);
+    if (character.empty())
+    {
+        say("Invaild number of arguments given.", player);
+        say("Usage: @permissions <character>", player);
+        return;
+    }
+
+    Character *other = getPlayer(character);
+    if (!other)
+    {
+        say("Invalid character", player);
+        return;
+    }
+
+    say(other->getName() + " has the permissions: " +
+        playerRights(other), player);
+}
+
 static void handleGivePermission(Character *player, std::string &args)
 {
     Character *other;
@@ -915,7 +956,10 @@ static void handleGivePermission(Character *player, std::string &args)
         // log transaction
         std::string msg = "User gave right " + strPermission + " to " + other->getName();
         accountHandler->sendTransaction(player->getDatabaseID(), TRANS_CMD_SETGROUP, msg);
-        say("Congratulations, "+player->getName()+" gave you the rights of a "+strPermission, other);
+        say("You gave " + other->getName() +
+            " the rights of a " + strPermission, player);
+        say("Congratulations, " + player->getName() +
+            " gave you the rights of a " + strPermission, other);
     }
 }
 
@@ -1090,23 +1134,7 @@ static void handleWhere(Character *player, std::string &)
 
 static void handleRights(Character *player, std::string &)
 {
-    std::list<std::string>classes;
-    classes = PermissionManager::getClassList(player);
-
-    std::stringstream str;
-    str << "Your rights level is: "
-        << (unsigned int)player->getAccountLevel()
-        << " ( ";
-
-    for (std::list<std::string>::iterator i = classes.begin();
-         i != classes.end();
-         i++)
-    {
-        str << (*i) << " ";
-    }
-    str << ")";
-
-    say(str.str(), player);
+    say("Your rights level is: " + playerRights(player), player);
 }
 
 static void handleHistory(Character *player, std::string &args)

@@ -36,6 +36,7 @@
 #include "game-server/gamehandler.h"
 #include "game-server/mapcomposite.h"
 #include "game-server/mapmanager.h"
+#include "game-server/skillmanager.h"
 #include "game-server/state.h"
 #include "game-server/trade.h"
 #include "scripting/script.h"
@@ -58,7 +59,7 @@ Character::Character(MessageIn &msg):
     mRechargePerSpecial(0),
     mSpecialUpdateNeeded(false),
     mDatabaseID(-1),
-    mGender(0),
+    mGender(GENDER_UNSPECIFIED),
     mHairStyle(0),
     mHairColor(0),
     mLevel(1),
@@ -161,7 +162,8 @@ void Character::perform()
     {
         int damageBase = getModifiedAttribute(ATTR_STR);
         int damageDelta = damageBase / 2;
-        Damage knuckleDamage(damageBase, damageDelta, 2, ELEMENT_NEUTRAL,
+        Damage knuckleDamage(skillManager->getDefaultSkillId(),
+                             damageBase, damageDelta, 2, ELEMENT_NEUTRAL,
                             DAMAGE_PHYSICAL,
                             (getSize() < DEFAULT_TILE_LENGTH) ?
                                 DEFAULT_TILE_LENGTH : getSize());
@@ -292,6 +294,21 @@ void Character::cancelTransaction()
             break;
         case TRANS_NONE:
             return;
+    }
+}
+
+void Character::setGender(int gender)
+{
+    switch (gender)
+    {
+        case 0:
+            mGender = GENDER_MALE;
+        break;
+        case 1:
+            mGender = GENDER_FEMALE;
+        break;
+        default:
+            mGender = GENDER_UNSPECIFIED;
     }
 }
 
@@ -697,7 +714,8 @@ void Character::takeSpecial(int id)
 
 void Character::clearSpecials()
 {
-    for(std::map<int, Special*>::iterator i = mSpecials.begin(); i != mSpecials.end(); i++)
+    for (std::map<int, Special*>::iterator i = mSpecials.begin();
+         i != mSpecials.end(); i++)
     {
         delete i->second;
     }

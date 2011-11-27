@@ -179,16 +179,32 @@ DEFAULT CHARSET=utf8
 AUTO_INCREMENT=1 ;
 
 --
+-- table: `mana_floor_items`
+--
+CREATE TABLE IF NOT EXISTS `mana_floor_items` (
+    `id`              int(10)      unsigned NOT NULL auto_increment,
+    `map_id`          int(10)      unsigned NOT NULL,
+    `item_id`         int(10)      unsigned NOT NULL,
+    `amount`          smallint(5)  unsigned NOT NULL,
+    `pos_x`           smallint(5)  unsigned NOT NULL,
+    `pos_y`           smallint(5)  unsigned NOT NULL,
+    --
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8
+AUTO_INCREMENT=1 ;
+
+--
 -- table: `mana_char_equips`
 --
 CREATE TABLE IF NOT EXISTS `mana_char_equips` (
     `id`               int(10)    unsigned NOT NULL auto_increment,
     `owner_id`         int(10)    unsigned NOT NULL,
-    `slot_type`        tinyint(3) unsigned NOT NULL,
-    `inventory_slot`   tinyint(3) unsigned NOT NULL,
+    `slot_type`        int(10)    unsigned NOT NULL,
+    `item_id`          int(10)    unsigned NOT NULL,
+    `item_instance`    int(10)    unsigned NOT NULL,
     --
     PRIMARY KEY (`id`),
-    UNIQUE KEY `owner_id` (`owner_id`, `inventory_slot`),
     FOREIGN KEY (`owner_id`) REFERENCES `mana_characters` (`id`)
 ) ENGINE=InnoDB
 DEFAULT CHARSET=utf8;
@@ -421,7 +437,7 @@ AUTO_INCREMENT=0 ;
 
 INSERT INTO mana_world_states VALUES('accountserver_startup',NULL,NULL, NOW());
 INSERT INTO mana_world_states VALUES('accountserver_version',NULL,NULL, NOW());
-INSERT INTO mana_world_states VALUES('database_version',     NULL,'14', NOW());
+INSERT INTO mana_world_states VALUES('database_version',     NULL,'18', NOW());
 
 -- all known transaction codes
 

@@ -24,14 +24,17 @@
 #include "account-server/storage.h"
 
 #include "account-server/account.h"
+#include "account-server/flooritem.h"
 #include "chat-server/chatchannel.h"
 #include "chat-server/guild.h"
 #include "chat-server/post.h"
 #include "common/configuration.h"
+#include "common/manaserv_protocol.h"
 #include "dal/dalexcept.h"
 #include "dal/dataproviderfactory.h"
 #include "utils/functors.h"
 #include "utils/point.h"
+#include "utils/string.h"
 #include "utils/throwerror.h"
 #include "utils/xml.h"
 
@@ -41,7 +44,6 @@ static const char *DEFAULT_ITEM_FILE = "items.xml";
 
 // Defines the supported db version
 static const char *DB_VERSION_PARAMETER = "database_version";
-static const char *SUPPORTED_DB_VERSION = "16";
 
 /*
  * MySQL specificities:
@@ -89,6 +91,7 @@ static const char *AUCTION_TBL_NAME             =   "mana_auctions";
 static const char *AUCTION_BIDS_TBL_NAME        =   "mana_auction_bids";
 static const char *ONLINE_USERS_TBL_NAME        =   "mana_online_list";
 static const char *TRANSACTION_TBL_NAME         =   "mana_transactions";
+static const char *FLOOR_ITEMS_TBL_NAME         =   "mana_floor_items";
 
 Storage::Storage()
         : mDb(dal::DataProviderFactory::createDataProvider()),
@@ -118,12 +121,14 @@ void Storage::open()
         mDb->connect();
 
         // Check database version here
-        std::string dbversion = getWorldStateVar(DB_VERSION_PARAMETER);
-        if (dbversion != SUPPORTED_DB_VERSION)
+        int dbversion = utils::stringToInt(
+                                        getWorldStateVar(DB_VERSION_PARAMETER));
+        int supportedDbVersion = ManaServ::SUPPORTED_DB_VERSION;
+        if (dbversion != supportedDbVersion)
         {
             std::ostringstream errmsg;
             errmsg << "Database version is not supported. "
-                   << "Needed version: '" << SUPPORTED_DB_VERSION
+                   << "Needed version: '" << supportedDbVersion
                    << "', current version: '" << dbversion << "'";
             utils::throwError(errmsg.str());
         }
@@ -135,6 +140,15 @@ void Storage::open()
         std::ostringstream sql;
         sql << "DELETE FROM " << ONLINE_USERS_TBL_NAME;
         mDb->execSql(sql.str());
+
+        // In case where the server shouldn't keep floor item in database,
+        // we remove remnants at startup
+        if (Configuration::getValue("game_floorItemDecayTime", 0) > 0)
+        {
+            sql.clear();
+            sql << "DELETE FROM " << FLOOR_ITEMS_TBL_NAME;
+            mDb->execSql(sql.str());
+        }
     }
     catch (const DbConnectionFailure& e)
     {
@@ -490,17 +504,26 @@ Character *Storage::getCharacterBySQL(Account *owner)
     try
     {
         std::ostringstream sql;
-        sql << " select slot_type, inventory_slot from "
+        sql << " select slot_type, item_id, item_instance from "
             << CHAR_EQUIPS_TBL_NAME
             << " where owner_id = '"
             << character->getDatabaseID() << "' order by slot_type desc;";
 
+        EquipData equipData;
         const dal::RecordSet &equipInfo = mDb->execSql(sql.str());
         if (!equipInfo.isEmpty())
+        {
+            EquipmentItem equipItem;
             for (int k = 0, size = equipInfo.rows(); k < size; ++k)
-                poss.equipSlots.insert(std::pair<unsigned int, unsigned int>(
-                                        toUint(equipInfo(k, 0)),
-                                        toUint(equipInfo(k, 1))));
+            {
+                equipItem.itemId = toUint(equipInfo(k, 1));
+                equipItem.itemInstance = toUint(equipInfo(k, 2));
+                equipData.insert(std::pair<unsigned int, EquipmentItem>(
+                                     toUint(equipInfo(k, 0)),
+                                     equipItem));
+            }
+        }
+        poss.setEquipment(equipData);
     }
     catch (const dal::DbSqlQueryExecFailure &e)
     {
@@ -515,6 +538,7 @@ Character *Storage::getCharacterBySQL(Account *owner)
             << " where owner_id = '"
             << character->getDatabaseID() << "' order by slot asc;";
 
+        InventoryData inventoryData;
         const dal::RecordSet &itemInfo = mDb->execSql(sql.str());
         if (!itemInfo.isEmpty())
         {
@@ -524,9 +548,10 @@ Character *Storage::getCharacterBySQL(Account *owner)
                 unsigned short slot = toUint(itemInfo(k, 2));
                 item.itemId   = toUint(itemInfo(k, 3));
                 item.amount   = toUint(itemInfo(k, 4));
-                poss.inventory[slot] = item;
+                inventoryData[slot] = item;
             }
         }
+        poss.setInventory(inventoryData);
     }
     catch (const dal::DbSqlQueryExecFailure &e)
     {
@@ -798,18 +823,18 @@ bool Storage::updateCharacter(Character *character)
         std::ostringstream sql;
 
         sql << "insert into " << CHAR_EQUIPS_TBL_NAME
-            << " (owner_id, slot_type, inventory_slot) values ("
+            << " (owner_id, slot_type, item_id, item_instance) values ("
             << character->getDatabaseID() << ", ";
         std::string base = sql.str();
 
         const Possessions &poss = character->getPossessions();
-        for (EquipData::const_iterator it = poss.equipSlots.begin(),
-             it_end = poss.equipSlots.end();
-             it != it_end;
-             ++it)
+        const EquipData &equipData = poss.getEquipment();
+        for (EquipData::const_iterator it = equipData.begin(),
+             it_end = equipData.end(); it != it_end; ++it)
         {
                 sql.str("");
-                sql << base << it->first << ", " << it->second << ");";
+                sql << base << it->first << ", " << it->second.itemId
+                    << ", " << it->second.itemInstance << ");";
                 mDb->execSql(sql.str());
         }
 
@@ -820,13 +845,14 @@ bool Storage::updateCharacter(Character *character)
             << character->getDatabaseID() << ", ";
         base = sql.str();
 
-        for (InventoryData::const_iterator j = poss.inventory.begin(),
-             j_end = poss.inventory.end(); j != j_end; ++j)
+        const InventoryData &inventoryData = poss.getInventory();
+        for (InventoryData::const_iterator j = inventoryData.begin(),
+             j_end = inventoryData.end(); j != j_end; ++j)
         {
             sql.str("");
             unsigned short slot = j->first;
-            unsigned int   itemId = j->second.itemId;
-            unsigned int   amount = j->second.amount;
+            unsigned int itemId = j->second.itemId;
+            unsigned int amount = j->second.amount;
             assert(itemId);
             sql << base << slot << ", " << itemId << ", " << amount << ");";
             mDb->execSql(sql.str());
@@ -1359,6 +1385,82 @@ void Storage::removeGuildMember(int guildId, int memberId)
         utils::throwError("(DALStorage::removeGuildMember) SQL query failure: ",
                           e);
     }
+}
+
+void Storage::addFloorItem(int mapId, int itemId, int amount,
+                           int posX, int posY)
+{
+    try
+    {
+        std::ostringstream sql;
+        sql << "INSERT INTO " << FLOOR_ITEMS_TBL_NAME
+        << " (map_id, item_id, amount, pos_x, pos_y)"
+        << " VALUES ("
+        << mapId << ", "
+        << itemId << ", "
+        << amount << ", "
+        << posX << ", "
+        << posY << ");";
+        mDb->execSql(sql.str());
+    }
+    catch (const dal::DbSqlQueryExecFailure& e)
+    {
+        utils::throwError("(DALStorage::addFloorItem) SQL query failure: ", e);
+    }
+}
+
+void Storage::removeFloorItem(int mapId, int itemId, int amount,
+                                int posX, int posY)
+{
+    try
+    {
+        std::ostringstream sql;
+        sql << "DELETE FROM " << FLOOR_ITEMS_TBL_NAME
+        << " WHERE map_id = "
+        << mapId << " AND item_id = "
+        << itemId << " AND amount = "
+        << amount << " AND pos_x = "
+        << posX << " AND pos_y = "
+        << posY << ";";
+        mDb->execSql(sql.str());
+    }
+    catch (const dal::DbSqlQueryExecFailure& e)
+    {
+        utils::throwError("(DALStorage::removeFloorItem) SQL query failure: ",
+                          e);
+    }
+}
+
+std::list<FloorItem> Storage::getFloorItemsFromMap(int mapId)
+{
+    std::list<FloorItem> floorItems;
+
+    try
+    {
+        std::ostringstream sql;
+        sql << "SELECT * FROM " << FLOOR_ITEMS_TBL_NAME
+        << " WHERE map_id = " << mapId;
+
+        string_to< unsigned > toUint;
+        const dal::RecordSet &itemInfo = mDb->execSql(sql.str());
+        if (!itemInfo.isEmpty())
+        {
+            for (int k = 0, size = itemInfo.rows(); k < size; ++k)
+            {
+                floorItems.push_back(FloorItem(toUint(itemInfo(k, 2)),
+                                                toUint(itemInfo(k, 3)),
+                                                toUint(itemInfo(k, 4)),
+                                                toUint(itemInfo(k, 5))));
+            }
+        }
+    }
+    catch (const dal::DbSqlQueryExecFailure &e)
+    {
+        utils::throwError("DALStorage::getFloorItemsFromMap "
+            "SQL query failure: ", e);
+    }
+
+    return floorItems;
 }
 
 void Storage::setMemberRights(int guildId, int memberId, int rights)

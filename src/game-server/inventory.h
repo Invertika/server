@@ -35,30 +35,15 @@ class Inventory
 
         /**
          * Creates a view on the possessions of a character.
-         * @param delayed If the changes need to be cancelable.
          */
-        Inventory(Character *, bool delayed = false);
+        Inventory(Character *);
 
         /**
          * Commits delayed changes if applicable.
          * Sends the update message to the client.
          */
-        ~Inventory();
-
-        /**
-         * Commits changes.
-         * Exclusive to delayed mode.
-         * @param doRestart Whether to prepare the inventory for more changes
-                   after this. If you are unsure, it is safe (though not
-                   terribly efficient) to leave this as true.
-         */
-        void commit(bool doRestart = true);
-
-        /**
-         * Cancels changes.
-         * Exclusive to delayed mode.
-         */
-        void cancel();
+        ~Inventory()
+        {}
 
         /**
          * Sends complete inventory status to the client.
@@ -73,25 +58,17 @@ class Inventory
 
         /**
          * Equips item from given inventory slot.
-         * @param slot The slot in which the target item is in.
-         * @param override Whether this item can unequip other items to equip
-         *            itself. If true, items that are unequipped will be
-         *            attempted to be reequipped, but with override disabled.
+         * @param inventorySlot The slot in which the target item is in.
          * @returns whether the item could be equipped.
          */
-        bool equip(int slot, bool override = true);
+        bool equip(int inventorySlot);
 
         /**
          * Unequips item from given equipment slot.
-         * @param it Starting iterator. When the only parameter, also extracts
-         *           slot number from it.
-         *           Used so that when we already have an iterator to the first
-         *           occurence from a previous operation we can start from
-         *           there.
+         * @param itemInstance The item instance id used to know what to unequip
          * @returns Whether it was unequipped.
          */
-        bool unequip(EquipData::iterator it);
-        bool unequip(unsigned int slot, EquipData::iterator *itp = 0);
+        bool unequip(unsigned int itemInstance);
 
         /**
          * Inserts some items into the inventory.
@@ -101,16 +78,16 @@ class Inventory
 
         /**
          * Removes some items from inventory.
-         * @param force If set to true, also remove any equipment encountered
          * @return number of items not removed.
          */
-        unsigned int remove(unsigned int itemId, unsigned int amount, bool force = false);
+        unsigned int remove(unsigned int itemId, unsigned int amount);
 
         /**
          * Moves some items from the first slot to the second one.
          * @returns number of items not moved.
          */
-        unsigned int move(unsigned int slot1, unsigned int slot2, unsigned int amount);
+        unsigned int move(unsigned int slot1, unsigned int slot2,
+                          unsigned int amount);
 
         /**
          * Removes some items from inventory.
@@ -129,18 +106,44 @@ class Inventory
         unsigned int getItem(unsigned int slot) const;
 
     private:
+        /**
+         * Tell whether the equipment slot has enough room in an equipment slot.
+         * @param equipmentSlot the slot in equipement to check.
+         * @param capacityRequested the capacity needed.
+         */
+        bool checkEquipmentCapacity(unsigned int equipmentSlot,
+                                    unsigned int capacityRequested);
 
         /**
-         * Make sure that changes are being done on a copy, not directly.
-         * No effect when not in delayed mode.
+         * Test whether the inventory has enough space to welcome
+         * the willing-to-be equipment slot.
+         * @todo
          */
-        void prepare();
+        bool hasInventoryEnoughSpace(unsigned int equipmentSlot)
+        { return true; }
 
         /**
-         * Starts a new notification message.
+         * Test the items unequipment requirements.
+         * This is especially useful for scripted equipment.
+         * @todo
          */
-        void restart();
+        bool testUnequipScriptRequirements(unsigned int equipementSlot)
+        { return true; }
 
+        /**
+         * Test the items equipment for scripted requirements.
+         * @todo
+         */
+        bool testEquipScriptRequirements(unsigned int itemId)
+        { return true; }
+
+        /**
+         * Return an equip item instance id unique to the item used,
+         * per character.
+         * This is used to differenciate some items that can be equipped
+         * multiple times, like one-handed weapons for instance.
+         */
+        unsigned int getNewEquipItemInstance();
 
         /**
          * Check the inventory is within the slot limit and capacity.
@@ -150,29 +153,19 @@ class Inventory
         void checkInventorySize();
 
         /**
-         * Helper function for equip() when computing changes to equipment
-         * When newCount is 0, the item is being unequipped.
+         * Check potential visible character sprite changes.
          */
-        // inventory slot -> {equip slots}
-        typedef std::multimap<unsigned int, unsigned short> IdSlotMap;
-        void equip_sub(unsigned int newCount, IdSlotMap::const_iterator &it);
+        void checkLookchanges(unsigned int slotTypeId);
 
         /**
-         * Changes equipment and adjusts character attributes.
+         * Apply equipment triggers.
          */
-        void changeEquipment(unsigned int oldId, unsigned int itemId);
-        void changeEquipment(ItemClass *oldI, ItemClass *newI);
+        void updateEquipmentTrigger(unsigned int oldId, unsigned int itemId);
+        void updateEquipmentTrigger(ItemClass *oldI, ItemClass *newI);
 
         Possessions *mPoss; /**< Pointer to the modified possessions. */
-        /**
-         * Update message containing inventory changes.
-         * Note that in sendFull(), this is reused to send all full changes
-         * (for both inventory and equipment)
-         */
-        MessageOut mInvMsg;
-        MessageOut mEqmMsg; /**< Update message containing equipment changes */
+
         Character *mCharacter; /**< Character to notify. */
-        bool mDelayed;      /**< Delayed changes. */
 };
 
 #endif

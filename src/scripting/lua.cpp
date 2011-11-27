@@ -367,7 +367,7 @@ static int chr_inv_change(lua_State *s)
         return 0;
     }
     int nb_items = (lua_gettop(s) - 1) / 2;
-    Inventory inv(q, true);
+    Inventory inv(q);
     for (int i = 0; i < nb_items; ++i)
     {
         if (!(lua_isnumber(s, i * 2 + 2) || lua_isstring(s, i * 2 + 2)) ||
@@ -405,12 +405,13 @@ static int chr_inv_change(lua_State *s)
         id = ic->getDatabaseID();
         if (nb < 0)
         {
+            // Removing too much item is a success as for the scripter's
+            // point of view. We log it anyway.
             nb = inv.remove(id, -nb);
             if (nb)
             {
-                inv.cancel();
-                lua_pushboolean(s, 0);
-                return 1;
+                LOG_WARN("mana.chr_inv_change() removed more items than owned: "
+                     << "character: " << q->getName() << " item id: " << id);
             }
         }
         else
@@ -473,6 +474,23 @@ static int chr_inv_count(lua_State *s)
         }
     }
     return nb_items;
+}
+
+/**
+ * mana.chr_get_level(Character*): int level
+ * Tells the character current level.
+ */
+static int chr_get_level(lua_State *s)
+{
+    Character *ch = getCharacter(s, 1);
+    if (!ch)
+    {
+        raiseScriptError(s, "chr_get_level "
+                         "called for nonexistent character.");
+    }
+
+    lua_pushinteger(s, ch->getLevel());
+    return 1;
 }
 
 /**
@@ -1155,14 +1173,14 @@ static int monster_change_anger(lua_State *s)
  */
 static int monster_remove(lua_State *s)
 {
-    bool monsterEnqueued = false;
+    bool monsterRemoved = false;
     Monster *m = getMonster(s, 1);
     if (m)
     {
-        GameState::enqueueRemove(m);
-        monsterEnqueued = true;
+        GameState::remove(m);
+        monsterRemoved = true;
     }
-    lua_pushboolean(s, monsterEnqueued);
+    lua_pushboolean(s, monsterRemoved);
     return 1;
 }
 
@@ -1414,14 +1432,27 @@ static int chat_message(lua_State *s)
 
 /**
  * mana.get_beings_in_circle(int x, int y, int radius): table of Being*
+ * mana.get_beings_in_circle(handle centerBeing, int radius): table of Being*
  * Gets a LUA table with the Being* pointers of all beings
  * inside of a circular area of the current map.
  */
 static int get_beings_in_circle(lua_State *s)
 {
-    const int x = luaL_checkint(s, 1);
-    const int y = luaL_checkint(s, 2);
-    const int r = luaL_checkint(s, 3);
+    int x, y, r;
+    if (lua_islightuserdata(s, 1))
+    {
+        Being *b = getBeing(s, 1);
+        const Point &pos = b->getPosition();
+        x = pos.x;
+        y = pos.y;
+        r = luaL_checkint(s, 2);
+    }
+    else
+    {
+        x = luaL_checkint(s, 1);
+        y = luaL_checkint(s, 2);
+        r = luaL_checkint(s, 3);
+    }
 
     lua_pushlightuserdata(s, (void *)&registryKey);
     lua_gettable(s, LUA_REGISTRYINDEX);
@@ -1793,6 +1824,25 @@ static int chr_get_gender(lua_State *s)
 }
 
 /**
+ * mana.chr_set_gender(Character*, int gender): void
+ * Set the gender of the character.
+ */
+static int chr_set_gender(lua_State *s)
+{
+    Character *c = getCharacter(s, 1);
+    if (!c)
+    {
+        raiseScriptError(s, "chr_set_gender called for nonexistent character.");
+        return 0;
+    }
+
+    const int gender = luaL_checkinteger(s, 2);
+    c->setGender(gender);
+
+    return 0;
+}
+
+/**
  * mana.chr_give_special(Character*, int special): void
  * Enables a special for a character.
  */
@@ -2102,6 +2152,132 @@ static int get_distance(lua_State *s)
     return 1;
 }
 
+/**
+ * mana.map_get_objects(): table of all objects
+ * mana.map_get_objects(string type): table of all objects of type
+ * Gets the objects of a map.
+ */
+static int map_get_objects(lua_State *s)
+{
+    const bool filtered = (lua_gettop(s) == 1);
+    std::string filter;
+    if (filtered)
+        filter = luaL_checkstring(s, 1);
+
+    lua_pushlightuserdata(s, (void *)&registryKey);
+    lua_gettable(s, LUA_REGISTRYINDEX);
+    Script *t = static_cast<Script *>(lua_touserdata(s, -1));
+    const std::vector<MapObject*> &objects = t->getMap()->getMap()->getObjects();
+
+    if (!filtered)
+        pushSTLContainer<MapObject*>(s, objects);
+    else
+    {
+        std::vector<MapObject*> filteredObjects;
+        for (std::vector<MapObject*>::const_iterator it = objects.begin();
+             it != objects.end(); ++it)
+        {
+            if (utils::compareStrI((*it)->getType(), filter) == 0)
+            {
+                filteredObjects.push_back(*it);
+            }
+        }
+        pushSTLContainer<MapObject*>(s, filteredObjects);
+    }
+    return 1;
+}
+
+/**
+ * mana.map_object_get_property(handle object, string key)
+ * Returns the value of the object property 'key'.
+ */
+static int map_object_get_property(lua_State *s)
+{
+    std::string key = luaL_checkstring(s, 2);
+    if (!lua_islightuserdata(s, 1))
+    {
+        raiseScriptError(s, "map_object_get_property called with invalid"
+                            "object handle");
+        return 0;
+    }
+    MapObject *obj = static_cast<MapObject *>(lua_touserdata(s, 1));
+    if (obj)
+    {
+        std::string property = obj->getProperty(key);
+        if (!property.empty())
+        {
+            lua_pushstring(s, property.c_str());
+            return 1;
+        }
+        else
+        {
+            // scripts can check for nil
+            return 0;
+        }
+    }
+    else
+    {
+        raiseScriptError(s, "map_object_get_property called with invalid"
+                            "object handle");
+        return 0;
+    }
+}
+
+/**
+ * mana.map_object_get_bounds(object)
+ * Returns 4 int: x/y/width/height of object.
+ */
+static int map_object_get_bounds(lua_State *s)
+{
+    if (!lua_islightuserdata(s, 1))
+    {
+        raiseScriptError(s, "map_object_get_bounds called with invalid"
+                            "object handle");
+        return 0;
+    }
+    MapObject *obj = static_cast<MapObject *>(lua_touserdata(s, 1));
+    const Rectangle &bounds = obj->getBounds();
+    lua_pushinteger(s, bounds.x);
+    lua_pushinteger(s, bounds.y);
+    lua_pushinteger(s, bounds.w);
+    lua_pushinteger(s, bounds.h);
+    return 4;
+}
+
+/**
+ * mana.map_object_get_name(object)
+ * Returns the name of the object.
+ */
+static int map_object_get_name(lua_State *s)
+{
+    if (!lua_islightuserdata(s, 1))
+    {
+        raiseScriptError(s, "map_object_get_name called with invalid"
+                            "object handle");
+        return 0;
+    }
+    MapObject *obj = static_cast<MapObject *>(lua_touserdata(s, 1));
+    lua_pushstring(s, obj->getName().c_str());
+    return 1;
+}
+
+/**
+ * mana.map_object_get_type(object)
+ * Returns the type of the object.
+ */
+static int map_object_get_type(lua_State *s)
+{
+    if (!lua_islightuserdata(s, 1))
+    {
+        raiseScriptError(s, "map_object_get_type called with invalid"
+                            "object handle");
+        return 0;
+    }
+    MapObject *obj = static_cast<MapObject *>(lua_touserdata(s, 1));
+    lua_pushstring(s, obj->getType().c_str());
+    return 1;
+}
+
 static int require_loader(lua_State *s)
 {
     // Add .lua extension (maybe only do this when it doesn't have it already)
@@ -2144,6 +2320,7 @@ LuaScript::LuaScript():
         { "chr_warp",                        &chr_warp                        },
         { "chr_inv_change",                  &chr_inv_change                  },
         { "chr_inv_count",                   &chr_inv_count                   },
+        { "chr_get_level",                   &chr_get_level                   },
         { "chr_get_quest",                   &chr_get_quest                   },
         { "chr_set_quest",                   &chr_set_quest                   },
         { "getvar_map",                      &getvar_map                      },
@@ -2160,6 +2337,7 @@ LuaScript::LuaScript():
         { "chr_get_hair_color",              &chr_get_hair_color              },
         { "chr_get_kill_count",              &chr_get_kill_count              },
         { "chr_get_gender",                  &chr_get_gender                  },
+        { "chr_set_gender",                  &chr_set_gender                  },
         { "chr_give_special",                &chr_give_special                },
         { "chr_has_special",                 &chr_has_special                 },
         { "chr_take_special",                &chr_take_special                },
@@ -2209,6 +2387,11 @@ LuaScript::LuaScript():
         { "npc_ask_string",                  &npc_ask_string                  },
         { "log",                             &log                             },
         { "get_distance",                    &get_distance                    },
+        { "map_get_objects",                 &map_get_objects                 },
+        { "map_object_get_property",         &map_object_get_property         },
+        { "map_object_get_bounds",           &map_object_get_bounds           },
+        { "map_object_get_name",             &map_object_get_name             },
+        { "map_object_get_type",             &map_object_get_type             },
         { NULL, NULL }
     };
     luaL_register(mState, "mana", callbacks);

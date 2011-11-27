@@ -131,7 +131,8 @@ void Monster::perform()
                 {
                     setTimerHard(T_M_ATTACK_TIME, mCurrentAttack->aftDelay
                                                   + mCurrentAttack->preDelay);
-                    Damage dmg(getModifiedAttribute(MOB_ATTR_PHY_ATK_MIN) *
+                    Damage dmg(0,
+                               getModifiedAttribute(MOB_ATTR_PHY_ATK_MIN) *
                                     mCurrentAttack->damageFactor,
                                getModifiedAttribute(MOB_ATTR_PHY_ATK_DELTA) *
                                     mCurrentAttack->damageFactor,
@@ -334,7 +335,9 @@ void Monster::loadScript(const std::string &scriptName)
     if (ResourceManager::exists(filename.str()))
     {
         LOG_INFO("Loading monster script: " << filename.str());
-        mScript = Script::create("lua");
+        std::string engineName =
+                Script::determineEngineByFilename(filename.str());
+        mScript = Script::create(engineName);
         mScript->loadFile(filename.str());
     }
     else
@@ -421,22 +424,14 @@ int Monster::damage(Actor *source, const Damage &damage)
     {
         Character *s = static_cast< Character * >(source);
 
-        std::list<size_t>::const_iterator iSkill;
-        for (iSkill = damage.usedSkills.begin();
-             iSkill != damage.usedSkills.end(); ++iSkill)
+        mExpReceivers[s].insert(damage.skill);
+        if (!isTimerRunning(T_M_KILLSTEAL_PROTECTED) || mOwner == s
+            || mOwner->getParty() == s->getParty())
         {
-            if (*iSkill)
-            {
-                mExpReceivers[s].insert(*iSkill);
-                if (!isTimerRunning(T_M_KILLSTEAL_PROTECTED) || mOwner == s
-                    || mOwner->getParty() == s->getParty())
-                {
-                    mOwner = s;
-                    mLegalExpReceivers.insert(s);
-                    setTimerHard(T_M_KILLSTEAL_PROTECTED,
-                                 KILLSTEAL_PROTECTION_TIME);
-                }
-            }
+            mOwner = s;
+            mLegalExpReceivers.insert(s);
+            setTimerHard(T_M_KILLSTEAL_PROTECTED,
+                         KILLSTEAL_PROTECTION_TIME);
         }
     }
     return HPLoss;
