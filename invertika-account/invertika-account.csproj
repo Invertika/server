@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2C2FEB66-F7DB-4EB0-A65E-15478AB982C5}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>invertika_account</RootNamespace>
+    <AssemblyName>invertika-account</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <StartupObject>invertika_account.Program</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugType>none</DebugType>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Account\Account.cs" />
+    <Compile Include="Account\AccountClient.cs" />
+    <Compile Include="Account\AccountClientHandler.cs" />
+    <Compile Include="Account\AccountClientStatus.cs" />
+    <Compile Include="Account\AccountHandler.cs" />
+    <Compile Include="Account\Character.cs" />
+    <Compile Include="Account\FloorItem.cs" />
+    <Compile Include="Account\GameServer.cs" />
+    <Compile Include="Account\GameServerHandler.cs" />
+    <Compile Include="Account\ServerHandler.cs" />
+    <Compile Include="Chat\ChatChannel.cs" />
+    <Compile Include="Chat\ChatChannelManager.cs" />
+    <Compile Include="Chat\ChatClient.cs" />
+    <Compile Include="Chat\ChatHandler.cs" />
+    <Compile Include="Chat\Guild.cs" />
+    <Compile Include="Chat\GuildManager.cs" />
+    <Compile Include="Chat\Letter.cs" />
+    <Compile Include="Chat\Party.cs" />
+    <Compile Include="Chat\PartyInvite.cs" />
+    <Compile Include="Chat\Pending.cs" />
+    <Compile Include="Chat\Post.cs" />
+    <Compile Include="Chat\PostManager.cs" />
+    <Compile Include="Common\Transaction.cs" />
+    <Compile Include="DAL\AlreadySetException.cs" />
+    <Compile Include="DAL\DataProvider.cs" />
+    <Compile Include="DAL\DataProviderFactory.cs" />
+    <Compile Include="DAL\DbBackends.cs" />
+    <Compile Include="DAL\DbConnectionFailure.cs" />
+    <Compile Include="DAL\DbException.cs" />
+    <Compile Include="DAL\DbSqlQueryExecFailureException.cs" />
+    <Compile Include="DAL\RecordSet.cs" />
+    <Compile Include="DAL\RsColumnHeadersNotSetException.cs" />
+    <Compile Include="DAL\SqLiteDataProvider.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Account\Storage.cs" />
+    <Compile Include="Utilities\TokenCollector.cs" />
+    <Compile Include="Utilities\TokenCollectorBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ISL.Server\ISL.Server.csproj">
+      <Project>{BD80B35E-0FA9-4599-A932-4012F9534A9C}</Project>
+      <Name>ISL.Server</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Development\cscl.googlecode.com\CSCL\CSCL.csproj">
+      <Project>{0E720343-5366-4C3A-BC59-7B7FD2C311B5}</Project>
+      <Name>CSCL</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Enums\" />
+    <Folder Include="Game\" />
+    <Folder Include="Misc\" />
+    <Folder Include="Network\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

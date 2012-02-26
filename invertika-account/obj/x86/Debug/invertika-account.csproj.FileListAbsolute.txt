@@ -1,0 +1,8 @@
+D:\#\Dropbox\Private\Development\Rebuild\invertika-account\obj\x86\Debug\ResolveAssemblyReference.cache
+D:\#\Dropbox\Private\Development\Rebuild\invertika-account\bin\Debug\invertika-account.exe
+D:\#\Dropbox\Private\Development\Rebuild\invertika-account\bin\Debug\invertika-account.pdb
+D:\#\Dropbox\Private\Development\Rebuild\invertika-account\obj\x86\Debug\invertika-account.exe
+D:\#\Dropbox\Private\Development\Rebuild\invertika-account\obj\x86\Debug\invertika-account.pdb
+D:\#\Dropbox\Private\Development\Rebuild\invertika-account\bin\Debug\invertika-account.exe.config
+D:\#\Dropbox\Private\Development\Rebuild\invertika-account\bin\Debug\CSCL.dll
+D:\#\Dropbox\Private\Development\Rebuild\invertika-account\bin\Debug\CSCL.pdb

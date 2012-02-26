@@ -1,0 +1,8 @@
+D:\#\Dropbox\Private\Development\Rebuild\invertika-game\bin\Release\invertika-game.exe.config
+D:\#\Dropbox\Private\Development\Rebuild\invertika-game\bin\Release\invertika-game.exe
+D:\#\Dropbox\Private\Development\Rebuild\invertika-game\bin\Release\CSCL.dll
+D:\#\Dropbox\Private\Development\Rebuild\invertika-game\bin\Release\ISL.Server.dll
+D:\#\Dropbox\Private\Development\Rebuild\invertika-game\bin\Release\CSCL.pdb
+D:\#\Dropbox\Private\Development\Rebuild\invertika-game\bin\Release\ISL.Server.pdb
+D:\#\Dropbox\Private\Development\Rebuild\invertika-game\obj\Release\ResolveAssemblyReference.cache
+D:\#\Dropbox\Private\Development\Rebuild\invertika-game\obj\Release\invertika-game.exe

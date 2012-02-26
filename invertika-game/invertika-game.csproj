@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{22998F26-5122-4577-A0F7-54150A26C5F4}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>invertika_game</RootNamespace>
+    <AssemblyName>invertika-game</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugType>none</DebugType>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\AttributeInfoType.cs" />
+    <Compile Include="Common\BeingAction.cs" />
+    <Compile Include="Common\BeingGender.cs" />
+    <Compile Include="Common\DamageType.cs" />
+    <Compile Include="Common\PermissionManager.cs" />
+    <Compile Include="Common\Result.cs" />
+    <Compile Include="Game\AutoAttacks.cs" />
+    <Compile Include="Game\Being.cs" />
+    <Compile Include="Game\Damage.cs" />
+    <Compile Include="Game\MapManager.cs" />
+    <Compile Include="Game\ModifierEffectType.cs" />
+    <Compile Include="Game\AccountConnection.cs" />
+    <Compile Include="Game\Actor.cs" />
+    <Compile Include="Game\AttributeManager.cs" />
+    <Compile Include="Game\Character.cs" />
+    <Compile Include="Game\DelayedEvent.cs" />
+    <Compile Include="Game\GameClient.cs" />
+    <Compile Include="Game\GameHandler.cs" />
+    <Compile Include="Game\GameState.cs" />
+    <Compile Include="Game\ItemClass.cs" />
+    <Compile Include="Game\ItemManager.cs" />
+    <Compile Include="Game\MapComposite.cs" />
+    <Compile Include="Game\ModifierLocation.cs" />
+    <Compile Include="Game\MonsterAttack.cs" />
+    <Compile Include="Game\MonsterClass.cs" />
+    <Compile Include="Game\MonsterDrop.cs" />
+    <Compile Include="Game\MonsterManager.cs" />
+    <Compile Include="Game\PostMan.cs" />
+    <Compile Include="Game\ScopeType.cs" />
+    <Compile Include="Game\SkillManager.cs" />
+    <Compile Include="Game\Status.cs" />
+    <Compile Include="Game\StatusEffect.cs" />
+    <Compile Include="Game\StatusManager.cs" />
+    <Compile Include="Game\Thing.cs" />
+    <Compile Include="Game\TimerID.cs" />
+    <Compile Include="Network\Connection.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scripting\Script.cs" />
+    <Compile Include="Utils\StringFilter.cs" />
+    <Compile Include="Utils\Timer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ISL.Server\ISL.Server.csproj">
+      <Project>{BD80B35E-0FA9-4599-A932-4012F9534A9C}</Project>
+      <Name>ISL.Server</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Development\cscl.googlecode.com\CSCL\CSCL.csproj">
+      <Project>{0E720343-5366-4C3A-BC59-7B7FD2C311B5}</Project>
+      <Name>CSCL</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
