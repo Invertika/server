@@ -1,8 +1,0 @@
-D:\#\Dropbox\Private\Development\Rebuild\invertika-game\bin\Debug\invertika-game.exe
-D:\#\Dropbox\Private\Development\Rebuild\invertika-game\bin\Debug\invertika-game.pdb
-D:\#\Dropbox\Private\Development\Rebuild\invertika-game\obj\x86\Debug\ResolveAssemblyReference.cache
-D:\#\Dropbox\Private\Development\Rebuild\invertika-game\obj\x86\Debug\invertika-game.exe
-D:\#\Dropbox\Private\Development\Rebuild\invertika-game\obj\x86\Debug\invertika-game.pdb
-D:\#\Dropbox\Private\Development\Rebuild\invertika-game\bin\Debug\invertika-game.exe.config
-D:\#\Dropbox\Private\Development\Rebuild\invertika-game\bin\Debug\ISL.Server.dll
-D:\#\Dropbox\Private\Development\Rebuild\invertika-game\bin\Debug\ISL.Server.pdb
