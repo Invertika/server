@@ -209,6 +209,7 @@ namespace invertika_game
 
 			try
 			{
+				if(options.configPath==null) options.configPath=Configuration.DEFAULT_CONFIG_FILE;
 				Configuration.Init(options.configPath);
 			}
 			catch

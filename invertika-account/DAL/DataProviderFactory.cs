@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ISL.Server.Common;
 
 namespace invertika_account.DAL
 {
@@ -12,16 +13,26 @@ namespace invertika_account.DAL
 		 */
 		public static DataProvider createDataProvider()
 		{
-			//#if defined (MYSQL_SUPPORT)
-			//    MySqlDataProvider* provider = new MySqlDataProvider;
-			//    return provider;
-			//#elif defined (POSTGRESQL_SUPPORT)
-			//    PqDataProvider *provider = new PqDataProvider;
-			//    return provider;
-			//#else // SQLITE_SUPPORT
-			SqLiteDataProvider provider=new SqLiteDataProvider();
-			return provider;
-			//#endif
+			//<option name="db_system" value="mysql"/>
+			string dbsystem=Configuration.getValue("db_system", "mysql");
+
+			switch(dbsystem.ToLower())
+			{
+				case "sqlite":
+					{
+						SqLiteDataProvider provider=new SqLiteDataProvider();
+						return provider;
+					}
+				case "mysql":
+					{
+						MySQLDataProvider provider=new MySQLDataProvider();
+						return provider;
+					}
+				default:
+					{
+						throw new Exception();
+					}
+			}
 		}
 	}
 }

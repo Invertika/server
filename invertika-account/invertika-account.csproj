@@ -85,6 +85,7 @@
     <Compile Include="DAL\DbConnectionFailure.cs" />
     <Compile Include="DAL\DbException.cs" />
     <Compile Include="DAL\DbSqlQueryExecFailureException.cs" />
+    <Compile Include="DAL\MySQLDataProvider.cs" />
     <Compile Include="DAL\RecordSet.cs" />
     <Compile Include="DAL\RsColumnHeadersNotSetException.cs" />
     <Compile Include="DAL\SqLiteDataProvider.cs" />

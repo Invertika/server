@@ -245,8 +245,6 @@ namespace invertika_account
 		 */
 		static int Main(string[] args)
 		{
-			Debug.WriteLine("YEAH");
-
 			//Logger
 			Logger.ChangeLogMode(LogMode.Debug);
 
@@ -256,6 +254,7 @@ namespace invertika_account
 
 			try
 			{
+				if(options.configPath==null) options.configPath=Configuration.DEFAULT_CONFIG_FILE;
 				Configuration.Init(options.configPath);
 			}
 			catch
