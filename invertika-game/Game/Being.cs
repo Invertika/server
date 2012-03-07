@@ -21,7 +21,7 @@ namespace invertika_game.Game
 		protected Point mDst;                 /**< Target coordinates. */
 		protected BeingGender mGender;        /**< Gender of the being. */
 
-		Being(ThingType type)
+		public Being(ThingType type)
 		{
 			//        Actor(type),
 			//    mAction(STAND),

@@ -88,7 +88,7 @@ namespace invertika_game.Common
 
 		static Result checkPermission(Character character, string permission)
 		{
-			//return checkPermission(character->getAccountLevel(), permission);
+			//return checkPermission(character.getAccountLevel(), permission);
 
 			return Result.PMR_ALLOWED; //ssk
 		}

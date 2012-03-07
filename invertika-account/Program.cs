@@ -32,7 +32,7 @@ namespace invertika_account
 		static string statisticsFile="";
 
 		/** Database handler. */
-		static Storage storage;
+		public static Storage storage;
 
 		/** Communications (chat) message handler */
 		static ChatHandler chatHandler;
@@ -354,10 +354,10 @@ namespace invertika_account
 
 			while(running)
 			{
-				//AccountClientHandler.process();
+				AccountClientHandler.process();
 
-				//GameServerHandler.process();
-				//chatHandler.process(50);
+				GameServerHandler.process();
+				chatHandler.process(50);
 
 				Thread.Sleep(50); //ssk
 			}

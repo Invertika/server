@@ -33,7 +33,7 @@ namespace invertika_account.Account
 
 		public static void prepareReconnect(string token, int id)
 		{
-			//accountHandler->mTokenCollector.addPendingConnect(token, id);
+			accountHandler.mTokenCollector.addPendingConnect(token, id);
 		}
 	}
 }

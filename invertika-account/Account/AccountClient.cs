@@ -26,7 +26,7 @@ namespace invertika_account.Account
 			//unsetAccount();
 		}
 
-		void setAccount(Account acc)
+		public void setAccount(Account acc)
 		{
 			//unsetAccount();
 			//mAccount = acc;

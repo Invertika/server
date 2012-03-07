@@ -45,7 +45,9 @@
     <Compile Include="Common\Result.cs" />
     <Compile Include="Game\AutoAttacks.cs" />
     <Compile Include="Game\Being.cs" />
+    <Compile Include="Game\BuySell.cs" />
     <Compile Include="Game\Damage.cs" />
+    <Compile Include="Game\Inventory.cs" />
     <Compile Include="Game\MapManager.cs" />
     <Compile Include="Game\ModifierEffectType.cs" />
     <Compile Include="Game\AccountConnection.cs" />
@@ -67,11 +69,15 @@
     <Compile Include="Game\PostMan.cs" />
     <Compile Include="Game\ScopeType.cs" />
     <Compile Include="Game\SkillManager.cs" />
+    <Compile Include="Game\Special.cs" />
     <Compile Include="Game\Status.cs" />
     <Compile Include="Game\StatusEffect.cs" />
     <Compile Include="Game\StatusManager.cs" />
     <Compile Include="Game\Thing.cs" />
     <Compile Include="Game\TimerID.cs" />
+    <Compile Include="Game\Trade.cs" />
+    <Compile Include="Game\TradedItem.cs" />
+    <Compile Include="Game\TradeState.cs" />
     <Compile Include="Network\Connection.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

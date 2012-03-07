@@ -31,15 +31,14 @@ namespace invertika_account.Account
 
 		Dictionary<int, DateTime> mLastLoginAttemptForIP;
 
-				/**
-		 * Token collector for connecting a client coming from a game server
-		 * without having to provide username and password a second time.
-		 */
-		TokenCollector<AccountHandler, AccountClient, int> mTokenCollector;
+		/**
+ * Token collector for connecting a client coming from a game server
+ * without having to provide username and password a second time.
+ */
+		public TokenCollector<AccountHandler, AccountClient, int> mTokenCollector;
 
 
 		public AccountHandler(string attributesFile)
-		//TODO Constructor Gedöns
 		//mTokenCollector(this),
 		//mStartingPoints(0),
 		//mAttributeMinimum(0),
@@ -820,28 +819,29 @@ namespace invertika_account.Account
 		{
 			MessageOut reply=new MessageOut(ManaServ.APMSG_RECONNECT_RESPONSE);
 
-			// Associate account with connection.
-			//Account acc = storage->getAccount(accountID);
-			//client->setAccount(acc);
-			//client->status = CLIENT_CONNECTED;
+			//Associate account with connection.
+			Account acc=Program.storage.getAccount(accountID);
+			client.setAccount(acc);
+			client.status=AccountClientStatus.CLIENT_CONNECTED;
 
-			//reply.writeInt8(ERRMSG_OK);
-			//client->send(reply);
+			reply.writeInt8(ManaServ.ERRMSG_OK);
+			client.send(reply);
 
-			//// Return information about available characters
-			//Characters &chars = acc->getCharacters();
+			// Return information about available characters
+			Dictionary<uint, Character> chars = acc.getCharacters();
 
-			//// Send characters list
-			//for (Characters::const_iterator i = chars.begin(), i_end = chars.end();
-			//     i != i_end; ++i)
-			//    sendCharacterData(*client, *(*i).second);
+			// Send characters list
+			foreach(Character character in chars.Values)
+			{
+				sendCharacterData(client, character);
+			}
 		}
 
 		void deletePendingClient(AccountClient client)
 		{
-			//MessageOut msg(APMSG_RECONNECT_RESPONSE);
-			//msg.writeInt8(ERRMSG_TIME_OUT);
-			//client->disconnect(msg);
+			MessageOut msg=new MessageOut(ManaServ.APMSG_RECONNECT_RESPONSE);
+			msg.writeInt8(ManaServ.ERRMSG_TIME_OUT);
+			client.disconnect(msg);
 			// The client will be deleted when the disconnect event is processed
 		}
 
