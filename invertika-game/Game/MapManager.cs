@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ISL.Server.Utilities;
+using CSCL;
+using System.Xml;
+using ISL.Server.Common;
 
 namespace invertika_game.Game
 {
@@ -16,41 +20,48 @@ namespace invertika_game.Game
 
 		public static int initialize(string mapReferenceFile)
 		{
-			//// Indicates the number of maps loaded successfully
-			//int loadedMaps = 0;
+			// Indicates the number of maps loaded successfully
+			int loadedMaps=0;
 
-			//XML::Document doc(mapReferenceFile);
-			//xmlNodePtr rootNode = doc.rootNode();
+			XmlData doc=new XmlData(mapReferenceFile);
 
-			//if (!rootNode || !xmlStrEqual(rootNode->name, BAD_CAST "maps"))
-			//{
-			//    LOG_ERROR("Item Manager: Error while parsing map database ("
-			//              << mapReferenceFile << ")!");
-			//    return loadedMaps;
-			//}
+			if(doc.ExistElement("maps")==false)
+			{
+				Logger.Add(LogLevel.Error, "Item Manager: Error while parsing map database ({0})!", mapReferenceFile);
+				return loadedMaps;
+			}
 
-			//LOG_INFO("Loading map reference: " << mapReferenceFile);
-			//for_each_xml_child_node(node, rootNode)
-			//{
-			//    if (!xmlStrEqual(node->name, BAD_CAST "map"))
-			//        continue;
+			Logger.Add(LogLevel.Information, "Loading map reference: {0}", mapReferenceFile);
 
-			//    int id = XML::getProperty(node, "id", 0);
-			//    std::string name = XML::getProperty(node, "name", std::string());
+			//Für jeden Mapknoten
+			List<XmlNode> nodes=doc.GetElements("maps.map");
 
-			//    // Test id and map name
-			//    if (id > 0 && !name.empty())
-			//    {
-			//        // Testing if the file is actually in the maps folder
-			//        std::string file = std::string("maps/") + name + ".tmx";
-			//        bool mapFileExists = ResourceManager::exists(file);
+			foreach(XmlNode node in nodes)
+			{
+				if(node.Name!="map") continue;
 
-			//        // Try to fall back on fully compressed map
-			//        if (!mapFileExists)
-			//        {
-			//            file += ".gz";
-			//            mapFileExists = ResourceManager::exists(file);
-			//        }
+				int id=Convert.ToInt32(node.Attributes["id"].Value);
+				string name=node.Attributes["name"].Value;
+
+				if(id>0&&name!="")
+				{
+					// Testing if the file is actually in the maps folder
+					string file="maps/"+name+".tmx";
+					bool mapFileExists=ResourceManager.exists(file);
+
+					if (mapFileExists)
+					{
+						maps[id]=new MapComposite(id, name);
+						++loadedMaps;
+					}
+
+				}
+			}
+
+
+			
+
+
 
 			//        if (mapFileExists)
 			//        {
@@ -72,12 +83,12 @@ namespace invertika_game.Game
 			//    }
 			//}
 
-			//if (loadedMaps > 0)
-			//    LOG_INFO(loadedMaps << " valid map file references were loaded.");
+			if(loadedMaps>0)
+			{
+				Logger.Add(LogLevel.Information, "{0} valid map file references were loaded.", loadedMaps);
+			}
 
-			//return loadedMaps;
-
-			return 0;
+			return loadedMaps;
 		}
 
 		static void deinitialize()

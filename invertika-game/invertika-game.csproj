@@ -43,12 +43,18 @@
     <Compile Include="Common\DamageType.cs" />
     <Compile Include="Common\PermissionManager.cs" />
     <Compile Include="Common\Result.cs" />
+    <Compile Include="Game\ActorIterator.cs" />
     <Compile Include="Game\AutoAttacks.cs" />
     <Compile Include="Game\Being.cs" />
+    <Compile Include="Game\BeingIterator.cs" />
     <Compile Include="Game\BuySell.cs" />
+    <Compile Include="Game\CharacterIterator.cs" />
     <Compile Include="Game\Damage.cs" />
+    <Compile Include="Game\FixedActorIterator.cs" />
     <Compile Include="Game\Inventory.cs" />
+    <Compile Include="Game\MapContent.cs" />
     <Compile Include="Game\MapManager.cs" />
+    <Compile Include="Game\MapZone.cs" />
     <Compile Include="Game\ModifierEffectType.cs" />
     <Compile Include="Game\AccountConnection.cs" />
     <Compile Include="Game\Actor.cs" />
@@ -66,6 +72,7 @@
     <Compile Include="Game\MonsterClass.cs" />
     <Compile Include="Game\MonsterDrop.cs" />
     <Compile Include="Game\MonsterManager.cs" />
+    <Compile Include="Game\ObjectBucket.cs" />
     <Compile Include="Game\PostMan.cs" />
     <Compile Include="Game\ScopeType.cs" />
     <Compile Include="Game\SkillManager.cs" />
@@ -78,6 +85,7 @@
     <Compile Include="Game\Trade.cs" />
     <Compile Include="Game\TradedItem.cs" />
     <Compile Include="Game\TradeState.cs" />
+    <Compile Include="Game\ZoneIterator.cs" />
     <Compile Include="Network\Connection.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
