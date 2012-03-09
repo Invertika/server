@@ -20,8 +20,6 @@ namespace invertika_game.Game
 		/** Maximum number of messages in sync buffer. */
 		const int SYNC_BUFFER_LIMIT=20;
 
-		Connection accConnection;
-
 		public AccountConnection()
 		{
 			// mSyncBuffer(0),
@@ -45,9 +43,7 @@ namespace invertika_game.Game
 
 			int accountServerPort=Configuration.getValue("net_accountListenToGamePort", alternativePort);
 
-			accConnection=new Connection();
-
-			if(!accConnection.start(accountServerAddress, accountServerPort))
+			if(!start(accountServerAddress, accountServerPort))
 			{
 				Logger.Add(LogLevel.Information, "Unable to create a connection to an account server.");
 				return false;
