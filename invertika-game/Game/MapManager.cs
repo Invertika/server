@@ -13,10 +13,10 @@ namespace invertika_game.Game
 	{
 		static Dictionary<int, MapComposite> maps=new Dictionary<int, MapComposite>();
 
-		//const MapManager::Maps &MapManager::getMaps()
-		//{
-		//    return maps;
-		//}
+		public static Dictionary<int, MapComposite> getMaps()
+		{
+			return maps;
+		}
 
 		public static int initialize(string mapReferenceFile)
 		{

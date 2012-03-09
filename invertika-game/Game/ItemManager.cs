@@ -83,7 +83,7 @@ namespace invertika_game.Game
 			return null; //ssk
 		}
 
-		uint getDatabaseVersion()
+		public uint getDatabaseVersion()
 		{
 			return mItemDatabaseVersion;
 		}

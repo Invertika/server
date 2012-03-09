@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using ISL.Server.Network;
 using invertika_game.Network;
+using ISL.Server.Common;
+using ISL.Server.Utilities;
 
 namespace invertika_game.Game
 {
@@ -18,6 +20,8 @@ namespace invertika_game.Game
 		/** Maximum number of messages in sync buffer. */
 		const int SYNC_BUFFER_LIMIT=20;
 
+		Connection accConnection;
+
 		public AccountConnection()
 		{
 			// mSyncBuffer(0),
@@ -31,51 +35,50 @@ namespace invertika_game.Game
 
 		public bool start(int gameServerPort)
 		{
-			//const std::string accountServerAddress =
-			//    Configuration::getValue("net_accountHost", "localhost");
+			string accountServerAddress=Configuration.getValue("net_accountHost", "localhost");
 
-			//// When the accountListenToGamePort is set, we use it.
-			//// Otherwise, we use the accountListenToClientPort + 1 if the option is set.
-			//// If neither, the DEFAULT_SERVER_PORT + 1 is used.
-			//int alternativePort =
-			//    Configuration::getValue("net_accountListenToClientPort", 0) + 1;
-			//if (alternativePort == 1)
-			//    alternativePort = DEFAULT_SERVER_PORT + 1;
-			//const int accountServerPort =
-			//    Configuration::getValue("net_accountListenToGamePort", alternativePort);
+			// When the accountListenToGamePort is set, we use it.
+			// Otherwise, we use the accountListenToClientPort + 1 if the option is set.
+			// If neither, the DEFAULT_SERVER_PORT + 1 is used.
+			int alternativePort=Configuration.getValue("net_accountListenToClientPort", 0)+1;
+			if(alternativePort==1) alternativePort=Configuration.DEFAULT_SERVER_PORT+1;
 
-			//if (!Connection::start(accountServerAddress, accountServerPort))
-			//{
-			//    LOG_INFO("Unable to create a connection to an account server.");
-			//    return false;
-			//}
+			int accountServerPort=Configuration.getValue("net_accountListenToGamePort", alternativePort);
 
-			//LOG_INFO("Connection established to the account server.");
+			accConnection=new Connection();
 
-			//const std::string gameServerAddress =
-			//    Configuration::getValue("net_gameHost", "localhost");
-			//const std::string password =
-			//    Configuration::getValue("net_password", "changeMe");
+			if(!accConnection.start(accountServerAddress, accountServerPort))
+			{
+				Logger.Add(LogLevel.Information, "Unable to create a connection to an account server.");
+				return false;
+			}
 
-			//// Register with the account server and send the list of maps we handle
-			//MessageOut msg(GAMSG_REGISTER);
-			//msg.writeString(gameServerAddress);
-			//msg.writeInt16(gameServerPort);
-			//msg.writeString(password);
-			//msg.writeInt32(itemManager->getDatabaseVersion());
-			//const MapManager::Maps &m = MapManager::getMaps();
-			//for (MapManager::Maps::const_iterator i = m.begin(), i_end = m.end();
-			//        i != i_end; ++i)
-			//{
-			//    msg.writeInt16(i->first);
-			//}
-			//send(msg);
+			Logger.Add(LogLevel.Information, "Connection established to the account server.");
 
-			//// initialize sync buffer
-			//if (!mSyncBuffer)
-			//    mSyncBuffer = new MessageOut(GAMSG_PLAYER_SYNC);
 
-			return true;
+			string gameServerAddress=Configuration.getValue("net_gameHost", "localhost");
+			string password=Configuration.getValue("net_password", "changeMe");
+
+			// Register with the account server and send the list of maps we handle
+			MessageOut msg=new MessageOut(ManaServ.GAMSG_REGISTER);
+			msg.writeString(gameServerAddress);
+			msg.writeInt16(gameServerPort);
+			msg.writeString(password);
+			msg.writeInt32((int)Program.itemManager.getDatabaseVersion());
+
+			Dictionary<int, MapComposite> m=MapManager.getMaps();
+
+			foreach(int map in m.Keys)
+			{
+				msg.writeInt16(map);
+			}
+
+			send(msg);
+
+			// initialize sync buffer
+			if(mSyncBuffer==null) mSyncBuffer=new MessageOut(ManaServ.GAMSG_PLAYER_SYNC);
+
+			return true; //ssk
 		}
 
 		void sendCharacterData(Character p)

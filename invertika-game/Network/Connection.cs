@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ISL.Server.Network;
+using System.Net.Sockets;
 
 namespace invertika_game.Network
 {
 	public class Connection
 	{
+		TcpClient mRemote;
 		//ENetPeer* mRemote;
 		//ENetHost* mLocal;
-
 
 		//#ifdef ENET_VERSION_CREATE
 		//#define ENET_CUTOFF ENET_VERSION_CREATE(1,3,0)
@@ -24,8 +25,10 @@ namespace invertika_game.Network
 			//mLocal(0)
 		}
 
-		bool start(string address, int port)
+		public bool start(string address, int port)
 		{
+			mRemote=new TcpClient(address, port);
+
 			//    ENetAddress enetAddress;
 			//    enet_address_set_host(&enetAddress, address.c_str());
 			//    enetAddress.port = port;
@@ -87,8 +90,11 @@ namespace invertika_game.Network
 			return true; //ssk
 		}
 
-		void send(MessageOut msg, bool reliable, uint channel)
+		public void send(MessageOut msg)//, bool reliable, uint channel)
 		{
+			NetworkStream stream=mRemote.GetStream();
+			stream.Write(msg.getData(), 0, (int)msg.getLength()); 
+
 			//if (!mRemote) {
 			//    LOG_WARN("Can't send message to unconnected host! (" << msg << ")");
 			//    return;

@@ -41,7 +41,7 @@ namespace invertika_game
 		static StringFilter stringFilter; /**< Slang's Filter */
 
 		static AttributeManager attributeManager=new AttributeManager(DEFAULT_ATTRIBUTEDB_FILE);
-		static ItemManager itemManager=new ItemManager(DEFAULT_ITEMSDB_FILE, DEFAULT_EQUIPDB_FILE);
+		public static ItemManager itemManager=new ItemManager(DEFAULT_ITEMSDB_FILE, DEFAULT_EQUIPDB_FILE);
 		static MonsterManager monsterManager=new MonsterManager(DEFAULT_MONSTERSDB_FILE);
 		static SkillManager skillManager=new SkillManager(DEFAULT_SKILLSDB_FILE);
 

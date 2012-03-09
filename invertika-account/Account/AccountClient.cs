@@ -14,10 +14,10 @@ namespace invertika_account.Account
 
 		public AccountClientStatus status;
 
-		public AccountClient(TcpClient peer):base(peer)
+		public AccountClient(TcpClient peer): base(peer)
 		{
-					 //NetComputer(peer);
-					 status=AccountClientStatus.CLIENT_LOGIN;
+			//NetComputer(peer);
+			status=AccountClientStatus.CLIENT_LOGIN;
 			//mAccount(NULL)
 		}
 
