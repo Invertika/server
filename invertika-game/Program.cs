@@ -33,7 +33,7 @@ namespace invertika_game
 
 		/** Timer for world ticks */
 		//utils::Timer worldTimer(WORLD_TICK_MS);
-		static Utils.Timer worldTimer;
+		static Utils.Timer worldTimer=new Utils.Timer(ManaServ.WORLD_TICK_MS, false);
 
 		static int worldTime=0;              /**< Current world time in ticks */
 		static bool running=true;            /**< Determines if server keeps running */

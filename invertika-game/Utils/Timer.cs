@@ -23,7 +23,7 @@ namespace invertika_game.Utils
 		 */
 		bool active;
 
-		Timer(uint ms, bool createActive)
+		public Timer(uint ms, bool createActive)
 		{
 			active=createActive;
 			interval=ms;
@@ -82,6 +82,5 @@ namespace invertika_game.Utils
 			TimeSpan timeDiff=DateTime.Now.ToUniversalTime()-timeBase;
 			return ((UInt64)timeDiff.TotalMilliseconds);
 		}
-
 	}
 }

@@ -11,7 +11,7 @@ namespace invertika_game.Game
 {
 	public static class MapManager
 	{
-		static Dictionary<int, MapComposite> maps;
+		static Dictionary<int, MapComposite> maps=new Dictionary<int, MapComposite>();
 
 		//const MapManager::Maps &MapManager::getMaps()
 		//{
@@ -49,39 +49,24 @@ namespace invertika_game.Game
 					string file="maps/"+name+".tmx";
 					bool mapFileExists=ResourceManager.exists(file);
 
-					if (mapFileExists)
+					if(mapFileExists)
 					{
 						maps[id]=new MapComposite(id, name);
 						++loadedMaps;
 					}
-
+				}
+				else
+				{
+					if(name=="")
+					{
+						Logger.Add(LogLevel.Warning, "Invalid unnamed map Id: {0}.", id);
+					}
+					else
+					{
+						Logger.Add(LogLevel.Warning, "Invalid map Id: {0}.", id);
+					}
 				}
 			}
-
-
-			
-
-
-
-			//        if (mapFileExists)
-			//        {
-			//            maps[id] = new MapComposite(id, name);
-			//            ++loadedMaps;
-			//        }
-			//    }
-			//    else
-			//    {
-			//        if (name.empty())
-			//        {
-			//            LOG_WARN("Invalid unnamed map Id: " << id << '.');
-			//        }
-			//        else
-			//        {
-			//            LOG_WARN("Invalid map Id: " << id << " for map: "
-			//                     << name << '.');
-			//        }
-			//    }
-			//}
 
 			if(loadedMaps>0)
 			{
