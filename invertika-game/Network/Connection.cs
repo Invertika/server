@@ -90,9 +90,18 @@ namespace invertika_game.Network
 			return true; //ssk
 		}
 
+		//TODO Connection zu Netcomputer zusammenfassen?
+
 		public void send(MessageOut msg)//, bool reliable, uint channel)
 		{
 			NetworkStream stream=mRemote.GetStream();
+
+
+			//Länge senden
+			ushort lengthPackage=(ushort)msg.getLength();
+			byte[] lengthAsByteArray=BitConverter.GetBytes(lengthPackage);
+			stream.Write(lengthAsByteArray, 0, (int)lengthAsByteArray.Length); 
+
 			stream.Write(msg.getData(), 0, (int)msg.getLength()); 
 
 			//if (!mRemote) {
