@@ -346,18 +346,29 @@ namespace invertika_account
 			storage.setWorldStateVar("accountserver_version", revision);
 			// -------------------------------------------------------------------------
 
+			//AccountClientHandler
 			Thread accountServerThread;	// Der Thread in dem die Process Funktion läuft
-
 			accountServerThread=new Thread(AccountClientHandler.process);
-			accountServerThread.Name="Account Server Thread";
+			accountServerThread.Name="AccountClientHandler Thread";
 			accountServerThread.Start();
+
+			//GameServerHandler
+			Thread gameServerThread;	// Der Thread in dem die Process Funktion läuft
+			gameServerThread=new Thread(GameServerHandler.process);
+			gameServerThread.Name="GameServerHandler Thread";
+			gameServerThread.Start();
+
+			//chatHandler
+			Thread chatServerThread;	// Der Thread in dem die Process Funktion läuft
+			chatServerThread=new Thread(chatHandler.process);
+			chatServerThread.Name="Chathandler Thread";
+			chatServerThread.Start();
 
 			while(running)
 			{
-				AccountClientHandler.process();
-
-				GameServerHandler.process();
-				chatHandler.process(50);
+				//AccountClientHandler.process();
+				//GameServerHandler.process();
+				//chatHandler.process(50);
 
 				Thread.Sleep(50); //ssk
 			}

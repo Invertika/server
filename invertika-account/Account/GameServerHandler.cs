@@ -30,7 +30,6 @@ namespace invertika_account.Account
 			serverHandler.process(50);
 		}
 
-
 		public static void dumpStatistics(StreamWriter os)
 		{
 			//for (ServerHandler::NetComputers::const_iterator
