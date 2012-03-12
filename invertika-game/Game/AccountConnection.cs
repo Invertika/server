@@ -56,7 +56,7 @@ namespace invertika_game.Game
 			string password=Configuration.getValue("net_password", "changeMe");
 
 			// Register with the account server and send the list of maps we handle
-			MessageOut msg=new MessageOut(ManaServ.GAMSG_REGISTER);
+			MessageOut msg=new MessageOut(Protocol.GAMSG_REGISTER);
 			msg.writeString(gameServerAddress);
 			msg.writeInt16(gameServerPort);
 			msg.writeString(password);
@@ -72,7 +72,7 @@ namespace invertika_game.Game
 			send(msg);
 
 			// initialize sync buffer
-			if(mSyncBuffer==null) mSyncBuffer=new MessageOut(ManaServ.GAMSG_PLAYER_SYNC);
+			if(mSyncBuffer==null) mSyncBuffer=new MessageOut(Protocol.GAMSG_PLAYER_SYNC);
 
 			return true; //ssk
 		}

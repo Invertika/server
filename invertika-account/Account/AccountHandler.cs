@@ -147,7 +147,7 @@ namespace invertika_account.Account
 
 		void sendCharacterData(AccountClient client, Character ch)
 		{
-			MessageOut charInfo=new MessageOut(ManaServ.APMSG_CHAR_INFO);
+			MessageOut charInfo=new MessageOut(Protocol.APMSG_CHAR_INFO);
 
 			//charInfo.writeInt8(ch.getCharacterSlot());
 			//charInfo.writeString(ch.getName());
@@ -294,7 +294,7 @@ namespace invertika_account.Account
 
 		void handleLogoutMessage(AccountClient client)
 		{
-			MessageOut reply=new MessageOut(ManaServ.APMSG_LOGOUT_RESPONSE);
+			MessageOut reply=new MessageOut(Protocol.APMSG_LOGOUT_RESPONSE);
 
 			//if (client.status == CLIENT_LOGIN)
 			//{
@@ -468,7 +468,7 @@ namespace invertika_account.Account
 
 		void handleEmailChangeMessage(AccountClient client, MessageIn msg)
 		{
-			MessageOut reply=new MessageOut(ManaServ.APMSG_EMAIL_CHANGE_RESPONSE);
+			MessageOut reply=new MessageOut(Protocol.APMSG_EMAIL_CHANGE_RESPONSE);
 
 			//Account acc = client.getAccount();
 			//if (!acc)
@@ -817,7 +817,7 @@ namespace invertika_account.Account
 
 		void tokenMatched(AccountClient client, int accountID)
 		{
-			MessageOut reply=new MessageOut(ManaServ.APMSG_RECONNECT_RESPONSE);
+			MessageOut reply=new MessageOut(Protocol.APMSG_RECONNECT_RESPONSE);
 
 			//Associate account with connection.
 			Account acc=Program.storage.getAccount(accountID);
@@ -839,7 +839,7 @@ namespace invertika_account.Account
 
 		void deletePendingClient(AccountClient client)
 		{
-			MessageOut msg=new MessageOut(ManaServ.APMSG_RECONNECT_RESPONSE);
+			MessageOut msg=new MessageOut(Protocol.APMSG_RECONNECT_RESPONSE);
 			msg.writeInt8(ManaServ.ERRMSG_TIME_OUT);
 			client.disconnect(msg);
 			// The client will be deleted when the disconnect event is processed
@@ -851,73 +851,73 @@ namespace invertika_account.Account
 
 			switch(message.getId())
 			{
-				case ManaServ.PAMSG_LOGIN_RNDTRGR:
+				case Protocol.PAMSG_LOGIN_RNDTRGR:
 					{
 						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_LOGIN_RANDTRIGGER");
 						handleLoginRandTriggerMessage(client, message);
 						break;
 					}
-				case ManaServ.PAMSG_LOGIN:
+				case Protocol.PAMSG_LOGIN:
 					{
 						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_LOGIN");
 						handleLoginMessage(client, message);
 						break;
 					}
-				case ManaServ.PAMSG_LOGOUT:
+				case Protocol.PAMSG_LOGOUT:
 					{
 						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_LOGOUT");
 						handleLogoutMessage(client);
 						break;
 					}
-				case ManaServ.PAMSG_RECONNECT:
+				case Protocol.PAMSG_RECONNECT:
 					{
 						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_RECONNECT");
 						handleReconnectMessage(client, message);
 						break;
 					}
-				case ManaServ.PAMSG_REGISTER:
+				case Protocol.PAMSG_REGISTER:
 					{
 						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_REGISTER");
 						handleRegisterMessage(client, message);
 						break;
 					}
-				case ManaServ.PAMSG_UNREGISTER:
+				case Protocol.PAMSG_UNREGISTER:
 					{
 						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_UNREGISTER");
 						handleUnregisterMessage(client, message);
 						break;
 					}
-				case ManaServ.PAMSG_REQUEST_REGISTER_INFO:
+				case Protocol.PAMSG_REQUEST_REGISTER_INFO:
 					{
 						Logger.Add(LogLevel.Debug, "Received msg ... REQUEST_REGISTER_INFO");
 						handleRequestRegisterInfoMessage(client, message);
 						break;
 					}
-				case ManaServ.PAMSG_EMAIL_CHANGE:
+				case Protocol.PAMSG_EMAIL_CHANGE:
 					{
 						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_EMAIL_CHANGE");
 						handleEmailChangeMessage(client, message);
 						break;
 					}
-				case ManaServ.PAMSG_PASSWORD_CHANGE:
+				case Protocol.PAMSG_PASSWORD_CHANGE:
 					{
 						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_PASSWORD_CHANGE");
 						handlePasswordChangeMessage(client, message);
 						break;
 					}
-				case ManaServ.PAMSG_CHAR_CREATE:
+				case Protocol.PAMSG_CHAR_CREATE:
 					{
 						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_CHAR_CREATE");
 						handleCharacterCreateMessage(client, message);
 						break;
 					}
-				case ManaServ.PAMSG_CHAR_SELECT:
+				case Protocol.PAMSG_CHAR_SELECT:
 					{
 						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_CHAR_SELECT");
 						handleCharacterSelectMessage(client, message);
 						break;
 					}
-				case ManaServ.PAMSG_CHAR_DELETE:
+				case Protocol.PAMSG_CHAR_DELETE:
 					{
 						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_CHAR_DELETE");
 						handleCharacterDeleteMessage(client, message);
@@ -926,7 +926,7 @@ namespace invertika_account.Account
 				default:
 					{
 						Logger.Add(LogLevel.Warning, "AccountHandler::processMessage, Invalid message type {0}", message.getId());
-						MessageOut result=new MessageOut((int)ManaServ.XXMSG_INVALID);
+						MessageOut result=new MessageOut(Protocol.XXMSG_INVALID);
 						client.send(result);
 						break;
 					}
