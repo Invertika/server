@@ -86,10 +86,10 @@ namespace invertika_account.Account
 							int id=message.readInt16();
 							Logger.Add(LogLevel.Information, "Registering map {0}.", id);
 
-							if(GameServerHandler.getGameServerFromMap(id)==null)
+							GameServer s=GameServerHandler.getGameServerFromMap(id);
+							if(s==null)
 							{
-								Logger.Add(LogLevel.Error, "Server Handler: map is already registered by {0}:{1}.");
-								//<< s->address << ':' << s->port << '.');
+								Logger.Add(LogLevel.Error, "Server Handler: map is already registered by {0}:{1}.", s.address, s.port);
 							}
 							else
 							{

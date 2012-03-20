@@ -15,6 +15,7 @@ namespace invertika_account.Account
 		public GameServer(TcpClient peer) : base(peer)
 		{
 			port=0;
+			maps=new Dictionary<ushort, MapStatistics>();
 		}
 
 		public string address;

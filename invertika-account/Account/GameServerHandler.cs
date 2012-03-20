@@ -44,18 +44,16 @@ namespace invertika_account.Account
 
 		public static GameServer getGameServerFromMap(int mapId)
 		{
-			//foreach(NetComputer client in clients)
-			//{
+			foreach(NetComputer client in serverHandler.clients)
+			{
+				GameServer server=(GameServer)(client);
 
-			//for (ServerHandler::NetComputers::const_iterator
-			//     i = serverHandler->clients.begin(),
-			//     i_end = serverHandler->clients.end(); i != i_end; ++i)
-			//{
-			//    GameServer *server = static_cast< GameServer * >(*i);
-			//    ServerStatistics::const_iterator i = server->maps.find(mapId);
-			//    if (i == server->maps.end()) continue;
-			//    return server;
-			//}
+				if(server.maps.ContainsKey((ushort)mapId))
+				{
+					return server;
+				}
+			}
+			
 			return null;
 		}
 

@@ -1553,7 +1553,7 @@ namespace invertika_account.Account
 			    // Add map filter if map_id is given
 			    if (mapId >= 0)
 				{
-			        query+=" WHERE `map_id` = ?";
+			        query+=String.Format(" WHERE `map_id` = {0}", mapId);
 				}
 
 			    //query << ";"; <-- No ';' at the end of prepared statements.
