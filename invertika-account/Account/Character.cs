@@ -16,10 +16,10 @@ namespace invertika_account.Account
 		//{ return it->second.modified; }
 
 		//Possessions mPossessions; //!< All the possesions of the character.
-		//std::string mName;        //!< Name of the character.
-		//int mDatabaseID;          //!< Character database ID.
-		//unsigned int mCharacterSlot;  //!< Character slot.
-		//int mAccountID;           //!< Account ID of the owner.
+		string mName;        //!< Name of the character.
+		int mDatabaseID;          //!< Character database ID.
+		uint mCharacterSlot;  //!< Character slot.
+		int mAccountID;           //!< Account ID of the owner.
 		Account mAccount;        //!< Account owning the character.
 		//Point mPos;               //!< Position the being is at.
 		//AttributeMap mAttributes; //!< Attributes.
@@ -69,5 +69,51 @@ namespace invertika_account.Account
 			//mAccountLevel = acc->getLevel();
 		}
 
+		/**
+		* Gets the Id of the map that the character is on.
+		*/
+		public int getMapId()
+		{
+			return mMapId;
+		}
+
+		/**
+ * Gets the ID of the account the character belongs to.
+ */
+		public int getAccountID()
+		{
+			return mAccountID;
+		}
+
+		void setAccountID(int id)
+		{
+			mAccountID=id;
+		}
+
+		/**
+ * Gets the name of the character.
+ */
+		public string getName()
+		{
+			return mName;
+		}
+
+		void setName(string name)
+		{
+			mName=name;
+		}
+
+		/**
+	  * Gets the database id of the character.
+	  */
+		public int getDatabaseID()
+		{
+			return mDatabaseID;
+		}
+
+		void setDatabaseID(int id)
+		{
+			mDatabaseID=id;
+		}
 	}
 }

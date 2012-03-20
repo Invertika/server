@@ -6,6 +6,10 @@ using invertika_account.Utilities;
 using System.Net.Sockets;
 using ISL.Server.Utilities;
 using ISL.Server.Network;
+using ISL.Server.Common;
+using invertika_account.Chat;
+using CSCL;
+using invertika_account.Common;
 
 namespace invertika_account.Account
 {
@@ -14,450 +18,462 @@ namespace invertika_account.Account
 		//    internal GameServer getGameServerFromMap(int);
 		//internal void GameServerHandler::dumpStatistics(std::ostream &);
 
-		/**
-		 * Processes server messages.
-		 */
+		/// <summary>
+		/// Processes server messages.
+		/// </summary>
+		/// <param name="computer"></param>
+		/// <param name="message"></param>
 		protected override void processMessage(NetComputer computer, MessageIn message)
 		{
-			//         MessageOut result;
-			//GameServer *server = static_cast<GameServer *>(comp);
+			MessageOut result=new MessageOut();
+			GameServer server=(GameServer)(computer);
 
-			//switch (msg.getId())
-			//{
-			//    case GAMSG_REGISTER:
-			//    {
-			//        LOG_DEBUG("GAMSG_REGISTER");
-			//        // TODO: check the credentials of the game server
-			//        server->address = msg.readString();
-			//        server->port = msg.readInt16();
-			//        const std::string password = msg.readString();
+			switch(message.getId())
+			{
+				case Protocol.GAMSG_REGISTER:
+					{
+						Logger.Add(LogLevel.Debug, "GAMSG_REGISTER");
 
-			//        // checks the version of the remote item database with our local copy
-			//        unsigned int dbversion = msg.readInt32();
-			//        LOG_INFO("Game server uses itemsdatabase with version " << dbversion);
+						// TODO: check the credentials of the game server
+						server.address=message.readString();
+						server.port=message.readInt16();
+						string password=message.readString();
 
-			//        LOG_DEBUG("AGMSG_REGISTER_RESPONSE");
-			//        MessageOut outMsg(AGMSG_REGISTER_RESPONSE);
-			//        if (dbversion == storage->getItemDatabaseVersion())
-			//        {
-			//            LOG_DEBUG("Item databases between account server and "
-			//                "gameserver are in sync");
-			//            outMsg.writeInt16(DATA_VERSION_OK);
-			//        }
-			//        else
-			//        {
-			//            LOG_DEBUG("Item database of game server has a wrong version");
-			//            outMsg.writeInt16(DATA_VERSION_OUTDATED);
-			//        }
-			//        if (password == Configuration::getValue("net_password", "changeMe"))
-			//        {
-			//            outMsg.writeInt16(PASSWORD_OK);
-			//            comp->send(outMsg);
+						// checks the version of the remote item database with our local copy
+						uint dbversion=(uint)message.readInt32();
+						Logger.Add(LogLevel.Information, "Game server uses itemsdatabase with version {0}", dbversion);
 
-			//            // transmit global world state variables
-			//            std::map<std::string, std::string> variables;
-			//            variables = storage->getAllWorldStateVars(0);
-			//            for (std::map<std::string, std::string>::iterator i = variables.begin();
-			//                 i != variables.end();
-			//                 i++)
-			//            {
-			//                outMsg.writeString(i->first);
-			//                outMsg.writeString(i->second);
-			//            }
-			//        }
-			//        else
-			//        {
-			//            LOG_INFO("The password given by " << server->address << ':' << server->port << " was bad.");
-			//            outMsg.writeInt16(PASSWORD_BAD);
-			//            comp->disconnect(outMsg);
-			//            break;
-			//        }
+						Logger.Add(LogLevel.Debug, "AGMSG_REGISTER_RESPONSE");
+						MessageOut outmessage=new MessageOut(Protocol.AGMSG_REGISTER_RESPONSE);
 
-			//        LOG_INFO("Game server " << server->address << ':' << server->port
-			//                 << " wants to register " << (msg.getUnreadLength() / 2)
-			//                 << " maps.");
+						if(dbversion==Program.storage.getItemDatabaseVersion())
+						{
+							Logger.Add(LogLevel.Debug, "Item databases between account server and gameserver are in sync");
+							outmessage.writeInt16(ManaServ.DATA_VERSION_OK);
+						}
+						else
+						{
+							Logger.Add(LogLevel.Debug, "Item database of game server has a wrong version");
+							outmessage.writeInt16(ManaServ.DATA_VERSION_OUTDATED);
+						}
+						if(password==Configuration.getValue("net_password", "changeMe"))
+						{
+							outmessage.writeInt16(ManaServ.PASSWORD_OK);
+							computer.send(outmessage);
 
-			//        while (msg.getUnreadLength())
-			//        {
-			//            int id = msg.readInt16();
-			//            LOG_INFO("Registering map " << id << '.');
-			//            if (GameServer *s = getGameServerFromMap(id))
-			//            {
-			//                LOG_ERROR("Server Handler: map is already registered by "
-			//                          << s->address << ':' << s->port << '.');
-			//            }
-			//            else
-			//            {
-			//                MessageOut outMsg(AGMSG_ACTIVE_MAP);
+							// transmit global world state variables
+							Dictionary<string, string> variables;
+							variables=Program.storage.getAllWorldStateVars(0);
 
-			//                // Map variables
-			//                outMsg.writeInt16(id);
-			//                std::map<std::string, std::string> variables;
-			//                variables = storage->getAllWorldStateVars(id);
+							foreach(KeyValuePair<string, string> pair in variables)
+							{
+								outmessage.writeString(pair.Key);
+								outmessage.writeString(pair.Value);
+							}
+						}
+						else
+						{
+							Logger.Add(LogLevel.Information, "The password given by {0}:{1} was bad.", server.address, server.port);
+							outmessage.writeInt16(ManaServ.PASSWORD_BAD);
+							computer.disconnect(outmessage);
+							break;
+						}
 
-			//                 // Map vars number
-			//                outMsg.writeInt16(variables.size());
+						Logger.Add(LogLevel.Information, "Game server {0}:{1} wants to register {2}  maps.", server.address, server.port, (message.getUnreadLength()/2));
 
-			//                for (std::map<std::string, std::string>::iterator i = variables.begin();
-			//                     i != variables.end();
-			//                     i++)
-			//                {
-			//                    outMsg.writeString(i->first);
-			//                    outMsg.writeString(i->second);
-			//                }
+						while(message.getUnreadLength()!=0)
+						{
+							int id=message.readInt16();
+							Logger.Add(LogLevel.Information, "Registering map {0}.", id);
 
-			//                // Persistent Floor Items
-			//                std::list<FloorItem> items;
-			//                items = storage->getFloorItemsFromMap(id);
+							if(GameServerHandler.getGameServerFromMap(id)==null)
+							{
+								Logger.Add(LogLevel.Error, "Server Handler: map is already registered by {0}:{1}.");
+								//<< s->address << ':' << s->port << '.');
+							}
+							else
+							{
+								MessageOut tmpOutMsg=new MessageOut(Protocol.AGMSG_ACTIVE_MAP);
 
-			//                outMsg.writeInt16(items.size()); //number of floor items
+								// Map variables
+								tmpOutMsg.writeInt16(id);
+								Dictionary<string, string> variables;
+								variables=Program.storage.getAllWorldStateVars(id);
 
-			//                // Send each map item: item_id, amount, pos_x, pos_y
-			//                for (std::list<FloorItem>::iterator i = items.begin();
-			//                     i != items.end(); ++i)
-			//                {
-			//                    outMsg.writeInt32(i->getItemId());
-			//                    outMsg.writeInt16(i->getItemAmount());
-			//                    outMsg.writeInt16(i->getPosX());
-			//                    outMsg.writeInt16(i->getPosY());
-			//                }
+								// Map vars number
+								tmpOutMsg.writeInt16(variables.Count);
 
-			//                comp->send(outMsg);
-			//                MapStatistics &m = server->maps[id];
-			//                m.nbThings = 0;
-			//                m.nbMonsters = 0;
-			//            }
-			//        }
-			//    } break;
+								foreach(KeyValuePair<string, string> pair in variables)
+								{
+									tmpOutMsg.writeString(pair.Key);
+									tmpOutMsg.writeString(pair.Value);
+								}
 
-			//    case GAMSG_PLAYER_DATA:
-			//    {
-			//        LOG_DEBUG("GAMSG_PLAYER_DATA");
-			//        int id = msg.readInt32();
-			//        if (Character *ptr = storage->getCharacter(id, NULL))
-			//        {
-			//            deserializeCharacterData(*ptr, msg);
-			//            if (!storage->updateCharacter(ptr))
-			//            {
-			//                LOG_ERROR("Failed to update character "
-			//                          << id << '.');
-			//            }
-			//            delete ptr;
-			//        }
-			//        else
-			//        {
-			//            LOG_ERROR("Received data for non-existing character "
-			//                      << id << '.');
-			//        }
-			//    } break;
+								// Persistent Floor Items
+								List<FloorItem> items;
+								items=Program.storage.getFloorItemsFromMap(id);
 
-			//    case GAMSG_PLAYER_SYNC:
-			//    {
-			//        LOG_DEBUG("GAMSG_PLAYER_SYNC");
-			//        GameServerHandler::syncDatabase(msg);
-			//    } break;
+								tmpOutMsg.writeInt16(items.Count); //number of floor items
 
-			//    case GAMSG_REDIRECT:
-			//    {
-			//        LOG_DEBUG("GAMSG_REDIRECT");
-			//        int id = msg.readInt32();
-			//        std::string magic_token(utils::getMagicToken());
-			//        if (Character *ptr = storage->getCharacter(id, NULL))
-			//        {
-			//            int mapId = ptr->getMapId();
-			//            if (GameServer *s = getGameServerFromMap(mapId))
-			//            {
-			//                registerGameClient(s, magic_token, ptr);
-			//                result.writeInt16(AGMSG_REDIRECT_RESPONSE);
-			//                result.writeInt32(id);
-			//                result.writeString(magic_token, MAGIC_TOKEN_LENGTH);
-			//                result.writeString(s->address);
-			//                result.writeInt16(s->port);
-			//            }
-			//            else
-			//            {
-			//                LOG_ERROR("Server Change: No game server for map " <<
-			//                          mapId << '.');
-			//            }
-			//            delete ptr;
-			//        }
-			//        else
-			//        {
-			//            LOG_ERROR("Received data for non-existing character "
-			//                      << id << '.');
-			//        }
-			//    } break;
+								// Send each map item: item_id, amount, pos_x, pos_y
+								foreach(FloorItem i in items)
+								{
+									tmpOutMsg.writeInt32(i.getItemId());
+									tmpOutMsg.writeInt16(i.getItemAmount());
+									tmpOutMsg.writeInt16(i.getPosX());
+									tmpOutMsg.writeInt16(i.getPosY());
+								}
 
-			//    case GAMSG_PLAYER_RECONNECT:
-			//    {
-			//        LOG_DEBUG("GAMSG_PLAYER_RECONNECT");
-			//        int id = msg.readInt32();
-			//        std::string magic_token = msg.readString(MAGIC_TOKEN_LENGTH);
+								computer.send(tmpOutMsg);
+								MapStatistics m=server.maps[(ushort)id];
+								m.nbThings=0;
+								m.nbMonsters=0;
+							}
+						}
+					} break;
 
-			//        if (Character *ptr = storage->getCharacter(id, NULL))
-			//        {
-			//            int accountID = ptr->getAccountID();
-			//            AccountClientHandler::prepareReconnect(magic_token, accountID);
-			//            delete ptr;
-			//        }
-			//        else
-			//        {
-			//            LOG_ERROR("Received data for non-existing character "
-			//                      << id << '.');
-			//        }
-			//    } break;
+				case Protocol.GAMSG_PLAYER_DATA:
+					{
+						//Logger.Add(LogLevel.Debug, "GAMSG_PLAYER_DATA");
+						//int id = message.readInt32();
 
-			//    case GAMSG_GET_VAR_CHR:
-			//    {
-			//        int id = msg.readInt32();
-			//        std::string name = msg.readString();
-			//        std::string value = storage->getQuestVar(id, name);
-			//        result.writeInt16(AGMSG_GET_VAR_CHR_RESPONSE);
-			//        result.writeInt32(id);
-			//        result.writeString(name);
-			//        result.writeString(value);
-			//    } break;
+						//try
+						//{
+						//Character ptr = Program.storage.getCharacter(id, null);
 
-			//    case GAMSG_SET_VAR_CHR:
-			//    {
-			//        int id = msg.readInt32();
-			//        std::string name = msg.readString();
-			//        std::string value = msg.readString();
-			//        storage->setQuestVar(id, name, value);
-			//    } break;
+						//    deserializeCharacterData(ptr, message);
+						//    if (!Program.storage.updateCharacter(ptr))
+						//    {
+						//        Logger.Add(LogLevel.Error, "Failed to update character {0}.", id);
+						//    }
+						//    //delete ptr;
+						//}
+						//catch
+						//{
+						//    Logger.Add(LogLevel.Error, "Received data for non-existing character {0}.", id);
+						//}
+					} break;
 
-			//    case GAMSG_SET_VAR_WORLD:
-			//    {
-			//        std::string name = msg.readString();
-			//        std::string value = msg.readString();
-			//        // save the new value to the database
-			//        storage->setWorldStateVar(name, value);
-			//        // relay the new value to all gameservers
-			//        for (ServerHandler::NetComputers::iterator i = clients.begin();
-			//            i != clients.end();
-			//            i++)
-			//        {
-			//            MessageOut varUpdateMessage(AGMSG_SET_VAR_WORLD);
-			//            varUpdateMessage.writeString(name);
-			//            varUpdateMessage.writeString(value);
-			//            (*i)->send(varUpdateMessage);
-			//        }
-			//    } break;
+				case Protocol.GAMSG_PLAYER_SYNC:
+					{
+						Logger.Add(LogLevel.Debug, "GAMSG_PLAYER_SYNC");
+						GameServerHandler.syncDatabase(message);
+					} break;
 
-			//    case GAMSG_SET_VAR_MAP:
-			//    {
-			//        int mapid = msg.readInt32();
-			//        std::string name = msg.readString();
-			//        std::string value = msg.readString();
-			//        storage->setWorldStateVar(name, mapid, value);
-			//    } break;
+				case Protocol.GAMSG_REDIRECT:
+					{
+						Logger.Add(LogLevel.Debug, "GAMSG_REDIRECT");
+						int id=message.readInt32();
+						//string magic_token(utils::getMagicToken());
+						string magic_token=Various.GetUniqueID();
 
-			//    case GAMSG_BAN_PLAYER:
-			//    {
-			//        int id = msg.readInt32();
-			//        int duration = msg.readInt32();
-			//        storage->banCharacter(id, duration);
-			//    } break;
+						try
+						{
 
-			//    case GAMSG_CHANGE_PLAYER_LEVEL:
-			//    {
-			//        int id = msg.readInt32();
-			//        int level = msg.readInt16();
-			//        storage->setPlayerLevel(id, level);
-			//    } break;
+							Character ptr=Program.storage.getCharacter(id, null);
 
-			//    case GAMSG_CHANGE_ACCOUNT_LEVEL:
-			//    {
-			//        int id = msg.readInt32();
-			//        int level = msg.readInt16();
+							int mapId=ptr.getMapId();
 
-			//        // get the character so we can get the account id
-			//        Character *c = storage->getCharacter(id, NULL);
-			//        if (c)
-			//        {
-			//            storage->setAccountLevel(c->getAccountID(), level);
-			//        }
-			//    } break;
+							try
+							{
+								GameServer s=GameServerHandler.getGameServerFromMap(mapId);
 
-			//    case GAMSG_STATISTICS:
-			//    {
-			//        while (msg.getUnreadLength())
-			//        {
-			//            int mapId = msg.readInt16();
-			//            ServerStatistics::iterator i = server->maps.find(mapId);
-			//            if (i == server->maps.end())
-			//            {
-			//                LOG_ERROR("Server " << server->address << ':'
-			//                          << server->port << " should not be sending stati"
-			//                          "stics for map " << mapId << '.');
-			//                // Skip remaining data.
-			//                break;
-			//            }
-			//            MapStatistics &m = i->second;
-			//            m.nbThings = msg.readInt16();
-			//            m.nbMonsters = msg.readInt16();
-			//            int nb = msg.readInt16();
-			//            m.players.resize(nb);
-			//            for (int j = 0; j < nb; ++j)
-			//            {
-			//                m.players[j] = msg.readInt32();
-			//            }
-			//        }
-			//    } break;
+								GameServerHandler.registerGameClient(s, magic_token, ptr);
+								result.writeInt16((int)Protocol.AGMSG_REDIRECT_RESPONSE);
+								result.writeInt32(id);
+								result.writeString(magic_token);
+								result.writeString(s.address);
+								result.writeInt16(s.port);
+							}
+							catch
+							{
+								Logger.Add(LogLevel.Error, "Server Change: No game server for map {0}.", mapId);
+							}
+							//delete ptr;
+						}
+						catch
+						{
+							Logger.Add(LogLevel.Error, "Received data for non-existing character {0}.", id);
+						}
+					} break;
 
-			//    case GCMSG_REQUEST_POST:
-			//    {
-			//        // Retrieve the post for user
-			//        LOG_DEBUG("GCMSG_REQUEST_POST");
-			//        result.writeInt16(CGMSG_POST_RESPONSE);
+				case Protocol.GAMSG_PLAYER_RECONNECT:
+					{
+						Logger.Add(LogLevel.Debug, "GAMSG_PLAYER_RECONNECT");
+						int id=message.readInt32();
+						string magic_token=message.readString();
+						//string magic_token=message.readString(ManaServ.MAGIC_TOKEN_LENGTH);
 
-			//        // get the character id
-			//        int characterId = msg.readInt32();
+						try
+						{
+							Character ptr=Program.storage.getCharacter(id, null);
+							int accountID=ptr.getAccountID();
+							AccountClientHandler.prepareReconnect(magic_token, accountID);
+							//delete ptr;
+						}
+						catch
+						{
+							Logger.Add(LogLevel.Error, "Received data for non-existing character {0}.", id);
+						}
+					} break;
 
-			//        // send the character id of sender
-			//        result.writeInt32(characterId);
+				case Protocol.GAMSG_GET_VAR_CHR:
+					{
+						int id=message.readInt32();
+						string name=message.readString();
+						string value=Program.storage.getQuestVar(id, name);
+						result.writeInt16((Int16)Protocol.AGMSG_GET_VAR_CHR_RESPONSE);
+						result.writeInt32(id);
+						result.writeString(name);
+						result.writeString(value);
+					} break;
 
-			//        // get the character based on the id
-			//        Character *ptr = storage->getCharacter(characterId, NULL);
-			//        if (!ptr)
-			//        {
-			//            // Invalid character
-			//            LOG_ERROR("Error finding character id for post");
-			//            break;
-			//        }
+				case Protocol.GAMSG_SET_VAR_CHR:
+					{
+						int id=message.readInt32();
+						string name=message.readString();
+						string value=message.readString();
+						Program.storage.setQuestVar(id, name, value);
+					} break;
 
-			//        // get the post for that character
-			//        Post *post = postalManager->getPost(ptr);
+				case Protocol.GAMSG_SET_VAR_WORLD:
+					{
+						string name=message.readString();
+						string value=message.readString();
+						// save the new value to the database
+						Program.storage.setWorldStateVar(name, value);
 
-			//        // send the post if valid
-			//        if (post)
-			//        {
-			//            for (unsigned int i = 0; i < post->getNumberOfLetters(); ++i)
-			//            {
-			//                // get each letter, send the sender's name,
-			//                // the contents and any attachments
-			//                Letter *letter = post->getLetter(i);
-			//                result.writeString(letter->getSender()->getName());
-			//                result.writeString(letter->getContents());
-			//                std::vector<InventoryItem> items = letter->getAttachments();
-			//                for (unsigned int j = 0; j < items.size(); ++j)
-			//                {
-			//                    result.writeInt16(items[j].itemId);
-			//                    result.writeInt16(items[j].amount);
-			//                }
-			//            }
+						// relay the new value to all gameservers
+						foreach(NetComputer client in clients)
+						{
+							MessageOut varUpdateMessage=new MessageOut(Protocol.AGMSG_SET_VAR_WORLD);
+							varUpdateMessage.writeString(name);
+							varUpdateMessage.writeString(value);
+							client.send(varUpdateMessage);
+						}
+					} break;
 
-			//            // clean up
-			//            postalManager->clearPost(ptr);
-			//        }
+				case Protocol.GAMSG_SET_VAR_MAP:
+					{
+						int mapid=message.readInt32();
+						string name=message.readString();
+						string value=message.readString();
+						Program.storage.setWorldStateVar(name, mapid, value);
+					} break;
 
-			//    } break;
+				case Protocol.GAMSG_BAN_PLAYER:
+					{
+						int id=message.readInt32();
+						int duration=message.readInt32();
+						Program.storage.banCharacter(id, duration);
+					} break;
 
-			//    case GCMSG_STORE_POST:
-			//    {
-			//        // Store the letter for the user
-			//        LOG_DEBUG("GCMSG_STORE_POST");
-			//        result.writeInt16(CGMSG_STORE_POST_RESPONSE);
+				case Protocol.GAMSG_CHANGE_PLAYER_LEVEL:
+					{
+						int id=message.readInt32();
+						int level=message.readInt16();
+						Program.storage.setPlayerLevel(id, level);
+					} break;
 
-			//        // get the sender and receiver
-			//        int senderId = msg.readInt32();
-			//        std::string receiverName = msg.readString();
+				case Protocol.GAMSG_CHANGE_ACCOUNT_LEVEL:
+					{
+						int id=message.readInt32();
+						int level=message.readInt16();
 
-			//        // for sending it back
-			//        result.writeInt32(senderId);
+						// get the character so we can get the account id
+						Character c=Program.storage.getCharacter(id, null);
 
-			//        // get their characters
-			//        Character *sender = storage->getCharacter(senderId, NULL);
-			//        Character *receiver = storage->getCharacter(receiverName);
-			//        if (!sender || !receiver)
-			//        {
-			//            // Invalid character
-			//            LOG_ERROR("Error finding character id for post");
-			//            result.writeInt8(ERRMSG_INVALID_ARGUMENT);
-			//            break;
-			//        }
+						if(c!=null)
+						{
+							Program.storage.setAccountLevel(c.getAccountID(), level);
+						}
+					} break;
 
-			//        // get the letter contents
-			//        std::string contents = msg.readString();
+				case Protocol.GAMSG_STATISTICS:
+					{
+						//while (message.getUnreadLength()!=0)
+						//{
+						//    int mapId = message.readInt16();
+						//    ServerStatistics::iterator i = server->maps.find(mapId);
 
-			//        std::vector< std::pair<int, int> > items;
-			//        while (msg.getUnreadLength())
-			//        {
-			//            items.push_back(std::pair<int, int>(msg.readInt16(), msg.readInt16()));
-			//        }
+						//    if (i == server.maps.end())
+						//    {
+						//        Logger.Add(LogLevel.Error, "Server {0}:{1} should not be sending statistics for map {2}.", server.address, server.port, mapId);
+						//        // Skip remaining data.
+						//        break;
+						//    }
 
-			//        // save the letter
-			//        LOG_DEBUG("Creating letter");
-			//        Letter *letter = new Letter(0, sender, receiver);
-			//        letter->addText(contents);
-			//        for (unsigned int i = 0; i < items.size(); ++i)
-			//        {
-			//            InventoryItem item;
-			//            item.itemId = items[i].first;
-			//            item.amount = items[i].second;
-			//            letter->addAttachment(item);
-			//        }
-			//        postalManager->addLetter(letter);
+						//    MapStatistics m = i->second;
+						//    m.nbThings =(ushort) message.readInt16();
+						//    m.nbMonsters=(ushort)message.readInt16();
+						//    int nb = message.readInt16();
+						//    m.players.resize(nb);
+						//    for (int j = 0; j < nb; ++j)
+						//    {
+						//        m.players[j] = message.readInt32();
+						//    }
+						//}
+					} break;
 
-			//        result.writeInt8(ERRMSG_OK);
-			//    } break;
+				case Protocol.GCMSG_REQUEST_POST:
+					{
+						// Retrieve the post for user
+						Logger.Add(LogLevel.Debug, "GCMSG_REQUEST_POST");
+						result.writeInt16((int)Protocol.CGMSG_POST_RESPONSE);
 
-			//    case GAMSG_TRANSACTION:
-			//    {
-			//        LOG_DEBUG("TRANSACTION");
-			//        int id = msg.readInt32();
-			//        int action = msg.readInt32();
-			//        std::string message = msg.readString();
+						// get the character id
+						int characterId=message.readInt32();
 
-			//        Transaction trans;
-			//        trans.mCharacterId = id;
-			//        trans.mAction = action;
-			//        trans.mMessage = message;
-			//        storage->addTransaction(trans);
-			//    } break;
+						// send the character id of sender
+						result.writeInt32(characterId);
 
-			//    case GCMSG_PARTY_INVITE:
-			//        chatHandler->handlePartyInvite(msg);
-			//        break;
+						// get the character based on the id
+						Character ptr=Program.storage.getCharacter(characterId, null);
+						if(ptr!=null)
+						{
+							// Invalid character
+							Logger.Add(LogLevel.Error, "Error finding character id for post");
+							break;
+						}
 
-			//    case GAMSG_CREATE_ITEM_ON_MAP:
-			//    {
-			//        int mapId = msg.readInt32();
-			//        int itemId = msg.readInt32();
-			//        int amount = msg.readInt16();
-			//        int posX = msg.readInt16();
-			//        int posY = msg.readInt16();
+						// get the post for that character
+						Post post=Program.postalManager.getPost(ptr);
 
-			//        LOG_DEBUG("Gameserver create item " << itemId
-			//            << " on map " << mapId);
+						// send the post if valid
+						if(post!=null)
+						{
+							for(int i=0; i<post.getNumberOfLetters(); ++i)
+							{
+								// get each letter, send the sender's name,
+								// the contents and any attachments
+								Letter letter=post.getLetter(i);
+								result.writeString(letter.getSender().getName());
+								result.writeString(letter.getContents());
+								List<InventoryItem> items=letter.getAttachments();
 
-			//        storage->addFloorItem(mapId, itemId, amount, posX, posY);
-			//    } break;
+								for(uint j=0; j<items.Count; ++j)
+								{
+									result.writeInt16((int)items[(int)j].itemId);
+									result.writeInt16((int)items[(int)j].amount);
+								}
+							}
 
-			//    case GAMSG_REMOVE_ITEM_ON_MAP:
-			//    {
-			//        int mapId = msg.readInt32();
-			//        int itemId = msg.readInt32();
-			//        int amount = msg.readInt16();
-			//        int posX = msg.readInt16();
-			//        int posY = msg.readInt16();
+							// clean up
+							Program.postalManager.clearPost(ptr);
+						}
 
-			//        LOG_DEBUG("Gameserver removed item " << itemId
-			//            << " from map " << mapId);
+					} break;
 
-			//        storage->removeFloorItem(mapId, itemId, amount, posX, posY);
-			//    } break;
+				case Protocol.GCMSG_STORE_POST:
+					{
+						//// Store the letter for the user
+						//Logger.Add(LogLevel.Debug, "GCMSG_STORE_POST");
+						//result.writeInt16((int)Protocol.CGMSG_STORE_POST_RESPONSE);
 
-			//    default:
-			//        LOG_WARN("ServerHandler::processMessage, Invalid message type: "
-			//                 << msg.getId());
-			//        result.writeInt16(XXMSG_INVALID);
-			//        break;
-			//}
+						//// get the sender and receiver
+						//int senderId = message.readInt32();
+						//string receiverName = message.readString();
 
-			//// return result
-			//if (result.getLength() > 0)
-			//    comp->send(result);
+						//// for sending it back
+						//result.writeInt32(senderId);
+
+						//// get their characters
+						//Character sender = Program.storage.getCharacter(senderId, null);
+						//Character receiver=Program.storage.getCharacter(receiverName);
+
+						//if (sender!=null || receiver!=null)
+						//{
+						//    // Invalid character
+						//    Logger.Add(LogLevel.Error, "Error finding character id for post");
+						//    result.writeInt8(ManaServ.ERRMSG_INVALID_ARGUMENT);
+						//    break;
+						//}
+
+						//// get the letter contents
+						//string contents = message.readString();
+
+						//List<Pair<int>> items;
+
+						//while (message.getUnreadLength()!=0)
+						//{
+						//    items.Add(new Pair<int>(message.readInt16(), message.readInt16()));
+						//}
+
+						//// save the letter
+						//Logger.Add(LogLevel.Debug, "Creating letter");
+						//Letter letter = new Letter(0, sender, receiver);
+						//letter.addText(contents);
+
+						//for (uint i = 0; i < items.Count; ++i)
+						//{
+						//    InventoryItem item;
+						//    item.itemId = items[i].first;
+						//    item.amount = items[i].second;
+						//    letter.addAttachment(item);
+						//}
+
+						//Program.postalManager.addLetter(letter);
+
+						//result.writeInt8(ManaServ.ERRMSG_OK);
+					} break;
+
+				case Protocol.GAMSG_TRANSACTION:
+					{
+						Logger.Add(LogLevel.Debug, "TRANSACTION");
+						int id=message.readInt32();
+						int action=message.readInt32();
+						string messageS=message.readString();
+
+						Transaction trans=new Transaction();
+						trans.mCharacterId=(uint)id;
+						trans.mAction=(uint)action;
+						trans.mMessage=messageS;
+						Program.storage.addTransaction(trans);
+					} break;
+
+				case Protocol.GCMSG_PARTY_INVITE:
+					Program.chatHandler.handlePartyInvite(message);
+					break;
+
+				case Protocol.GAMSG_CREATE_ITEM_ON_MAP:
+					{
+						int mapId=message.readInt32();
+						int itemId=message.readInt32();
+						int amount=message.readInt16();
+						int posX=message.readInt16();
+						int posY=message.readInt16();
+
+						Logger.Add(LogLevel.Debug, "Gameserver create item {0} on map {1} ", itemId, mapId);
+
+						Program.storage.addFloorItem(mapId, itemId, amount, posX, posY);
+					} break;
+
+				case Protocol.GAMSG_REMOVE_ITEM_ON_MAP:
+					{
+						int mapId=message.readInt32();
+						int itemId=message.readInt32();
+						int amount=message.readInt16();
+						int posX=message.readInt16();
+						int posY=message.readInt16();
+
+						Logger.Add(LogLevel.Debug, "Gameserver removed item {0} from map {1}", itemId, mapId);
+
+						Program.storage.removeFloorItem(mapId, itemId, amount, posX, posY);
+					} break;
+
+				default:
+					{
+						Logger.Add(LogLevel.Warning, "ServerHandler::processMessage, Invalid message type: {0}", message.getId());
+						result.writeInt16((int)Protocol.XXMSG_INVALID);
+						break;
+					}
+			}
+
+			// return result
+			if(result.getLength()>0)
+			{
+				computer.send(result);
+			}
 		}
 
 		/**

@@ -7,19 +7,19 @@ using ISL.Server.Network;
 
 namespace invertika_account.Account
 {
-	/**
- * Stores address, maps, and statistics, of a connected game server.
- */
+	/// <summary>
+	/// Stores address, maps, and statistics, of a connected game server.
+	/// </summary>
 	public class GameServer : NetComputer
 	{
-		public GameServer(TcpClient peer): base(peer)
+		public GameServer(TcpClient peer) : base(peer)
 		{
 			port=0;
 		}
 
-		//std::string address;
+		public string address;
 		//NetComputer *server;
-		//ServerStatistics maps;
-		short port;
+		public Dictionary<ushort, MapStatistics> maps;
+		public short port;
 	}
 }

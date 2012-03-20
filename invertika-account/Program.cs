@@ -35,11 +35,11 @@ namespace invertika_account
 		public static Storage storage;
 
 		/** Communications (chat) message handler */
-		static ChatHandler chatHandler;
+		public static ChatHandler chatHandler;
 
 		static ChatChannelManager chatChannelManager;
 		static GuildManager guildManager;
-		static PostManager postalManager;
+		public static PostManager postalManager;
 		static BandwidthMonitor gBandwidth;
 
 		//static Configuration Configuration;

@@ -8,6 +8,7 @@ using invertika_account.DAL;
 using System.Data;
 using ISL.Server.Common;
 using CSCL.Database;
+using ISL.Server.Utilities;
 
 namespace invertika_account.Account
 {
@@ -127,6 +128,16 @@ namespace invertika_account.Account
 		void close()
 		{
 			mDb.Disconnect();
+		}
+		
+		        /**
+         * Returns the version of the local item database.
+         *
+         * @return the database version number.
+         */
+        public uint getItemDatabaseVersion()
+        { 
+			return mItemDbVersion; 
 		}
 
 		Account getAccountBySQL()
@@ -537,32 +548,18 @@ namespace invertika_account.Account
 			return null; //ssk
 		}
 
-		Character getCharacter(int id, Account owner)
+		public Character getCharacter(int id, Account owner)
 		{
-			//std::ostringstream sql;
-			//sql << "SELECT * FROM " << CHARACTERS_TBL_NAME << " WHERE id = ?";
-			//if (mDb->prepareSql(sql.str()))
-			//{
-			//    mDb->bindValue(1, id);
-			//    return getCharacterBySQL(owner);
-			//}
-			//return 0;
-
-			return null; //ssk
+			string sql=String.Format("SELECT * FROM {0},  WHERE id = {1}", CHARACTERS_TBL_NAME, id);
+			//TODO Überprüfen was hier genau passiert
+			return getCharacterBySQL(owner);
 		}
 
-		Character getCharacter(string name)
+		public Character getCharacter(string name)
 		{
-			//std::ostringstream sql;
-			//sql << "SELECT * FROM " << CHARACTERS_TBL_NAME << " WHERE name = ?";
-			//if (mDb->prepareSql(sql.str()))
-			//{
-			//    mDb->bindValue(1, name);
-			//    return getCharacterBySQL(0);
-			//}
-			//return 0;
-
-			return null; //ssk
+			string sql=String.Format("SELECT * FROM {0} WHERE name = {1}", CHARACTERS_TBL_NAME, name);
+			//TODO Überprüfen was hier genau passiert
+			return getCharacterBySQL(null);
 		}
 
 		bool doesUserNameExist(string name)
@@ -666,7 +663,7 @@ namespace invertika_account.Account
 			return true;
 		}
 
-		bool updateCharacter(Character character)
+		public bool updateCharacter(Character character)
 		{
 			//dal::PerformTransaction transaction(mDb);
 
@@ -1364,7 +1361,7 @@ namespace invertika_account.Account
 			//}
 		}
 
-		void addFloorItem(int mapId, int itemId, int amount, int posX, int posY)
+		public void addFloorItem(int mapId, int itemId, int amount, int posX, int posY)
 		{
 			//try
 			//{
@@ -1385,7 +1382,7 @@ namespace invertika_account.Account
 			//}
 		}
 
-		void removeFloorItem(int mapId, int itemId, int amount, int posX, int posY)
+		public void removeFloorItem(int mapId, int itemId, int amount, int posX, int posY)
 		{
 			//try
 			//{
@@ -1406,7 +1403,7 @@ namespace invertika_account.Account
 			//}
 		}
 
-		List<FloorItem> getFloorItemsFromMap(int mapId)
+		public List<FloorItem> getFloorItemsFromMap(int mapId)
 		{
 			//std::list<FloorItem> floorItems;
 
@@ -1523,37 +1520,11 @@ namespace invertika_account.Account
 			return null; //ssk
 		}
 
-		string getQuestVar(int id, string name)
+		public string getQuestVar(int id, string name)
 		{
-			//try
-			//{
-			//    std::ostringstream query;
-			//    query << "select value from " << QUESTS_TBL_NAME
-			//            << " WHERE owner_id = ? AND name = ?";
-			//    if (mDb->prepareSql(query.str()))
-			//    {
-			//        mDb->bindValue(1, id);
-			//        mDb->bindValue(2, name);
-			//        const dal::RecordSet &info = mDb->processSql();
-
-			//        if (!info.isEmpty())
-			//            return info(0, 0);
-			//    }
-			//    else
-			//    {
-			//        utils::throwError("(DALStorage:getQuestVar) "
-			//                          "SQL query preparation failure.");
-			//    }
-			//}
-			//catch (const dal::DbSqlQueryExecFailure &e)
-			//{
-			//    utils::throwError("(DALStorage::getQuestVar) SQL query failure: ", e);
-			//}
-
-			//// Should never happen
-			//return std::string();
-
-			return "";//ssk
+			string query=String.Format("select value from {0}  WHERE owner_id = {1} AND name = {2}", QUESTS_TBL_NAME, id, name);
+			DataTable table=mDb.ExecuteQuery(query);
+			return table.Rows[0]["value"].ToString(); //TODO Testen ob Ergebnis kommt
 		}
 
 		string getWorldStateVar(string name, int mapId)
@@ -1565,56 +1536,37 @@ namespace invertika_account.Account
 			return (string)rs.Rows[0][0];
 		}
 
-		Dictionary<string, string> getAllWorldStateVars(int mapId)
+		public Dictionary<string, string> getAllWorldStateVars(int mapId)
 		{
-			//std::map<std::string, std::string> variables;
+			Dictionary<string, string> variables=new Dictionary<string, string>();
 
-			//// Avoid a crash because prepared statements must have at least one binding.
-			//if (mapId < 0)
-			//{
-			//    LOG_ERROR("getAllWorldStateVars was called with a negative map Id: "
-			//              << mapId);
-			//    return variables;
-			//}
+			// Avoid a crash because prepared statements must have at least one binding.
+			if (mapId < 0)
+			{
+			    Logger.Add(LogLevel.Error, "getAllWorldStateVars was called with a negative map Id: {0}", mapId);
+			    return variables;
+			}
 
-			//try
-			//{
-			//    std::ostringstream query;
-			//    query << "SELECT `state_name`, `value` "
-			//          << "FROM " << WORLD_STATES_TBL_NAME;
+				string query=String.Format("SELECT `state_name`, `value` FROM {0}", WORLD_STATES_TBL_NAME);
 
-			//    // Add map filter if map_id is given
-			//    if (mapId >= 0)
-			//        query << " WHERE `map_id` = ?";
 
-			//    //query << ";"; <-- No ';' at the end of prepared statements.
+			    // Add map filter if map_id is given
+			    if (mapId >= 0)
+				{
+			        query+=" WHERE `map_id` = ?";
+				}
 
-			//    if (mDb->prepareSql(query.str()))
-			//    {
-			//        if (mapId >= 0)
-			//            mDb->bindValue(1, mapId);
-			//        const dal::RecordSet &results = mDb->processSql();
+			    //query << ";"; <-- No ';' at the end of prepared statements.
+				DataTable table=mDb.ExecuteQuery(query);
 
-			//        for (unsigned int i = 0; i < results.rows(); ++i)
-			//        {
-			//            variables[results(i, 0)] = results(i, 1);
-			//        }
-			//    }
-			//    else
-			//    {
-			//        utils::throwError("(DALStorage:getAllWorldStateVar) "
-			//                          "SQL query preparation failure.");
-			//    }
-			//}
-			//catch (const dal::DbSqlQueryExecFailure &e)
-			//{
-			//    utils::throwError("(DALStorage::getWorldStateVar) SQL query failure: ",
-			//                      e);
-			//}
+				foreach(DataRow row in table.Rows)
+				{
+					string state_name=row["state_name"].ToString();
+					string state_value=row["value"].ToString();
+					variables.Add(state_name, state_value);
+				}
 
-			//return variables;
-
-			return null;//ssk
+			return variables;
 		}
 
 		public void setWorldStateVar(string name, string value)
@@ -1679,7 +1631,7 @@ namespace invertika_account.Account
 			}
 		}
 
-		void setQuestVar(int id, string name, string value)
+		public void setQuestVar(int id, string name, string value)
 		{
 			//try
 			//{
@@ -1704,7 +1656,7 @@ namespace invertika_account.Account
 			//}
 		}
 
-		void banCharacter(int id, int duration)
+		public void banCharacter(int id, int duration)
 		{
 			//try
 			//{
@@ -1820,24 +1772,13 @@ namespace invertika_account.Account
 			//}
 		}
 
-		void setAccountLevel(int id, int level)
+		public void setAccountLevel(int id, int level)
 		{
-			//try
-			//{
-			//    std::ostringstream sql;
-			//    sql << "update " << ACCOUNTS_TBL_NAME
-			//    << " set level = " << level
-			//    << " where id = " << id << ";";
-			//    mDb->execSql(sql.str());
-			//}
-			//catch (const dal::DbSqlQueryExecFailure &e)
-			//{
-			//    utils::throwError("(DALStorage::setAccountLevel) SQL query failure: ",
-			//                      e);
-			//}
+			string sql=String.Format("update {0}  set level = {1}  where id =  {3};", ACCOUNTS_TBL_NAME, level, id);
+			mDb.ExecuteQuery(sql);
 		}
 
-		void setPlayerLevel(int id, int level)
+		public void setPlayerLevel(int id, int level)
 		{
 			//try
 			//{
@@ -2159,7 +2100,7 @@ namespace invertika_account.Account
 			//}
 		}
 
-		void addTransaction(Transaction trans)
+		public void addTransaction(Transaction trans)
 		{
 			//try
 			//{

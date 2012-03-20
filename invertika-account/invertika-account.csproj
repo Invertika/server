@@ -64,6 +64,7 @@
     <Compile Include="Account\FloorItem.cs" />
     <Compile Include="Account\GameServer.cs" />
     <Compile Include="Account\GameServerHandler.cs" />
+    <Compile Include="Account\MapStatistics.cs" />
     <Compile Include="Account\ServerHandler.cs" />
     <Compile Include="Chat\ChatChannel.cs" />
     <Compile Include="Chat\ChatChannelManager.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Chat\Pending.cs" />
     <Compile Include="Chat\Post.cs" />
     <Compile Include="Chat\PostManager.cs" />
+    <Compile Include="Common\InventoryItem.cs" />
     <Compile Include="Common\Transaction.cs" />
     <Compile Include="DAL\AlreadySetException.cs" />
     <Compile Include="DAL\DataProviderFactory.cs" />
@@ -88,6 +90,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Account\Storage.cs" />
+    <Compile Include="Serialize\CharacterData.cs" />
     <Compile Include="Utilities\TokenCollector.cs" />
     <Compile Include="Utilities\TokenCollectorBase.cs" />
   </ItemGroup>

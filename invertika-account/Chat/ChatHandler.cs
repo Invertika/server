@@ -679,7 +679,7 @@ namespace invertika_account.Chat
 			//}
 		}
 
-		void handlePartyInvite(MessageIn msg)
+		public void handlePartyInvite(MessageIn msg)
 		{
 			//std::string inviterName = msg.readString();
 			//std::string inviteeName = msg.readString();

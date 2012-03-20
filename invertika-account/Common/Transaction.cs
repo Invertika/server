@@ -7,5 +7,8 @@ namespace invertika_account.Common
 {
 	public class Transaction
 	{
+		public uint mAction;
+		public uint mCharacterId;
+		public string mMessage;
 	}
 }
