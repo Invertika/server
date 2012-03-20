@@ -1405,36 +1405,23 @@ namespace invertika_account.Account
 
 		public List<FloorItem> getFloorItemsFromMap(int mapId)
 		{
-			//std::list<FloorItem> floorItems;
+			List<FloorItem> floorItems=new List<FloorItem>();
+			 
+			string sql=String.Format("SELECT * FROM {0}  WHERE map_id = {1}", FLOOR_ITEMS_TBL_NAME, mapId);
+			DataTable table=mDb.ExecuteQuery(sql);
 
-			//try
-			//{
-			//    std::ostringstream sql;
-			//    sql << "SELECT * FROM " << FLOOR_ITEMS_TBL_NAME
-			//    << " WHERE map_id = " << mapId;
+			foreach(DataRow row in table.Rows)
+			{
+				int itemID=Convert.ToInt32(row["item_id"]);
+				int itemAmount=Convert.ToInt32(row["amount"]);
+				int posX=Convert.ToInt32(row["pos_x"]);
+				int posY=Convert.ToInt32(row["pos_y"]);
 
-			//    string_to< unsigned > toUint;
-			//    const dal::RecordSet &itemInfo = mDb->execSql(sql.str());
-			//    if (!itemInfo.isEmpty())
-			//    {
-			//        for (int k = 0, size = itemInfo.rows(); k < size; ++k)
-			//        {
-			//            floorItems.push_back(FloorItem(toUint(itemInfo(k, 2)),
-			//                                            toUint(itemInfo(k, 3)),
-			//                                            toUint(itemInfo(k, 4)),
-			//                                            toUint(itemInfo(k, 5))));
-			//        }
-			//    }
-			//}
-			//catch (const dal::DbSqlQueryExecFailure &e)
-			//{
-			//    utils::throwError("DALStorage::getFloorItemsFromMap "
-			//        "SQL query failure: ", e);
-			//}
+				FloorItem fitem=new FloorItem(itemID, itemAmount, posX, posY);
+				floorItems.Add(fitem);
+			}
 
-			//return floorItems;
-
-			return null; //ssk
+			return floorItems;
 		}
 
 		void setMemberRights(int guildId, int memberId, int rights)

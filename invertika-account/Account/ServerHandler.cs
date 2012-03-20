@@ -87,7 +87,7 @@ namespace invertika_account.Account
 							Logger.Add(LogLevel.Information, "Registering map {0}.", id);
 
 							GameServer s=GameServerHandler.getGameServerFromMap(id);
-							if(s==null)
+							if(s!=null)
 							{
 								Logger.Add(LogLevel.Error, "Server Handler: map is already registered by {0}:{1}.", s.address, s.port);
 							}
@@ -110,8 +110,7 @@ namespace invertika_account.Account
 								}
 
 								// Persistent Floor Items
-								List<FloorItem> items;
-								items=Program.storage.getFloorItemsFromMap(id);
+								List<FloorItem> items=Program.storage.getFloorItemsFromMap(id);
 
 								tmpOutMsg.writeInt16(items.Count); //number of floor items
 
