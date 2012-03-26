@@ -124,9 +124,9 @@ namespace invertika_account.Account
 								}
 
 								computer.send(tmpOutMsg);
-								MapStatistics m=server.maps[(ushort)id];
-								m.nbThings=0;
-								m.nbMonsters=0;
+								//MapStatistics m=server.maps[(ushort)id]; //Auskommentiert da nicht klar ist wo dieser Wert gesetzt wird
+								//m.nbThings=0;
+								//m.nbMonsters=0;
 							}
 						}
 					} break;
@@ -168,7 +168,6 @@ namespace invertika_account.Account
 
 						try
 						{
-
 							Character ptr=Program.storage.getCharacter(id, null);
 
 							int mapId=ptr.getMapId();

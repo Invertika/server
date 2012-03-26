@@ -31,7 +31,6 @@ namespace invertika_account.Account
 			serverHandler.process(50);
 		}
 
-
 		public static void registerGameClient(GameServer s, string token, Character ptr)
 		{
 			MessageOut msg=new MessageOut(Protocol.AGMSG_PLAYER_ENTER);
