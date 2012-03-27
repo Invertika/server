@@ -1,9 +1,9 @@
-﻿//  
+//
 //  Account.cs
 //
 //  This file is part of Invertika (http://invertika.org)
 // 
-//	Based on The Mana Server (http://manasource.org)
+//  Based on The Mana Server (http://manasource.org)
 //  Copyright (C) 2004-2012  The Mana World Development Team 
 //
 //  Author:
