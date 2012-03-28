@@ -41,6 +41,7 @@
     <Compile Include="Common\BeingAction.cs" />
     <Compile Include="Common\BeingGender.cs" />
     <Compile Include="Common\DamageType.cs" />
+    <Compile Include="Common\InventoryItem.cs" />
     <Compile Include="Common\PermissionManager.cs" />
     <Compile Include="Common\Result.cs" />
     <Compile Include="Game\ActorIterator.cs" />
