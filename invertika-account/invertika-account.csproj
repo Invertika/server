@@ -80,13 +80,8 @@
     <Compile Include="Chat\PostManager.cs" />
     <Compile Include="Common\InventoryItem.cs" />
     <Compile Include="Common\Transaction.cs" />
-    <Compile Include="Common\DAL\AlreadySetException.cs" />
-    <Compile Include="Common\DAL\DataProviderFactory.cs" />
-    <Compile Include="Common\DAL\DbBackends.cs" />
-    <Compile Include="Common\DAL\DbConnectionFailure.cs" />
-    <Compile Include="Common\DAL\DbException.cs" />
-    <Compile Include="Common\DAL\DbSqlQueryExecFailureException.cs" />
-    <Compile Include="Common\DAL\RsColumnHeadersNotSetException.cs" />
+    <Compile Include="DAL\DataProviderFactory.cs" />
+    <Compile Include="DAL\DbBackends.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Account\Storage.cs" />

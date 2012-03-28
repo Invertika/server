@@ -112,42 +112,34 @@ namespace invertika_account.Account
 			// Do nothing if already connected.
 			if(mDb.Connected) return;
 
-			try
+			// Open a connection to the database.
+			mDb.Connect();
+
+			// Check database version here
+			string dbversionVal=getWorldStateVar(DB_VERSION_PARAMETER, -1);
+			int dbversion=Convert.ToInt32(dbversionVal);
+			int supportedDbVersion=ManaServ.SUPPORTED_DB_VERSION;
+
+			if(dbversion!=supportedDbVersion)
 			{
-				// Open a connection to the database.
-				mDb.Connect();
-
-				// Check database version here
-				string dbversionVal=getWorldStateVar(DB_VERSION_PARAMETER, -1);
-				int dbversion=Convert.ToInt32(dbversionVal);
-				int supportedDbVersion=ManaServ.SUPPORTED_DB_VERSION;
-
-				if(dbversion!=supportedDbVersion)
-				{
-					string errmsg=String.Format("Database version is not supported. Needed version: '{0}', current version: '", supportedDbVersion, dbversion);
-					throw new Exception(errmsg);
-					// utils::throwError(errmsg.str()); //TODO überprüfen
-				}
-
-				// Synchronize base data from xml files
-				syncDatabase();
-
-				// Clean list of online users, this should be empty after restart
-				string sql=String.Format("DELETE FROM {0}", ONLINE_USERS_TBL_NAME);
-				mDb.ExecuteNonQuery(sql);
-
-				// In case where the server shouldn't keep floor item in database,
-				// we remove remnants at startup
-				if(Configuration.getValue("game_floorItemDecayTime", 0)>0)
-				{
-					sql=String.Format("DELETE FROM {0}", FLOOR_ITEMS_TBL_NAME);
-					mDb.ExecuteNonQuery(sql);
-				}
+				string errmsg=String.Format("Database version is not supported. Needed version: '{0}', current version: '", supportedDbVersion, dbversion);
+				throw new Exception(errmsg);
+				// utils::throwError(errmsg.str()); //TODO überprüfen
 			}
-			catch(DbConnectionFailure ex)
+
+			// Synchronize base data from xml files
+			syncDatabase();
+
+			// Clean list of online users, this should be empty after restart
+			string sql=String.Format("DELETE FROM {0}", ONLINE_USERS_TBL_NAME);
+			mDb.ExecuteNonQuery(sql);
+
+			// In case where the server shouldn't keep floor item in database,
+			// we remove remnants at startup
+			if(Configuration.getValue("game_floorItemDecayTime", 0)>0)
 			{
-				throw ex;
-				//utils::throwError("(DALStorage::open) "                  "Unable to connect to the database: ", e); //TODO Checken
+				sql=String.Format("DELETE FROM {0}", FLOOR_ITEMS_TBL_NAME);
+				mDb.ExecuteNonQuery(sql);
 			}
 		}
 
@@ -1607,41 +1599,29 @@ namespace invertika_account.Account
 
 			//TODO vereinfachen
 
+			// Try to update the variable in the database
+			string updateStateVar=String.Format("UPDATE {0} SET value = '{1}', moddate = '{2}'  WHERE state_name = '{3}'", WORLD_STATES_TBL_NAME, value, DateTime.Now.Ticks, name);
 
-
-			try
+			if(mapId>=0)
 			{
-
-
-				// Try to update the variable in the database
-				string updateStateVar=String.Format("UPDATE {0} SET value = '{1}', moddate = '{2}'  WHERE state_name = '{3}'", WORLD_STATES_TBL_NAME, value, DateTime.Now.Ticks, name);
-
-				if(mapId>=0)
-				{
-					updateStateVar+=String.Format(" AND map_id = '{0}'", mapId);
-				}
-
-				updateStateVar+=";";
-
-				int modifiedRows=mDb.ExecuteNonQuery(updateStateVar);
-
-				// If we updated a row, were finished here
-				if(modifiedRows>0) return;
-
-				// Otherwise we have to add the new variable
-				string insertStateVar=String.Format("INSERT INTO {0}  (state_name, map_id, value , moddate) VALUES ('{1}', ", WORLD_STATES_TBL_NAME, name);
-
-				if(mapId>=0) insertStateVar+=String.Format("'{0}', ", mapId);
-				else insertStateVar+="0 , ";
-
-				insertStateVar+=String.Format("'{0}', '{1}');", value, DateTime.Now.Ticks);
-				mDb.ExecuteNonQuery(insertStateVar);
+				updateStateVar+=String.Format(" AND map_id = '{0}'", mapId);
 			}
-			catch(DbSqlQueryExecFailureException ex)
-			{
-				throw ex;
-				//utils::throwError("(DALStorage::setWorldStateVar) SQL query failure: ",       e); //TODO nochmal überprüfen
-			}
+
+			updateStateVar+=";";
+
+			int modifiedRows=mDb.ExecuteNonQuery(updateStateVar);
+
+			// If we updated a row, were finished here
+			if(modifiedRows>0) return;
+
+			// Otherwise we have to add the new variable
+			string insertStateVar=String.Format("INSERT INTO {0}  (state_name, map_id, value , moddate) VALUES ('{1}', ", WORLD_STATES_TBL_NAME, name);
+
+			if(mapId>=0) insertStateVar+=String.Format("'{0}', ", mapId);
+			else insertStateVar+="0 , ";
+
+			insertStateVar+=String.Format("'{0}', '{1}');", value, DateTime.Now.Ticks);
+			mDb.ExecuteNonQuery(insertStateVar);
 		}
 
 		public void setQuestVar(int id, string name, string value)
