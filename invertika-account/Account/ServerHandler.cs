@@ -173,7 +173,6 @@ namespace invertika_account.Account
 							{
 								Logger.Add(LogLevel.Error, "Failed to update character {0}.", id);
 							}
-							//delete ptr;
 						}
 						catch
 						{
@@ -215,7 +214,6 @@ namespace invertika_account.Account
 							{
 								Logger.Add(LogLevel.Error, "Server Change: No game server for map {0}.", mapId);
 							}
-							//delete ptr;
 						}
 						catch
 						{
@@ -235,7 +233,6 @@ namespace invertika_account.Account
 							Character ptr=Program.storage.getCharacter(id, null);
 							int accountID=ptr.getAccountID();
 							AccountClientHandler.prepareReconnect(magic_token, accountID);
-							//delete ptr;
 						}
 						catch
 						{

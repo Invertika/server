@@ -59,7 +59,6 @@
     <Compile Include="Account\AccountClientHandler.cs" />
     <Compile Include="Account\AccountClientStatus.cs" />
     <Compile Include="Account\AccountHandler.cs" />
-    <Compile Include="Account\AttributeValue.cs" />
     <Compile Include="Account\FloorItem.cs" />
     <Compile Include="Account\GameServer.cs" />
     <Compile Include="Account\GameServerHandler.cs" />
