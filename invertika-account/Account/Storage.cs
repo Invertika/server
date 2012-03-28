@@ -35,6 +35,7 @@ using System.Data;
 using ISL.Server.Common;
 using CSCL.Database;
 using ISL.Server.Utilities;
+using ISL.Server.Account;
 
 namespace invertika_account.Account
 {
@@ -157,7 +158,7 @@ namespace invertika_account.Account
 			return mItemDbVersion; 
 		}
 
-		Account getAccountBySQL()
+		ISL.Server.Account.Account getAccountBySQL()
 		{
 			//try
 			//{
@@ -315,7 +316,7 @@ namespace invertika_account.Account
 			//}
 		}
 
-		public Account getAccount(string userName)
+		public ISL.Server.Account.Account getAccount(string userName)
 		{
 			//std::ostringstream sql;
 			//sql << "SELECT * FROM " << ACCOUNTS_TBL_NAME << " WHERE username = ?";
@@ -329,7 +330,7 @@ namespace invertika_account.Account
 			return null; //ssk;
 		}
 
-		public Account getAccount(int accountID)
+		public ISL.Server.Account.Account getAccount(int accountID)
 		{
 			//std::ostringstream sql;
 			//sql << "SELECT * FROM " << ACCOUNTS_TBL_NAME << " WHERE id = ?";
@@ -343,7 +344,7 @@ namespace invertika_account.Account
 			return null; //ssk;
 		}
 
-		Character getCharacterBySQL(Account owner)
+		Character getCharacterBySQL(ISL.Server.Account.Account owner)
 		{
 			//Character *character = 0;
 
@@ -565,7 +566,7 @@ namespace invertika_account.Account
 			return null; //ssk
 		}
 
-		public Character getCharacter(int id, Account owner)
+		public Character getCharacter(int id, ISL.Server.Account.Account owner)
 		{
 			string sql=String.Format("SELECT * FROM {0},  WHERE id = {1}", CHARACTERS_TBL_NAME, id);
 			//TODO Überprüfen was hier genau passiert
@@ -903,7 +904,7 @@ namespace invertika_account.Account
 			//    character->getExperience(skillId));
 		}
 
-		void addAccount(Account account)
+		void addAccount(ISL.Server.Account.Account account)
 		{
 			//assert(account->getCharacters().size() == 0);
 
@@ -942,7 +943,7 @@ namespace invertika_account.Account
 			//}
 		}
 
-		void flush(Account account)
+		void flush(ISL.Server.Account.Account account)
 		{
 			//assert(account->getID() >= 0);
 
@@ -1091,7 +1092,7 @@ namespace invertika_account.Account
 			//}
 		}
 
-		void delAccount(Account account)
+		void delAccount(ISL.Server.Account.Account account)
 		{
 			//// Sync the account info into the database.
 			//flush(account);
@@ -1113,7 +1114,7 @@ namespace invertika_account.Account
 			//}
 		}
 
-		void updateLastLogin(Account account)
+		void updateLastLogin(ISL.Server.Account.Account account)
 		{
 			//try
 			//{

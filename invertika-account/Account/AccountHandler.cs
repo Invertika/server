@@ -34,6 +34,7 @@ using invertika_account.Utilities;
 using ISL.Server.Utilities;
 using ISL.Server.Network;
 using ISL.Server.Common;
+using ISL.Server.Account;
 
 namespace invertika_account.Account
 {
@@ -846,7 +847,7 @@ namespace invertika_account.Account
 			MessageOut reply=new MessageOut(Protocol.APMSG_RECONNECT_RESPONSE);
 
 			//Associate account with connection.
-			Account acc=Program.storage.getAccount(accountID);
+			ISL.Server.Account.Account acc=Program.storage.getAccount(accountID);
 			client.setAccount(acc);
 			client.status=AccountClientStatus.CLIENT_CONNECTED;
 

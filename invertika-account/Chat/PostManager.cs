@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using invertika_account.Account;
+using ISL.Server.Account;
 
 namespace invertika_account.Chat
 {

@@ -34,6 +34,8 @@ using System.IO;
 using ISL.Server.Network;
 using ISL.Server.Common;
 using System.Diagnostics;
+using ISL.Server.Serialize;
+using ISL.Server.Account;
 
 namespace invertika_account.Account
 {
@@ -64,7 +66,7 @@ namespace invertika_account.Account
 			msg.writeString(token);
 			msg.writeInt32(ptr.getDatabaseID());
 			msg.writeString(ptr.getName());
-			//serializeCharacterData(ptr, msg); //TODO wieder einbauen
+			CharacterData.serializeCharacterData(ptr, msg);
 			s.send(msg);
 		}
 
@@ -105,7 +107,6 @@ namespace invertika_account.Account
 			GameServer s=getGameServerFromMap(ptr.getMapId());
 			registerGameClient(s, token, ptr);
 		}
-
 
 		public static void sendPartyChange(Character ptr, int partyId)
 		{

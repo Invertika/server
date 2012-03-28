@@ -30,13 +30,14 @@ using System.Linq;
 using System.Text;
 using System.Net.Sockets;
 using ISL.Server.Network;
+using ISL.Server.Account;
 
 namespace invertika_account.Account
 {
 	public class AccountClient : NetComputer
 	{
-		/** Account associated with connection */
-		Account mAccount;
+		/** Account associated with connection */ 
+		ISL.Server.Account.Account mAccount;
 
 		public AccountClientStatus status;
 
@@ -51,7 +52,7 @@ namespace invertika_account.Account
 			unsetAccount();
 		}
 
-		public void setAccount(Account acc)
+		public void setAccount(ISL.Server.Account.Account acc)
 		{
 			unsetAccount();
 			mAccount=acc;

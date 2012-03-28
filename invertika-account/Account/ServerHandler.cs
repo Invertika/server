@@ -36,6 +36,8 @@ using ISL.Server.Common;
 using invertika_account.Chat;
 using CSCL;
 using invertika_account.Common;
+using ISL.Server.Serialize;
+using ISL.Server.Account;
 
 namespace invertika_account.Account
 {
@@ -159,24 +161,24 @@ namespace invertika_account.Account
 
 				case Protocol.GAMSG_PLAYER_DATA:
 					{
-						//Logger.Add(LogLevel.Debug, "GAMSG_PLAYER_DATA");
-						//int id = message.readInt32();
+						Logger.Add(LogLevel.Debug, "GAMSG_PLAYER_DATA");
+						int id=message.readInt32();
 
-						//try
-						//{
-						//Character ptr = Program.storage.getCharacter(id, null);
+						try
+						{
+							Character ptr=Program.storage.getCharacter(id, null);
 
-						//    deserializeCharacterData(ptr, message);
-						//    if (!Program.storage.updateCharacter(ptr))
-						//    {
-						//        Logger.Add(LogLevel.Error, "Failed to update character {0}.", id);
-						//    }
-						//    //delete ptr;
-						//}
-						//catch
-						//{
-						//    Logger.Add(LogLevel.Error, "Received data for non-existing character {0}.", id);
-						//}
+							CharacterData.deserializeCharacterData(ptr, message);
+							if(!Program.storage.updateCharacter(ptr))
+							{
+								Logger.Add(LogLevel.Error, "Failed to update character {0}.", id);
+							}
+							//delete ptr;
+						}
+						catch
+						{
+							Logger.Add(LogLevel.Error, "Received data for non-existing character {0}.", id);
+						}
 					} break;
 
 				case Protocol.GAMSG_PLAYER_SYNC:
