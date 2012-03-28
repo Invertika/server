@@ -122,51 +122,52 @@ namespace invertika_account.Account
 
 		public static void syncDatabase(MessageIn msg)
 		{
-			//// It is safe to perform the following updates in a transaction
+			// It is safe to perform the following updates in a transaction
 			//dal::PerformTransaction transaction(storage->database());
 
-			//while (msg.getUnreadLength() > 0)
-			//{
-			//    int msgType = msg.readInt8();
-			//    switch (msgType)
-			//    {
-			//        case SYNC_CHARACTER_POINTS:
-			//        {
-			//            LOG_DEBUG("received SYNC_CHARACTER_POINTS");
-			//            int charId = msg.readInt32();
-			//            int charPoints = msg.readInt32();
-			//            int corrPoints = msg.readInt32();
-			//            storage->updateCharacterPoints(charId, charPoints, corrPoints);
-			//        } break;
-
-			//        case SYNC_CHARACTER_ATTRIBUTE:
-			//        {
-			//            LOG_DEBUG("received SYNC_CHARACTER_ATTRIBUTE");
-			//            int    charId = msg.readInt32();
-			//            int    attrId = msg.readInt32();
-			//            double base   = msg.readDouble();
-			//            double mod    = msg.readDouble();
-			//            storage->updateAttribute(charId, attrId, base, mod);
-			//        } break;
-
-			//        case SYNC_CHARACTER_SKILL:
-			//        {
-			//            LOG_DEBUG("received SYNC_CHARACTER_SKILL");
-			//            int charId = msg.readInt32();
-			//            int skillId = msg.readInt8();
-			//            int skillValue = msg.readInt32();
-			//            storage->updateExperience(charId, skillId, skillValue);
-			//        } break;
-
-			//        case SYNC_ONLINE_STATUS:
-			//        {
-			//            LOG_DEBUG("received SYNC_ONLINE_STATUS");
-			//            int charId = msg.readInt32();
-			//            bool online = (msg.readInt8() == 1);
-			//            storage->setOnlineStatus(charId, online);
-			//        }
-			//    }
-			//}
+			while(msg.getUnreadLength()>0)
+			{
+				int msgType=msg.readInt8();
+				switch((Sync)msgType)
+				{
+					case Sync.SYNC_CHARACTER_POINTS:
+						{
+							Logger.Add(LogLevel.Debug, "received SYNC_CHARACTER_POINTS");
+							int charId=msg.readInt32();
+							int charPoints=msg.readInt32();
+							int corrPoints=msg.readInt32();
+							Program.storage.updateCharacterPoints(charId, charPoints, corrPoints);
+							break;
+						}
+					case Sync.SYNC_CHARACTER_ATTRIBUTE:
+						{
+							Logger.Add(LogLevel.Debug, "received SYNC_CHARACTER_ATTRIBUTE");
+							int charId=msg.readInt32();
+							int attrId=msg.readInt32();
+							double @base=msg.readDouble();
+							double mod=msg.readDouble();
+							Program.storage.updateAttribute(charId, (uint)attrId, @base, mod);
+							break;
+						}
+					case Sync.SYNC_CHARACTER_SKILL:
+						{
+							Logger.Add(LogLevel.Debug, "received SYNC_CHARACTER_SKILL");
+							int charId=msg.readInt32();
+							int skillId=msg.readInt8();
+							int skillValue=msg.readInt32();
+							Program.storage.updateExperience(charId, skillId, skillValue);
+							break;
+						}
+					case Sync.SYNC_ONLINE_STATUS:
+						{
+							Logger.Add(LogLevel.Debug, "received SYNC_ONLINE_STATUS");
+							int charId=msg.readInt32();
+							bool online=(msg.readInt8()==1);
+							Program.storage.setOnlineStatus(charId, online);
+							break;
+						}
+				}
+			}
 
 			//transaction.commit();
 		}

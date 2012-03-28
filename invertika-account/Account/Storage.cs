@@ -1130,7 +1130,7 @@ namespace invertika_account.Account
 			//}
 		}
 
-		void updateCharacterPoints(int charId, int charPoints, int corrPoints)
+		public void updateCharacterPoints(int charId, int charPoints, int corrPoints)
 		{
 			//try
 			//{
@@ -1147,10 +1147,9 @@ namespace invertika_account.Account
 			//    utils::throwError("(DALStorage::updateCharacterPoints) "
 			//                      "SQL query failure: ", e);
 			//}
-
 		}
 
-		void updateExperience(int charId, int skillId, int skillValue)
+		public void updateExperience(int charId, int skillId, int skillValue)
 		{
 			//try
 			//{
@@ -1195,7 +1194,7 @@ namespace invertika_account.Account
 			//}
 		}
 
-		void updateAttribute(int charId, uint attrId, double @base, double mod)
+		public void updateAttribute(int charId, uint attrId, double @base, double mod)
 		{
 			//try
 			//{
@@ -2043,7 +2042,7 @@ namespace invertika_account.Account
 			//transaction.commit();
 		}
 
-		void setOnlineStatus(int charId, bool online)
+		public void setOnlineStatus(int charId, bool online)
 		{
 			//try
 			//{
