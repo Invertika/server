@@ -124,7 +124,6 @@ namespace invertika_account.Account
 			{
 				string errmsg=String.Format("Database version is not supported. Needed version: '{0}', current version: '", supportedDbVersion, dbversion);
 				throw new Exception(errmsg);
-				// utils::throwError(errmsg.str()); //TODO überprüfen
 			}
 
 			// Synchronize base data from xml files
@@ -1773,19 +1772,8 @@ namespace invertika_account.Account
 
 		public void setPlayerLevel(int id, int level)
 		{
-			//try
-			//{
-			//    std::ostringstream sql;
-			//    sql << "update " << CHARACTERS_TBL_NAME
-			//    << " set level = " << level
-			//    << " where id = " << id << ";";
-			//    mDb->execSql(sql.str());
-			//}
-			//catch (const dal::DbSqlQueryExecFailure &e)
-			//{
-			//    utils::throwError("(DALStorage::setPlayerLevel) SQL query failure: ",
-			//                      e);
-			//}
+			string sql=String.Format("update {0}  set level = {1}  where id =  {3};", CHARACTERS_TBL_NAME, level, id);
+			mDb.ExecuteQuery(sql);
 		}
 
 		void storeLetter(Letter letter)
