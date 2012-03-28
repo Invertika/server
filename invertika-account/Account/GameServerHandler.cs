@@ -33,6 +33,7 @@ using ISL.Server.Utilities;
 using System.IO;
 using ISL.Server.Network;
 using ISL.Server.Common;
+using System.Diagnostics;
 
 namespace invertika_account.Account
 {
@@ -82,35 +83,41 @@ namespace invertika_account.Account
 			return null;
 		}
 
-		public static bool getGameServerFromMap(int mapId, string address, int port)
+		public static bool getGameServerFromMap(int mapId, out string address, out int port)
 		{
-			//if (GameServer *s = ::getGameServerFromMap(mapId))
-			//{
-			//    address = s->address;
-			//    port = s->port;
-			//    return true;
-			//}
+			GameServer s=getGameServerFromMap(mapId);
+
+			if(s!=null)
+			{
+				address=s.address;
+				port=s.port;
+				return true;
+			}
+
+			address="";
+			port=0;
+
 			return false;
 		}
 
 		public static void registerClient(string token, Character ptr)
 		{
-			//GameServer *s = ::getGameServerFromMap(ptr->getMapId());
-			//assert(s);
-			//registerGameClient(s, token, ptr);
+			GameServer s=getGameServerFromMap(ptr.getMapId());
+			registerGameClient(s, token, ptr);
 		}
 
 
 		public static void sendPartyChange(Character ptr, int partyId)
 		{
-			//GameServer *s = ::getGameServerFromMap(ptr->getMapId());
-			//if (s)
-			//{
-			//    MessageOut msg(CGMSG_CHANGED_PARTY);
-			//    msg.writeInt32(ptr->getDatabaseID());
-			//    msg.writeInt32(partyId);
-			//    s->send(msg);
-			//}
+			GameServer s=getGameServerFromMap(ptr.getMapId());
+
+			if(s!=null)
+			{
+				MessageOut msg=new MessageOut(Protocol.CGMSG_CHANGED_PARTY);
+				msg.writeInt32(ptr.getDatabaseID());
+				msg.writeInt32(partyId);
+				s.send(msg);
+			}
 		}
 
 		public static void syncDatabase(MessageIn msg)

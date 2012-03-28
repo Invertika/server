@@ -42,26 +42,24 @@ namespace invertika_account.Account
 
 		public AccountClient(TcpClient peer): base(peer)
 		{
-			//NetComputer(peer);
 			status=AccountClientStatus.CLIENT_LOGIN;
-			//mAccount(NULL)
+			mAccount=null;
 		}
 
 		~AccountClient()
 		{
-			//unsetAccount();
+			unsetAccount();
 		}
 
 		public void setAccount(Account acc)
 		{
-			//unsetAccount();
-			//mAccount = acc;
+			unsetAccount();
+			mAccount=acc;
 		}
 
 		void unsetAccount()
 		{
-			//delete mAccount;
-			//mAccount = NULL;
+			mAccount=null;
 		}
 	}
 }
