@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 
 namespace invertika_account.Account
 {
@@ -47,20 +48,10 @@ namespace invertika_account.Account
 		//time_t mRegistrationDate; /**< Date and time of the account registration */
 		//time_t mLastLogin;        /**< Date and time of the last login */
 
-		~Account()
-		{
-			//for (Characters::iterator i = mCharacters.begin(),
-			//     i_end = mCharacters.end(); i != i_end; ++i)
-			//{
-			//    delete (*i).second;
-			//}
-		}
-
-		/**
- * Get all the characters.
- *
- * @return all the characters.
- */
+		/// <summary>
+		/// Get all the characters.
+		/// </summary>
+		/// <returns>all the characters.</returns>
 		public Dictionary<uint, Character> getCharacters()
 		{
 			return mCharacters;
@@ -68,42 +59,29 @@ namespace invertika_account.Account
 
 		bool isSlotEmpty(uint slot)
 		{
-			//return mCharacters.find(slot) == mCharacters.end();
-
-			return true; //ssk
+			return !mCharacters.ContainsKey(slot);
 		}
 
 		void setCharacters(Dictionary<uint, Character> characters)
 		{
-			//mCharacters = characters;
+			mCharacters = characters;
 		}
 
 		void addCharacter(Character character)
 		{
-			//unsigned int slot = (unsigned int) character->getCharacterSlot();
-			//assert(isSlotEmpty(slot));
-
-			//mCharacters[slot] = character;
+			uint slot = character.getCharacterSlot();
+			mCharacters[slot] = character;
 		}
 
 		void delCharacter(uint slot)
 		{
-			//for (Characters::iterator iter = mCharacters.begin(),
-			//         iter_end = mCharacters.end(); iter != iter_end; ++iter)
-			//{
-			//    if ((*iter).second->getCharacterSlot() == slot)
-			//    {
-			//        delete (*iter).second;
-			//        (*iter).second = 0;
-			//        mCharacters.erase(iter);
-			//    }
-			//}
+			mCharacters.Remove(slot);
 		}
 
 		void setID(int id)
 		{
-			//assert(mID < 0);
-			//mID = id;
+			Debug.Assert(mID<0);
+			mID=id;
 		}
 
 		//void setRegistrationDate(time_ ttime)

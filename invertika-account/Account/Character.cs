@@ -141,5 +141,13 @@ namespace invertika_account.Account
 		{
 			mDatabaseID=id;
 		}
+
+		/**
+		 * Gets the slot of the character.
+		 */
+		public uint getCharacterSlot()
+		{
+			return mCharacterSlot;
+		}
 	}
 }
