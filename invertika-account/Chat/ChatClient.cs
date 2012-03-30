@@ -44,9 +44,9 @@ namespace invertika_account.Chat
 
         public string characterName;
         uint characterId;
-        List<ChatChannel> channels;
+        public List<ChatChannel> channels;
         Party party;
         byte accountLevel;
-        Dictionary<ChatChannel, string> userModes;
+        public Dictionary<ChatChannel, string> userModes;
 	}
 }

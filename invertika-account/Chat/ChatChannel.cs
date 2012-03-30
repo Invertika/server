@@ -52,30 +52,33 @@ namespace invertika_account.Chat
 
 		bool addUser(ChatClient user)
 		{
-			//// First user is the channel owner
-			//if (mRegisteredUsers.Count() < 1)
-			//{
-			//    mOwner = user->characterName;
-			//    setUserMode(user, 'o');
-			//}
+			// First user is the channel owner
+			if (mRegisteredUsers.Count() < 1)
+			{
+			    mOwner = user.characterName;
+			    setUserMode(user, (byte)'o');
+			}
 
-			//// Check if the user already exists in the channel
-			//ChannelUsers::const_iterator i = mRegisteredUsers.begin(),
-			//                             i_end = mRegisteredUsers.end();
-			//if (std::find(i, i_end, user) != i_end)
-			//    return false;
+			// Check if the user already exists in the channel
+			foreach(ChatClient chatClient in mRegisteredUsers)
+			{
+				if(chatClient.characterName==user.characterName)
+				{
+					return false;
+				}
+			}
 
-			//mRegisteredUsers.push_back(user);
-			//user->channels.push_back(this);
+			mRegisteredUsers.Add(user);
+			user.channels.Add(this);
 
-			//// set user as logged in
-			//setUserMode(user, 'l');
+			// set user as logged in
+			setUserMode(user, (byte)'l');
 
-			//// if owner has rejoined, give them ops
-			//if (user->characterName == mOwner)
-			//{
-			//    setUserMode(user, 'o');
-			//}
+			// if owner has rejoined, give them ops
+			if (user.characterName == mOwner)
+			{
+			    setUserMode(user, (byte)'o');
+			}
 
 			return true;
 		}
@@ -113,6 +116,16 @@ namespace invertika_account.Chat
 
 		void setUserMode(ChatClient user, byte mode)
 		{
+			//try
+			//{
+				
+			//    string itr=user.userModes[this];
+
+			//}
+			//catch
+			//{
+			//}
+
 			//Dictionary<ChatChannel, string>::iterator itr = user->userModes.find(this);
 			//if (itr != user->userModes.end())
 			//{
