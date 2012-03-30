@@ -85,28 +85,23 @@ namespace invertika_account.Chat
 
 		bool removeUser(ChatClient user)
 		{
-			//ChannelUsers::iterator i_end = mRegisteredUsers.end(),
-			//                       i = std::find(mRegisteredUsers.begin(), i_end, user);
-			//if (i == i_end) return false;
-			//mRegisteredUsers.erase(i);
-			//std::vector< ChatChannel * > &channels = user->channels;
-			//channels.erase(std::find(channels.begin(), channels.end(), this));
-			//std::map<ChatChannel*,std::string> &modes = user->userModes;
-			//modes.erase(modes.begin(), modes.end());
+			user.channels.Clear();
+			user.userModes.Clear();
+
+			mRegisteredUsers.Remove(user);
+
 			return true;
 		}
 
 		void removeAllUsers()
 		{
-			//for (ChannelUsers::const_iterator i = mRegisteredUsers.begin(),
-			//     i_end = mRegisteredUsers.end(); i != i_end; ++i)
-			//{
-			//    std::vector< ChatChannel * > &channels = (*i)->channels;
-			//    channels.erase(std::find(channels.begin(), channels.end(), this));
-			//    std::map<ChatChannel*,std::string> &modes = (*i)->userModes;
-			//    modes.erase(modes.begin(), modes.end());
-			//}
-			//mRegisteredUsers.clear();
+			foreach(ChatClient chatClient in mRegisteredUsers)
+			{
+				chatClient.channels.Clear();
+				chatClient.userModes.Clear();
+			}
+
+			mRegisteredUsers.Clear();
 		}
 
 		bool canJoin()
@@ -116,39 +111,26 @@ namespace invertika_account.Chat
 
 		void setUserMode(ChatClient user, byte mode)
 		{
-			//try
-			//{
-				
-			//    string itr=user.userModes[this];
-
-			//}
-			//catch
-			//{
-			//}
-
-			//Dictionary<ChatChannel, string>::iterator itr = user->userModes.find(this);
-			//if (itr != user->userModes.end())
-			//{
-			//    itr->second += mode;
-			//}
-			//else
-			//{
-			//    std::stringstream ss; ss << mode;
-			//    user->userModes.insert(std::pair<ChatChannel*, std::string>(this, ss.str()));
-			//}
+			if(user.userModes.ContainsKey(this))
+			{
+				user.userModes[this]+=mode;
+			}
+			else
+			{
+				user.userModes.Add(this, mode.ToString());
+			}
 		}
 
 		string getUserMode(ChatClient user)
 		{
-			//std::map<ChatChannel*, std::string>::const_iterator itr =
-			//        user->userModes.find(const_cast<ChatChannel*>(this));
-
-			//if (itr != user->userModes.end())
-			//    return itr->second;
-
-			//return 0;
-
-			return ""; //ssk
+			try
+			{
+				return user.userModes[this];
+			}
+			catch
+			{
+				return "";
+			}
 		}
 	}
 }
