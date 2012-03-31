@@ -50,7 +50,7 @@ namespace invertika_account.Chat
 		{
 			int channelId=nextUsable();
 
-			//// Register channel
+			// Register channel
 			mChatChannels.Add((ushort)channelId, new ChatChannel(channelId, channelName, channelAnnouncement, channelPassword, joinable));
 
 			return channelId;
@@ -89,12 +89,12 @@ namespace invertika_account.Chat
 
 		bool removeChannel(int channelId)
 		{
-			//ChatChannels::iterator i = mChatChannels.find(channelId);
-			//if (i == mChatChannels.end())
-			//    return false;
-			//i->second.removeAllUsers();
-			//mChatChannels.erase(i);
-			//mChannelsNoLongerUsed.push_back(channelId);
+			if(mChatChannels.ContainsKey((ushort)channelId)==false) return false;
+
+			mChatChannels[(ushort)channelId].removeAllUsers();
+			mChatChannels.Remove((ushort)channelId);
+			mChannelsNoLongerUsed.Add(channelId);
+
 			return true;
 		}
 

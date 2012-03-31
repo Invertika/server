@@ -93,7 +93,7 @@ namespace invertika_account.Chat
 			return true;
 		}
 
-		void removeAllUsers()
+		public void removeAllUsers()
 		{
 			foreach(ChatClient chatClient in mRegisteredUsers)
 			{
