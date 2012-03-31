@@ -115,33 +115,36 @@ namespace invertika_account.Chat
 
 		int getChannelId(string channelName)
 		{
-			//for (ChatChannels::const_iterator i = mChatChannels.begin(),
-			//        i_end = mChatChannels.end();
-			//     i != i_end; ++i)
-			//{
-			//    if (i->second.getName() == channelName)
-			//        return i->first;
-			//}
+			foreach(KeyValuePair<ushort, ChatChannel> pair in mChatChannels)
+			{
+				if(pair.Value.getName()==channelName)
+				{
+					return (int)pair.Key;
+				}
+			}
 
 			return 0;
 		}
 
 		ChatChannel getChannel(int channelId)
 		{
-			//ChatChannels::iterator i = mChatChannels.find(channelId);
-			//if (i != mChatChannels.end())
-			//    return &i->second;
+			if(mChatChannels.ContainsKey((ushort)channelId))
+			{
+				return mChatChannels[(ushort)channelId];
+			}
+
 			return null;
 		}
 
 		ChatChannel getChannel(string name)
 		{
-			//for (ChatChannels::iterator i = mChatChannels.begin();
-			//     i != mChatChannels.end(); ++i)
-			//{
-			//    if (i->second.getName() == name)
-			//        return &(i->second);
-			//}
+			foreach(ChatChannel channel in mChatChannels.Values)
+			{
+				if(channel.getName()==name)
+				{
+					return channel;
+				}
+			}
 
 			return null;
 		}
