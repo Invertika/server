@@ -33,5 +33,180 @@ namespace invertika_account.Chat
 {
 	public class ChatChannelManager
 	{
+		/**
+		 * The map keeping all the chat channels. The channel id must be
+		 * unique.
+		 */
+		Dictionary<ushort, ChatChannel> mChatChannels;
+		int mNextChannelId;
+		List<int> mChannelsNoLongerUsed;
+
+		public ChatChannelManager()
+		{
+			mNextChannelId=1;
+		}
+
+		int createNewChannel(string channelName, string channelAnnouncement, string channelPassword, bool joinable)
+		{
+			int channelId=nextUsable();
+
+			//// Register channel
+			mChatChannels.Add((ushort)channelId, new ChatChannel(channelId, channelName, channelAnnouncement, channelPassword, joinable));
+
+			return channelId;
+		}
+
+		bool tryNewPublicChannel(string name)
+		{
+			//if (!stringFilter->filterContent(name))
+			//{
+			//    return false;
+			//}
+
+			//// Checking strings for length and double quotes
+			//unsigned maxNameLength = Configuration::getValue("chat_maxChannelNameLength", 15);
+			//if (name.empty() ||
+			//    name.length() > maxNameLength ||
+			//    stringFilter->findDoubleQuotes(name))
+			//{
+			//    return false;
+			//}
+			//else if (guildManager->doesExist(name) ||
+			//         channelExists(name))
+			//{
+			//    // Channel already exists
+			//    return false;
+			//}
+			//else
+			//{
+			//    // We attempt to create a new channel
+			//    short id = createNewChannel(name, std::string(), std::string(), true);
+			//    return id != 0;
+			//}
+
+			return true;
+		}
+
+		bool removeChannel(int channelId)
+		{
+			//ChatChannels::iterator i = mChatChannels.find(channelId);
+			//if (i == mChatChannels.end())
+			//    return false;
+			//i->second.removeAllUsers();
+			//mChatChannels.erase(i);
+			//mChannelsNoLongerUsed.push_back(channelId);
+			return true;
+		}
+
+		List<ChatChannel> getPublicChannels()
+		{
+			List<ChatChannel> channels=new List<ChatChannel>();
+
+			foreach(ChatChannel channel in mChatChannels.Values)
+			{
+				if(channel.canJoin())
+				{
+					channels.Add(channel);
+				}
+			}
+
+			return channels;
+		}
+
+		int getChannelId(string channelName)
+		{
+			//for (ChatChannels::const_iterator i = mChatChannels.begin(),
+			//        i_end = mChatChannels.end();
+			//     i != i_end; ++i)
+			//{
+			//    if (i->second.getName() == channelName)
+			//        return i->first;
+			//}
+
+			return 0;
+		}
+
+		ChatChannel getChannel(int channelId)
+		{
+			//ChatChannels::iterator i = mChatChannels.find(channelId);
+			//if (i != mChatChannels.end())
+			//    return &i->second;
+			return null;
+		}
+
+		ChatChannel getChannel(string name)
+		{
+			//for (ChatChannels::iterator i = mChatChannels.begin();
+			//     i != mChatChannels.end(); ++i)
+			//{
+			//    if (i->second.getName() == name)
+			//        return &(i->second);
+			//}
+
+			return null;
+		}
+
+		void setChannelTopic(int channelId, string topic)
+		{
+			//ChatChannels::iterator i = mChatChannels.find(channelId);
+			//if (i == mChatChannels.end())
+			//    return;
+
+			//i->second.setAnnouncement(topic);
+			//chatHandler->warnUsersAboutPlayerEventInChat(&(i->second),
+			//                                             topic,
+			//                                             CHAT_EVENT_TOPIC_CHANGE);
+		}
+
+		void removeUserFromAllChannels(ChatClient user)
+		{
+			//// Local copy as they will be destroyed under our feet.
+			//std::vector<ChatChannel *> channels = user->channels;
+			//// Reverse iterator to reduce load on vector operations.
+			//for (std::vector<ChatChannel *>::const_reverse_iterator
+			//     i = channels.rbegin(), i_end = channels.rend(); i != i_end; ++i)
+			//{
+			//    chatHandler->warnUsersAboutPlayerEventInChat((*i),
+			//                                                 user->characterName,
+			//                                                 CHAT_EVENT_LEAVING_PLAYER);
+			//    (*i)->removeUser(user);
+			//}
+		}
+
+		bool channelExists(int channelId)
+		{
+			return mChatChannels.ContainsKey((ushort)channelId);
+		}
+
+		bool channelExists(string channelName)
+		{
+			foreach(ChatChannel channel in mChatChannels.Values)
+			{
+				if(channel.getName()==channelName)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		int nextUsable()
+		{
+			int channelId=0;
+
+			if(mChannelsNoLongerUsed.Count>0)
+			{
+				channelId=mChannelsNoLongerUsed[0];
+				mChannelsNoLongerUsed.Remove(0);
+			}
+			else
+			{
+				channelId=mNextChannelId;
+				++mNextChannelId;
+			}
+
+			return channelId;
+		}
 	}
 }

@@ -41,7 +41,7 @@ namespace invertika_account.Chat
 		List<ChatClient> mRegisteredUsers; /**< Users in this channel. */
 		string mOwner;             /**< Channel owner character name */
 
-		ChatChannel(int id, string name, string announcement, string password, bool joinable)
+		public ChatChannel(int id, string name, string announcement, string password, bool joinable)
 		{
 			mId=(ushort)id;
 			mName=name;
@@ -53,10 +53,10 @@ namespace invertika_account.Chat
 		bool addUser(ChatClient user)
 		{
 			// First user is the channel owner
-			if (mRegisteredUsers.Count() < 1)
+			if(mRegisteredUsers.Count()<1)
 			{
-			    mOwner = user.characterName;
-			    setUserMode(user, (byte)'o');
+				mOwner=user.characterName;
+				setUserMode(user, (byte)'o');
 			}
 
 			// Check if the user already exists in the channel
@@ -75,9 +75,9 @@ namespace invertika_account.Chat
 			setUserMode(user, (byte)'l');
 
 			// if owner has rejoined, give them ops
-			if (user.characterName == mOwner)
+			if(user.characterName==mOwner)
 			{
-			    setUserMode(user, (byte)'o');
+				setUserMode(user, (byte)'o');
 			}
 
 			return true;
@@ -104,7 +104,7 @@ namespace invertika_account.Chat
 			mRegisteredUsers.Clear();
 		}
 
-		bool canJoin()
+		public bool canJoin()
 		{
 			return mJoinable;
 		}
@@ -131,6 +131,14 @@ namespace invertika_account.Chat
 			{
 				return "";
 			}
+		}
+
+		/**
+ * Get the name of the channel.
+ */
+		public string getName()
+		{
+			return mName;
 		}
 	}
 }

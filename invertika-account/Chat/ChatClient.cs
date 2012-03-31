@@ -37,9 +37,6 @@ namespace invertika_account.Chat
 	{
 		public ChatClient(TcpClient peer): base(peer)
 		{
-			// NetComputer(peer),
-			//party(0),
-			//accountLevel(0)
 		}
 
         public string characterName;
