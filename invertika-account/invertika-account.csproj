@@ -70,6 +70,7 @@
     <Compile Include="Chat\ChatHandler.cs" />
     <Compile Include="Chat\Guild.cs" />
     <Compile Include="Chat\GuildManager.cs" />
+    <Compile Include="Chat\GuildMember.cs" />
     <Compile Include="Chat\Letter.cs" />
     <Compile Include="Chat\Party.cs" />
     <Compile Include="Chat\PartyInvite.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Account\Storage.cs" />
+    <Compile Include="Utilities\StringFilter.cs" />
     <Compile Include="Utilities\TokenCollector.cs" />
     <Compile Include="Utilities\TokenCollectorBase.cs" />
   </ItemGroup>

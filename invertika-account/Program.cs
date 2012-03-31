@@ -53,7 +53,7 @@ namespace invertika_account
 
 		static bool running=true;        /**< Determines if server keeps running */
 
-		//utils::StringFilter *stringFilter; /**< Slang's Filter */
+		public static StringFilter stringFilter; /**< Slang's Filter */
 
 		static string statisticsFile="";
 
@@ -64,7 +64,7 @@ namespace invertika_account
 		public static ChatHandler chatHandler;
 
 		static ChatChannelManager chatChannelManager;
-		static GuildManager guildManager;
+		public static GuildManager guildManager;
 		public static PostManager postalManager;
 		static BandwidthMonitor gBandwidth;
 
@@ -119,7 +119,7 @@ namespace invertika_account
 //#endif
 
 			// --- Initialize the managers
-			//stringFilter = new utils::StringFilter;  // The slang's and double quotes filter. //TODO Überprüfen
+			stringFilter = new StringFilter();  // The slang's and double quotes filter.
 			chatChannelManager=new ChatChannelManager();
 			guildManager=new GuildManager();
 			postalManager=new PostManager();

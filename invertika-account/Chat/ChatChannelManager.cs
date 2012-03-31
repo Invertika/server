@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ISL.Server.Common;
 
 namespace invertika_account.Chat
 {
@@ -44,6 +45,8 @@ namespace invertika_account.Chat
 		public ChatChannelManager()
 		{
 			mNextChannelId=1;
+			mChatChannels=new Dictionary<ushort, ChatChannel>();
+			mChannelsNoLongerUsed=new List<int>();
 		}
 
 		int createNewChannel(string channelName, string channelAnnouncement, string channelPassword, bool joinable)
@@ -58,33 +61,30 @@ namespace invertika_account.Chat
 
 		bool tryNewPublicChannel(string name)
 		{
-			//if (!stringFilter->filterContent(name))
-			//{
-			//    return false;
-			//}
+			//Slangfilter Überprüfung
+			if (!Program.stringFilter.filterContent(name))
+			{
+			    return false;
+			}
 
-			//// Checking strings for length and double quotes
-			//unsigned maxNameLength = Configuration::getValue("chat_maxChannelNameLength", 15);
-			//if (name.empty() ||
-			//    name.length() > maxNameLength ||
-			//    stringFilter->findDoubleQuotes(name))
-			//{
-			//    return false;
-			//}
-			//else if (guildManager->doesExist(name) ||
-			//         channelExists(name))
-			//{
-			//    // Channel already exists
-			//    return false;
-			//}
-			//else
-			//{
-			//    // We attempt to create a new channel
-			//    short id = createNewChannel(name, std::string(), std::string(), true);
-			//    return id != 0;
-			//}
-
-			return true;
+			// Checking strings for length and double quotes
+			uint maxNameLength = (uint)Configuration.getValue("chat_maxChannelNameLength", 15);
+			
+			if (name==null|| name.Length>maxNameLength || Program.stringFilter.findDoubleQuotes(name))   
+			{
+			    return false;
+			}
+			else if (Program.guildManager.doesExist(name) ||  channelExists(name))
+			{
+			    // Channel already exists
+			    return false;
+			}
+			else
+			{
+			    // We attempt to create a new channel
+			    int id = createNewChannel(name, "", "", true);
+			    return id != 0;
+			}
 		}
 
 		bool removeChannel(int channelId)
@@ -151,29 +151,21 @@ namespace invertika_account.Chat
 
 		void setChannelTopic(int channelId, string topic)
 		{
-			//ChatChannels::iterator i = mChatChannels.find(channelId);
-			//if (i == mChatChannels.end())
-			//    return;
-
-			//i->second.setAnnouncement(topic);
-			//chatHandler->warnUsersAboutPlayerEventInChat(&(i->second),
-			//                                             topic,
-			//                                             CHAT_EVENT_TOPIC_CHANGE);
+			if(mChatChannels.ContainsKey((ushort)channelId))
+			{
+				ChatChannel channel=mChatChannels[(ushort)channelId];
+				channel.setAnnouncement(topic);
+				Program.chatHandler.warnUsersAboutPlayerEventInChat(channel, topic, ManaServ.CHAT_EVENT_TOPIC_CHANGE);
+			}
 		}
 
 		void removeUserFromAllChannels(ChatClient user)
 		{
-			//// Local copy as they will be destroyed under our feet.
-			//std::vector<ChatChannel *> channels = user->channels;
-			//// Reverse iterator to reduce load on vector operations.
-			//for (std::vector<ChatChannel *>::const_reverse_iterator
-			//     i = channels.rbegin(), i_end = channels.rend(); i != i_end; ++i)
-			//{
-			//    chatHandler->warnUsersAboutPlayerEventInChat((*i),
-			//                                                 user->characterName,
-			//                                                 CHAT_EVENT_LEAVING_PLAYER);
-			//    (*i)->removeUser(user);
-			//}
+			foreach(ChatChannel channel in user.channels)
+			{
+				Program.chatHandler.warnUsersAboutPlayerEventInChat(channel, user.characterName, ManaServ.CHAT_EVENT_LEAVING_PLAYER);
+				channel.removeUser(user);
+			}
 		}
 
 		bool channelExists(int channelId)

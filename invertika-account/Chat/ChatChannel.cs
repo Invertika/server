@@ -83,7 +83,7 @@ namespace invertika_account.Chat
 			return true;
 		}
 
-		bool removeUser(ChatClient user)
+		public bool removeUser(ChatClient user)
 		{
 			user.channels.Clear();
 			user.userModes.Clear();
@@ -139,6 +139,14 @@ namespace invertika_account.Chat
 		public string getName()
 		{
 			return mName;
+		}
+
+		/**
+ * Sets the announcement string of the channel.
+ */
+		public void setAnnouncement(string channelAnnouncement)
+		{
+			mAnnouncement=channelAnnouncement;
 		}
 	}
 }

@@ -658,7 +658,7 @@ namespace invertika_account.Chat
 			//}
 		}
 
-		void warnUsersAboutPlayerEventInChat(ChatChannel channel, string info, char eventId)
+		public void warnUsersAboutPlayerEventInChat(ChatChannel channel, string info, byte eventId)
 		{
 			//MessageOut msg(CPMSG_CHANNEL_EVENT);
 			//msg.writeInt16(channel->getId());

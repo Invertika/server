@@ -33,5 +33,129 @@ namespace invertika_account.Chat
 {
 	public class Guild
 	{
+		short mId;
+		string mName;
+		List<GuildMember> mMembers;
+		List<int> mInvited;
+
+
+		Guild(string name)
+		{
+			mName=name;
+		}
+
+		~Guild()
+		{
+		}
+
+		void addMember(int playerId, int permissions)
+		{
+			//// create new guild member
+			//GuildMember *member = new GuildMember;
+			//member->mId = playerId;
+			//member->mPermissions = permissions;
+
+			//// add new guild member to guild
+			//mMembers.push_back(member);
+
+			//if (checkInvited(playerId))
+			//{
+			//    mInvited.remove(playerId);
+			//}
+		}
+
+		void removeMember(int playerId)
+		{
+			//if (getOwner() == playerId)
+			//{
+			//    // if the leader is leaving, assign next member as leader
+			//    std::list<GuildMember*>::iterator itr = mMembers.begin();
+			//    ++itr;
+			//    if (itr != mMembers.end())
+			//        setOwner((*itr)->mId);
+			//}
+			//GuildMember *member = getMember(playerId);
+			//if (member)
+			//    mMembers.remove(member);
+		}
+
+		int getOwner()
+		{
+			//std::list<GuildMember*>::const_iterator itr = mMembers.begin();
+			//std::list<GuildMember*>::const_iterator itr_end = mMembers.end();
+
+			//while (itr != itr_end)
+			//{
+			//    if ((*itr)->mPermissions == GAL_OWNER)
+			//        return (*itr)->mId;
+			//    ++itr;
+			//}
+
+			return 0;
+		}
+
+		void setOwner(int playerId)
+		{
+			//GuildMember *member = getMember(playerId);
+			//if (member)
+			//{
+			//    member->mPermissions = GAL_OWNER;
+			//}
+		}
+
+		bool checkInvited(int playerId)
+		{
+			//return std::find(mInvited.begin(), mInvited.end(), playerId) != mInvited.end();
+
+			return true; //ssk
+		}
+
+		void addInvited(int playerId)
+		{
+			//mInvited.push_back(playerId);
+		}
+
+		bool checkInGuild(int playerId)
+		{
+			return getMember(playerId)!=null;
+		}
+
+		GuildMember getMember(int playerId)
+		{
+			//std::list<GuildMember*>::const_iterator itr = mMembers.begin(),
+			//                                        itr_end = mMembers.end();
+			//while (itr != itr_end)
+			//{
+			//    if ((*itr)->mId == playerId)
+			//        return (*itr);
+			//    ++itr;
+			//}
+
+			return null;
+		}
+
+		bool canInvite(int playerId)
+		{
+			//// Guild members with permissions above NONE can invite
+			//// Check that guild members permissions are not NONE
+			//GuildMember *member = getMember(playerId);
+			//if (member->mPermissions & GAL_INVITE)
+			//    return true;
+			return false;
+		}
+
+		int getUserPermissions(int playerId)
+		{
+			//GuildMember *member = getMember(playerId);
+			//return member->mPermissions;
+
+			return 0; //ssk
+		}
+
+		void setUserPermissions(int playerId, int level)
+		{
+			//GuildMember *member = getMember(playerId);
+			//member->mPermissions = level;
+		}
 	}
 }
