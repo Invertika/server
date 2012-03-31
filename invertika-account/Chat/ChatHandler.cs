@@ -26,12 +26,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using invertika_account.Common;
 using System.Net.Sockets;
 using invertika_account.Utilities;
 using ISL.Server.Network;
+using ISL.Server.Utilities;
 
 namespace invertika_account.Chat
 {
@@ -47,15 +45,14 @@ namespace invertika_account.Chat
 
 		public ChatHandler()
 		{
+			//mTokenCollector=new TokenCollector<ChatHandler,ChatClient,Pending>(();
 			// mTokenCollector(this)
 		}
 
 		bool startListen(UInt16 port, string host)
 		{
-			//LOG_INFO("Chat handler started:");
-			//return ConnectionHandler::startListen(port, host);
-
-			return true; //ssk;
+			Logger.Add(LogLevel.Information, "Chat handler started:");
+			return base.startListen(port, host);
 		}
 
 		void deletePendingClient(ChatClient c)
