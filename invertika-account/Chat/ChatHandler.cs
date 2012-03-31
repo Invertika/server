@@ -51,7 +51,7 @@ namespace invertika_account.Chat
 
 		bool startListen(UInt16 port, string host)
 		{
-			Logger.Add(LogLevel.Information, "Chat handler started:");
+			Logger.Write(LogLevel.Information, "Chat handler started:");
 			return base.startListen(port, host);
 		}
 

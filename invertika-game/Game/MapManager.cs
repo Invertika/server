@@ -53,11 +53,11 @@ namespace invertika_game.Game
 
 			if(doc.ExistElement("maps")==false)
 			{
-				Logger.Add(LogLevel.Error, "Item Manager: Error while parsing map database ({0})!", mapReferenceFile);
+				Logger.Write(LogLevel.Error, "Item Manager: Error while parsing map database ({0})!", mapReferenceFile);
 				return loadedMaps;
 			}
 
-			Logger.Add(LogLevel.Information, "Loading map reference: {0}", mapReferenceFile);
+			Logger.Write(LogLevel.Information, "Loading map reference: {0}", mapReferenceFile);
 
 			//Für jeden Mapknoten
 			List<XmlNode> nodes=doc.GetElements("maps.map");
@@ -85,18 +85,18 @@ namespace invertika_game.Game
 				{
 					if(name=="")
 					{
-						Logger.Add(LogLevel.Warning, "Invalid unnamed map Id: {0}.", id);
+						Logger.Write(LogLevel.Warning, "Invalid unnamed map Id: {0}.", id);
 					}
 					else
 					{
-						Logger.Add(LogLevel.Warning, "Invalid map Id: {0}.", id);
+						Logger.Write(LogLevel.Warning, "Invalid map Id: {0}.", id);
 					}
 				}
 			}
 
 			if(loadedMaps>0)
 			{
-				Logger.Add(LogLevel.Information, "{0} valid map file references were loaded.", loadedMaps);
+				Logger.Write(LogLevel.Information, "{0} valid map file references were loaded.", loadedMaps);
 			}
 
 			return loadedMaps;

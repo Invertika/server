@@ -40,7 +40,7 @@ namespace invertika_account.Account
 		public static bool initialize(string attributesFile, int port, string host)
 		{
 			accountHandler=new AccountHandler(attributesFile);
-			Logger.Add(LogLevel.Information, "Account handler started:");
+			Logger.Write(LogLevel.Information, "Account handler started:");
 
 			return accountHandler.startListen((ushort)port, host);
 		}

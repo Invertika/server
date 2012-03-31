@@ -60,7 +60,7 @@ namespace invertika_account.Account
 			{
 				case Protocol.GAMSG_REGISTER:
 					{
-						Logger.Add(LogLevel.Debug, "GAMSG_REGISTER");
+						Logger.Write(LogLevel.Debug, "GAMSG_REGISTER");
 
 						// TODO: check the credentials of the game server
 						server.address=message.readString();
@@ -69,19 +69,19 @@ namespace invertika_account.Account
 
 						// checks the version of the remote item database with our local copy
 						uint dbversion=(uint)message.readInt32();
-						Logger.Add(LogLevel.Information, "Game server uses itemsdatabase with version {0}", dbversion);
+						Logger.Write(LogLevel.Information, "Game server uses itemsdatabase with version {0}", dbversion);
 
-						Logger.Add(LogLevel.Debug, "AGMSG_REGISTER_RESPONSE");
+						Logger.Write(LogLevel.Debug, "AGMSG_REGISTER_RESPONSE");
 						MessageOut outmessage=new MessageOut(Protocol.AGMSG_REGISTER_RESPONSE);
 
 						if(dbversion==Program.storage.getItemDatabaseVersion())
 						{
-							Logger.Add(LogLevel.Debug, "Item databases between account server and gameserver are in sync");
+							Logger.Write(LogLevel.Debug, "Item databases between account server and gameserver are in sync");
 							outmessage.writeInt16(ManaServ.DATA_VERSION_OK);
 						}
 						else
 						{
-							Logger.Add(LogLevel.Debug, "Item database of game server has a wrong version");
+							Logger.Write(LogLevel.Debug, "Item database of game server has a wrong version");
 							outmessage.writeInt16(ManaServ.DATA_VERSION_OUTDATED);
 						}
 						if(password==Configuration.getValue("net_password", "changeMe"))
@@ -101,23 +101,23 @@ namespace invertika_account.Account
 						}
 						else
 						{
-							Logger.Add(LogLevel.Information, "The password given by {0}:{1} was bad.", server.address, server.port);
+							Logger.Write(LogLevel.Information, "The password given by {0}:{1} was bad.", server.address, server.port);
 							outmessage.writeInt16(ManaServ.PASSWORD_BAD);
 							computer.disconnect(outmessage);
 							break;
 						}
 
-						Logger.Add(LogLevel.Information, "Game server {0}:{1} wants to register {2}  maps.", server.address, server.port, (message.getUnreadLength()/2));
+						Logger.Write(LogLevel.Information, "Game server {0}:{1} wants to register {2}  maps.", server.address, server.port, (message.getUnreadLength()/2));
 
 						while(message.getUnreadLength()!=0)
 						{
 							int id=message.readInt16();
-							Logger.Add(LogLevel.Information, "Registering map {0}.", id);
+							Logger.Write(LogLevel.Information, "Registering map {0}.", id);
 
 							GameServer s=GameServerHandler.getGameServerFromMap(id);
 							if(s!=null)
 							{
-								Logger.Add(LogLevel.Error, "Server Handler: map is already registered by {0}:{1}.", s.address, s.port);
+								Logger.Write(LogLevel.Error, "Server Handler: map is already registered by {0}:{1}.", s.address, s.port);
 							}
 							else
 							{
@@ -161,7 +161,7 @@ namespace invertika_account.Account
 
 				case Protocol.GAMSG_PLAYER_DATA:
 					{
-						Logger.Add(LogLevel.Debug, "GAMSG_PLAYER_DATA");
+						Logger.Write(LogLevel.Debug, "GAMSG_PLAYER_DATA");
 						int id=message.readInt32();
 
 						try
@@ -171,24 +171,24 @@ namespace invertika_account.Account
 							CharacterData.deserializeCharacterData(ptr, message);
 							if(!Program.storage.updateCharacter(ptr))
 							{
-								Logger.Add(LogLevel.Error, "Failed to update character {0}.", id);
+								Logger.Write(LogLevel.Error, "Failed to update character {0}.", id);
 							}
 						}
 						catch
 						{
-							Logger.Add(LogLevel.Error, "Received data for non-existing character {0}.", id);
+							Logger.Write(LogLevel.Error, "Received data for non-existing character {0}.", id);
 						}
 					} break;
 
 				case Protocol.GAMSG_PLAYER_SYNC:
 					{
-						Logger.Add(LogLevel.Debug, "GAMSG_PLAYER_SYNC");
+						Logger.Write(LogLevel.Debug, "GAMSG_PLAYER_SYNC");
 						GameServerHandler.syncDatabase(message);
 					} break;
 
 				case Protocol.GAMSG_REDIRECT:
 					{
-						Logger.Add(LogLevel.Debug, "GAMSG_REDIRECT");
+						Logger.Write(LogLevel.Debug, "GAMSG_REDIRECT");
 						int id=message.readInt32();
 						//string magic_token(utils::getMagicToken());
 						string magic_token=Various.GetUniqueID();
@@ -212,18 +212,18 @@ namespace invertika_account.Account
 							}
 							catch
 							{
-								Logger.Add(LogLevel.Error, "Server Change: No game server for map {0}.", mapId);
+								Logger.Write(LogLevel.Error, "Server Change: No game server for map {0}.", mapId);
 							}
 						}
 						catch
 						{
-							Logger.Add(LogLevel.Error, "Received data for non-existing character {0}.", id);
+							Logger.Write(LogLevel.Error, "Received data for non-existing character {0}.", id);
 						}
 					} break;
 
 				case Protocol.GAMSG_PLAYER_RECONNECT:
 					{
-						Logger.Add(LogLevel.Debug, "GAMSG_PLAYER_RECONNECT");
+						Logger.Write(LogLevel.Debug, "GAMSG_PLAYER_RECONNECT");
 						int id=message.readInt32();
 						string magic_token=message.readString();
 						//string magic_token=message.readString(ManaServ.MAGIC_TOKEN_LENGTH);
@@ -236,7 +236,7 @@ namespace invertika_account.Account
 						}
 						catch
 						{
-							Logger.Add(LogLevel.Error, "Received data for non-existing character {0}.", id);
+							Logger.Write(LogLevel.Error, "Received data for non-existing character {0}.", id);
 						}
 					} break;
 
@@ -341,7 +341,7 @@ namespace invertika_account.Account
 				case Protocol.GCMSG_REQUEST_POST:
 					{
 						// Retrieve the post for user
-						Logger.Add(LogLevel.Debug, "GCMSG_REQUEST_POST");
+						Logger.Write(LogLevel.Debug, "GCMSG_REQUEST_POST");
 						result.writeInt16((int)Protocol.CGMSG_POST_RESPONSE);
 
 						// get the character id
@@ -355,7 +355,7 @@ namespace invertika_account.Account
 						if(ptr!=null)
 						{
 							// Invalid character
-							Logger.Add(LogLevel.Error, "Error finding character id for post");
+							Logger.Write(LogLevel.Error, "Error finding character id for post");
 							break;
 						}
 
@@ -442,7 +442,7 @@ namespace invertika_account.Account
 
 				case Protocol.GAMSG_TRANSACTION:
 					{
-						Logger.Add(LogLevel.Debug, "TRANSACTION");
+						Logger.Write(LogLevel.Debug, "TRANSACTION");
 						int id=message.readInt32();
 						int action=message.readInt32();
 						string messageS=message.readString();
@@ -466,7 +466,7 @@ namespace invertika_account.Account
 						int posX=message.readInt16();
 						int posY=message.readInt16();
 
-						Logger.Add(LogLevel.Debug, "Gameserver create item {0} on map {1} ", itemId, mapId);
+						Logger.Write(LogLevel.Debug, "Gameserver create item {0} on map {1} ", itemId, mapId);
 
 						Program.storage.addFloorItem(mapId, itemId, amount, posX, posY);
 					} break;
@@ -479,14 +479,14 @@ namespace invertika_account.Account
 						int posX=message.readInt16();
 						int posY=message.readInt16();
 
-						Logger.Add(LogLevel.Debug, "Gameserver removed item {0} from map {1}", itemId, mapId);
+						Logger.Write(LogLevel.Debug, "Gameserver removed item {0} from map {1}", itemId, mapId);
 
 						Program.storage.removeFloorItem(mapId, itemId, amount, posX, posY);
 					} break;
 
 				default:
 					{
-						Logger.Add(LogLevel.Warning, "ServerHandler::processMessage, Invalid message type: {0}", message.getId());
+						Logger.Write(LogLevel.Warning, "ServerHandler::processMessage, Invalid message type: {0}", message.getId());
 						result.writeInt16((int)Protocol.XXMSG_INVALID);
 						break;
 					}
@@ -513,7 +513,7 @@ namespace invertika_account.Account
 		 */
 		protected override void computerDisconnected(NetComputer comp)
 		{
-			Logger.Add(LogLevel.Information, "Game-server disconnected.");
+			Logger.Write(LogLevel.Information, "Game-server disconnected.");
 		}
 	}
 }

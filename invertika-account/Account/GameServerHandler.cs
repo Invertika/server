@@ -46,7 +46,7 @@ namespace invertika_account.Account
 		public static bool initialize(int port, string host)
 		{
 			serverHandler=new ServerHandler();
-			Logger.Add(LogLevel.Information, "Game server handler started:");
+			Logger.Write(LogLevel.Information, "Game server handler started:");
 			return serverHandler.startListen((ushort)port, host);
 		}
 
@@ -133,7 +133,7 @@ namespace invertika_account.Account
 				{
 					case Sync.SYNC_CHARACTER_POINTS:
 						{
-							Logger.Add(LogLevel.Debug, "received SYNC_CHARACTER_POINTS");
+							Logger.Write(LogLevel.Debug, "received SYNC_CHARACTER_POINTS");
 							int charId=msg.readInt32();
 							int charPoints=msg.readInt32();
 							int corrPoints=msg.readInt32();
@@ -142,7 +142,7 @@ namespace invertika_account.Account
 						}
 					case Sync.SYNC_CHARACTER_ATTRIBUTE:
 						{
-							Logger.Add(LogLevel.Debug, "received SYNC_CHARACTER_ATTRIBUTE");
+							Logger.Write(LogLevel.Debug, "received SYNC_CHARACTER_ATTRIBUTE");
 							int charId=msg.readInt32();
 							int attrId=msg.readInt32();
 							double @base=msg.readDouble();
@@ -152,7 +152,7 @@ namespace invertika_account.Account
 						}
 					case Sync.SYNC_CHARACTER_SKILL:
 						{
-							Logger.Add(LogLevel.Debug, "received SYNC_CHARACTER_SKILL");
+							Logger.Write(LogLevel.Debug, "received SYNC_CHARACTER_SKILL");
 							int charId=msg.readInt32();
 							int skillId=msg.readInt8();
 							int skillValue=msg.readInt32();
@@ -161,7 +161,7 @@ namespace invertika_account.Account
 						}
 					case Sync.SYNC_ONLINE_STATUS:
 						{
-							Logger.Add(LogLevel.Debug, "received SYNC_ONLINE_STATUS");
+							Logger.Write(LogLevel.Debug, "received SYNC_ONLINE_STATUS");
 							int charId=msg.readInt32();
 							bool online=(msg.readInt8()==1);
 							Program.storage.setOnlineStatus(charId, online);

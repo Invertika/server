@@ -98,7 +98,7 @@ namespace invertika_account
 
 			// Indicate in which file the statistics are put.
 			statisticsFile=Configuration.getValue("log_statisticsFile", DEFAULT_STATS_FILE);
-			Logger.Add(LogLevel.Information, "Using statistics file: {0}", statisticsFile);
+			Logger.Write(LogLevel.Information, "Using statistics file: {0}", statisticsFile);
 
 			//ResourceManager::initialize(); //TODO Check
 
@@ -237,7 +237,7 @@ namespace invertika_account
 				{
 					options.verbosity=(LogLevel)(param.GetInt32("verbosity", 1));
 					options.verbosityChanged=true; //TODO richtig so?
-					Logger.Add(LogLevel.Information, "Using log verbosity level {0}", options.verbosity);
+					Logger.Write(LogLevel.Information, "Using log verbosity level {0}", options.verbosity);
 				}
 
 				if(param.GetBool("port")) //-port:1234
@@ -285,7 +285,7 @@ namespace invertika_account
 			}
 			catch
 			{
-				Logger.Add(LogLevel.Error, "Refusing to run without configuration!");
+				Logger.Write(LogLevel.Error, "Refusing to run without configuration!");
 				System.Environment.Exit((int)ExitValue.EXIT_CONFIG_NOT_FOUND);
 			}
 
@@ -296,15 +296,15 @@ namespace invertika_account
 			// Check inter-server password.
 			if (Configuration.getValue("net_password", "")=="")
 			{
-				Logger.Add(LogLevel.Error, "SECURITY WARNING: 'net_password' not set!");
+				Logger.Write(LogLevel.Error, "SECURITY WARNING: 'net_password' not set!");
 				System.Environment.Exit((int)ExitValue.EXIT_BAD_CONFIG_PARAMETER);
 			}
 
 			// General initialization
 			initialize();
 
-			Logger.Add(LogLevel.Information, "The Mana Account+Chat Server v{0}", Various.AssemblyVersion);
-			Logger.Add(LogLevel.Information, "Manaserv Protocol version {0}, Database version {1}", ManaServ.PROTOCOL_VERSION, ManaServ.SUPPORTED_DB_VERSION);
+			Logger.Write(LogLevel.Information, "The Mana Account+Chat Server v{0}", Various.AssemblyVersion);
+			Logger.Write(LogLevel.Information, "Manaserv Protocol version {0}, Database version {1}", ManaServ.PROTOCOL_VERSION, ManaServ.SUPPORTED_DB_VERSION);
 
 			if (!options.verbosityChanged)
 			{
@@ -334,7 +334,7 @@ namespace invertika_account
 				!GameServerHandler.initialize(accountGamePort, accountHost) || 
 				!chatHandler.startListen(chatClientPort, chatHost))
 			{
-			    Logger.Add(LogLevel.Error, "Unable to create an ENet server host.");
+			    Logger.Write(LogLevel.Error, "Unable to create an ENet server host.");
 			    System.Environment.Exit((int)ExitValue.EXIT_NET_EXCEPTION);
 			}
 
@@ -399,7 +399,7 @@ namespace invertika_account
 				Thread.Sleep(50); //ssk
 			}
 
-			Logger.Add(LogLevel.Information, "Received: Quit signal, closing down...");
+			Logger.Write(LogLevel.Information, "Received: Quit signal, closing down...");
 			chatHandler.stopListen();
 			deinitializeServer();
 

@@ -880,79 +880,79 @@ namespace invertika_account.Account
 			{
 				case Protocol.PAMSG_LOGIN_RNDTRGR:
 					{
-						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_LOGIN_RANDTRIGGER");
+						Logger.Write(LogLevel.Debug, "Received msg ... PAMSG_LOGIN_RANDTRIGGER");
 						handleLoginRandTriggerMessage(client, message);
 						break;
 					}
 				case Protocol.PAMSG_LOGIN:
 					{
-						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_LOGIN");
+						Logger.Write(LogLevel.Debug, "Received msg ... PAMSG_LOGIN");
 						handleLoginMessage(client, message);
 						break;
 					}
 				case Protocol.PAMSG_LOGOUT:
 					{
-						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_LOGOUT");
+						Logger.Write(LogLevel.Debug, "Received msg ... PAMSG_LOGOUT");
 						handleLogoutMessage(client);
 						break;
 					}
 				case Protocol.PAMSG_RECONNECT:
 					{
-						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_RECONNECT");
+						Logger.Write(LogLevel.Debug, "Received msg ... PAMSG_RECONNECT");
 						handleReconnectMessage(client, message);
 						break;
 					}
 				case Protocol.PAMSG_REGISTER:
 					{
-						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_REGISTER");
+						Logger.Write(LogLevel.Debug, "Received msg ... PAMSG_REGISTER");
 						handleRegisterMessage(client, message);
 						break;
 					}
 				case Protocol.PAMSG_UNREGISTER:
 					{
-						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_UNREGISTER");
+						Logger.Write(LogLevel.Debug, "Received msg ... PAMSG_UNREGISTER");
 						handleUnregisterMessage(client, message);
 						break;
 					}
 				case Protocol.PAMSG_REQUEST_REGISTER_INFO:
 					{
-						Logger.Add(LogLevel.Debug, "Received msg ... REQUEST_REGISTER_INFO");
+						Logger.Write(LogLevel.Debug, "Received msg ... REQUEST_REGISTER_INFO");
 						handleRequestRegisterInfoMessage(client, message);
 						break;
 					}
 				case Protocol.PAMSG_EMAIL_CHANGE:
 					{
-						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_EMAIL_CHANGE");
+						Logger.Write(LogLevel.Debug, "Received msg ... PAMSG_EMAIL_CHANGE");
 						handleEmailChangeMessage(client, message);
 						break;
 					}
 				case Protocol.PAMSG_PASSWORD_CHANGE:
 					{
-						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_PASSWORD_CHANGE");
+						Logger.Write(LogLevel.Debug, "Received msg ... PAMSG_PASSWORD_CHANGE");
 						handlePasswordChangeMessage(client, message);
 						break;
 					}
 				case Protocol.PAMSG_CHAR_CREATE:
 					{
-						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_CHAR_CREATE");
+						Logger.Write(LogLevel.Debug, "Received msg ... PAMSG_CHAR_CREATE");
 						handleCharacterCreateMessage(client, message);
 						break;
 					}
 				case Protocol.PAMSG_CHAR_SELECT:
 					{
-						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_CHAR_SELECT");
+						Logger.Write(LogLevel.Debug, "Received msg ... PAMSG_CHAR_SELECT");
 						handleCharacterSelectMessage(client, message);
 						break;
 					}
 				case Protocol.PAMSG_CHAR_DELETE:
 					{
-						Logger.Add(LogLevel.Debug, "Received msg ... PAMSG_CHAR_DELETE");
+						Logger.Write(LogLevel.Debug, "Received msg ... PAMSG_CHAR_DELETE");
 						handleCharacterDeleteMessage(client, message);
 						break;
 					}
 				default:
 					{
-						Logger.Add(LogLevel.Warning, "AccountHandler::processMessage, Invalid message type {0}", message.getId());
+						Logger.Write(LogLevel.Warning, "AccountHandler::processMessage, Invalid message type {0}", message.getId());
 						MessageOut result=new MessageOut(Protocol.XXMSG_INVALID);
 						client.send(result);
 						break;

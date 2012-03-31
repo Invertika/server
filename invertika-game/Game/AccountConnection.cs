@@ -71,11 +71,11 @@ namespace invertika_game.Game
 
 			if(!start(accountServerAddress, accountServerPort))
 			{
-				Logger.Add(LogLevel.Information, "Unable to create a connection to an account server.");
+				Logger.Write(LogLevel.Information, "Unable to create a connection to an account server.");
 				return false;
 			}
 
-			Logger.Add(LogLevel.Information, "Connection established to the account server.");
+			Logger.Write(LogLevel.Information, "Connection established to the account server.");
 
 
 			string gameServerAddress=Configuration.getValue("net_gameHost", "localhost");

@@ -110,7 +110,7 @@ namespace invertika_game
 
 			if(MapManager.initialize(DEFAULT_MAPSDB_FILE)<1)
 			{
-				Logger.Add(LogLevel.Fatal, "The Game Server can't find any valid/available maps.");
+				Logger.Write(LogLevel.Fatal, "The Game Server can't find any valid/available maps.");
 				System.Environment.Exit((int)ExitValue.EXIT_MAP_FILE_NOT_FOUND);
 			}
 
@@ -210,7 +210,7 @@ namespace invertika_game
 				{
 					options.verbosity=(LogLevel)(param.GetInt32("verbosity", 1));
 					options.verbosityChanged=true; //TODO richtig so?
-					Logger.Add(LogLevel.Information, "Using log verbosity level {0}", options.verbosity);
+					Logger.Write(LogLevel.Information, "Using log verbosity level {0}", options.verbosity);
 				}
 
 				if(param.GetBool("port")) //-port:1234
@@ -240,7 +240,7 @@ namespace invertika_game
 			}
 			catch
 			{
-				Logger.Add(LogLevel.Error, "Refusing to run without configuration!");
+				Logger.Write(LogLevel.Error, "Refusing to run without configuration!");
 				System.Environment.Exit((int)ExitValue.EXIT_CONFIG_NOT_FOUND);
 			}
 
@@ -251,15 +251,15 @@ namespace invertika_game
 			// Check inter-server password.
 			if(Configuration.getValue("net_password", "")=="")
 			{
-				Logger.Add(LogLevel.Error, "SECURITY WARNING: 'net_password' not set!");
+				Logger.Write(LogLevel.Error, "SECURITY WARNING: 'net_password' not set!");
 				System.Environment.Exit((int)ExitValue.EXIT_BAD_CONFIG_PARAMETER);
 			}
 
 			// General initialization
 			initializeServer();
 
-			Logger.Add(LogLevel.Information, "The Mana Account+Chat Server v{0}", Various.AssemblyVersion);
-			Logger.Add(LogLevel.Information, "Manaserv Protocol version {0}, Database version {1}", ManaServ.PROTOCOL_VERSION, ManaServ.SUPPORTED_DB_VERSION);
+			Logger.Write(LogLevel.Information, "The Mana Account+Chat Server v{0}", Various.AssemblyVersion);
+			Logger.Write(LogLevel.Information, "Manaserv Protocol version {0}, Database version {1}", ManaServ.PROTOCOL_VERSION, ManaServ.SUPPORTED_DB_VERSION);
 
 			if(!options.verbosityChanged)
 			{
@@ -288,19 +288,19 @@ namespace invertika_game
 
 			while(!isConnected&&running)
 			{
-				Logger.Add(LogLevel.Information, "Connecting to account server");
+				Logger.Write(LogLevel.Information, "Connecting to account server");
 				isConnected=accountHandler.start(options.port);
 
 				if(!isConnected)
 				{
-					Logger.Add(LogLevel.Information, "Retrying in {0} seconds", waittime);
+					Logger.Write(LogLevel.Information, "Retrying in {0} seconds", waittime);
 					Thread.Sleep(waittime*1000);
 				}
 			}
 
 			if(!gameHandler.startListen((ushort)options.port))
 			{
-				Logger.Add(LogLevel.Fatal, "Unable to create an server host.");
+				Logger.Write(LogLevel.Fatal, "Unable to create an server host.");
 				System.Environment.Exit((int)ExitValue.EXIT_NET_EXCEPTION);
 			}
 
@@ -320,7 +320,7 @@ namespace invertika_game
 				{
 					if(elapsedWorldTicks>WORLD_TICK_SKIP)
 					{
-						Logger.Add(LogLevel.Warning, "Skipped {0} world tick due to insufficient CPU time.", elapsedWorldTicks-1);
+						Logger.Write(LogLevel.Warning, "Skipped {0} world tick due to insufficient CPU time.", elapsedWorldTicks-1);
 						elapsedWorldTicks=1;
 					}
 
@@ -330,7 +330,7 @@ namespace invertika_game
 					// Print world time at 10 second intervals to show we're alive
 					if(worldTime%100==0)
 					{
-						Logger.Add(LogLevel.Information, "World time: {0}", worldTime);
+						Logger.Write(LogLevel.Information, "World time: {0}", worldTime);
 
 					}
 
@@ -350,10 +350,10 @@ namespace invertika_game
 						if(worldTime%300==0)
 						{
 							accountHandler.sendStatistics();
-							Logger.Add(LogLevel.Information, "Total Account Output: {0} Bytes", gBandwidth.totalInterServerOut());
-							Logger.Add(LogLevel.Information, "Total Account Input: {0} Bytes", gBandwidth.totalInterServerIn());
-							Logger.Add(LogLevel.Information, "Total Client Output: {0} Bytes", gBandwidth.totalClientOut());
-							Logger.Add(LogLevel.Information, "Total Client Input: {0} Bytes", gBandwidth.totalClientIn());
+							Logger.Write(LogLevel.Information, "Total Account Output: {0} Bytes", gBandwidth.totalInterServerOut());
+							Logger.Write(LogLevel.Information, "Total Account Input: {0} Bytes", gBandwidth.totalInterServerIn());
+							Logger.Write(LogLevel.Information, "Total Client Output: {0} Bytes", gBandwidth.totalClientOut());
+							Logger.Write(LogLevel.Information, "Total Client Input: {0} Bytes", gBandwidth.totalClientIn());
 						}
 					}
 					else
@@ -362,7 +362,7 @@ namespace invertika_game
 						// Every players have to be logged out
 						if(!accountServerLost)
 						{
-							Logger.Add(LogLevel.Warning, "The connection to the account server was lost.");
+							Logger.Write(LogLevel.Warning, "The connection to the account server was lost.");
 							accountServerLost=true;
 						}
 
@@ -383,7 +383,7 @@ namespace invertika_game
 				}
 			}
 
-			Logger.Add(LogLevel.Information, "Received: Quit signal, closing down...");
+			Logger.Write(LogLevel.Information, "Received: Quit signal, closing down...");
 
 			gameHandler.stopListen();
 			accountHandler.stop();

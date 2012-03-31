@@ -1547,7 +1547,7 @@ namespace invertika_account.Account
 			// Avoid a crash because prepared statements must have at least one binding.
 			if (mapId < 0)
 			{
-			    Logger.Add(LogLevel.Error, "getAllWorldStateVars was called with a negative map Id: {0}", mapId);
+			    Logger.Write(LogLevel.Error, "getAllWorldStateVars was called with a negative map Id: {0}", mapId);
 			    return variables;
 			}
 
