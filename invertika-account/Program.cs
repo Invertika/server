@@ -63,7 +63,7 @@ namespace invertika_account
 		/** Communications (chat) message handler */
 		public static ChatHandler chatHandler;
 
-		static ChatChannelManager chatChannelManager;
+		public static ChatChannelManager chatChannelManager;
 		public static GuildManager guildManager;
 		public static PostManager postalManager;
 		static BandwidthMonitor gBandwidth;

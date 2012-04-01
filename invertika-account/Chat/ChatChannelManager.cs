@@ -159,7 +159,7 @@ namespace invertika_account.Chat
 			}
 		}
 
-		void removeUserFromAllChannels(ChatClient user)
+		public void removeUserFromAllChannels(ChatClient user)
 		{
 			foreach(ChatChannel channel in user.channels)
 			{
