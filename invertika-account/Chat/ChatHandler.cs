@@ -243,20 +243,20 @@ namespace invertika_account.Chat
 
 		void handleCommand(ChatClient computer, string command)
 		{
-			//LOG_INFO("Chat: Received unhandled command: " << command);
-			//MessageOut result(CPMSG_ERROR);
-			//result.writeInt8(CHAT_UNHANDLED_COMMAND);
-			//computer.send(result);
+			Logger.Write(LogLevel.Information, "Chat: Received unhandled command:  {0}", command);
+			MessageOut result=new MessageOut(Protocol.CPMSG_ERROR);
+			result.writeInt8(ManaServ.CHAT_UNHANDLED_COMMAND); //TODO sollte im Protocol landen
+			computer.send(result);
 		}
 
 		void warnPlayerAboutBadWords(ChatClient computer)
 		{
-			//// We could later count if the player is really often unpolite.
-			//MessageOut result(CPMSG_ERROR);
-			//result.writeInt8(CHAT_USING_BAD_WORDS); // The Channel
-			//computer.send(result);
+			// We could later count if the player is really often unpolite.
+			MessageOut result=new MessageOut(Protocol.CPMSG_ERROR);
+			result.writeInt8(ManaServ.CHAT_USING_BAD_WORDS); // The Channel //TODO sollte im Protocol landen
+			computer.send(result);
 
-			//LOG_INFO(computer.characterName << " says bad words.");
+			Logger.Write(LogLevel.Information, "{0} says bad words.", computer.characterName);
 		}
 
 		void handleChatMessage(ChatClient client, MessageIn msg)
