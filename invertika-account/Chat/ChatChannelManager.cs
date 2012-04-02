@@ -126,7 +126,7 @@ namespace invertika_account.Chat
 			return 0;
 		}
 
-		ChatChannel getChannel(int channelId)
+		public ChatChannel getChannel(int channelId)
 		{
 			if(mChatChannels.ContainsKey((ushort)channelId))
 			{
@@ -136,7 +136,7 @@ namespace invertika_account.Chat
 			return null;
 		}
 
-		ChatChannel getChannel(string name)
+		public ChatChannel getChannel(string name)
 		{
 			foreach(ChatChannel channel in mChatChannels.Values)
 			{

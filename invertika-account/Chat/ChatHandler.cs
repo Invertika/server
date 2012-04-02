@@ -32,6 +32,7 @@ using ISL.Server.Network;
 using ISL.Server.Utilities;
 using ISL.Server.Common;
 using ISL.Server.Account;
+using invertika_account.Common;
 
 namespace invertika_account.Chat
 {
@@ -47,7 +48,7 @@ namespace invertika_account.Chat
 
 		public ChatHandler()
 		{
-			//mTokenCollector=new TokenCollector<ChatHandler,ChatClient,Pending>(();
+			mTokenCollector=new TokenCollector<ChatHandler, ChatClient, Pending>();
 			// mTokenCollector(this)
 		}
 
@@ -261,36 +262,35 @@ namespace invertika_account.Chat
 
 		void handleChatMessage(ChatClient client, MessageIn msg)
 		{
-			//std::string text = msg.readString();
+			string text = msg.readString();
 
-			//// Pass it through the slang filter (false when it contains bad words)
-			//if (!stringFilter->filterContent(text))
-			//{
-			//    warnPlayerAboutBadWords(client);
-			//    return;
-			//}
+			// Pass it through the slang filter (false when it contains bad words)
+			if (!Program.stringFilter.filterContent(text))
+			{
+			    warnPlayerAboutBadWords(client);
+			    return;
+			}
 
-			//short channelId = msg.readInt16();
-			//ChatChannel *channel = chatChannelManager->getChannel(channelId);
+			short channelId = msg.readInt16();
+			ChatChannel channel = Program.chatChannelManager.getChannel(channelId);
 
-			//if (channel)
-			//{
-			//    LOG_DEBUG(client.characterName << " says in channel " << channelId
-			//              << ": " << text);
+			if (channel!=null)
+			{
+			Logger.Write(LogLevel.Debug, "{0} says in channel {1}: {2}", client.characterName, channelId, text);
 
-			//    MessageOut result(CPMSG_PUBMSG);
-			//    result.writeInt16(channelId);
-			//    result.writeString(client.characterName);
-			//    result.writeString(text);
-			//    sendInChannel(channel, result);
-			//}
+			    MessageOut result=new MessageOut(Protocol.CPMSG_PUBMSG);
+			    result.writeInt16(channelId);
+			    result.writeString(client.characterName);
+			    result.writeString(text);
+			    sendInChannel(channel, result);
+			}
 
-			//// log transaction
-			//Transaction trans;
-			//trans.mCharacterId = client.characterId;
-			//trans.mAction = TRANS_MSG_PUBLIC;
-			//trans.mMessage = "User said " + text;
-			//storage->addTransaction(trans);
+			// log transaction
+			Transaction trans=new Transaction();
+			trans.mCharacterId = client.characterId;
+			trans.mAction=(uint)TransactionMembers.TRANS_MSG_PUBLIC;
+			trans.mMessage = "User said " + text;
+			Program.storage.addTransaction(trans);
 		}
 
 		void handleAnnounceMessage(ChatClient client, MessageIn msg)

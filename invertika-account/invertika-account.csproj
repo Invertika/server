@@ -79,6 +79,7 @@
     <Compile Include="Chat\PostManager.cs" />
     <Compile Include="Common\InventoryItem.cs" />
     <Compile Include="Common\Transaction.cs" />
+    <Compile Include="Common\TransactionMembers.cs" />
     <Compile Include="DAL\DataProviderFactory.cs" />
     <Compile Include="DAL\DbBackends.cs" />
     <Compile Include="Program.cs" />
