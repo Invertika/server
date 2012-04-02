@@ -332,17 +332,17 @@ namespace invertika_account.Chat
 
 		void handlePrivMsgMessage(ChatClient client, MessageIn msg)
 		{
-			//string user = msg.readString();
-			//std::string text = msg.readString();
+			string user = msg.readString();
+			string text = msg.readString();
 
-			//if (!stringFilter->filterContent(text))
-			//{
-			//    warnPlayerAboutBadWords(client);
-			//    return;
-			//}
+			if (!Program.stringFilter.filterContent(text))
+			{
+			    warnPlayerAboutBadWords(client);
+			    return;
+			}
 
-			//// We seek the player to whom the message is told and send it to her/him.
-			//sayToPlayer(client, user, text);
+			// We seek the player to whom the message is told and send it to her/him.
+			sayToPlayer(client, user, text);
 		}
 
 		void handleWhoMessage(ChatClient client)
