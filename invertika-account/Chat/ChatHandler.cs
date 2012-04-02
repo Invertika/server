@@ -173,7 +173,7 @@ namespace invertika_account.Chat
 
 				case Protocol.PCMSG_KICK_USER:
 					handleKickUserMessage(computer, message);
-					break; //TODO hinzugefügt, evt sollte es durchfallen
+					break; //TODO hinzugefï¿½gt, evt sollte es durchfallen
 
 				case Protocol.PCMSG_QUIT_CHANNEL:
 					handleQuitChannelMessage(computer, message);
@@ -217,7 +217,7 @@ namespace invertika_account.Chat
 
 				case Protocol.PCMSG_GUILD_KICK_MEMBER:
 					handleGuildKickMember(computer, message);
-					break; //TODO hinzugefügt, evt sollte es durchfallen
+					break; //TODO hinzugefï¿½gt, evt sollte es durchfallen
 
 				case Protocol.PCMSG_GUILD_QUIT:
 					handleGuildQuit(computer, message);

@@ -61,7 +61,7 @@ namespace invertika_account.Chat
 
 		bool tryNewPublicChannel(string name)
 		{
-			//Slangfilter Überprüfung
+			//Slangfilter ï¿½berprï¿½fung
 			if (!Program.stringFilter.filterContent(name))
 			{
 			    return false;
