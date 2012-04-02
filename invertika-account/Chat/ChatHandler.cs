@@ -347,19 +347,14 @@ namespace invertika_account.Chat
 
 		void handleWhoMessage(ChatClient client)
 		{
-			//MessageOut reply(CPMSG_WHO_RESPONSE);
+			MessageOut reply=new MessageOut(Protocol.CPMSG_WHO_RESPONSE);
 
-			//std::map<std::string, ChatClient*>::iterator itr, itr_end;
-			//itr = mPlayerMap.begin();
-			//itr_end = mPlayerMap.end();
+			foreach(string id in mPlayerMap.Keys)
+			{
+				reply.writeString(id);
+			}
 
-			//while (itr != itr_end)
-			//{
-			//    reply.writeString(itr->first);
-			//    ++itr;
-			//}
-
-			//client.send(reply);
+			client.send(reply);
 		}
 
 		void handleEnterChannelMessage(ChatClient client, MessageIn msg)
