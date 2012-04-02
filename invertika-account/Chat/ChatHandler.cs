@@ -31,6 +31,7 @@ using invertika_account.Utilities;
 using ISL.Server.Network;
 using ISL.Server.Utilities;
 using ISL.Server.Common;
+using ISL.Server.Account;
 
 namespace invertika_account.Chat
 {
@@ -58,11 +59,11 @@ namespace invertika_account.Chat
 
 		void deletePendingClient(ChatClient c)
 		{
-			//MessageOut msg=new MessageOut(ManaServ.CPMSG_CONNECT_RESPONSE);
-			//msg.writeInt8(ManaServ.ERRMSG_TIME_OUT);
+			MessageOut msg=new MessageOut(Protocol.CPMSG_CONNECT_RESPONSE);
+			msg.writeInt8(ManaServ.ERRMSG_TIME_OUT);
 
-			//// The computer will be deleted when the disconnect event is processed
-			//c.disconnect(msg);
+			// The computer will be deleted when the disconnect event is processed
+			c.disconnect(msg);
 		}
 
 		void deletePendingConnect(Pending p)
@@ -72,31 +73,30 @@ namespace invertika_account.Chat
 
 		void tokenMatched(ChatClient client, Pending p)
 		{
-			//MessageOut msg(CPMSG_CONNECT_RESPONSE);
+			MessageOut msg=new MessageOut(Protocol.CPMSG_CONNECT_RESPONSE);
 
-			//client->characterName = p->character;
-			//client->accountLevel = p->level;
+			client.characterName = p.character;
+			client.accountLevel = p.level;
 
-			//Character *c = storage->getCharacter(p->character);
+			Character c = Program.storage.getCharacter(p.character);
 
-			//if (!c)
-			//{
-			//    // character wasnt found
-			//    msg.writeInt8(ERRMSG_FAILURE);
-			//}
-			//else
-			//{
-			//    client->characterId = c->getDatabaseID();
-			//    delete p;
+			if (c!=null)
+			{
+			    // character wasnt found
+			    msg.writeInt8(ManaServ.ERRMSG_FAILURE); //TODO In Protocol?
+			}
+			else
+			{
+			    client.characterId = (uint)c.getDatabaseID();
+				//delete p;
 
-			//    msg.writeInt8(ERRMSG_OK);
+				msg.writeInt8(ManaServ.ERRMSG_OK);
 
-			//    // Add chat client to player map
-			//    mPlayerMap.insert(DoublePair<string, ChatClient>(client.characterName, client));
-			//}
+			    // Add chat client to player map
+				mPlayerMap.Add(client.characterName, client);
+			}
 
-			//client->send(msg);
-
+			client.send(msg);
 		}
 
 		protected override NetComputer computerConnected(TcpClient peer)

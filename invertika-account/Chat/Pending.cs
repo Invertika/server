@@ -33,7 +33,7 @@ namespace invertika_account.Chat
 {
 	public class Pending
 	{
-		string character;
-		byte level;
+		public string character;
+		public byte level;
 	}
 }
