@@ -295,41 +295,39 @@ namespace invertika_account.Chat
 
 		void handleAnnounceMessage(ChatClient client, MessageIn msg)
 		{
-			//std::string text = msg.readString();
+			string text=msg.readString();
 
-			//if (!stringFilter->filterContent(text))
-			//{
-			//    warnPlayerAboutBadWords(client);
-			//    return;
-			//}
+			if(!Program.stringFilter.filterContent(text))
+			{
+				warnPlayerAboutBadWords(client);
+				return;
+			}
 
-			//if (client.accountLevel == AL_ADMIN || client.accountLevel == AL_GM)
-			//{
-			//    // TODO: b_lindeijer: Shouldn't announcements also have a sender?
-			//    LOG_INFO("ANNOUNCE: " << text);
-			//    MessageOut result(CPMSG_ANNOUNCEMENT);
-			//    result.writeString(text);
+			if(client.accountLevel==(byte)AccessLevel.AL_ADMIN||client.accountLevel==(byte)AccessLevel.AL_GM)
+			{
+				// TODO: b_lindeijer: Shouldn't announcements also have a sender?
+				Logger.Write(LogLevel.Information, "ANNOUNCE: {0}", text);
+				MessageOut result=new MessageOut(Protocol.CPMSG_ANNOUNCEMENT);
+				result.writeString(text);
 
-			//    // We send the message to all players in the default channel as it is
-			//    // an announcement.
-			//    sendToEveryone(result);
+				// We send the message to all players in the default channel as it is
+				// an announcement.
+				sendToEveryone(result);
 
-			//    // log transaction
-			//    Transaction trans;
-			//    trans.mCharacterId = client.characterId;
-			//    trans.mAction = TRANS_MSG_ANNOUNCE;
-			//    trans.mMessage = "User announced " + text;
-			//    storage->addTransaction(trans);
-			//}
-			//else
-			//{
-			//    MessageOut result(CPMSG_ERROR);
-			//    result.writeInt8(ERRMSG_INSUFFICIENT_RIGHTS);
-			//    client.send(result);
-			//    LOG_INFO(client.characterName <<
-			//        " couldn't make an announcement due to insufficient rights.");
-			//}
-
+				// log transaction
+				Transaction trans=new Transaction();
+				trans.mCharacterId=client.characterId;
+				trans.mAction=(uint)TransactionMembers.TRANS_MSG_ANNOUNCE;
+				trans.mMessage="User announced "+text;
+				Program.storage.addTransaction(trans);
+			}
+			else
+			{
+				MessageOut result=new MessageOut(Protocol.CPMSG_ERROR);
+				result.writeInt8(ManaServ.ERRMSG_INSUFFICIENT_RIGHTS);
+				client.send(result);
+				Logger.Write(LogLevel.Information, "{0} couldn't make an announcement due to insufficient rights.", client.characterName);
+			}
 		}
 
 		void handlePrivMsgMessage(ChatClient client, MessageIn msg)

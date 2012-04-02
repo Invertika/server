@@ -77,6 +77,7 @@
     <Compile Include="Chat\Pending.cs" />
     <Compile Include="Chat\Post.cs" />
     <Compile Include="Chat\PostManager.cs" />
+    <Compile Include="Common\AccessLevel.cs" />
     <Compile Include="Common\InventoryItem.cs" />
     <Compile Include="Common\Transaction.cs" />
     <Compile Include="Common\TransactionMembers.cs" />
