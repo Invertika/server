@@ -109,7 +109,7 @@ namespace invertika_account.Chat
 			return mJoinable;
 		}
 
-		void setUserMode(ChatClient user, byte mode)
+		public void setUserMode(ChatClient user, byte mode)
 		{
 			if(user.userModes.ContainsKey(this))
 			{

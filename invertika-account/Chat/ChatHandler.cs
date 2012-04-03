@@ -424,43 +424,40 @@ namespace invertika_account.Chat
 
 		void handleModeChangeMessage(ChatClient client, MessageIn msg)
 		{
-			//short channelId = msg.readInt16();
-			//ChatChannel *channel = chatChannelManager->getChannel(channelId);
+			short channelId=msg.readInt16();
+			ChatChannel channel=Program.chatChannelManager.getChannel(channelId);
 
-			//if (channelId == 0 || !channel)
-			//{
-			//    // invalid channel
-			//    return;
-			//}
+			if(channelId==0||channel!=null)
+			{
+				// invalid channel
+				return;
+			}
 
-			//if (channel->getUserMode(&client).find('o') == std::string::npos)
-			//{
-			//    // invalid permissions
-			//    return;
-			//}
+			if(channel.getUserMode(client).IndexOf('o')==-1)
+			{
+				// invalid permissions
+				return;
+			}
 
-			//// get the user whos mode has been changed
-			//std::string user = msg.readString();
+			// get the user whos mode has been changed
+			string user=msg.readString();
 
-			//// get the mode to change to
-			//unsigned char mode = msg.readInt8();
-			//channel->setUserMode(getClient(user), mode);
+			// get the mode to change to
+			byte mode=msg.readInt8();
+			channel.setUserMode(getClient(user), mode);
 
-			//// set the info to pass to all channel clients
-			//std::stringstream info;
-			//info << client.characterName << ":" << user << ":" << mode;
+			// set the info to pass to all channel clients
+			string info=client.characterName+":"+user+":"+mode;
 
-			//warnUsersAboutPlayerEventInChat(channel,
-			//                info.str(),
-			//                CHAT_EVENT_MODE_CHANGE);
+			warnUsersAboutPlayerEventInChat(channel, info, ManaServ.CHAT_EVENT_MODE_CHANGE);
 
-			//// log transaction
-			//Transaction trans;
-			//trans.mCharacterId = client.characterId;
-			//trans.mAction = TRANS_CHANNEL_MODE;
-			//trans.mMessage = "User mode ";
-			//trans.mMessage.append(mode + " set on " + user);
-			//storage->addTransaction(trans);
+			// log transaction
+			Transaction trans=new Transaction();
+			trans.mCharacterId=client.characterId;
+			trans.mAction=(uint)TransactionMembers.TRANS_CHANNEL_MODE;
+			trans.mMessage="User mode ";
+			trans.mMessage+=mode+" set on "+user;
+			Program.storage.addTransaction(trans);
 		}
 
 		void handleKickUserMessage(ChatClient client, MessageIn msg)
