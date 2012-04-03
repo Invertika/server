@@ -59,7 +59,7 @@ namespace invertika_account.Chat
 			return channelId;
 		}
 
-		bool tryNewPublicChannel(string name)
+		public bool tryNewPublicChannel(string name)
 		{
 			//Slangfilter �berpr�fung
 			if (!Program.stringFilter.filterContent(name))
@@ -168,12 +168,12 @@ namespace invertika_account.Chat
 			}
 		}
 
-		bool channelExists(int channelId)
+		public bool channelExists(int channelId)
 		{
 			return mChatChannels.ContainsKey((ushort)channelId);
 		}
 
-		bool channelExists(string channelName)
+		public bool channelExists(string channelName)
 		{
 			foreach(ChatChannel channel in mChatChannels.Values)
 			{

@@ -50,7 +50,7 @@ namespace invertika_account.Chat
 			mJoinable=joinable;
 		}
 
-		bool addUser(ChatClient user)
+		public bool addUser(ChatClient user)
 		{
 			// First user is the channel owner
 			if(mRegisteredUsers.Count()<1)
@@ -121,7 +121,7 @@ namespace invertika_account.Chat
 			}
 		}
 
-		string getUserMode(ChatClient user)
+		public string getUserMode(ChatClient user)
 		{
 			try
 			{
@@ -147,6 +147,38 @@ namespace invertika_account.Chat
 		public void setAnnouncement(string channelAnnouncement)
 		{
 			mAnnouncement=channelAnnouncement;
+		}
+
+		/**
+ * Get the password of the channel.
+ */
+		public string getPassword()
+		{
+			return mPassword;
+		}
+
+		/**
+ * Get the ID of the channel.
+ */
+		public int getId()
+		{
+			return mId;
+		}
+
+		/**
+ * Gets the list of the users registered in the channel.
+ */
+		public List<ChatClient> getUserList()
+		{
+			return mRegisteredUsers;
+		}
+
+		/**
+ * Get the announcement string of the channel.
+ */
+		public string getAnnouncement()
+		{
+			return mAnnouncement;
 		}
 	}
 }

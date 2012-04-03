@@ -359,70 +359,67 @@ namespace invertika_account.Chat
 
 		void handleEnterChannelMessage(ChatClient client, MessageIn msg)
 		{
-			//MessageOut reply(CPMSG_ENTER_CHANNEL_RESPONSE);
+			MessageOut reply=new MessageOut(Protocol.CPMSG_ENTER_CHANNEL_RESPONSE);
 
-			//std::string channelName = msg.readString();
-			//std::string givenPassword = msg.readString();
-			//ChatChannel *channel = NULL;
-			//if (chatChannelManager->channelExists(channelName) ||
-			//    chatChannelManager->tryNewPublicChannel(channelName))
-			//{
-			//    channel = chatChannelManager->getChannel(channelName);
-			//}
+			string channelName=msg.readString();
+			string givenPassword=msg.readString();
+			ChatChannel channel=null;
 
-			//if (!channel)
-			//{
-			//    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
-			//}
-			//else if (!channel->getPassword().empty() &&
-			//        channel->getPassword() != givenPassword)
-			//{
-			//    // Incorrect password (should probably have its own return value)
-			//    reply.writeInt8(ERRMSG_INSUFFICIENT_RIGHTS);
-			//}
-			//else if (!channel->canJoin())
-			//{
-			//    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
-			//}
-			//else
-			//{
-			//    if (channel->addUser(&client))
-			//    {
-			//        reply.writeInt8(ERRMSG_OK);
-			//        // The user entered the channel, now give him the channel
-			//        // id, the announcement string and the user list.
-			//        reply.writeInt16(channel->getId());
-			//        reply.writeString(channelName);
-			//        reply.writeString(channel->getAnnouncement());
-			//        const ChatChannel::ChannelUsers &users = channel->getUserList();
+			if(Program.chatChannelManager.channelExists(channelName)||
+				Program.chatChannelManager.tryNewPublicChannel(channelName))
+			{
+				channel=Program.chatChannelManager.getChannel(channelName);
+			}
 
-			//        for (ChatChannel::ChannelUsers::const_iterator i = users.begin(),
-			//                i_end = users.end();
-			//                i != i_end; ++i)
-			//        {
-			//            reply.writeString((*i)->characterName);
-			//            reply.writeString(channel->getUserMode((*i)));
-			//        }
-			//        // Send an CPMSG_UPDATE_CHANNEL to warn other clients a user went
-			//        // in the channel.
-			//        warnUsersAboutPlayerEventInChat(channel,
-			//                client.characterName,
-			//                CHAT_EVENT_NEW_PLAYER);
+			if(channel!=null)
+			{
+				reply.writeInt8(ManaServ.ERRMSG_INVALID_ARGUMENT);
+			}
+			else if(channel.getPassword()!=null&&channel.getPassword()!=givenPassword)
+			{
+				// Incorrect password (should probably have its own return value)
+				reply.writeInt8(ManaServ.ERRMSG_INSUFFICIENT_RIGHTS);
+			}
+			else if(!channel.canJoin())
+			{
+				reply.writeInt8(ManaServ.ERRMSG_INVALID_ARGUMENT);
+			}
+			else
+			{
+				if(channel.addUser(client))
+				{
+					reply.writeInt8(ManaServ.ERRMSG_OK);
+					// The user entered the channel, now give him the channel
+					// id, the announcement string and the user list.
+					reply.writeInt16(channel.getId());
+					reply.writeString(channelName);
+					reply.writeString(channel.getAnnouncement());
+					List<ChatClient> users=channel.getUserList();
 
-			//        // log transaction
-			//        Transaction trans;
-			//        trans.mCharacterId = client.characterId;
-			//        trans.mAction = TRANS_CHANNEL_JOIN;
-			//        trans.mMessage = "User joined " + channelName;
-			//        storage->addTransaction(trans);
-			//    }
-			//    else
-			//    {
-			//        reply.writeInt8(ERRMSG_FAILURE);
-			//    }
-			//}
+					foreach(ChatClient user in users)
+					{
+						reply.writeString(user.characterName);
+						reply.writeString(channel.getUserMode(user));
+					}
 
-			//client.send(reply);
+					// Send an CPMSG_UPDATE_CHANNEL to warn other clients a user went
+					// in the channel.
+					warnUsersAboutPlayerEventInChat(channel, client.characterName, ManaServ.CHAT_EVENT_NEW_PLAYER);
+
+					// log transaction
+					Transaction trans=new Transaction();
+					trans.mCharacterId=client.characterId;
+					trans.mAction=(uint)TransactionMembers.TRANS_CHANNEL_JOIN;
+					trans.mMessage="User joined "+channelName;
+					Program.storage.addTransaction(trans);
+				}
+				else
+				{
+					reply.writeInt8(ManaServ.ERRMSG_FAILURE);
+				}
+			}
+
+			client.send(reply);
 		}
 
 		void handleModeChangeMessage(ChatClient client, MessageIn msg)
