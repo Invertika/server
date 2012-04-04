@@ -637,22 +637,21 @@ namespace invertika_account.Chat
 
 		public void warnUsersAboutPlayerEventInChat(ChatChannel channel, string info, byte eventId)
 		{
-			//MessageOut msg(CPMSG_CHANNEL_EVENT);
-			//msg.writeInt16(channel->getId());
-			//msg.writeInt8(eventId);
-			//msg.writeString(info);
-			//sendInChannel(channel, msg);
+			MessageOut msg=new MessageOut(Protocol.CPMSG_CHANNEL_EVENT);
+			msg.writeInt16(channel.getId());
+			msg.writeInt8(eventId);
+			msg.writeString(info);
+			sendInChannel(channel, msg);
 		}
 
 		void sendInChannel(ChatChannel channel, MessageOut msg)
 		{
-			//const ChatChannel::ChannelUsers &users = channel->getUserList();
+			List<ChatClient> users=channel.getUserList();
 
-			//for (ChatChannel::ChannelUsers::const_iterator
-			//     i = users.begin(), i_end = users.end(); i != i_end; ++i)
-			//{
-			//    (*i)->send(msg);
-			//}
+			foreach(ChatClient user in users)
+			{
+				user.send(msg);
+			}
 		}
 
 		ChatClient getClient(string name)
