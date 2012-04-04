@@ -159,7 +159,7 @@ namespace invertika_account.Chat
 			return guildList;
 		}
 
-		void disconnectPlayer(ChatClient player)
+		public void disconnectPlayer(ChatClient player)
 		{
 			//std::vector<Guild*> guildList = getGuildsForPlayer(player->characterId);
 

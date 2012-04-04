@@ -610,11 +610,11 @@ namespace invertika_account.Chat
 
 		void handleDisconnectMessage(ChatClient client, MessageIn msg)
 		{
-			//MessageOut reply(CPMSG_DISCONNECT_RESPONSE);
-			//reply.writeInt8(ERRMSG_OK);
-			//chatChannelManager->removeUserFromAllChannels(&client);
-			//guildManager->disconnectPlayer(&client);
-			//client.send(reply);
+			MessageOut reply=new MessageOut(Protocol.CPMSG_DISCONNECT_RESPONSE);
+			reply.writeInt8(ManaServ.ERRMSG_OK);
+			Program.chatChannelManager.removeUserFromAllChannels(client);
+			Program.guildManager.disconnectPlayer(client);
+			client.send(reply);
 		}
 
 		void sayToPlayer(ChatClient computer, string playerName, string text)
