@@ -668,54 +668,56 @@ namespace invertika_account.Chat
 
 		void removeExpiredPartyInvites()
 		{
-			//time_t now = time(NULL);
-			//while (!mInvitations.empty() && mInvitations.front().mExpireTime < now)
-			//{
-			//    std::map<std::string, int>::iterator itr;
-			//    itr = mNumInvites.find(mInvitations.front().mInviter);
-			//    if (--itr->second <= 0)
-			//        mNumInvites.erase(itr);
-			//    mInvitations.pop_front();
-			//}
+			DateTime now=DateTime.Now;
+
+			while(mInvitations.Count!=0&&mInvitations[0].mExpireTime<now.Ticks) //TODO Vergleich Überprüfen 
+			{
+				//std::map<std::string, int>::iterator itr;
+				//itr = mNumInvites.find(mInvitations.front().mInviter);
+				//if (--itr->second <= 0)
+				//    mNumInvites.erase(itr);
+				//mInvitations.pop_front();
+			}
 		}
 
 		public void handlePartyInvite(MessageIn msg)
 		{
-			//std::string inviterName = msg.readString();
-			//std::string inviteeName = msg.readString();
-			//ChatClient *inviter = getClient(inviterName);
-			//ChatClient *invitee = getClient(inviteeName);
+			string inviterName = msg.readString();
+			string inviteeName = msg.readString();
+			ChatClient inviter = getClient(inviterName);
+			ChatClient invitee = getClient(inviteeName);
 
-			//if (!inviter || !invitee)
-			//    return;
+			if (inviter==null|| invitee==null) return;
 
-			//removeExpiredPartyInvites();
-			//const int maxInvitesPerTimeframe = 10;
-			//int &num = mNumInvites[inviterName];
-			//if (num >= maxInvitesPerTimeframe)
-			//{
-			//    MessageOut out(CPMSG_PARTY_REJECTED);
-			//    out.writeString(inviterName);
-			//    out.writeInt8(ERRMSG_LIMIT_REACHED);
-			//    inviter->send(out);
-			//    return;
-			//}
-			//++num;
+			removeExpiredPartyInvites();
+			int maxInvitesPerTimeframe = 10;
 
-			//if (invitee->party)
-			//{
-			//    MessageOut out(CPMSG_PARTY_REJECTED);
-			//    out.writeString(inviterName);
-			//    out.writeInt8(ERRMSG_FAILURE);
-			//    inviter->send(out);
-			//    return;
-			//}
+			int num = mNumInvites[inviterName];
 
-			//mInvitations.push_back(PartyInvite(inviterName, inviteeName));
+			if (num >= maxInvitesPerTimeframe)
+			{
+			    MessageOut @out=new MessageOut(Protocol.CPMSG_PARTY_REJECTED);
+			    @out.writeString(inviterName);
+			    @out.writeInt8(ManaServ.ERRMSG_LIMIT_REACHED);
+			    inviter.send(@out);
+			    return;
+			}
+			++num;
 
-			//MessageOut out(CPMSG_PARTY_INVITED);
-			//out.writeString(inviterName);
-			//invitee->send(out);
+			if (invitee.party!=null)
+			{
+			    MessageOut @out=new MessageOut(Protocol.CPMSG_PARTY_REJECTED);
+			    @out.writeString(inviterName);
+			    @out.writeInt8(ManaServ.ERRMSG_FAILURE);
+			    inviter.send(@out);
+			    return;
+			}
+
+			mInvitations.Add(new PartyInvite(inviterName, inviteeName));
+
+			MessageOut msgout=new MessageOut(Protocol.CPMSG_PARTY_INVITED);
+			msgout.writeString(inviterName);
+			invitee.send(msgout);
 		}
 
 		void handlePartyInviteAnswer(ChatClient client, MessageIn msg)

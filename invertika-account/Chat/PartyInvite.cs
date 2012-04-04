@@ -43,6 +43,6 @@ namespace invertika_account.Chat
 
 		string mInviter;
 		string mInvitee;
-		long mExpireTime;
+		public long mExpireTime;
 	}
 }

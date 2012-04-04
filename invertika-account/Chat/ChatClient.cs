@@ -42,7 +42,7 @@ namespace invertika_account.Chat
         public string characterName;
         public uint characterId;
         public List<ChatChannel> channels;
-        Party party;
+        public Party party;
         public byte accountLevel;
         public Dictionary<ChatChannel, string> userModes;
 	}
