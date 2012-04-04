@@ -557,32 +557,31 @@ namespace invertika_account.Chat
 
 		void handleListChannelUsersMessage(ChatClient client, MessageIn msg)
 		{
-			//MessageOut reply(CPMSG_LIST_CHANNELUSERS_RESPONSE);
+			MessageOut reply=new MessageOut(Protocol.CPMSG_LIST_CHANNELUSERS_RESPONSE);
 
-			//std::string channelName = msg.readString();
-			//ChatChannel *channel = chatChannelManager->getChannel(channelName);
+			string channelName=msg.readString();
+			ChatChannel channel=Program.chatChannelManager.getChannel(channelName);
 
-			//if (channel)
-			//{
-			//    reply.writeString(channel->getName());
+			if(channel!=null)
+			{
+				reply.writeString(channel.getName());
 
-			//    const ChatChannel::ChannelUsers &users = channel->getUserList();
+				List<ChatClient> users=channel.getUserList();
 
-			//    for (ChatChannel::ChannelUsers::const_iterator
-			//         i = users.begin(), i_end = users.end(); i != i_end; ++i)
-			//    {
-			//        reply.writeString((*i)->characterName);
-			//        reply.writeString(channel->getUserMode((*i)));
-			//    }
+				foreach(ChatClient user in users)
+				{
+					reply.writeString(user.characterName);
+					reply.writeString(channel.getUserMode(user));
+				}
 
-			//    client.send(reply);
-			//}
+				client.send(reply);
+			}
 
-			//// log transaction
-			//Transaction trans;
-			//trans.mCharacterId = client.characterId;
-			//trans.mAction = TRANS_CHANNEL_USERLIST;
-			//storage->addTransaction(trans);
+			// log transaction
+			Transaction trans=new Transaction();
+			trans.mCharacterId=client.characterId;
+			trans.mAction=(uint)TransactionMembers.TRANS_CHANNEL_USERLIST;
+			Program.storage.addTransaction(trans);
 		}
 
 		void handleTopicChange(ChatClient client, MessageIn msg)
