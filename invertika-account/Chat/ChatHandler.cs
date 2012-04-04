@@ -496,44 +496,42 @@ namespace invertika_account.Chat
 
 		void handleQuitChannelMessage(ChatClient client, MessageIn msg)
 		{
-			//MessageOut reply(CPMSG_QUIT_CHANNEL_RESPONSE);
+			MessageOut reply=new MessageOut(Protocol.CPMSG_QUIT_CHANNEL_RESPONSE);
 
-			//short channelId = msg.readInt16();
-			//ChatChannel *channel = chatChannelManager->getChannel(channelId);
+			short channelId = msg.readInt16();
+			ChatChannel channel = Program.chatChannelManager.getChannel(channelId);
 
-			//if (channelId == 0 || !channel)
-			//{
-			//    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
-			//}
-			//else if (!channel->removeUser(&client))
-			//{
-			//    reply.writeInt8(ERRMSG_FAILURE);
-			//}
-			//else
-			//{
-			//    reply.writeInt8(ERRMSG_OK);
-			//    reply.writeInt16(channelId);
+			if (channelId == 0 || channel!=null)
+			{
+			    reply.writeInt8(ManaServ.ERRMSG_INVALID_ARGUMENT);
+			}
+			else if (!channel.removeUser(client))
+			{
+				reply.writeInt8(ManaServ.ERRMSG_FAILURE);
+			}
+			else
+			{
+				reply.writeInt8(ManaServ.ERRMSG_OK);
+			    reply.writeInt16(channelId);
 
-			//    // Send an CPMSG_UPDATE_CHANNEL to warn other clients a user left
-			//    // the channel.
-			//    warnUsersAboutPlayerEventInChat(channel,
-			//            client.characterName,
-			//            CHAT_EVENT_LEAVING_PLAYER);
+			    // Send an CPMSG_UPDATE_CHANNEL to warn other clients a user left
+			    // the channel.
+			    warnUsersAboutPlayerEventInChat(channel,client.characterName,	ManaServ.CHAT_EVENT_LEAVING_PLAYER);
 
-			//    // log transaction
-			//    Transaction trans;
-			//    trans.mCharacterId = client.characterId;
-			//    trans.mAction = TRANS_CHANNEL_QUIT;
-			//    trans.mMessage = "User left " + channel->getName();
-			//    storage->addTransaction(trans);
+			    // log transaction
+				Transaction trans=new Transaction();
+			    trans.mCharacterId = client.characterId;
+			    trans.mAction =(uint)TransactionMembers.TRANS_CHANNEL_QUIT;
+			    trans.mMessage = "User left " + channel.getName();
+			    Program.storage.addTransaction(trans);
 
-			//    if (channel->getUserList().empty())
-			//    {
-			//        chatChannelManager->removeChannel(channel->getId());
-			//    }
-			//}
+			    if (channel.getUserList()!=null)
+			    {
+			        Program.chatChannelManager.removeChannel(channel.getId());
+			    }
+			}
 
-			//client.send(reply);
+			client.send(reply);
 		}
 
 		void handleListChannelsMessage(ChatClient client, MessageIn msg)

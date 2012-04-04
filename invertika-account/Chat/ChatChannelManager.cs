@@ -87,7 +87,7 @@ namespace invertika_account.Chat
 			}
 		}
 
-		bool removeChannel(int channelId)
+		public bool removeChannel(int channelId)
 		{
 			if(mChatChannels.ContainsKey((ushort)channelId)==false) return false;
 
