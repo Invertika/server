@@ -462,39 +462,36 @@ namespace invertika_account.Chat
 
 		void handleKickUserMessage(ChatClient client, MessageIn msg)
 		{
-			//short channelId = msg.readInt16();
-			//ChatChannel *channel = chatChannelManager->getChannel(channelId);
+			short channelId=msg.readInt16();
+			ChatChannel channel=Program.chatChannelManager.getChannel(channelId);
 
-			//if (channelId == 0 || !channel)
-			//{
-			//    // invalid channel
-			//    return;
-			//}
+			if(channelId==0||channel!=null)
+			{
+				// invalid channel
+				return;
+			}
 
-			//if (channel->getUserMode(&client).find('o') == std::string::npos)
-			//{
-			//    // invalid permissions
-			//    return;
-			//}
+			if(channel.getUserMode(client).IndexOf('o')==-1)
+			{
+				// invalid permissions
+				return;
+			}
 
-			//// get the user whos being kicked
-			//std::string user = msg.readString();
+			// get the user whos being kicked
+			string user=msg.readString();
 
-			//if (channel->removeUser(getClient(user)))
-			//{
-			//    std::stringstream ss;
-			//    ss << client.characterName << ":" << user;
-			//    warnUsersAboutPlayerEventInChat(channel,
-			//            ss.str(),
-			//            CHAT_EVENT_KICKED_PLAYER);
-			//}
+			if(channel.removeUser(getClient(user)))
+			{
+				string ss=client.characterName+":"+user;
+				warnUsersAboutPlayerEventInChat(channel, ss, ManaServ.CHAT_EVENT_KICKED_PLAYER);
+			}
 
-			//// log transaction
-			//Transaction trans;
-			//trans.mCharacterId = client.characterId;
-			//trans.mAction = TRANS_CHANNEL_KICK;
-			//trans.mMessage = "User kicked " + user;
-			//storage->addTransaction(trans);
+			// log transaction
+			Transaction trans=new Transaction();
+			trans.mCharacterId=client.characterId;
+			trans.mAction=(uint)TransactionMembers.TRANS_CHANNEL_KICK;
+			trans.mMessage="User kicked "+user;
+			Program.storage.addTransaction(trans);
 		}
 
 		void handleQuitChannelMessage(ChatClient client, MessageIn msg)
