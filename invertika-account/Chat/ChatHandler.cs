@@ -586,26 +586,26 @@ namespace invertika_account.Chat
 
 		void handleTopicChange(ChatClient client, MessageIn msg)
 		{
-			//short channelId = msg.readInt16();
-			//std::string topic = msg.readString();
-			//ChatChannel *channel = chatChannelManager->getChannel(channelId);
+			short channelId=msg.readInt16();
+			string topic=msg.readString();
+			ChatChannel channel=Program.chatChannelManager.getChannel(channelId);
 
-			//if (!guildManager->doesExist(channel->getName()))
-			//{
-			//    chatChannelManager->setChannelTopic(channelId, topic);
-			//}
-			//else
-			//{
-			//    guildChannelTopicChange(channel, client.characterId, topic);
-			//}
+			if(!Program.guildManager.doesExist(channel.getName()))
+			{
+				Program.chatChannelManager.setChannelTopic(channelId, topic);
+			}
+			else
+			{
+				guildChannelTopicChange(channel, (int)client.characterId, topic);
+			}
 
-			//// log transaction
-			//Transaction trans;
-			//trans.mCharacterId = client.characterId;
-			//trans.mAction = TRANS_CHANNEL_TOPIC;
-			//trans.mMessage = "User changed topic to " + topic;
-			//trans.mMessage.append(" in " + channel->getName());
-			//storage->addTransaction(trans);
+			// log transaction
+			Transaction trans=new Transaction();
+			trans.mCharacterId=client.characterId;
+			trans.mAction=(uint)TransactionMembers.TRANS_CHANNEL_TOPIC;
+			trans.mMessage="User changed topic to "+topic;
+			trans.mMessage+=(" in "+channel.getName());
+			Program.storage.addTransaction(trans);
 		}
 
 		void handleDisconnectMessage(ChatClient client, MessageIn msg)

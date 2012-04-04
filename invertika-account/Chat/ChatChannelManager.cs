@@ -149,7 +149,7 @@ namespace invertika_account.Chat
 			return null;
 		}
 
-		void setChannelTopic(int channelId, string topic)
+		public void setChannelTopic(int channelId, string topic)
 		{
 			if(mChatChannels.ContainsKey((ushort)channelId))
 			{
