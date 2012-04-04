@@ -619,20 +619,20 @@ namespace invertika_account.Chat
 
 		void sayToPlayer(ChatClient computer, string playerName, string text)
 		{
-			//LOG_DEBUG(computer.characterName << " says to " << playerName << ": "
-			//          << text);
-			//// Send it to the being if the being exists
-			//MessageOut result(CPMSG_PRIVMSG);
-			//result.writeString(computer.characterName);
-			//result.writeString(text);
-			//for (NetComputers::iterator i = clients.begin(), i_end = clients.end();
-			//     i != i_end; ++i) {
-			//    if (static_cast< ChatClient * >(*i)->characterName == playerName)
-			//    {
-			//        (*i)->send(result);
-			//        break;
-			//    }
-			//}
+			Logger.Write(LogLevel.Debug, computer.characterName+" says to "+playerName+": "+text);
+
+			// Send it to the being if the being exists
+			MessageOut result=new MessageOut(Protocol.CPMSG_PRIVMSG);
+			result.writeString(computer.characterName);
+			result.writeString(text);
+
+			foreach(NetComputer client in clients)
+			{
+				if(client is ChatClient)
+				{
+					client.send(result);
+				}
+			}
 		}
 
 		public void warnUsersAboutPlayerEventInChat(ChatChannel channel, string info, byte eventId)
