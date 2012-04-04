@@ -35,15 +35,16 @@ namespace invertika_account.Chat
 {
 	public class ChatClient : NetComputer
 	{
-		public ChatClient(TcpClient peer): base(peer)
+		public ChatClient(TcpClient peer)
+			: base(peer)
 		{
 		}
 
-        public string characterName;
-        public uint characterId;
-        public List<ChatChannel> channels;
-        public Party party;
-        public byte accountLevel;
-        public Dictionary<ChatChannel, string> userModes;
+		public string characterName;
+		public uint characterId;
+		public List<ChatChannel> channels;
+		public Party party;
+		public byte accountLevel;
+		public Dictionary<ChatChannel, string> userModes;
 	}
 }

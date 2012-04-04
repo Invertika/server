@@ -41,8 +41,8 @@ namespace invertika_account.Chat
 			mExpireTime=DateTime.Now.Ticks+validTimeframe; //	time(NULL) + validTimeframe;
 		}
 
-		string mInviter;
-		string mInvitee;
+		public string mInviter;
+		public string mInvitee;
 		public long mExpireTime;
 	}
 }

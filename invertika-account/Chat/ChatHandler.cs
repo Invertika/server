@@ -33,6 +33,7 @@ using ISL.Server.Utilities;
 using ISL.Server.Common;
 using ISL.Server.Account;
 using invertika_account.Common;
+using invertika_account.Account;
 
 namespace invertika_account.Chat
 {
@@ -720,85 +721,99 @@ namespace invertika_account.Chat
 			invitee.send(msgout);
 		}
 
+		void updateInfo(ChatClient client, int partyId)
+		{
+			Character character=Program.storage.getCharacter(client.characterName);
+			GameServerHandler.sendPartyChange(character, partyId);
+		}
+
 		void handlePartyInviteAnswer(ChatClient client, MessageIn msg)
 		{
-			//if (client.party)     return;
+			if(client.party==null) return;
 
-			//MessageOut outInvitee(CPMSG_PARTY_INVITE_ANSWER_RESPONSE);
+			MessageOut outInvitee=new MessageOut(Protocol.CPMSG_PARTY_INVITE_ANSWER_RESPONSE);
 
-			//std::string inviter = msg.readString();
+			string inviter=msg.readString();
 
-			//// check if the invite is still valid
-			//bool valid = false;
-			//removeExpiredPartyInvites();
-			//const size_t size = mInvitations.size();
-			//for (size_t i = 0; i < size; ++i)
+			// check if the invite is still valid
+			bool valid=false;
+			removeExpiredPartyInvites();
+			int size=mInvitations.Count;
+
+			for(int i=0; i<size; i++)
+			{
+				if(mInvitations[i].mInviter==inviter&&mInvitations[i].mInvitee==client.characterName)
+				{
+					valid=true;
+				}
+			}
+
+			// the invitee did not accept the invitation
+			//if (msg.readInt8();)
 			//{
-			//    if (mInvitations[i].mInviter == inviter &&
-			//        mInvitations[i].mInvitee == client.characterName)
-			//    {
-			//        valid = true;
-			//    }
+			msg.readInt8();
+
+			if(!valid) return;
+
+			// send rejection to inviter
+			ChatClient inviterClient=getClient(inviter);
+
+			if(inviterClient!=null)
+			{
+				MessageOut outmsg=new MessageOut(Protocol.CPMSG_PARTY_REJECTED);
+				outmsg.writeString(inviter);
+				outmsg.writeInt8(ManaServ.ERRMSG_OK);
+				inviterClient.send(outmsg);
+			}
+			return;
 			//}
 
-			//// the invitee did not accept the invitation
-			//if (!msg.readInt8())
-			//{
-			//    if (!valid)
-			//        return;
+			// if the invitation has expired, tell the inivtee about it
+			if(!valid)
+			{
+				outInvitee.writeInt8(ManaServ.ERRMSG_TIME_OUT);
+				client.send(outInvitee);
+				return;
+			}
 
-			//    // send rejection to inviter
-			//    ChatClient *inviterClient = getClient(inviter);
-			//    if (inviterClient)
-			//    {
-			//        MessageOut out(CPMSG_PARTY_REJECTED);
-			//        out.writeString(inviter);
-			//        out.writeInt8(ERRMSG_OK);
-			//        inviterClient->send(out);
-			//    }
-			//    return;
-			//}
+			// check that the inviter is still in the game
+			ChatClient c1=getClient(inviter);
+			if(c1==null)
+			{
+				outInvitee.writeInt8(ManaServ.ERRMSG_FAILURE);
+				client.send(outInvitee);
+				return;
+			}
 
-			//// if the invitation has expired, tell the inivtee about it
-			//if (!valid)
-			//{
-			//    outInvitee.writeInt8(ERRMSG_TIME_OUT);
-			//    client.send(outInvitee);
-			//    return;
-			//}
+			// if party doesnt exist, create it
+			if(c1.party!=null)
+			{
+				c1.party=new Party();
+				//c1.party.addUser(inviter);
+				c1.party.addUser("", inviter); //TODO Überprüfen
+				// tell game server to update info
+				updateInfo(c1, (int)c1.party.getId());
+			}
 
-			//// check that the inviter is still in the game
-			//ChatClient *c1 = getClient(inviter);
-			//if (!c1)
-			//{
-			//    outInvitee.writeInt8(ERRMSG_FAILURE);
-			//    client.send(outInvitee);
-			//    return;
-			//}
+			outInvitee.writeInt8(ManaServ.ERRMSG_OK);
 
-			//// if party doesnt exist, create it
-			//if (!c1->party)
-			//{
-			//    c1->party = new Party();
-			//    c1->party->addUser(inviter);
-			//    // tell game server to update info
-			//    updateInfo(c1, c1->party->getId());
-			//}
+			List<string> users=c1.party.getUsers();
 
-			//outInvitee.writeInt8(ERRMSG_OK);
-			//Party::PartyUsers users = c1->party->getUsers();
-			//const unsigned usersSize = users.size();
-			//for (unsigned i = 0; i < usersSize; i++)
-			//    outInvitee.writeString(users[i]);
+			int usersSize=users.Count;
 
-			//client.send(outInvitee);
+			for(int i=0; i<usersSize; i++)
+			{
+				outInvitee.writeString(users[i]);
+			}
 
-			//// add invitee to the party
-			//c1->party->addUser(client.characterName, inviter);
-			//client.party = c1->party;
+			client.send(outInvitee);
 
-			//// tell game server to update info
-			//updateInfo(&client, client.party->getId());
+			// add invitee to the party
+			c1.party.addUser(client.characterName, inviter);
+			client.party=c1.party;
+
+			// tell game server to update info
+			updateInfo(client, (int)client.party.getId());
 		}
 
 		void handlePartyQuit(ChatClient client)
