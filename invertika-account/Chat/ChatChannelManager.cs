@@ -98,7 +98,7 @@ namespace invertika_account.Chat
 			return true;
 		}
 
-		List<ChatChannel> getPublicChannels()
+		public List<ChatChannel> getPublicChannels()
 		{
 			List<ChatChannel> channels=new List<ChatChannel>();
 

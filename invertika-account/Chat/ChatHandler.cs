@@ -536,26 +536,23 @@ namespace invertika_account.Chat
 
 		void handleListChannelsMessage(ChatClient client, MessageIn msg)
 		{
-			//MessageOut reply(CPMSG_LIST_CHANNELS_RESPONSE);
+			MessageOut reply=new MessageOut(Protocol.CPMSG_LIST_CHANNELS_RESPONSE);
 
-			//std::list<const ChatChannel*> channels =
-			//    chatChannelManager->getPublicChannels();
+			List<ChatChannel> channels=Program.chatChannelManager.getPublicChannels();
 
-			//for (std::list<const ChatChannel*>::iterator i = channels.begin(),
-			//        i_end = channels.end();
-			//        i != i_end; ++i)
-			//{
-			//    reply.writeString((*i)->getName());
-			//    reply.writeInt16((*i)->getUserList().size());
-			//}
+			foreach(ChatChannel channel in channels)
+			{
+				reply.writeString(channel.getName());
+				reply.writeInt16(channel.getUserList().Count);
+			}
 
-			//client.send(reply);
+			client.send(reply);
 
-			//// log transaction
-			//Transaction trans;
-			//trans.mCharacterId = client.characterId;
-			//trans.mAction = TRANS_CHANNEL_LIST;
-			//storage->addTransaction(trans);
+			// log transaction
+			Transaction trans=new Transaction();
+			trans.mCharacterId = client.characterId;
+			trans.mAction =(uint)TransactionMembers.TRANS_CHANNEL_LIST;
+			Program.storage.addTransaction(trans);
 		}
 
 		void handleListChannelUsersMessage(ChatClient client, MessageIn msg)
