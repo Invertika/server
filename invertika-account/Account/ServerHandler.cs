@@ -38,6 +38,7 @@ using CSCL;
 using invertika_account.Common;
 using ISL.Server.Serialize;
 using ISL.Server.Account;
+using ISL.Server.Enums;
 
 namespace invertika_account.Account
 {
@@ -77,16 +78,16 @@ namespace invertika_account.Account
 						if(dbversion==Program.storage.getItemDatabaseVersion())
 						{
 							Logger.Write(LogLevel.Debug, "Item databases between account server and gameserver are in sync");
-							outmessage.writeInt16(ManaServ.DATA_VERSION_OK);
+							outmessage.writeInt16((int)DataVersion.DATA_VERSION_OK);
 						}
 						else
 						{
 							Logger.Write(LogLevel.Debug, "Item database of game server has a wrong version");
-							outmessage.writeInt16(ManaServ.DATA_VERSION_OUTDATED);
+							outmessage.writeInt16((int)DataVersion.DATA_VERSION_OUTDATED);
 						}
 						if(password==Configuration.getValue("net_password", "changeMe"))
 						{
-							outmessage.writeInt16(ManaServ.PASSWORD_OK);
+							outmessage.writeInt16((int)Password.PASSWORD_OK);
 							computer.send(outmessage);
 
 							// transmit global world state variables
@@ -102,7 +103,7 @@ namespace invertika_account.Account
 						else
 						{
 							Logger.Write(LogLevel.Information, "The password given by {0}:{1} was bad.", server.address, server.port);
-							outmessage.writeInt16(ManaServ.PASSWORD_BAD);
+							outmessage.writeInt16((int)Password.PASSWORD_BAD);
 							computer.disconnect(outmessage);
 							break;
 						}

@@ -35,6 +35,7 @@ using ISL.Server.Utilities;
 using ISL.Server.Network;
 using ISL.Server.Common;
 using ISL.Server.Account;
+using ISL.Server.Enums;
 
 namespace invertika_account.Account
 {
@@ -851,7 +852,7 @@ namespace invertika_account.Account
 			client.setAccount(acc);
 			client.status=AccountClientStatus.CLIENT_CONNECTED;
 
-			reply.writeInt8(ManaServ.ERRMSG_OK);
+			reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
 			client.send(reply);
 
 			// Return information about available characters
@@ -867,7 +868,7 @@ namespace invertika_account.Account
 		void deletePendingClient(AccountClient client)
 		{
 			MessageOut msg=new MessageOut(Protocol.APMSG_RECONNECT_RESPONSE);
-			msg.writeInt8(ManaServ.ERRMSG_TIME_OUT);
+			msg.writeInt8((int)ErrorMessage.ERRMSG_TIME_OUT);
 			client.disconnect(msg);
 			// The client will be deleted when the disconnect event is processed
 		}

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ISL.Server.Common;
+using ISL.Server.Enums;
 
 namespace invertika_account.Chat
 {
@@ -155,7 +156,7 @@ namespace invertika_account.Chat
 			{
 				ChatChannel channel=mChatChannels[(ushort)channelId];
 				channel.setAnnouncement(topic);
-				Program.chatHandler.warnUsersAboutPlayerEventInChat(channel, topic, ManaServ.CHAT_EVENT_TOPIC_CHANGE);
+				Program.chatHandler.warnUsersAboutPlayerEventInChat(channel, topic, (int)ChatValues.CHAT_EVENT_TOPIC_CHANGE);
 			}
 		}
 
@@ -163,7 +164,7 @@ namespace invertika_account.Chat
 		{
 			foreach(ChatChannel channel in user.channels)
 			{
-				Program.chatHandler.warnUsersAboutPlayerEventInChat(channel, user.characterName, ManaServ.CHAT_EVENT_LEAVING_PLAYER);
+				Program.chatHandler.warnUsersAboutPlayerEventInChat(channel, user.characterName, (int)ChatValues.CHAT_EVENT_LEAVING_PLAYER);
 				channel.removeUser(user);
 			}
 		}

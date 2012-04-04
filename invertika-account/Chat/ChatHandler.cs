@@ -34,6 +34,7 @@ using ISL.Server.Common;
 using ISL.Server.Account;
 using invertika_account.Common;
 using invertika_account.Account;
+using ISL.Server.Enums;
 
 namespace invertika_account.Chat
 {
@@ -62,7 +63,7 @@ namespace invertika_account.Chat
 		void deletePendingClient(ChatClient c)
 		{
 			MessageOut msg=new MessageOut(Protocol.CPMSG_CONNECT_RESPONSE);
-			msg.writeInt8(ManaServ.ERRMSG_TIME_OUT);
+			msg.writeInt8((int)ErrorMessage.ERRMSG_TIME_OUT);
 
 			// The computer will be deleted when the disconnect event is processed
 			c.disconnect(msg);
@@ -85,14 +86,14 @@ namespace invertika_account.Chat
 			if (c!=null)
 			{
 			    // character wasnt found
-			    msg.writeInt8(ManaServ.ERRMSG_FAILURE); //TODO In Protocol?
+				msg.writeInt8((int)ErrorMessage.ERRMSG_FAILURE); //TODO In Protocol?
 			}
 			else
 			{
 			    client.characterId = (uint)c.getDatabaseID();
 				//delete p;
 
-				msg.writeInt8(ManaServ.ERRMSG_OK);
+				msg.writeInt8((int)ErrorMessage.ERRMSG_OK);
 
 			    // Add chat client to player map
 				mPlayerMap.Add(client.characterName, client);
@@ -247,7 +248,7 @@ namespace invertika_account.Chat
 		{
 			Logger.Write(LogLevel.Information, "Chat: Received unhandled command:  {0}", command);
 			MessageOut result=new MessageOut(Protocol.CPMSG_ERROR);
-			result.writeInt8(ManaServ.CHAT_UNHANDLED_COMMAND); //TODO sollte im Protocol landen
+			result.writeInt8((int)ChatValues.CHAT_UNHANDLED_COMMAND); //TODO sollte im Protocol landen
 			computer.send(result);
 		}
 
@@ -255,7 +256,7 @@ namespace invertika_account.Chat
 		{
 			// We could later count if the player is really often unpolite.
 			MessageOut result=new MessageOut(Protocol.CPMSG_ERROR);
-			result.writeInt8(ManaServ.CHAT_USING_BAD_WORDS); // The Channel //TODO sollte im Protocol landen
+			result.writeInt8((int)ChatValues.CHAT_USING_BAD_WORDS); // The Channel //TODO sollte im Protocol landen
 			computer.send(result);
 
 			Logger.Write(LogLevel.Information, "{0} says bad words.", computer.characterName);
@@ -325,7 +326,7 @@ namespace invertika_account.Chat
 			else
 			{
 				MessageOut result=new MessageOut(Protocol.CPMSG_ERROR);
-				result.writeInt8(ManaServ.ERRMSG_INSUFFICIENT_RIGHTS);
+				result.writeInt8((int)ErrorMessage.ERRMSG_INSUFFICIENT_RIGHTS);
 				client.send(result);
 				Logger.Write(LogLevel.Information, "{0} couldn't make an announcement due to insufficient rights.", client.characterName);
 			}
@@ -374,22 +375,22 @@ namespace invertika_account.Chat
 
 			if(channel!=null)
 			{
-				reply.writeInt8(ManaServ.ERRMSG_INVALID_ARGUMENT);
+				reply.writeInt8((int)ErrorMessage.ERRMSG_INVALID_ARGUMENT);
 			}
 			else if(channel.getPassword()!=null&&channel.getPassword()!=givenPassword)
 			{
 				// Incorrect password (should probably have its own return value)
-				reply.writeInt8(ManaServ.ERRMSG_INSUFFICIENT_RIGHTS);
+				reply.writeInt8((int)ErrorMessage.ERRMSG_INSUFFICIENT_RIGHTS);
 			}
 			else if(!channel.canJoin())
 			{
-				reply.writeInt8(ManaServ.ERRMSG_INVALID_ARGUMENT);
+				reply.writeInt8((int)ErrorMessage.ERRMSG_INVALID_ARGUMENT);
 			}
 			else
 			{
 				if(channel.addUser(client))
 				{
-					reply.writeInt8(ManaServ.ERRMSG_OK);
+					reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
 					// The user entered the channel, now give him the channel
 					// id, the announcement string and the user list.
 					reply.writeInt16(channel.getId());
@@ -405,7 +406,7 @@ namespace invertika_account.Chat
 
 					// Send an CPMSG_UPDATE_CHANNEL to warn other clients a user went
 					// in the channel.
-					warnUsersAboutPlayerEventInChat(channel, client.characterName, ManaServ.CHAT_EVENT_NEW_PLAYER);
+					warnUsersAboutPlayerEventInChat(channel, client.characterName, (int)ChatValues.CHAT_EVENT_NEW_PLAYER);
 
 					// log transaction
 					Transaction trans=new Transaction();
@@ -416,7 +417,7 @@ namespace invertika_account.Chat
 				}
 				else
 				{
-					reply.writeInt8(ManaServ.ERRMSG_FAILURE);
+					reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
 				}
 			}
 
@@ -450,7 +451,7 @@ namespace invertika_account.Chat
 			// set the info to pass to all channel clients
 			string info=client.characterName+":"+user+":"+mode;
 
-			warnUsersAboutPlayerEventInChat(channel, info, ManaServ.CHAT_EVENT_MODE_CHANGE);
+			warnUsersAboutPlayerEventInChat(channel, info, (int)ChatValues.CHAT_EVENT_MODE_CHANGE);
 
 			// log transaction
 			Transaction trans=new Transaction();
@@ -484,7 +485,7 @@ namespace invertika_account.Chat
 			if(channel.removeUser(getClient(user)))
 			{
 				string ss=client.characterName+":"+user;
-				warnUsersAboutPlayerEventInChat(channel, ss, ManaServ.CHAT_EVENT_KICKED_PLAYER);
+				warnUsersAboutPlayerEventInChat(channel, ss, (int)ChatValues.CHAT_EVENT_KICKED_PLAYER);
 			}
 
 			// log transaction
@@ -504,20 +505,20 @@ namespace invertika_account.Chat
 
 			if (channelId == 0 || channel!=null)
 			{
-			    reply.writeInt8(ManaServ.ERRMSG_INVALID_ARGUMENT);
+				reply.writeInt8((int)ErrorMessage.ERRMSG_INVALID_ARGUMENT);
 			}
 			else if (!channel.removeUser(client))
 			{
-				reply.writeInt8(ManaServ.ERRMSG_FAILURE);
+				reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
 			}
 			else
 			{
-				reply.writeInt8(ManaServ.ERRMSG_OK);
+				reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
 			    reply.writeInt16(channelId);
 
 			    // Send an CPMSG_UPDATE_CHANNEL to warn other clients a user left
 			    // the channel.
-			    warnUsersAboutPlayerEventInChat(channel,client.characterName,	ManaServ.CHAT_EVENT_LEAVING_PLAYER);
+				warnUsersAboutPlayerEventInChat(channel, client.characterName, (int)ChatValues.CHAT_EVENT_LEAVING_PLAYER);
 
 			    // log transaction
 				Transaction trans=new Transaction();
@@ -612,7 +613,7 @@ namespace invertika_account.Chat
 		void handleDisconnectMessage(ChatClient client, MessageIn msg)
 		{
 			MessageOut reply=new MessageOut(Protocol.CPMSG_DISCONNECT_RESPONSE);
-			reply.writeInt8(ManaServ.ERRMSG_OK);
+			reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
 			Program.chatChannelManager.removeUserFromAllChannels(client);
 			Program.guildManager.disconnectPlayer(client);
 			client.send(reply);
@@ -699,7 +700,7 @@ namespace invertika_account.Chat
 			{
 			    MessageOut @out=new MessageOut(Protocol.CPMSG_PARTY_REJECTED);
 			    @out.writeString(inviterName);
-			    @out.writeInt8(ManaServ.ERRMSG_LIMIT_REACHED);
+				@out.writeInt8((int)ErrorMessage.ERRMSG_LIMIT_REACHED);
 			    inviter.send(@out);
 			    return;
 			}
@@ -709,7 +710,7 @@ namespace invertika_account.Chat
 			{
 			    MessageOut @out=new MessageOut(Protocol.CPMSG_PARTY_REJECTED);
 			    @out.writeString(inviterName);
-			    @out.writeInt8(ManaServ.ERRMSG_FAILURE);
+				@out.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
 			    inviter.send(@out);
 			    return;
 			}
@@ -762,7 +763,7 @@ namespace invertika_account.Chat
 			{
 				MessageOut outmsg=new MessageOut(Protocol.CPMSG_PARTY_REJECTED);
 				outmsg.writeString(inviter);
-				outmsg.writeInt8(ManaServ.ERRMSG_OK);
+				outmsg.writeInt8((int)ErrorMessage.ERRMSG_OK);
 				inviterClient.send(outmsg);
 			}
 			return;
@@ -771,7 +772,7 @@ namespace invertika_account.Chat
 			// if the invitation has expired, tell the inivtee about it
 			if(!valid)
 			{
-				outInvitee.writeInt8(ManaServ.ERRMSG_TIME_OUT);
+				outInvitee.writeInt8((int)ErrorMessage.ERRMSG_TIME_OUT);
 				client.send(outInvitee);
 				return;
 			}
@@ -780,7 +781,7 @@ namespace invertika_account.Chat
 			ChatClient c1=getClient(inviter);
 			if(c1==null)
 			{
-				outInvitee.writeInt8(ManaServ.ERRMSG_FAILURE);
+				outInvitee.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
 				client.send(outInvitee);
 				return;
 			}
@@ -795,7 +796,7 @@ namespace invertika_account.Chat
 				updateInfo(c1, (int)c1.party.getId());
 			}
 
-			outInvitee.writeInt8(ManaServ.ERRMSG_OK);
+			outInvitee.writeInt8((int)ErrorMessage.ERRMSG_OK);
 
 			List<string> users=c1.party.getUsers();
 
