@@ -656,17 +656,15 @@ namespace invertika_account.Chat
 
 		ChatClient getClient(string name)
 		{
-			//std::map<std::string, ChatClient*>::const_iterator itr
-			//        = mPlayerMap.find(name);
-
-			//if (itr != mPlayerMap.end())
-			//    return itr->second;
-			//else
-			//    return 0;
-
-			return null; //SSK
+			if(mPlayerMap.ContainsKey(name))
+			{
+				return mPlayerMap[name];
+			}
+			else
+			{
+				return null;
+			}
 		}
-
 
 		void removeExpiredPartyInvites()
 		{
