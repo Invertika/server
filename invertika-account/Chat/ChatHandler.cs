@@ -832,18 +832,17 @@ namespace invertika_account.Chat
 
 		void removeUserFromParty(ChatClient client)
 		{
-			//if (client.party)
-			//{
-			//    client.party->removeUser(client.characterName);
-			//    informPartyMemberQuit(client);
+			if (client.party!=null)
+			{
+			    client.party.removeUser(client.characterName);
+			    informPartyMemberQuit(client);
 
-			//    // if theres less than 1 member left, remove the party
-			//    if (client.party->userCount() < 1)
-			//    {
-			//        delete client.party;
-			//        client.party = 0;
-			//    }
-			//}
+			    // if theres less than 1 member left, remove the party
+			    if (client.party.userCount() < 1)
+			    {
+			        client.party = null;
+			    }
+			}
 		}
 
 		void informPartyMemberQuit(ChatClient client)

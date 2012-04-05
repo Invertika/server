@@ -57,7 +57,7 @@ namespace invertika_account.Chat
 			//}
 		}
 
-		void removeUser(string name)
+		public void removeUser(string name)
 		{
 			//PartyUsers::iterator itr = std::find(mUsers.begin(), mUsers.end(), name);
 			//if (itr != mUsers.end())
@@ -78,6 +78,14 @@ namespace invertika_account.Chat
 		public uint getId()
 		{
 			return mId;
+		}
+
+		/**
+   * Return number of users in party
+   */
+		public int userCount()
+		{
+			return mUsers.Count;
 		}
 	}
 }
