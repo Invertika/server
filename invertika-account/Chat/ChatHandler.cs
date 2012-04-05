@@ -883,7 +883,7 @@ namespace invertika_account.Chat
 
 			    client.send(msg);
 
-			    sendGuildListUpdate(guildName, client.characterName, (int)ISL.Server.Enums.Guild.GUILD_EVENT_ONLINE_PLAYER);
+			    sendGuildListUpdate(guildName, client.characterName, (int)ISL.Server.Enums.GuildValues.GUILD_EVENT_ONLINE_PLAYER);
 			}
 		}
 
@@ -1018,41 +1018,42 @@ namespace invertika_account.Chat
 
 		void handleGuildAcceptInvite(ChatClient client, MessageIn msg)
 		{
-			//MessageOut reply(CPMSG_GUILD_ACCEPT_RESPONSE);
-			//std::string guildName = msg.readString();
-			//bool error = true; // set true by default, and set false only if success
+			MessageOut reply=new MessageOut(Protocol.CPMSG_GUILD_ACCEPT_RESPONSE);
+			string guildName = msg.readString();
+			bool error = true; // set true by default, and set false only if success
 
-			//// check guild exists and that member was invited
-			//// then add them as guild member
-			//// and remove from invite list
-			//Guild *guild = guildManager->findByName(guildName);
-			//if (guild)
-			//{
-			//    if (guild->checkInvited(client.characterId))
-			//    {
-			//        // add user to guild
-			//        guildManager->addGuildMember(guild, client.characterId);
-			//        reply.writeInt8(ERRMSG_OK);
-			//        reply.writeString(guild->getName());
-			//        reply.writeInt16(guild->getId());
-			//        reply.writeInt16(guild->getUserPermissions(client.characterId));
+			// check guild exists and that member was invited
+			// then add them as guild member
+			// and remove from invite list
+			Guild guild = Program.guildManager.findByName(guildName);
 
-			//        // have character join guild channel
-			//        ChatChannel *channel = joinGuildChannel(guild->getName(), client);
-			//        reply.writeInt16(channel->getId());
-			//        sendGuildListUpdate(guildName, client.characterName, GUILD_EVENT_NEW_PLAYER);
+			if (guild!=null)
+			{
+			    if (guild.checkInvited((int)client.characterId))
+			    {
+			        // add user to guild
+					Program.guildManager.addGuildMember(guild, (int)client.characterId);
+			        reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
+			        reply.writeString(guild.getName());
+			        reply.writeInt16(guild.getId());
+			        reply.writeInt16(guild.getUserPermissions((int)client.characterId));
 
-			//        // success! set error to false
-			//        error = false;
-			//    }
-			//}
+			        // have character join guild channel
+			        ChatChannel channel = joinGuildChannel(guild.getName(), client);
+			        reply.writeInt16(channel.getId());
+					sendGuildListUpdate(guildName, client.characterName, (int)GuildValues.GUILD_EVENT_NEW_PLAYER);
 
-			//if (error)
-			//{
-			//    reply.writeInt8(ERRMSG_FAILURE);
-			//}
+			        // success! set error to false
+			        error = false;
+			    }
+			}
 
-			//client.send(reply);
+			if (error)
+			{
+			    reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
+			}
+
+			client.send(reply);
 		}
 
 		void handleGuildGetMembers(ChatClient client, MessageIn msg)

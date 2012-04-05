@@ -103,7 +103,7 @@ namespace invertika_account.Chat
 			//}
 		}
 
-		bool checkInvited(int playerId)
+		public bool checkInvited(int playerId)
 		{
 			//return std::find(mInvited.begin(), mInvited.end(), playerId) != mInvited.end();
 

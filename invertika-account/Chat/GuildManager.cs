@@ -83,7 +83,7 @@ namespace invertika_account.Chat
 			//delete guild;
 		}
 
-		void addGuildMember(Guild guild, int playerId)
+		public void addGuildMember(Guild guild, int playerId)
 		{
 			//storage->addGuildMember(guild->getId(), playerId);
 			//guild->addMember(playerId);
