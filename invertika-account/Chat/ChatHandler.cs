@@ -1058,37 +1058,35 @@ namespace invertika_account.Chat
 
 		void handleGuildGetMembers(ChatClient client, MessageIn msg)
 		{
-			//MessageOut reply(CPMSG_GUILD_GET_MEMBERS_RESPONSE);
-			//short guildId = msg.readInt16();
-			//Guild *guild = guildManager->findById(guildId);
+			MessageOut reply=new MessageOut(Protocol.CPMSG_GUILD_GET_MEMBERS_RESPONSE);
+			short guildId = msg.readInt16();
+			Guild guild = Program.guildManager.findById(guildId);
 
-			//// check for valid guild
-			//// write a list of member names that belong to the guild
-			//if (guild)
-			//{
-			//    // make sure the requestor is in the guild
-			//    if (guild->checkInGuild(client.characterId))
-			//    {
-			//        reply.writeInt8(ERRMSG_OK);
-			//        reply.writeInt16(guildId);
-			//        std::list<GuildMember*> memberList = guild->getMembers();
-			//        std::list<GuildMember*>::const_iterator itr_end = memberList.end();
-			//        for (std::list<GuildMember*>::iterator itr = memberList.begin();
-			//             itr != itr_end; ++itr)
-			//        {
-			//            Character *c = storage->getCharacter((*itr)->mId, NULL);
-			//            std::string memberName = c->getName();
-			//            reply.writeString(memberName);
-			//            reply.writeInt8(mPlayerMap.find(memberName) != mPlayerMap.end());
-			//        }
-			//    }
-			//}
-			//else
-			//{
-			//    reply.writeInt8(ERRMSG_FAILURE);
-			//}
+			// check for valid guild
+			// write a list of member names that belong to the guild
+			if (guild!=null)
+			{
+			    // make sure the requestor is in the guild
+			    if (guild.checkInGuild((int)client.characterId))
+			    {
+			        reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
+			        reply.writeInt16(guildId);
 
-			//client.send(reply);
+					foreach(GuildMember member in guild.getMembers())
+					{
+			            Character c = Program.storage.getCharacter(member.mId, null);
+			            string memberName = c.getName();
+			            reply.writeString(memberName);
+			            reply.writeInt8((int)((mPlayerMap.ContainsKey(memberName)?1:0)));
+			        }
+			    }
+			}
+			else
+			{
+			    reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
+			}
+
+			client.send(reply);
 		}
 
 		void handleGuildMemberLevelChange(ChatClient client, MessageIn msg)
