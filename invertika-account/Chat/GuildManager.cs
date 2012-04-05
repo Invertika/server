@@ -113,7 +113,7 @@ namespace invertika_account.Chat
 			//}
 		}
 
-		Guild findById(short id)
+		public Guild findById(short id)
 		{
 			//for (std::list<Guild*>::const_iterator itr = mGuilds.begin(),
 			//        itr_end = mGuilds.end();
@@ -123,6 +123,7 @@ namespace invertika_account.Chat
 			//    if (guild->getId() == id)
 			//        return guild;
 			//}
+
 			return null;
 		}
 

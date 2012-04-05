@@ -110,12 +110,12 @@ namespace invertika_account.Chat
 			return true; //ssk
 		}
 
-		void addInvited(int playerId)
+		public void addInvited(int playerId)
 		{
 			//mInvited.push_back(playerId);
 		}
 
-		bool checkInGuild(int playerId)
+		public bool checkInGuild(int playerId)
 		{
 			return getMember(playerId)!=null;
 		}
@@ -134,7 +134,7 @@ namespace invertika_account.Chat
 			return null;
 		}
 
-		bool canInvite(int playerId)
+		public bool canInvite(int playerId)
 		{
 			//// Guild members with permissions above NONE can invite
 			//// Check that guild members permissions are not NONE

@@ -973,49 +973,47 @@ namespace invertika_account.Chat
 
 		void handleGuildInvite(ChatClient client, MessageIn msg)
 		{
-			//MessageOut reply(CPMSG_GUILD_INVITE_RESPONSE);
-			//MessageOut invite(CPMSG_GUILD_INVITED);
+			MessageOut reply=new MessageOut(Protocol.CPMSG_GUILD_INVITE_RESPONSE);
+			MessageOut invite=new MessageOut(Protocol.CPMSG_GUILD_INVITED);
 
-			//// send an invitation from sender to character to join guild
-			//int guildId = msg.readInt16();
-			//std::string character = msg.readString();
+			// send an invitation from sender to character to join guild
+			int guildId=msg.readInt16();
+			string character=msg.readString();
 
-			//// get the chat client and the guild
-			//ChatClient *invitedClient = mPlayerMap[character];
-			//Guild *guild = guildManager->findById(guildId);
+			// get the chat client and the guild
+			ChatClient invitedClient=mPlayerMap[character];
+			Guild guild=Program.guildManager.findById((short)guildId);
 
-			//if (invitedClient && guild)
-			//{
-			//    // check permissions of inviter, and that they arent inviting themself,
-			//    // and arent someone already in the guild
-			//    if (guild->canInvite(client.characterId) &&
-			//        (client.characterName != character) &&
-			//        !guild->checkInGuild(invitedClient->characterId))
-			//    {
-			//        // send the name of the inviter and the name of the guild
-			//        // that the character has been invited to join
-			//        std::string senderName = client.characterName;
-			//        std::string guildName = guild->getName();
-			//        invite.writeString(senderName);
-			//        invite.writeString(guildName);
-			//        invite.writeInt16(guildId);
-			//        invitedClient->send(invite);
-			//        reply.writeInt8(ERRMSG_OK);
+			if(invitedClient!=null&&guild!=null)
+			{
+				// check permissions of inviter, and that they arent inviting themself,
+				// and arent someone already in the guild
+				if(guild.canInvite((int)client.characterId)&&(client.characterName!=character)&&!guild.checkInGuild((int)invitedClient.characterId))
+				{
+					// send the name of the inviter and the name of the guild
+					// that the character has been invited to join
+					string senderName=client.characterName;
+					string guildName=guild.getName();
+					invite.writeString(senderName);
+					invite.writeString(guildName);
+					invite.writeInt16(guildId);
+					invitedClient.send(invite);
+					reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
 
-			//        // add member to list of invited members to the guild
-			//        guild->addInvited(invitedClient->characterId);
-			//    }
-			//    else
-			//    {
-			//        reply.writeInt8(ERRMSG_FAILURE);
-			//    }
-			//}
-			//else
-			//{
-			//    reply.writeInt8(ERRMSG_FAILURE);
-			//}
+					// add member to list of invited members to the guild
+					guild.addInvited((int)invitedClient.characterId);
+				}
+				else
+				{
+					reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
+				}
+			}
+			else
+			{
+				reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
+			}
 
-			//client.send(reply);
+			client.send(reply);
 		}
 
 		void handleGuildAcceptInvite(ChatClient client, MessageIn msg)
