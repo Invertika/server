@@ -1145,51 +1145,55 @@ namespace invertika_account.Chat
 
 		void handleGuildQuit(ChatClient client, MessageIn msg)
 		{
-			//MessageOut reply(CPMSG_GUILD_QUIT_RESPONSE);
-			//short guildId = msg.readInt16();
-			//Guild *guild = guildManager.findById(guildId);
+			MessageOut reply=new MessageOut(Protocol.CPMSG_GUILD_QUIT_RESPONSE);
+			short guildId = msg.readInt16();
+			Guild guild = Program.guildManager.findById(guildId);
 
-			//// check for valid guild
-			//// check the member is in the guild
-			//// remove the member from the guild
-			//if (guild)
-			//{
-			//    if (guild.checkInGuild(client.characterId))
-			//    {
-			//        reply.writeInt8(ERRMSG_OK);
-			//        reply.writeInt16(guildId);
+			// check for valid guild
+			// check the member is in the guild
+			// remove the member from the guild
+			if (guild!=null)
+			{
+			    if (guild.checkInGuild((int)client.characterId))
+			    {
+			        reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
+			        reply.writeInt16(guildId);
 
-			//        // Check if there are no members left, remove the guild channel
-			//        if (guild.memberCount() == 0)
-			//        {
-			//            chatChannelManager.removeChannel(chatChannelManager.getChannelId(guild.getName()));
-			//        }
+			        // Check if there are no members left, remove the guild channel
+			        if (guild.memberCount() == 0)
+			        {
+			            Program.chatChannelManager.removeChannel(Program.chatChannelManager.getChannelId(guild.getName()));
+			        }
 
-			//        // guild manager checks if the member is the last in the guild
-			//        // and removes the guild if so
-			//        guildManager.removeGuildMember(guild, client.characterId);
-			//        sendGuildListUpdate(guild.getName(), client.characterName, GUILD_EVENT_LEAVING_PLAYER);
-			//    }
-			//    else
-			//    {
-			//        reply.writeInt8(ERRMSG_FAILURE);
-			//    }
-			//}
-			//else
-			//{
-			//    reply.writeInt8(ERRMSG_FAILURE);
-			//}
+			        // guild manager checks if the member is the last in the guild
+			        // and removes the guild if so
+			        Program.guildManager.removeGuildMember(guild, (int)client.characterId);
+			        sendGuildListUpdate(guild.getName(), client.characterName, (int)GuildValues.GUILD_EVENT_LEAVING_PLAYER);
+			    }
+			    else
+			    {
+			        reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
+			    }
+			}
+			else
+			{
+			    reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
+			}
 
 			//client.send(reply);
 		}
 
 		void guildChannelTopicChange(ChatChannel channel, int playerId, string topic)
 		{
-			//Guild *guild = guildManager.findByName(channel.getName());
-			//if (guild && guild.getUserPermissions(playerId) & GAL_TOPIC_CHANGE)
-			//{
-			//    chatChannelManager.setChannelTopic(channel.getId(), topic);
-			//}
+			Guild guild=Program.guildManager.findByName(channel.getName());
+
+			if(guild!=null)
+			{
+				if((guild.getUserPermissions(playerId)&(int)GuildAccessLevel.GAL_TOPIC_CHANGE)!=0) //TODO Überprüfen ob Vergleich so richtig rum
+				{
+					Program.chatChannelManager.setChannelTopic(channel.getId(), topic);
+				}
+			}
 		}
 	}
 }

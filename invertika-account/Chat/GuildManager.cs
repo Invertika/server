@@ -89,7 +89,7 @@ namespace invertika_account.Chat
 			//guild->addMember(playerId);
 		}
 
-		void removeGuildMember(Guild guild, int playerId)
+		public void removeGuildMember(Guild guild, int playerId)
 		{
 			//// remove the user from the guild
 			//storage->removeGuildMember(guild->getId(), playerId);

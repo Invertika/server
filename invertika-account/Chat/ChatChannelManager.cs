@@ -114,7 +114,7 @@ namespace invertika_account.Chat
 			return channels;
 		}
 
-		int getChannelId(string channelName)
+		public int getChannelId(string channelName)
 		{
 			foreach(KeyValuePair<ushort, ChatChannel> pair in mChatChannels)
 			{

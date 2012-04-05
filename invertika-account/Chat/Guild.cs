@@ -181,5 +181,14 @@ namespace invertika_account.Chat
 		{
 			return mMembers;
 		}
+
+
+		/**
+		 * Returns the number of members in the guild.
+		 */
+		public int memberCount()
+		{
+			return mMembers.Count;
+		}
 	}
 }
