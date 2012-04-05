@@ -678,7 +678,7 @@ namespace invertika_account.Chat
 			{
 				//std::map<std::string, int>::iterator itr;
 				//itr = mNumInvites.find(mInvitations.front().mInviter);
-				//if (--itr->second <= 0)
+				//if (--itr.second <= 0)
 				//    mNumInvites.erase(itr);
 				//mInvitations.pop_front();
 			}
@@ -1117,58 +1117,58 @@ namespace invertika_account.Chat
 
 		void handleGuildKickMember(ChatClient client, MessageIn msg)
 		{
-			//MessageOut reply(CPMSG_GUILD_KICK_MEMBER_RESPONSE);
-			//short guildId = msg.readInt16();
-			//std::string user = msg.readString();
+			MessageOut reply=new MessageOut(Protocol.CPMSG_GUILD_KICK_MEMBER_RESPONSE);
+			short guildId=msg.readInt16();
+			string user=msg.readString();
 
-			//Guild *guild = guildManager->findById(guildId);
-			//Character *c = storage->getCharacter(user);
+			Guild guild=Program.guildManager.findById(guildId);
+			Character c=Program.storage.getCharacter(user);
 
-			//if (guild && c)
-			//{
-			//    if (guild->getUserPermissions(c->getDatabaseID()) & GAL_KICK)
-			//    {
-			//        reply.writeInt8(ERRMSG_OK);
-			//    }
-			//    else
-			//    {
-			//        reply.writeInt8(ERRMSG_INSUFFICIENT_RIGHTS);
-			//    }
-			//}
-			//else
-			//{
-			//    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
-			//}
+			if(guild!=null&&c!=null)
+			{
+				if((guild.getUserPermissions(c.getDatabaseID())&(int)(GuildAccessLevel.GAL_KICK))!=0) //TODO Überprüfen ob Vergleich so richtig rum
+				{
+					reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
+				}
+				else
+				{
+					reply.writeInt8((int)ErrorMessage.ERRMSG_INSUFFICIENT_RIGHTS);
+				}
+			}
+			else
+			{
+				reply.writeInt8((int)ErrorMessage.ERRMSG_INVALID_ARGUMENT);
+			}
 
-			//client.send(reply);
+			client.send(reply);
 		}
 
 		void handleGuildQuit(ChatClient client, MessageIn msg)
 		{
 			//MessageOut reply(CPMSG_GUILD_QUIT_RESPONSE);
 			//short guildId = msg.readInt16();
-			//Guild *guild = guildManager->findById(guildId);
+			//Guild *guild = guildManager.findById(guildId);
 
 			//// check for valid guild
 			//// check the member is in the guild
 			//// remove the member from the guild
 			//if (guild)
 			//{
-			//    if (guild->checkInGuild(client.characterId))
+			//    if (guild.checkInGuild(client.characterId))
 			//    {
 			//        reply.writeInt8(ERRMSG_OK);
 			//        reply.writeInt16(guildId);
 
 			//        // Check if there are no members left, remove the guild channel
-			//        if (guild->memberCount() == 0)
+			//        if (guild.memberCount() == 0)
 			//        {
-			//            chatChannelManager->removeChannel(chatChannelManager->getChannelId(guild->getName()));
+			//            chatChannelManager.removeChannel(chatChannelManager.getChannelId(guild.getName()));
 			//        }
 
 			//        // guild manager checks if the member is the last in the guild
 			//        // and removes the guild if so
-			//        guildManager->removeGuildMember(guild, client.characterId);
-			//        sendGuildListUpdate(guild->getName(), client.characterName, GUILD_EVENT_LEAVING_PLAYER);
+			//        guildManager.removeGuildMember(guild, client.characterId);
+			//        sendGuildListUpdate(guild.getName(), client.characterName, GUILD_EVENT_LEAVING_PLAYER);
 			//    }
 			//    else
 			//    {
@@ -1185,10 +1185,10 @@ namespace invertika_account.Chat
 
 		void guildChannelTopicChange(ChatChannel channel, int playerId, string topic)
 		{
-			//Guild *guild = guildManager->findByName(channel->getName());
-			//if (guild && guild->getUserPermissions(playerId) & GAL_TOPIC_CHANGE)
+			//Guild *guild = guildManager.findByName(channel.getName());
+			//if (guild && guild.getUserPermissions(playerId) & GAL_TOPIC_CHANGE)
 			//{
-			//    chatChannelManager->setChannelTopic(channel->getId(), topic);
+			//    chatChannelManager.setChannelTopic(channel.getId(), topic);
 			//}
 		}
 	}
