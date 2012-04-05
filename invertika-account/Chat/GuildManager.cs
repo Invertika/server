@@ -126,7 +126,7 @@ namespace invertika_account.Chat
 			return null;
 		}
 
-		Guild findByName(string name)
+		public Guild findByName(string name)
 		{
 			//for (std::list<Guild*>::const_iterator itr = mGuilds.begin(),
 			//        itr_end = mGuilds.end();

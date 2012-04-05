@@ -908,34 +908,31 @@ namespace invertika_account.Chat
 			}
 
 			return channel;
-
-			return null; //ssk
 		}
 
 		void sendGuildListUpdate(string guildName, string characterName, byte eventId)
 		{
-			//Guild *guild = guildManager->findByName(guildName);
-			//if (guild)
-			//{
-			//    MessageOut msg(CPMSG_GUILD_UPDATE_LIST);
+			Guild guild=Program.guildManager.findByName(guildName);
 
-			//    msg.writeInt16(guild->getId());
-			//    msg.writeString(characterName);
-			//    msg.writeInt8(eventId);
-			//    std::map<std::string, ChatClient*>::const_iterator chr;
-			//    std::list<GuildMember*> members = guild->getMembers();
+			if(guild!=null)
+			{
+				MessageOut msg=new MessageOut(Protocol.CPMSG_GUILD_UPDATE_LIST);
 
-			//    for (std::list<GuildMember*>::const_iterator itr = members.begin();
-			//         itr != members.end(); ++itr)
-			//    {
-			//        Character *c = storage->getCharacter((*itr)->mId, NULL);
-			//        chr = mPlayerMap.find(c->getName());
-			//        if (chr != mPlayerMap.end())
-			//        {
-			//            chr->second->send(msg);
-			//        }
-			//    }
-			//}
+				msg.writeInt16(guild.getId());
+				msg.writeString(characterName);
+				msg.writeInt8(eventId);
+
+				foreach(GuildMember member in guild.getMembers())
+				{
+					Character c=Program.storage.getCharacter(member.mId, null);
+
+					if(mPlayerMap.ContainsKey(c.getName()))
+					{
+						ChatClient chr=mPlayerMap[c.getName()];
+						chr.send(msg);
+					}
+				}
+			}
 		}
 
 		void handleGuildCreate(ChatClient client, MessageIn msg)

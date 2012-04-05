@@ -173,5 +173,13 @@ namespace invertika_account.Chat
 		{
 			return mName;
 		}
+
+		/**
+ * Returns a list of the members in this guild.
+ */
+		public List<GuildMember> getMembers()
+		{
+			return mMembers;
+		}
 	}
 }
