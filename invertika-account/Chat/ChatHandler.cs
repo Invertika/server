@@ -858,35 +858,33 @@ namespace invertika_account.Chat
 			}
 		}
 
-
 		void sendGuildRejoin(ChatClient client)
 		{
-			//// Get list of guilds and check what rights they have.
-			//std::vector<Guild*> guilds = guildManager->getGuildsForPlayer(client.characterId);
-			//for (unsigned int i = 0; i != guilds.size(); ++i)
-			//{
-			//    const Guild *guild = guilds[i];
+			// Get list of guilds and check what rights they have.
+			List<Guild> guilds=Program.guildManager.getGuildsForPlayer((int)client.characterId);
 
-			//    const int permissions = guild->getUserPermissions(client.characterId);
-			//    const std::string guildName = guild->getName();
+			foreach(Guild guild in guilds)
+			{
+			    int permissions = guild.getUserPermissions((int)client.characterId);
+			    string guildName = guild.getName();
 
-			//    // Tell the client what guilds the character belongs to and their permissions
-			//    MessageOut msg(CPMSG_GUILD_REJOIN);
-			//    msg.writeString(guildName);
-			//    msg.writeInt16(guild->getId());
-			//    msg.writeInt16(permissions);
+			    // Tell the client what guilds the character belongs to and their permissions
+			    MessageOut msg=new MessageOut(Protocol.CPMSG_GUILD_REJOIN);
+			    msg.writeString(guildName);
+			    msg.writeInt16(guild.getId());
+			    msg.writeInt16(permissions);
 
-			//    // get channel id of guild channel
-			//    ChatChannel *channel = joinGuildChannel(guildName, client);
+			    // get channel id of guild channel
+			    ChatChannel channel = joinGuildChannel(guildName, client);
 
-			//    // send the channel id for the autojoined channel
-			//    msg.writeInt16(channel->getId());
-			//    msg.writeString(channel->getAnnouncement());
+			    // send the channel id for the autojoined channel
+			    msg.writeInt16(channel.getId());
+			    msg.writeString(channel.getAnnouncement());
 
-			//    client.send(msg);
+			    client.send(msg);
 
-			//    sendGuildListUpdate(guildName, client.characterName, GUILD_EVENT_ONLINE_PLAYER);
-			//}
+			    sendGuildListUpdate(guildName, client.characterName, (int)ISL.Server.Enums.Guild.GUILD_EVENT_ONLINE_PLAYER);
+			}
 		}
 
 		ChatChannel joinGuildChannel(string guildName, ChatClient client)
@@ -915,7 +913,7 @@ namespace invertika_account.Chat
 			return null; //ssk
 		}
 
-		void sendGuildListUpdate(string guildName, string characterName, char eventId)
+		void sendGuildListUpdate(string guildName, string characterName, byte eventId)
 		{
 			//Guild *guild = guildManager->findByName(guildName);
 			//if (guild)

@@ -144,7 +144,7 @@ namespace invertika_account.Chat
 			return findByName(name)!=null;
 		}
 
-		List<Guild> getGuildsForPlayer(int playerId)
+		public List<Guild> getGuildsForPlayer(int playerId)
 		{
 			List<Guild> guildList=new List<Guild>();
 
@@ -156,6 +156,7 @@ namespace invertika_account.Chat
 			//        guildList.push_back((*itr));
 			//    }
 			//}
+
 			return guildList;
 		}
 

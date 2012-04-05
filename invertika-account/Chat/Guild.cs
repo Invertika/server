@@ -144,7 +144,7 @@ namespace invertika_account.Chat
 			return false;
 		}
 
-		int getUserPermissions(int playerId)
+		public int getUserPermissions(int playerId)
 		{
 			//GuildMember *member = getMember(playerId);
 			//return member->mPermissions;
@@ -156,6 +156,22 @@ namespace invertika_account.Chat
 		{
 			//GuildMember *member = getMember(playerId);
 			//member->mPermissions = level;
+		}
+
+		/**
+ * Returns the ID of the guild.
+ */
+		public int getId()
+		{
+			return mId;
+		}
+
+		/**
+ * Returns the name of the guild.
+ */
+		public string getName()
+		{
+			return mName;
 		}
 	}
 }
