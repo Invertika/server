@@ -672,6 +672,8 @@ namespace invertika_account.Chat
 		{
 			DateTime now=DateTime.Now;
 
+			//TODO Reimplementation
+
 			while(mInvitations.Count!=0&&mInvitations[0].mExpireTime<now.Ticks) //TODO Vergleich Überprüfen 
 			{
 				//std::map<std::string, int>::iterator itr;
@@ -819,13 +821,13 @@ namespace invertika_account.Chat
 
 		void handlePartyQuit(ChatClient client)
 		{
-			//removeUserFromParty(client);
-			//MessageOut out(CPMSG_PARTY_QUIT_RESPONSE);
-			//out.writeInt8(ERRMSG_OK);
-			//client.send(out);
+			removeUserFromParty(client);
+			MessageOut outmsg=new MessageOut(Protocol.CPMSG_PARTY_QUIT_RESPONSE);
+			outmsg.writeInt8((int)ErrorMessage.ERRMSG_OK);
+			client.send(outmsg);
 
-			//// tell game server to update info
-			//updateInfo(&client, 0);
+			// tell game server to update info
+			updateInfo(client, 0);
 		}
 
 		void removeUserFromParty(ChatClient client)
