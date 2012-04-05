@@ -50,7 +50,7 @@ namespace invertika_game.Game
 		//ZoneIterator::ZoneIterator(const MapRegion &r, const MapContent *m)
 		//  : region(r), pos(0), map(m)
 		//{
-		//    current = &map->zones[r.empty() ? 0 : r[0]];
+		//    current = &map.zones[r.empty() ? 0 : r[0]];
 		//}
 
 		//void ZoneIterator::operator++()
@@ -60,14 +60,14 @@ namespace invertika_game.Game
 		//    {
 		//        if (++pos != region.size())
 		//        {
-		//            current = &map->zones[region[pos]];
+		//            current = &map.zones[region[pos]];
 		//        }
 		//    }
 		//    else
 		//    {
-		//        if (++pos != (unsigned)map->mapWidth * map->mapHeight)
+		//        if (++pos != (unsigned)map.mapWidth * map.mapHeight)
 		//        {
-		//            current = &map->zones[pos];
+		//            current = &map.zones[pos];
 		//        }
 		//    }
 		//}

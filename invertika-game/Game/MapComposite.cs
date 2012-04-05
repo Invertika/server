@@ -90,7 +90,7 @@ namespace invertika_game.Game
 
 			//initializeContent();
 
-			//std::string sPvP = mMap->getProperty("pvp");
+			//std::string sPvP = mMap.getProperty("pvp");
 			//if (sPvP.empty())
 			//    sPvP = Configuration::getValue("game_defaultPvp", std::string());
 
@@ -101,9 +101,9 @@ namespace invertika_game.Game
 
 			//if (Script *s = getScript())
 			//{
-			//    s->setMap(this);
-			//    s->prepare("initialize");
-			//    s->execute();
+			//    s.setMap(this);
+			//    s.prepare("initialize");
+			//    s.execute();
 			//}
 
 			return true;
@@ -112,7 +112,7 @@ namespace invertika_game.Game
 		ZoneIterator getAroundPointIterator(Point p, int radius)
 		{
 			//MapRegion r;
-			//mContent->fillRegion(r, p, radius);
+			//mContent.fillRegion(r, p, radius);
 			//return ZoneIterator(r, mContent);
 
 			return null; //ssk
@@ -121,7 +121,7 @@ namespace invertika_game.Game
 		ZoneIterator getAroundActorIterator(Actor obj, int radius)
 		{
 			//MapRegion r;
-			//mContent->fillRegion(r, obj->getPosition(), radius);
+			//mContent.fillRegion(r, obj.getPosition(), radius);
 			//return ZoneIterator(r, mContent);
 
 			return null; //ssk
@@ -130,7 +130,7 @@ namespace invertika_game.Game
 		ZoneIterator getInsideRectangleIterator(Rectangle p)
 		{
 			//MapRegion r;
-			//mContent->fillRegion(r, p);
+			//mContent.fillRegion(r, p);
 			//return ZoneIterator(r, mContent);
 
 			return null; //ssk
@@ -139,7 +139,7 @@ namespace invertika_game.Game
 		ZoneIterator getAroundBeingIterator(Being obj, int radius)
 		{
 			//MapRegion r1;
-			//mContent->fillRegion(r1, obj->getOldPosition(), radius);
+			//mContent.fillRegion(r1, obj.getOldPosition(), radius);
 			//MapRegion r2 = r1;
 			//for (MapRegion::iterator i = r1.begin(), i_end = r1.end(); i != i_end; ++i)
 			//{
@@ -147,7 +147,7 @@ namespace invertika_game.Game
 			//       This is necessary to detect two moving objects changing zones at the
 			//       same time and at the border, and going in opposite directions (or
 			//       more simply to detect teleportations, if any). */
-			//    MapRegion &r4 = mContent->zones[*i].destinations;
+			//    MapRegion &r4 = mContent.zones[*i].destinations;
 			//    if (!r4.empty())
 			//    {
 			//        MapRegion r3;
@@ -157,7 +157,7 @@ namespace invertika_game.Game
 			//        r2.swap(r3);
 			//    }
 			//}
-			//mContent->fillRegion(r2, obj->getPosition(), radius);
+			//mContent.fillRegion(r2, obj.getPosition(), radius);
 			//return ZoneIterator(r2, mContent);
 
 			return null; //ssk
@@ -165,77 +165,77 @@ namespace invertika_game.Game
 
 		bool insert(Thing ptr)
 		{
-			//if (ptr->isVisible())
+			//if (ptr.isVisible())
 			//{
-			//    if (ptr->canMove() && !mContent->allocate(static_cast< Being * >(ptr)))
+			//    if (ptr.canMove() && !mContent.allocate(static_cast< Being * >(ptr)))
 			//    {
 			//        return false;
 			//    }
 
 			//    Actor *obj = static_cast< Actor * >(ptr);
-			//    mContent->getZone(obj->getPosition()).insert(obj);
+			//    mContent.getZone(obj.getPosition()).insert(obj);
 			//}
 
-			//ptr->setMap(this);
-			//mContent->things.push_back(ptr);
+			//ptr.setMap(this);
+			//mContent.things.push_back(ptr);
 			return true;
 		}
 
 		void remove(Thing ptr)
 		{
-			//for (std::vector<Thing*>::iterator i = mContent->things.begin(),
-			//     i_end = mContent->things.end(); i != i_end; ++i)
+			//for (std::vector<Thing*>::iterator i = mContent.things.begin(),
+			//     i_end = mContent.things.end(); i != i_end; ++i)
 			//{
-			//    if ((*i)->canFight())
+			//    if ((*i).canFight())
 			//    {
 			//        Being *being = static_cast<Being*>(*i);
-			//        if (being->getTarget() == ptr)
+			//        if (being.getTarget() == ptr)
 			//        {
-			//            being->setTarget(NULL);
+			//            being.setTarget(NULL);
 			//        }
 			//    }
 			//    if (*i == ptr)
 			//    {
-			//        i = mContent->things.erase(i);
+			//        i = mContent.things.erase(i);
 			//    }
 			//}
 
-			//if (ptr->isVisible())
+			//if (ptr.isVisible())
 			//{
 			//    Actor *obj = static_cast< Actor * >(ptr);
-			//    mContent->getZone(obj->getPosition()).remove(obj);
+			//    mContent.getZone(obj.getPosition()).remove(obj);
 
-			//    if (ptr->canMove())
+			//    if (ptr.canMove())
 			//    {
-			//        mContent->deallocate(static_cast< Being * >(ptr));
+			//        mContent.deallocate(static_cast< Being * >(ptr));
 			//    }
 			//}
 		}
 
 		void update()
 		{
-			//for (int i = 0; i < mContent->mapHeight * mContent->mapWidth; ++i)
+			//for (int i = 0; i < mContent.mapHeight * mContent.mapWidth; ++i)
 			//{
-			//    mContent->zones[i].destinations.clear();
+			//    mContent.zones[i].destinations.clear();
 			//}
 
 			//// Cannot use a WholeMap iterator as objects will change zones under its feet.
-			//for (std::vector< Thing * >::iterator i = mContent->things.begin(),
-			//     i_end = mContent->things.end(); i != i_end; ++i)
+			//for (std::vector< Thing * >::iterator i = mContent.things.begin(),
+			//     i_end = mContent.things.end(); i != i_end; ++i)
 			//{
-			//    if (!(*i)->canMove())
+			//    if (!(*i).canMove())
 			//        continue;
 
 			//    Being *obj = static_cast< Being * >(*i);
 
-			//    const Point &pos1 = obj->getOldPosition(),
-			//                &pos2 = obj->getPosition();
+			//    const Point &pos1 = obj.getOldPosition(),
+			//                &pos2 = obj.getPosition();
 
-			//    MapZone &src = mContent->getZone(pos1),
-			//            &dst = mContent->getZone(pos2);
+			//    MapZone &src = mContent.getZone(pos1),
+			//            &dst = mContent.getZone(pos2);
 			//    if (&src != &dst)
 			//    {
-			//        addZone(src.destinations, &dst - mContent->zones);
+			//        addZone(src.destinations, &dst - mContent.zones);
 			//        src.remove(obj);
 			//        dst.insert(obj);
 			//    }
@@ -244,7 +244,7 @@ namespace invertika_game.Game
 
 		List<Thing> getEverything()
 		{
-			//return mContent->things;
+			//return mContent.things;
 			return null; //ssk
 		}
 
@@ -253,7 +253,7 @@ namespace invertika_game.Game
 		{
 			//std::map<std::string, std::string>::const_iterator i = mScriptVariables.find(key);
 			//if (i != mScriptVariables.end())
-			//    return i->second;
+			//    return i.second;
 			//else
 			//    return std::string();
 
@@ -264,12 +264,12 @@ namespace invertika_game.Game
 		{
 			//// check if the value actually changed
 			//std::map<std::string, std::string>::iterator i = mScriptVariables.find(key);
-			//if (i == mScriptVariables.end() || i->second != value)
+			//if (i == mScriptVariables.end() || i.second != value)
 			//{
 			//    // changed value or unknown variable
 			//    mScriptVariables[key] = value;
 			//    // update accountserver
-			//    accountHandler->updateMapVar(this, key, value);
+			//    accountHandler.updateMapVar(this, key, value);
 			//}
 		}
 
@@ -281,25 +281,25 @@ namespace invertika_game.Game
 		{
 			//mContent = new MapContent(mMap);
 
-			//const std::vector<MapObject*> &objects = mMap->getObjects();
+			//const std::vector<MapObject*> &objects = mMap.getObjects();
 
 			//for (size_t i = 0; i < objects.size(); ++i)
 			//{
 			//    const MapObject *object = objects.at(i);
-			//    const std::string &type = object->getType();
+			//    const std::string &type = object.getType();
 
 			//    if (utils::compareStrI(type, "WARP") == 0)
 			//    {
-			//        std::string destMapName = object->getProperty("DEST_MAP");
-			//        int destX = utils::stringToInt(object->getProperty("DEST_X"));
-			//        int destY = utils::stringToInt(object->getProperty("DEST_Y"));
+			//        std::string destMapName = object.getProperty("DEST_MAP");
+			//        int destX = utils::stringToInt(object.getProperty("DEST_X"));
+			//        int destY = utils::stringToInt(object.getProperty("DEST_Y"));
 
 			//        if (!destMapName.empty() && destX && destY)
 			//        {
 			//            if (MapComposite *destMap = MapManager::getMap(destMapName))
 			//            {
 			//                WarpAction *action = new WarpAction(destMap, destX, destY);
-			//                insert(new TriggerArea(this, object->getBounds(),
+			//                insert(new TriggerArea(this, object.getBounds(),
 			//                                       action, false));
 			//            }
 			//        }
@@ -311,14 +311,14 @@ namespace invertika_game.Game
 			//    else if (utils::compareStrI(type, "SPAWN") == 0)
 			//    {
 			//        MonsterClass *monster = 0;
-			//        int maxBeings = utils::stringToInt(object->getProperty("MAX_BEINGS"));
-			//        int spawnRate = utils::stringToInt(object->getProperty("SPAWN_RATE"));
-			//        std::string monsterName = object->getProperty("MONSTER_ID");
+			//        int maxBeings = utils::stringToInt(object.getProperty("MAX_BEINGS"));
+			//        int spawnRate = utils::stringToInt(object.getProperty("SPAWN_RATE"));
+			//        std::string monsterName = object.getProperty("MONSTER_ID");
 			//        int monsterId = utils::stringToInt(monsterName);
 
 			//        if (monsterId)
 			//        {
-			//            monster = monsterManager->getMonster(monsterId);
+			//            monster = monsterManager.getMonster(monsterId);
 			//            if (!monster)
 			//            {
 			//                LOG_WARN("Couldn't find monster ID " << monsterId <<
@@ -327,7 +327,7 @@ namespace invertika_game.Game
 			//        }
 			//        else
 			//        {
-			//            monster = monsterManager->getMonsterByName(monsterName);
+			//            monster = monsterManager.getMonsterByName(monsterName);
 			//            if (!monster)
 			//            {
 			//                LOG_WARN("Couldn't find monster " << monsterName <<
@@ -337,19 +337,19 @@ namespace invertika_game.Game
 
 			//        if (monster && maxBeings && spawnRate)
 			//        {
-			//            insert(new SpawnArea(this, monster, object->getBounds(),
+			//            insert(new SpawnArea(this, monster, object.getBounds(),
 			//                                 maxBeings, spawnRate));
 			//        }
 			//    }
 			//    else if (utils::compareStrI(type, "NPC") == 0)
 			//    {
-			//        int npcId = utils::stringToInt(object->getProperty("NPC_ID"));
-			//        std::string scriptText = object->getProperty("SCRIPT");
+			//        int npcId = utils::stringToInt(object.getProperty("NPC_ID"));
+			//        std::string scriptText = object.getProperty("SCRIPT");
 
 			//        if (!mScript)
 			//        {
 			//            // Determine script engine by xml property
-			//            std::string scriptEngineName = object->getProperty("ENGINE");
+			//            std::string scriptEngineName = object.getProperty("ENGINE");
 			//            if (scriptEngineName.empty())
 			//            {
 			//                // Set engine to default value and print warning
@@ -362,8 +362,8 @@ namespace invertika_game.Game
 
 			//        if (npcId && !scriptText.empty())
 			//        {
-			//            mScript->loadNPC(object->getName(), npcId,
-			//                             object->getX(), object->getY(),
+			//            mScript.loadNPC(object.getName(), npcId,
+			//                             object.getX(), object.getY(),
 			//                             scriptText.c_str());
 			//        }
 			//        else
@@ -373,13 +373,13 @@ namespace invertika_game.Game
 			//    }
 			//    else if (utils::compareStrI(type, "SCRIPT") == 0)
 			//    {
-			//        std::string scriptFilename = object->getProperty("FILENAME");
-			//        std::string scriptText = object->getProperty("TEXT");
+			//        std::string scriptFilename = object.getProperty("FILENAME");
+			//        std::string scriptText = object.getProperty("TEXT");
 
 			//        if (!mScript)
 			//        {
 			//            // Determine script engine by xml property
-			//            std::string scriptEngineName = object->getProperty("ENGINE");
+			//            std::string scriptEngineName = object.getProperty("ENGINE");
 			//            if (!scriptFilename.empty() && scriptEngineName.empty())
 			//            {
 			//                // Engine property is empty - determine by filename
@@ -397,12 +397,12 @@ namespace invertika_game.Game
 
 			//        if (!scriptFilename.empty())
 			//        {
-			//            mScript->loadFile(scriptFilename);
+			//            mScript.loadFile(scriptFilename);
 			//        }
 			//        else if (!scriptText.empty())
 			//        {
-			//            std::string name = "'" + object->getName() + "'' in " + mName;
-			//            mScript->load(scriptText.c_str(), name.c_str());
+			//            std::string name = "'" + object.getName() + "'' in " + mName;
+			//            mScript.load(scriptText.c_str(), name.c_str());
 			//        }
 			//        else
 			//        {

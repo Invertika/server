@@ -61,31 +61,31 @@ namespace invertika_game.Game
 		static void updateMap(MapComposite map)
 		{
 			//// 1. update object status.
-			//const std::vector< Thing * > &things = map->getEverything();
+			//const std::vector< Thing * > &things = map.getEverything();
 			//for (std::vector< Thing * >::const_iterator i = things.begin(),
 			//     i_end = things.end(); i != i_end; ++i)
 			//{
-			//    (*i)->update();
+			//    (*i).update();
 			//}
 
 			//// 2. run scripts.
-			//if (Script *s = map->getScript())
+			//if (Script *s = map.getScript())
 			//{
-			//    s->update();
+			//    s.update();
 			//}
 
 			//// 3. perform actions.
-			//for (BeingIterator i(map->getWholeMapIterator()); i; ++i)
+			//for (BeingIterator i(map.getWholeMapIterator()); i; ++i)
 			//{
-			//    (*i)->perform();
+			//    (*i).perform();
 			//}
 
 			//// 4. move objects around and update zones.
-			//for (BeingIterator i(map->getWholeMapIterator()); i; ++i)
+			//for (BeingIterator i(map.getWholeMapIterator()); i; ++i)
 			//{
-			//    (*i)->move();
+			//    (*i).move();
 			//}
-			//map->update();
+			//map.update();
 		}
 
 		/**
@@ -93,8 +93,8 @@ namespace invertika_game.Game
 		 */
 		static void serializeLooks(Character ch, MessageOut msg, bool full)
 		{
-			//const Possessions &poss = ch->getPossessions();
-			//unsigned int nb_slots = itemManager->getVisibleSlotCount();
+			//const Possessions &poss = ch.getPossessions();
+			//unsigned int nb_slots = itemManager.getVisibleSlotCount();
 
 			//// Bitmask describing the changed entries.
 			//int changed = (1 << nb_slots) - 1;
@@ -120,10 +120,10 @@ namespace invertika_game.Game
 			//        ++nb_diff;
 			//        mask_diff |= 1 << i;
 			//    }
-			//    if (it == poss.equipSlots.end() || it->first > i) continue;
+			//    if (it == poss.equipSlots.end() || it.first > i) continue;
 			//    ItemClass *eq;
-			//    items[i] = it->first && (eq = itemManager->getItem(it->first)) ?
-			//               eq->getSpriteID() : 0;
+			//    items[i] = it.first && (eq = itemManager.getItem(it.first)) ?
+			//               eq.getSpriteID() : 0;
 			//    if (items[i])
 			//    {
 			//        /* If we are sending the whole equipment, only filled slots have to
@@ -154,18 +154,18 @@ namespace invertika_game.Game
 		{
 			//MessageOut moveMsg(GPMSG_BEINGS_MOVE);
 			//MessageOut damageMsg(GPMSG_BEINGS_DAMAGE);
-			//const Point &pold = p->getOldPosition(), ppos = p->getPosition();
-			//int pid = p->getPublicID(), pflags = p->getUpdateFlags();
+			//const Point &pold = p.getOldPosition(), ppos = p.getPosition();
+			//int pid = p.getPublicID(), pflags = p.getUpdateFlags();
 			//int visualRange = Configuration::getValue("game_visualRange", 448);
 
 			//// Inform client about activities of other beings near its character
-			//for (BeingIterator i(map->getAroundBeingIterator(p, visualRange)); i; ++i)
+			//for (BeingIterator i(map.getAroundBeingIterator(p, visualRange)); i; ++i)
 			//{
 			//    Being *o = *i;
 
-			//    const Point &oold = o->getOldPosition(), opos = o->getPosition();
-			//    int otype = o->getType();
-			//    int oid = o->getPublicID(), oflags = o->getUpdateFlags();
+			//    const Point &oold = o.getOldPosition(), opos = o.getPosition();
+			//    int otype = o.getType();
+			//    int oid = o.getPublicID(), oflags = o.getUpdateFlags();
 			//    int flags = 0;
 
 			//    // Check if the character p and the moving object o are around.
@@ -187,9 +187,9 @@ namespace invertika_game.Game
 			//        {
 			//            MessageOut AttackMsg(GPMSG_BEING_ATTACK);
 			//            AttackMsg.writeInt16(oid);
-			//            AttackMsg.writeInt8(o->getDirection());
-			//            AttackMsg.writeInt8(static_cast< Being * >(o)->getAttackId());
-			//            gameHandler->sendTo(p, AttackMsg);
+			//            AttackMsg.writeInt8(o.getDirection());
+			//            AttackMsg.writeInt8(static_cast< Being * >(o).getAttackId());
+			//            gameHandler.sendTo(p, AttackMsg);
 			//        }
 
 			//        // Send action change messages.
@@ -197,8 +197,8 @@ namespace invertika_game.Game
 			//        {
 			//            MessageOut ActionMsg(GPMSG_BEING_ACTION_CHANGE);
 			//            ActionMsg.writeInt16(oid);
-			//            ActionMsg.writeInt8(static_cast< Being * >(o)->getAction());
-			//            gameHandler->sendTo(p, ActionMsg);
+			//            ActionMsg.writeInt8(static_cast< Being * >(o).getAction());
+			//            gameHandler.sendTo(p, ActionMsg);
 			//        }
 
 			//        // Send looks change messages.
@@ -208,10 +208,10 @@ namespace invertika_game.Game
 			//            LooksMsg.writeInt16(oid);
 			//            Character * c = static_cast<Character * >(o);
 			//            serializeLooks(c, LooksMsg, false);
-			//            LooksMsg.writeInt16(c->getHairStyle());
-			//            LooksMsg.writeInt16(c->getHairColor());
-			//            LooksMsg.writeInt16(c->getGender());
-			//            gameHandler->sendTo(p, LooksMsg);
+			//            LooksMsg.writeInt16(c.getHairStyle());
+			//            LooksMsg.writeInt16(c.getHairColor());
+			//            LooksMsg.writeInt16(c.getGender());
+			//            gameHandler.sendTo(p, LooksMsg);
 			//        }
 
 			//        // Send direction change messages.
@@ -219,15 +219,15 @@ namespace invertika_game.Game
 			//        {
 			//            MessageOut DirMsg(GPMSG_BEING_DIR_CHANGE);
 			//            DirMsg.writeInt16(oid);
-			//            DirMsg.writeInt8(o->getDirection());
-			//            gameHandler->sendTo(p, DirMsg);
+			//            DirMsg.writeInt8(o.getDirection());
+			//            gameHandler.sendTo(p, DirMsg);
 			//        }
 
 			//        // Send damage messages.
-			//        if (o->canFight())
+			//        if (o.canFight())
 			//        {
 			//            Being *victim = static_cast< Being * >(o);
-			//            const Hits &hits = victim->getHitsTaken();
+			//            const Hits &hits = victim.getHitsTaken();
 			//            for (Hits::const_iterator j = hits.begin(),
 			//                 j_end = hits.end(); j != j_end; ++j)
 			//            {
@@ -248,7 +248,7 @@ namespace invertika_game.Game
 			//        // o is no longer visible from p. Send leave message.
 			//        MessageOut leaveMsg(GPMSG_BEING_LEAVE);
 			//        leaveMsg.writeInt16(oid);
-			//        gameHandler->sendTo(p, leaveMsg);
+			//        gameHandler.sendTo(p, leaveMsg);
 			//        continue;
 			//    }
 
@@ -258,40 +258,40 @@ namespace invertika_game.Game
 			//        MessageOut enterMsg(GPMSG_BEING_ENTER);
 			//        enterMsg.writeInt8(otype);
 			//        enterMsg.writeInt16(oid);
-			//        enterMsg.writeInt8(static_cast< Being *>(o)->getAction());
+			//        enterMsg.writeInt8(static_cast< Being *>(o).getAction());
 			//        enterMsg.writeInt16(opos.x);
 			//        enterMsg.writeInt16(opos.y);
-			//        enterMsg.writeInt8(o->getDirection());
+			//        enterMsg.writeInt8(o.getDirection());
 			//        switch (otype)
 			//        {
 			//            case OBJECT_CHARACTER:
 			//            {
 			//                Character *q = static_cast< Character * >(o);
-			//                enterMsg.writeString(q->getName());
-			//                enterMsg.writeInt8(q->getHairStyle());
-			//                enterMsg.writeInt8(q->getHairColor());
-			//                enterMsg.writeInt8(q->getGender());
+			//                enterMsg.writeString(q.getName());
+			//                enterMsg.writeInt8(q.getHairStyle());
+			//                enterMsg.writeInt8(q.getHairColor());
+			//                enterMsg.writeInt8(q.getGender());
 			//                serializeLooks(q, enterMsg, true);
 			//            } break;
 
 			//            case OBJECT_MONSTER:
 			//            {
 			//                Monster *q = static_cast< Monster * >(o);
-			//                enterMsg.writeInt16(q->getSpecy()->getId());
-			//                enterMsg.writeString(q->getName());
+			//                enterMsg.writeInt16(q.getSpecy().getId());
+			//                enterMsg.writeString(q.getName());
 			//            } break;
 
 			//            case OBJECT_NPC:
 			//            {
 			//                NPC *q = static_cast< NPC * >(o);
-			//                enterMsg.writeInt16(q->getNPC());
-			//                enterMsg.writeString(q->getName());
+			//                enterMsg.writeInt16(q.getNPC());
+			//                enterMsg.writeString(q.getName());
 			//            } break;
 
 			//            default:
 			//                assert(false); // TODO
 			//        }
-			//        gameHandler->sendTo(p, enterMsg);
+			//        gameHandler.sendTo(p, enterMsg);
 			//    }
 
 			//    if (opos != oold)
@@ -320,22 +320,22 @@ namespace invertika_game.Game
 			//        // to get it within a byte with decimal precision.
 			//        // For instance, a value of 4.5 will be sent as 45.
 			//        moveMsg.writeInt8((unsigned short)
-			//            (o->getModifiedAttribute(ATTR_MOVE_SPEED_TPS) * 10));
+			//            (o.getModifiedAttribute(ATTR_MOVE_SPEED_TPS) * 10));
 			//    }
 			//}
 
 			//// Do not send a packet if nothing happened in p's range.
 			//if (moveMsg.getLength() > 2)
-			//    gameHandler->sendTo(p, moveMsg);
+			//    gameHandler.sendTo(p, moveMsg);
 
 			//if (damageMsg.getLength() > 2)
-			//    gameHandler->sendTo(p, damageMsg);
+			//    gameHandler.sendTo(p, damageMsg);
 
 			//// Inform client about status change.
-			//p->sendStatus();
+			//p.sendStatus();
 
 			//// Inform client about health change of party members
-			//for (CharacterIterator i(map->getWholeMapIterator()); i; ++i)
+			//for (CharacterIterator i(map.getWholeMapIterator()); i; ++i)
 			//{
 			//    Character *c = *i;
 
@@ -344,38 +344,38 @@ namespace invertika_game.Game
 			//        continue;
 
 			//    // make sure they are in the same party
-			//    if (c->getParty() == p->getParty())
+			//    if (c.getParty() == p.getParty())
 			//    {
-			//        int cflags = c->getUpdateFlags();
+			//        int cflags = c.getUpdateFlags();
 			//        if (cflags & UPDATEFLAG_HEALTHCHANGE)
 			//        {
 			//            MessageOut healthMsg(GPMSG_BEING_HEALTH_CHANGE);
-			//            healthMsg.writeInt16(c->getPublicID());
-			//            healthMsg.writeInt16(c->getModifiedAttribute(ATTR_HP));
-			//            healthMsg.writeInt16(c->getModifiedAttribute(ATTR_MAX_HP));
-			//            gameHandler->sendTo(p, healthMsg);
+			//            healthMsg.writeInt16(c.getPublicID());
+			//            healthMsg.writeInt16(c.getModifiedAttribute(ATTR_HP));
+			//            healthMsg.writeInt16(c.getModifiedAttribute(ATTR_MAX_HP));
+			//            gameHandler.sendTo(p, healthMsg);
 			//        }
 			//    }
 			//}
 
 			//// Inform client about items on the ground around its character
 			//MessageOut itemMsg(GPMSG_ITEMS);
-			//for (FixedActorIterator i(map->getAroundBeingIterator(p, visualRange)); i;
+			//for (FixedActorIterator i(map.getAroundBeingIterator(p, visualRange)); i;
 			//                                                                        ++i)
 			//{
-			//    assert((*i)->getType() == OBJECT_ITEM ||
-			//           (*i)->getType() == OBJECT_EFFECT);
+			//    assert((*i).getType() == OBJECT_ITEM ||
+			//           (*i).getType() == OBJECT_EFFECT);
 
 			//    Actor *o = *i;
-			//    Point opos = o->getPosition();
-			//    int oflags = o->getUpdateFlags();
+			//    Point opos = o.getPosition();
+			//    int oflags = o.getUpdateFlags();
 			//    bool willBeInRange = ppos.inRangeOf(opos, visualRange);
 			//    bool wereInRange = pold.inRangeOf(opos, visualRange) &&
 			//                       !((pflags | oflags) & UPDATEFLAG_NEW_ON_MAP);
 
 			//    if (willBeInRange ^ wereInRange)
 			//    {
-			//        switch (o->getType())
+			//        switch (o.getType())
 			//        {
 			//            case OBJECT_ITEM:
 			//            {
@@ -385,14 +385,14 @@ namespace invertika_game.Game
 			//                    /* Send a specific message to the client when an item appears
 			//                       out of nowhere, so that a sound/animation can be performed. */
 			//                    MessageOut appearMsg(GPMSG_ITEM_APPEAR);
-			//                    appearMsg.writeInt16(o->getItemClass()->getDatabaseID());
+			//                    appearMsg.writeInt16(o.getItemClass().getDatabaseID());
 			//                    appearMsg.writeInt16(opos.x);
 			//                    appearMsg.writeInt16(opos.y);
-			//                    gameHandler->sendTo(p, appearMsg);
+			//                    gameHandler.sendTo(p, appearMsg);
 			//                }
 			//                else
 			//                {
-			//                    itemMsg.writeInt16(willBeInRange ? o->getItemClass()->getDatabaseID() : 0);
+			//                    itemMsg.writeInt16(willBeInRange ? o.getItemClass().getDatabaseID() : 0);
 			//                    itemMsg.writeInt16(opos.x);
 			//                    itemMsg.writeInt16(opos.y);
 			//                }
@@ -401,23 +401,23 @@ namespace invertika_game.Game
 			//            case OBJECT_EFFECT:
 			//            {
 			//                Effect *o = static_cast< Effect * >(*i);
-			//                o->show();
+			//                o.show();
 			//                // Don't show old effects
 			//                if (!(oflags & UPDATEFLAG_NEW_ON_MAP))
 			//                    break;
-			//                Being *b = o->getBeing();
+			//                Being *b = o.getBeing();
 			//                if (b)
 			//                {
 			//                    MessageOut effectMsg(GPMSG_CREATE_EFFECT_BEING);
-			//                    effectMsg.writeInt16(o->getEffectId());
-			//                    effectMsg.writeInt16(b->getPublicID());
-			//                    gameHandler->sendTo(p, effectMsg);
+			//                    effectMsg.writeInt16(o.getEffectId());
+			//                    effectMsg.writeInt16(b.getPublicID());
+			//                    gameHandler.sendTo(p, effectMsg);
 			//                } else {
 			//                    MessageOut effectMsg(GPMSG_CREATE_EFFECT_POS);
-			//                    effectMsg.writeInt16(o->getEffectId());
+			//                    effectMsg.writeInt16(o.getEffectId());
 			//                    effectMsg.writeInt16(opos.x);
 			//                    effectMsg.writeInt16(opos.y);
-			//                    gameHandler->sendTo(p, effectMsg);
+			//                    gameHandler.sendTo(p, effectMsg);
 			//                }
 			//            }
 			//            break;
@@ -428,7 +428,7 @@ namespace invertika_game.Game
 
 			//// Do not send a packet if nothing happened in p's range.
 			//if (itemMsg.getLength() > 2)
-			//    gameHandler->sendTo(p, itemMsg);
+			//    gameHandler.sendTo(p, itemMsg);
 		}
 
 		//#ifndef NDEBUG
@@ -445,15 +445,15 @@ namespace invertika_game.Game
 			//    const MapManager::Maps &maps = MapManager::getMaps();
 			//    for (MapManager::Maps::const_iterator m = maps.begin(), m_end = maps.end(); m != m_end; ++m)
 			//    {
-			//        MapComposite *map = m->second;
-			//        if (!map->isActive())
+			//        MapComposite *map = m.second;
+			//        if (!map.isActive())
 			//        {
 			//            continue;
 			//        }
 
 			//        updateMap(map);
 
-			//        for (CharacterIterator p(map->getWholeMapIterator()); p; ++p)
+			//        for (CharacterIterator p(map.getWholeMapIterator()); p; ++p)
 			//        {
 			//            informPlayer(map, *p, worldTime);
 			//            /*
@@ -463,18 +463,18 @@ namespace invertika_game.Game
 
 			//            if (worldTime % 2000 == 0)
 			//            {
-			//                accountHandler->sendCharacterData(*p);
+			//                accountHandler.sendCharacterData(*p);
 			//            }
 			//            */
 			//        }
 
-			//        for (ActorIterator i(map->getWholeMapIterator()); i; ++i)
+			//        for (ActorIterator i(map.getWholeMapIterator()); i; ++i)
 			//        {
 			//            Actor *a = *i;
-			//            a->clearUpdateFlags();
-			//            if (a->canFight())
+			//            a.clearUpdateFlags();
+			//            if (a.canFight())
 			//            {
-			//                static_cast< Being * >(a)->clearHitsTaken();
+			//                static_cast< Being * >(a).clearHitsTaken();
 			//            }
 			//        }
 			//    }
@@ -487,17 +487,17 @@ namespace invertika_game.Game
 			//    for (DelayedEvents::iterator i = delayedEvents.begin(),
 			//         i_end = delayedEvents.end(); i != i_end; ++i)
 			//    {
-			//        const DelayedEvent &e = i->second;
-			//        Actor *o = i->first;
+			//        const DelayedEvent &e = i.second;
+			//        Actor *o = i.first;
 			//        switch (e.type)
 			//        {
 			//            case EVENT_REMOVE:
 			//                remove(o);
-			//                if (o->getType() == OBJECT_CHARACTER)
+			//                if (o.getType() == OBJECT_CHARACTER)
 			//                {
 			//                    Character *ch = static_cast< Character * >(o);
-			//                    ch->disconnected();
-			//                    gameHandler->kill(ch);
+			//                    ch.disconnected();
+			//                    gameHandler.kill(ch);
 			//                }
 			//                delete o;
 			//                break;
@@ -507,7 +507,7 @@ namespace invertika_game.Game
 			//                break;
 
 			//            case EVENT_WARP:
-			//                assert(o->getType() == OBJECT_CHARACTER);
+			//                assert(o.getType() == OBJECT_CHARACTER);
 			//                warp(static_cast< Character * >(o), e.map, e.x, e.y);
 			//                break;
 			//        }
@@ -518,90 +518,90 @@ namespace invertika_game.Game
 		static bool insert(Thing ptr)
 		{
 			//assert(!dbgLockObjects);
-			//MapComposite *map = ptr->getMap();
-			//assert(map && map->isActive());
+			//MapComposite *map = ptr.getMap();
+			//assert(map && map.isActive());
 
 			///* Non-visible objects have neither position nor public ID, so their
 			//   insertion cannot fail. Take care of them first. */
-			//if (!ptr->isVisible())
+			//if (!ptr.isVisible())
 			//{
-			//    map->insert(ptr);
-			//    ptr->inserted();
+			//    map.insert(ptr);
+			//    ptr.inserted();
 			//    return true;
 			//}
 
 			//// Check that coordinates are actually valid.
 			//Actor *obj = static_cast< Actor * >(ptr);
-			//Map *mp = map->getMap();
-			//Point pos = obj->getPosition();
-			//if ((int)pos.x / mp->getTileWidth() >= mp->getWidth() ||
-			//    (int)pos.y / mp->getTileHeight() >= mp->getHeight())
+			//Map *mp = map.getMap();
+			//Point pos = obj.getPosition();
+			//if ((int)pos.x / mp.getTileWidth() >= mp.getWidth() ||
+			//    (int)pos.y / mp.getTileHeight() >= mp.getHeight())
 			//{
 			//    LOG_ERROR("Tried to insert an actor at position " << pos.x << ','
-			//              << pos.y << " outside map " << map->getID() << '.');
+			//              << pos.y << " outside map " << map.getID() << '.');
 			//    // Set an arbitrary small position.
 			//    pos = Point(100, 100);
-			//    obj->setPosition(pos);
+			//    obj.setPosition(pos);
 			//}
 
-			//if (!map->insert(obj))
+			//if (!map.insert(obj))
 			//{
 			//    // The map is overloaded, no room to add a new actor
-			//    LOG_ERROR("Too many actors on map " << map->getID() << '.');
+			//    LOG_ERROR("Too many actors on map " << map.getID() << '.');
 			//    return false;
 			//}
 
-			//obj->inserted();
+			//obj.inserted();
 
 			//// DEBUG INFO
-			//switch (obj->getType())
+			//switch (obj.getType())
 			//{
 			//    case OBJECT_ITEM:
 			//        LOG_DEBUG("Item inserted: "
-			//               << static_cast<Item*>(obj)->getItemClass()->getDatabaseID());
+			//               << static_cast<Item*>(obj).getItemClass().getDatabaseID());
 			//        break;
 
 			//    case OBJECT_NPC:
-			//        LOG_DEBUG("NPC inserted: " << static_cast<NPC*>(obj)->getNPC());
+			//        LOG_DEBUG("NPC inserted: " << static_cast<NPC*>(obj).getNPC());
 			//        break;
 
 			//    case OBJECT_CHARACTER:
 			//        LOG_DEBUG("Player inserted: "
-			//                  << static_cast<Being*>(obj)->getName());
+			//                  << static_cast<Being*>(obj).getName());
 			//        break;
 
 			//    case OBJECT_EFFECT:
 			//        LOG_DEBUG("Effect inserted: "
-			//                  << static_cast<Effect*>(obj)->getEffectId());
+			//                  << static_cast<Effect*>(obj).getEffectId());
 			//        break;
 
 			//    case OBJECT_MONSTER:
 			//        LOG_DEBUG("Monster inserted: "
-			//                  << static_cast<Monster*>(obj)->getSpecy()->getId());
+			//                  << static_cast<Monster*>(obj).getSpecy().getId());
 			//        break;
 
 			//    case OBJECT_ACTOR:
 			//    case OBJECT_OTHER:
 			//    default:
-			//        LOG_DEBUG("Thing inserted: " << obj->getType());
+			//        LOG_DEBUG("Thing inserted: " << obj.getType());
 			//}
 
-			//obj->raiseUpdateFlags(UPDATEFLAG_NEW_ON_MAP);
-			//if (obj->getType() != OBJECT_CHARACTER)
+			//obj.raiseUpdateFlags(UPDATEFLAG_NEW_ON_MAP);
+			//if (obj.getType() != OBJECT_CHARACTER)
 			//    return true;
 
 			///* Since the player does not know yet where in the world its character is,
 			//   we send a map-change message, even if it is the first time it
 			//   connects to this server. */
 			//MessageOut mapChangeMessage(GPMSG_PLAYER_MAP_CHANGE);
-			//mapChangeMessage.writeString(map->getName());
+			//mapChangeMessage.writeString(map.getName());
 			//mapChangeMessage.writeInt16(pos.x);
 			//mapChangeMessage.writeInt16(pos.y);
-			//gameHandler->sendTo(static_cast< Character * >(obj), mapChangeMessage);
+			//gameHandler.sendTo(static_cast< Character * >(obj), mapChangeMessage);
 
 			//// update the online state of the character
-			//accountHandler->updateOnlineStatus(
-			//    static_cast< Character * >(obj)->getDatabaseID(), true);
+			//accountHandler.updateOnlineStatus(
+			//    static_cast< Character * >(obj).getDatabaseID(), true);
 
 			return true;
 		}
@@ -616,117 +616,117 @@ namespace invertika_game.Game
 		static void remove(Thing ptr)
 		{
 			//assert(!dbgLockObjects);
-			//MapComposite *map = ptr->getMap();
+			//MapComposite *map = ptr.getMap();
 			//int visualRange = Configuration::getValue("game_visualRange", 448);
 
-			//ptr->removed();
+			//ptr.removed();
 
 			//// DEBUG INFO
-			//switch (ptr->getType())
+			//switch (ptr.getType())
 			//{
 			//    case OBJECT_ITEM:
 			//        LOG_DEBUG("Item removed: "
-			//               << static_cast<Item*>(ptr)->getItemClass()->getDatabaseID());
+			//               << static_cast<Item*>(ptr).getItemClass().getDatabaseID());
 			//        break;
 
 			//    case OBJECT_NPC:
-			//        LOG_DEBUG("NPC removed: " << static_cast<NPC*>(ptr)->getNPC());
+			//        LOG_DEBUG("NPC removed: " << static_cast<NPC*>(ptr).getNPC());
 			//        break;
 
 			//    case OBJECT_CHARACTER:
 			//        LOG_DEBUG("Player removed: "
-			//                  << static_cast<Being*>(ptr)->getName());
+			//                  << static_cast<Being*>(ptr).getName());
 			//        break;
 
 			//    case OBJECT_EFFECT:
 			//        LOG_DEBUG("Effect removed: "
-			//                  << static_cast<Effect*>(ptr)->getEffectId());
+			//                  << static_cast<Effect*>(ptr).getEffectId());
 			//        break;
 
 			//    case OBJECT_MONSTER:
 			//        LOG_DEBUG("Monster removed: "
-			//                  << static_cast<Monster*>(ptr)->getSpecy()->getId());
+			//                  << static_cast<Monster*>(ptr).getSpecy().getId());
 			//        break;
 
 			//    case OBJECT_ACTOR:
 			//    case OBJECT_OTHER:
 			//    default:
-			//        LOG_DEBUG("Thing removed: " << ptr->getType());
+			//        LOG_DEBUG("Thing removed: " << ptr.getType());
 			//}
 
-			//if (ptr->canMove())
+			//if (ptr.canMove())
 			//{
-			//    if (ptr->getType() == OBJECT_CHARACTER)
+			//    if (ptr.getType() == OBJECT_CHARACTER)
 			//    {
-			//        static_cast< Character * >(ptr)->cancelTransaction();
+			//        static_cast< Character * >(ptr).cancelTransaction();
 
 			//        // remove characters online status
-			//        accountHandler->updateOnlineStatus(
-			//            static_cast< Character * >(ptr)->getDatabaseID(), false);
+			//        accountHandler.updateOnlineStatus(
+			//            static_cast< Character * >(ptr).getDatabaseID(), false);
 			//    }
 
 			//    Actor *obj = static_cast< Actor * >(ptr);
 			//    MessageOut msg(GPMSG_BEING_LEAVE);
-			//    msg.writeInt16(obj->getPublicID());
-			//    Point objectPos = obj->getPosition();
+			//    msg.writeInt16(obj.getPublicID());
+			//    Point objectPos = obj.getPosition();
 
-			//    for (CharacterIterator p(map->getAroundActorIterator(obj, visualRange));
+			//    for (CharacterIterator p(map.getAroundActorIterator(obj, visualRange));
 			//         p; ++p)
 			//    {
-			//        if (*p != obj && objectPos.inRangeOf((*p)->getPosition(),
+			//        if (*p != obj && objectPos.inRangeOf((*p).getPosition(),
 			//            visualRange))
 			//        {
-			//            gameHandler->sendTo(*p, msg);
+			//            gameHandler.sendTo(*p, msg);
 			//        }
 			//    }
 			//}
-			//else if (ptr->getType() == OBJECT_ITEM)
+			//else if (ptr.getType() == OBJECT_ITEM)
 			//{
 			//    Item *obj = static_cast< Item * >(ptr);
-			//    Point pos = obj->getPosition();
+			//    Point pos = obj.getPosition();
 			//    MessageOut msg(GPMSG_ITEMS);
 			//    msg.writeInt16(0);
 			//    msg.writeInt16(pos.x);
 			//    msg.writeInt16(pos.y);
 
-			//    for (CharacterIterator p(map->getAroundActorIterator(obj, visualRange)); p; ++p)
+			//    for (CharacterIterator p(map.getAroundActorIterator(obj, visualRange)); p; ++p)
 			//    {
-			//        if (pos.inRangeOf((*p)->getPosition(), visualRange))
+			//        if (pos.inRangeOf((*p).getPosition(), visualRange))
 			//        {
-			//            gameHandler->sendTo(*p, msg);
+			//            gameHandler.sendTo(*p, msg);
 			//        }
 			//    }
 			//}
 
-			//map->remove(ptr);
+			//map.remove(ptr);
 		}
 
 		static void warp(Character ptr, MapComposite map, int x, int y)
 		{
 			//remove(ptr);
-			//ptr->setMap(map);
-			//ptr->setPosition(Point(x, y));
-			//ptr->clearDestination();
+			//ptr.setMap(map);
+			//ptr.setPosition(Point(x, y));
+			//ptr.clearDestination();
 			///* Force update of persistent data on map change, so that
 			//   characters can respawn at the start of the map after a death or
 			//   a disconnection. */
-			//accountHandler->sendCharacterData(ptr);
+			//accountHandler.sendCharacterData(ptr);
 
-			//if (map->isActive())
+			//if (map.isActive())
 			//{
 			//    if (!insert(ptr))
 			//    {
-			//        ptr->disconnected();
-			//        gameHandler->kill(ptr);
+			//        ptr.disconnected();
+			//        gameHandler.kill(ptr);
 			//        delete ptr;
 			//    }
 			//}
 			//else
 			//{
 			//    MessageOut msg(GAMSG_REDIRECT);
-			//    msg.writeInt32(ptr->getDatabaseID());
-			//    accountHandler->send(msg);
-			//    gameHandler->prepareServerChange(ptr);
+			//    msg.writeInt32(ptr.getDatabaseID());
+			//    accountHandler.send(msg);
+			//    gameHandler.prepareServerChange(ptr);
 			//}
 		}
 
@@ -740,7 +740,7 @@ namespace invertika_game.Game
 			//// Delete events take precedence over other events.
 			//if (!p.second && e.type == EVENT_REMOVE)
 			//{
-			//    p.first->second.type = EVENT_REMOVE;
+			//    p.first.second.type = EVENT_REMOVE;
 			//}
 		}
 
@@ -764,12 +764,12 @@ namespace invertika_game.Game
 
 		static void sayAround(Actor obj, string text)
 		{
-			//Point speakerPosition = obj->getPosition();
+			//Point speakerPosition = obj.getPosition();
 			//int visualRange = Configuration::getValue("game_visualRange", 448);
 
-			//for (CharacterIterator i(obj->getMap()->getAroundActorIterator(obj, visualRange)); i; ++i)
+			//for (CharacterIterator i(obj.getMap().getAroundActorIterator(obj, visualRange)); i; ++i)
 			//{
-			//    if (speakerPosition.inRangeOf((*i)->getPosition(), visualRange))
+			//    if (speakerPosition.inRangeOf((*i).getPosition(), visualRange))
 			//    {
 			//        sayTo(*i, obj, text);
 			//    }
@@ -778,7 +778,7 @@ namespace invertika_game.Game
 
 		static void sayTo(Actor destination, Actor source, string text)
 		{
-			//if (destination->getType() != OBJECT_CHARACTER)
+			//if (destination.getType() != OBJECT_CHARACTER)
 			//    return; //only characters will read it anyway
 
 			//MessageOut msg(GPMSG_SAY);
@@ -786,17 +786,17 @@ namespace invertika_game.Game
 			//{
 			//    msg.writeInt16(0);
 			//}
-			//else if (!source->canMove())
+			//else if (!source.canMove())
 			//{
 			//    msg.writeInt16(65535);
 			//}
 			//else
 			//{
-			//    msg.writeInt16(static_cast< Actor * >(source)->getPublicID());
+			//    msg.writeInt16(static_cast< Actor * >(source).getPublicID());
 			//}
 			//msg.writeString(text);
 
-			//gameHandler->sendTo(static_cast< Character * >(destination), msg);
+			//gameHandler.sendTo(static_cast< Character * >(destination), msg);
 		}
 
 		static void sayToAll(string text)
@@ -808,7 +808,7 @@ namespace invertika_game.Game
 			//msg.writeString(text);
 
 			//// Sends it to everyone connected to the game server
-			//gameHandler->sendToEveryone(msg);
+			//gameHandler.sendToEveryone(msg);
 		}
 
 
@@ -817,7 +817,7 @@ namespace invertika_game.Game
 			//std::map<std::string, std::string>::iterator iValue =
 			//                                                 mScriptVariables.find(key);
 			//if (iValue != mScriptVariables.end())
-			//    return iValue->second;
+			//    return iValue.second;
 			//else
 			//    return std::string();
 
@@ -827,7 +827,7 @@ namespace invertika_game.Game
 		static void setVariable(string key, string value)
 		{
 			//mScriptVariables[key] = value;
-			//accountHandler->updateWorldVar(key, value);
+			//accountHandler.updateWorldVar(key, value);
 		}
 
 		static void setVariableFromDbserver(string key, string value)

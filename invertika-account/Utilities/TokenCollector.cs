@@ -71,13 +71,13 @@ namespace invertika_account.Utilities
 		//private:
 
 		//    void removedClient(intptr_t data)
-		//    { mHandler->deletePendingClient((Client)data); }
+		//    { mHandler.deletePendingClient((Client)data); }
 
 		//    void removedConnect(intptr_t data)
-		//    { mHandler->deletePendingConnect((ServerData)data); }
+		//    { mHandler.deletePendingConnect((ServerData)data); }
 
 		//    void foundMatch(intptr_t client, intptr_t data)
-		//    { mHandler->tokenMatched((Client)client, (ServerData)data); }
+		//    { mHandler.tokenMatched((Client)client, (ServerData)data); }
 
 		//    Handler *mHandler;
 	}

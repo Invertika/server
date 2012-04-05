@@ -48,23 +48,23 @@ namespace invertika_game.Game
 		//        ActorIterator::ActorIterator(const ZoneIterator &it)
 		//  : iterator(it), pos(0)
 		//{
-		//    while (iterator && (*iterator)->objects.empty()) ++iterator;
+		//    while (iterator && (*iterator).objects.empty()) ++iterator;
 		//    if (iterator)
 		//    {
-		//        current = (*iterator)->objects[pos];
+		//        current = (*iterator).objects[pos];
 		//    }
 		//}
 
 		//void ActorIterator::operator++()
 		//{
-		//    if (++pos == (*iterator)->objects.size())
+		//    if (++pos == (*iterator).objects.size())
 		//    {
-		//        do ++iterator; while (iterator && (*iterator)->objects.empty());
+		//        do ++iterator; while (iterator && (*iterator).objects.empty());
 		//        pos = 0;
 		//    }
 		//    if (iterator)
 		//    {
-		//        current = (*iterator)->objects[pos];
+		//        current = (*iterator).objects[pos];
 		//    }
 		//}
 	}

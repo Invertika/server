@@ -80,14 +80,14 @@ namespace invertika_game.Game
 			//for (ItemClasses::iterator i = mItemClasses.begin(),
 			//     i_end = mItemClasses.end(); i != i_end; ++i)
 			//{
-			//    delete i->second;
+			//    delete i.second;
 			//}
 
 			//for (std::map< unsigned int, EquipSlotInfo* >::iterator it =
 			//    mEquipSlotsInfo.begin(), it_end = mEquipSlotsInfo.end(); it != it_end;
 			//    ++it)
 			//{
-			//    delete it->second;
+			//    delete it.second;
 			//}
 
 			//mItemClasses.clear();
@@ -97,7 +97,7 @@ namespace invertika_game.Game
 		ItemClass getItem(int itemId)
 		{
 			//ItemClasses::const_iterator i = mItemClasses.find(itemId);
-			//return i != mItemClasses.end() ? i->second : 0;
+			//return i != mItemClasses.end() ? i.second : 0;
 
 			return null; //ssk
 		}
@@ -117,7 +117,7 @@ namespace invertika_game.Game
 		uint getEquipSlotIdFromName(string name)
 		{
 			//EquipSlotInfo *slotInfo = mNamedEquipSlotsInfo.value(name);
-			//return slotInfo ? slotInfo->slotId : 0;
+			//return slotInfo ? slotInfo.slotId : 0;
 
 			return 0; //ssk
 		}
@@ -125,7 +125,7 @@ namespace invertika_game.Game
 		uint getEquipSlotCapacity(uint id)
 		{
 			//EquipSlotsInfo::const_iterator i = mEquipSlotsInfo.find(id);
-			//return i != mEquipSlotsInfo.end() ? i->second->slotCapacity : 0;
+			//return i != mEquipSlotsInfo.end() ? i.second.slotCapacity : 0;
 
 			return 0; //ssk
 
@@ -134,7 +134,7 @@ namespace invertika_game.Game
 		bool isEquipSlotVisible(uint id)
 		{
 			//EquipSlotsInfo::const_iterator i = mEquipSlotsInfo.find(id);
-			//return i != mEquipSlotsInfo.end() ? i->second->visibleSlot : false;
+			//return i != mEquipSlotsInfo.end() ? i.second.visibleSlot : false;
 
 			return true; //ssk
 		}
@@ -144,7 +144,7 @@ namespace invertika_game.Game
 			//XML::Document doc(mEquipSlotsFile);
 			//xmlNodePtr rootNode = doc.rootNode();
 
-			//if (!rootNode || !xmlStrEqual(rootNode->name, BAD_CAST "equip-slots"))
+			//if (!rootNode || !xmlStrEqual(rootNode.name, BAD_CAST "equip-slots"))
 			//{
 			//    LOG_ERROR("Item Manager: Error while parsing equip slots database ("
 			//              << mEquipSlotsFile << ")!");
@@ -159,7 +159,7 @@ namespace invertika_game.Game
 
 			//for_each_xml_child_node(node, rootNode)
 			//{
-			//    if (xmlStrEqual(node->name, BAD_CAST "slot"))
+			//    if (xmlStrEqual(node.name, BAD_CAST "slot"))
 			//    {
 			//        const int slotId = XML::getProperty(node, "id", 0);
 			//        const std::string name = XML::getProperty(node, "name",
@@ -217,7 +217,7 @@ namespace invertika_game.Game
 			//XML::Document doc2(mItemsFile);
 			//xmlNodePtr rootNode = doc2.rootNode();
 
-			//if (!rootNode || !xmlStrEqual(rootNode->name, BAD_CAST "items"))
+			//if (!rootNode || !xmlStrEqual(rootNode.name, BAD_CAST "items"))
 			//{
 			//    LOG_ERROR("Item Manager: Error while parsing item database ("
 			//              << mItemsFile << ")!");
@@ -228,7 +228,7 @@ namespace invertika_game.Game
 
 			//for_each_xml_child_node(node, rootNode)
 			//{
-			//    if (xmlStrEqual(node->name, BAD_CAST "item"))
+			//    if (xmlStrEqual(node.name, BAD_CAST "item"))
 			//    {
 			//        readItemNode(node);
 			//    }
@@ -276,7 +276,7 @@ namespace invertika_game.Game
 			//const std::string name = XML::getProperty(itemNode, "name", std::string());
 			//if (!name.empty())
 			//{
-			//    item->setName(name);
+			//    item.setName(name);
 
 			//    if (mItemClassesByName.contains(name))
 			//        LOG_WARN("Item Manager: Name not unique for item " << id);
@@ -286,15 +286,15 @@ namespace invertika_game.Game
 
 			//int value = XML::getProperty(itemNode, "value", 0);
 			//// Should have multiple value definitions for multiple currencies?
-			//item->mCost = value;
+			//item.mCost = value;
 
 			//for_each_xml_child_node(subNode, itemNode)
 			//{
-			//    if (xmlStrEqual(subNode->name, BAD_CAST "equip"))
+			//    if (xmlStrEqual(subNode.name, BAD_CAST "equip"))
 			//    {
 			//        readEquipNode(subNode, item);
 			//    }
-			//    else if (xmlStrEqual(subNode->name, BAD_CAST "effect"))
+			//    else if (xmlStrEqual(subNode.name, BAD_CAST "effect"))
 			//    {
 			//        readEffectNode(subNode, item);
 			//    }
@@ -306,9 +306,9 @@ namespace invertika_game.Game
 		{
 			//for_each_xml_child_node(subNode, equipNode)
 			//{
-			//    if (xmlStrEqual(subNode->name, BAD_CAST "slot"))
+			//    if (xmlStrEqual(subNode.name, BAD_CAST "slot"))
 			//    {
-			//        if (item->mEquipReq.equipSlotId)
+			//        if (item.mEquipReq.equipSlotId)
 			//        {
 			//            LOG_WARN("Item Manager: duplicate equip slot definitions!"
 			//                     " Only the first will apply.");
@@ -324,22 +324,22 @@ namespace invertika_game.Game
 			//        if (utils::isNumeric(slot))
 			//        {
 			//            // When the slot id is given
-			//            item->mEquipReq.equipSlotId = utils::stringToInt(slot);
+			//            item.mEquipReq.equipSlotId = utils::stringToInt(slot);
 			//        }
 			//        else
 			//        {
 			//            // When its name is given
-			//            item->mEquipReq.equipSlotId = getEquipSlotIdFromName(slot);
+			//            item.mEquipReq.equipSlotId = getEquipSlotIdFromName(slot);
 			//        }
-			//        item->mEquipReq.capacityRequired =
+			//        item.mEquipReq.capacityRequired =
 			//            XML::getProperty(subNode, "required", 1);
 			//    }
 			//}
 
-			//if (!item->mEquipReq.equipSlotId)
+			//if (!item.mEquipReq.equipSlotId)
 			//{
 			//    LOG_WARN("Item Manager: empty equip requirement "
-			//             "definition for item " << item->getDatabaseID() << "!"
+			//             "definition for item " << item.getDatabaseID() << "!"
 			//             " The item will be unequippable.");
 			//    return;
 			//}
@@ -353,7 +353,7 @@ namespace invertika_game.Game
 			//                effectNode, "trigger", std::string());
 			//    const std::string dispellTrigger = XML::getProperty(
 			//                effectNode, "dispell", std::string());
-			//    // label -> { trigger (apply), trigger (cancel (default)) }
+			//    // label . { trigger (apply), trigger (cancel (default)) }
 			//    // The latter can be overridden.
 			//    static std::map<const std::string,
 			//                    std::pair<ItemTriggerType, ItemTriggerType> >
@@ -391,20 +391,20 @@ namespace invertika_game.Game
 			//                 << triggerName << "\", skipping!");
 			//        return;
 			//    }
-			//    triggerTypes = it->second;
+			//    triggerTypes = it.second;
 			//    if (!dispellTrigger.empty())
 			//    {
 			//        if ((it = triggerTable.find(dispellTrigger)) == triggerTable.end())
 			//            LOG_WARN("Item Manager: Unable to find dispell effect "
 			//                     "trigger type \"" << dispellTrigger << "\"!");
 			//        else
-			//            triggerTypes.second = it->second.first;
+			//            triggerTypes.second = it.second.first;
 			//    }
 			//}
 
 			//for_each_xml_child_node(subNode, effectNode)
 			//{
-			//    if (xmlStrEqual(subNode->name, BAD_CAST "modifier"))
+			//    if (xmlStrEqual(subNode.name, BAD_CAST "modifier"))
 			//    {
 			//        std::string tag = XML::getProperty(subNode, "attribute", std::string());
 			//        if (tag.empty())
@@ -416,35 +416,35 @@ namespace invertika_game.Game
 			//        unsigned int duration = XML::getProperty(subNode,
 			//                                                 "duration",
 			//                                                 0);
-			//        ModifierLocation location = attributeManager->getLocation(tag);
+			//        ModifierLocation location = attributeManager.getLocation(tag);
 			//        double value = XML::getFloatProperty(subNode, "value", 0.0);
-			//        item->addEffect(new ItemEffectAttrMod(location.attributeId,
+			//        item.addEffect(new ItemEffectAttrMod(location.attributeId,
 			//                                              location.layer,
 			//                                              value,
-			//                                              item->getDatabaseID(),
+			//                                              item.getDatabaseID(),
 			//                                              duration),
 			//                        triggerTypes.first, triggerTypes.second);
 			//    }
-			//    else if (xmlStrEqual(subNode->name, BAD_CAST "autoattack"))
+			//    else if (xmlStrEqual(subNode.name, BAD_CAST "autoattack"))
 			//    {
 			//        // TODO - URGENT
 			//    }
 			//    // Having a dispell for the next three is nonsensical.
-			//    else if (xmlStrEqual(subNode->name, BAD_CAST "cooldown"))
+			//    else if (xmlStrEqual(subNode.name, BAD_CAST "cooldown"))
 			//    {
 			//        LOG_WARN("Item Manager: Cooldown property not implemented yet!");
 			//        // TODO: Also needs unique items before this action will work
 			//    }
-			//    else if (xmlStrEqual(subNode->name, BAD_CAST "g-cooldown"))
+			//    else if (xmlStrEqual(subNode.name, BAD_CAST "g-cooldown"))
 			//    {
 			//        LOG_WARN("Item Manager: G-Cooldown property not implemented yet!");
 			//        // TODO
 			//    }
-			//    else if (xmlStrEqual(subNode->name, BAD_CAST "consumes"))
+			//    else if (xmlStrEqual(subNode.name, BAD_CAST "consumes"))
 			//    {
-			//        item->addEffect(new ItemEffectConsumes(), triggerTypes.first);
+			//        item.addEffect(new ItemEffectConsumes(), triggerTypes.first);
 			//    }
-			//    else if (xmlStrEqual(subNode->name, BAD_CAST "script"))
+			//    else if (xmlStrEqual(subNode.name, BAD_CAST "script"))
 			//    {
 			//        std::string activateFunctionName = XML::getProperty(subNode,
 			//                                                            "function",
@@ -468,7 +468,7 @@ namespace invertika_game.Game
 			//        if (!ResourceManager::exists(filename.str()))
 			//        {
 			//            LOG_WARN("Could not find script file \"" << filename.str()
-			//                     << "\" for item #" << item->mDatabaseID);
+			//                     << "\" for item #" << item.mDatabaseID);
 			//            continue;
 			//        }
 
@@ -477,13 +477,13 @@ namespace invertika_game.Game
 			//        std::string engineName =
 			//                Script::determineEngineByFilename(filename.str());
 			//        Script *script = Script::create(engineName);
-			//        if (!script->loadFile(filename.str()))
+			//        if (!script.loadFile(filename.str()))
 			//        {
 			//            // Delete the script as it's invalid.
 			//            delete script;
 
 			//            LOG_WARN("Could not load script file \"" << filename.str()
-			//                      << "\" for item #" << item->mDatabaseID);
+			//                      << "\" for item #" << item.mDatabaseID);
 			//            continue;
 			//        }
 
@@ -495,7 +495,7 @@ namespace invertika_game.Game
 			//                                                         "dispell-function",
 			//                                                         std::string());
 
-			//        item->addEffect(new ItemEffectScript(item->mDatabaseID, script,
+			//        item.addEffect(new ItemEffectScript(item.mDatabaseID, script,
 			//                                             activateFunctionName,
 			//                                             dispellFunctionName),
 			//                                             triggerTypes.first,

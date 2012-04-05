@@ -37,7 +37,7 @@ namespace invertika_game.Game
 		{
 			//std::map<int, Character*>::const_iterator itr = mCharacters.find(id);
 			//if (itr != mCharacters.end())
-			//    return itr->second;
+			//    return itr.second;
 			//return 0;
 
 			return null; //ssk
@@ -45,17 +45,17 @@ namespace invertika_game.Game
 
 		void addCharacter(Character player)
 		{
-			//std::map<int, Character*>::iterator itr = mCharacters.find(player->getDatabaseID());
+			//std::map<int, Character*>::iterator itr = mCharacters.find(player.getDatabaseID());
 			//if (itr == mCharacters.end())
 			//{
-			//    mCharacters.insert(std::pair<int, Character*>(player->getDatabaseID(), player));
+			//    mCharacters.insert(std::pair<int, Character*>(player.getDatabaseID(), player));
 			//}
 		}
 
 		void getPost(Character player)//, PostCallback &f)
 		{
 			//mCallbacks.insert(std::pair<Character*, PostCallback>(player, f));
-			//accountHandler->getPost(player);
+			//accountHandler.getPost(player);
 		}
 
 		void gotPost(Character player, string sender, string letter)
@@ -63,7 +63,7 @@ namespace invertika_game.Game
 			//std::map<Character*, PostCallback>::iterator itr = mCallbacks.find(player);
 			//if (itr != mCallbacks.end())
 			//{
-			//    itr->second.handler(player, sender, letter, itr->second.data);
+			//    itr.second.handler(player, sender, letter, itr.second.data);
 			//}
 		}
 

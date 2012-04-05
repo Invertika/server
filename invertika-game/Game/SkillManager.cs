@@ -49,7 +49,7 @@ namespace invertika_game.Game
 			//for (SkillsInfo::iterator it = mSkillsInfo.begin(),
 			//     it_end = mSkillsInfo.end(); it != it_end; ++it)
 			//{
-			//    delete it->second;
+			//    delete it.second;
 			//}
 
 			//mSkillsInfo.clear();
@@ -63,7 +63,7 @@ namespace invertika_game.Game
 			//XML::Document doc(mSkillFile);
 			//xmlNodePtr rootNode = doc.rootNode();
 
-			//if (!rootNode || !xmlStrEqual(rootNode->name, BAD_CAST "skills"))
+			//if (!rootNode || !xmlStrEqual(rootNode.name, BAD_CAST "skills"))
 			//{
 			//    LOG_ERROR("Skill Manager: " << mSkillFile
 			//              << " is not a valid database file!");
@@ -75,7 +75,7 @@ namespace invertika_game.Game
 			//for_each_xml_child_node(setNode, rootNode)
 			//{
 			//    // The server will prefix the core name with the set, so we need one.
-			//    if (!xmlStrEqual(setNode->name, BAD_CAST "set"))
+			//    if (!xmlStrEqual(setNode.name, BAD_CAST "set"))
 			//        continue;
 
 			//    std::string setName = XML::getProperty(setNode, "name", std::string());
@@ -105,30 +105,30 @@ namespace invertika_game.Game
 
 		void readSkillNode()//xmlNodePtr skillNode,       const std::string& setName)
 		{
-			//if (!xmlStrEqual(skillNode->name, BAD_CAST "skill"))
+			//if (!xmlStrEqual(skillNode.name, BAD_CAST "skill"))
 			//    return;
 
 			//SkillInfo *skillInfo = new SkillInfo;
-			//skillInfo->setName = setName;
-			//skillInfo->skillName = utils::toLower(
+			//skillInfo.setName = setName;
+			//skillInfo.skillName = utils::toLower(
 			//    XML::getProperty(skillNode, "name", std::string()));
 			//int id = XML::getProperty(skillNode, "id", 0);
 
-			//if (id <= 0 || skillInfo->skillName.empty())
+			//if (id <= 0 || skillInfo.skillName.empty())
 			//{
 			//    LOG_WARN("Invalid skill (empty name or id <= 0) in set: " << setName);
 			//    return;
 			//}
-			//skillInfo->id = (unsigned)id;
+			//skillInfo.id = (unsigned)id;
 
-			//SkillsInfo::iterator it = mSkillsInfo.find(skillInfo->id);
+			//SkillsInfo::iterator it = mSkillsInfo.find(skillInfo.id);
 			//if (it != mSkillsInfo.end())
 			//{
-			//    LOG_WARN("SkillManager: The same id: " << skillInfo->id
-			//    << " is given for skill names: " << it->first
-			//    << " and " << skillInfo->skillName);
-			//    LOG_WARN("The skill reference: " << skillInfo->id
-			//    << ": '" << skillInfo->skillName << "' will be ignored.");
+			//    LOG_WARN("SkillManager: The same id: " << skillInfo.id
+			//    << " is given for skill names: " << it.first
+			//    << " and " << skillInfo.skillName);
+			//    LOG_WARN("The skill reference: " << skillInfo.id
+			//    << ": '" << skillInfo.skillName << "' will be ignored.");
 			//    return;
 			//}
 
@@ -139,20 +139,20 @@ namespace invertika_game.Game
 			//        LOG_WARN("SkillManager: "
 			//        "Default Skill id already defined as "
 			//        << mDefaultSkillId
-			//        << ". Redefinit it as: " << skillInfo->id);
+			//        << ". Redefinit it as: " << skillInfo.id);
 			//    }
 			//    else
 			//    {
-			//        LOG_INFO("SkillManager: Defining skill id: " << skillInfo->id
+			//        LOG_INFO("SkillManager: Defining skill id: " << skillInfo.id
 			//        << " as default weapon-type id.");
 			//    }
-			//    mDefaultSkillId = skillInfo->id;
+			//    mDefaultSkillId = skillInfo.id;
 			//}
 
 			//mSkillsInfo.insert(
-			//    std::make_pair<unsigned int, SkillInfo*>(skillInfo->id, skillInfo));
+			//    std::make_pair<unsigned int, SkillInfo*>(skillInfo.id, skillInfo));
 
-			//std::string keyName = setName + "_" + skillInfo->skillName;
+			//std::string keyName = setName + "_" + skillInfo.skillName;
 			//mNamedSkillsInfo.insert(keyName, skillInfo);
 		}
 
@@ -166,20 +166,20 @@ namespace invertika_game.Game
 			//    for (SkillsInfo::iterator it = mSkillsInfo.begin();
 			//        it != mSkillsInfo.end(); ++it)
 			//    {
-			//        if (!lastSet.compare(it->second->setName))
+			//        if (!lastSet.compare(it.second.setName))
 			//        {
-			//            lastSet = it->second->setName;
+			//            lastSet = it.second.setName;
 			//            LOG_DEBUG("Skill set: " << lastSet);
 			//        }
 
-			//        if (it->first == mDefaultSkillId)
+			//        if (it.first == mDefaultSkillId)
 			//        {
-			//            LOG_DEBUG("'" << it->first << "': " << it->second->skillName
+			//            LOG_DEBUG("'" << it.first << "': " << it.second.skillName
 			//                      << " (Default)");
 			//        }
 			//        else
 			//        {
-			//            LOG_DEBUG("'" << it->first << "': " << it->second->skillName);
+			//            LOG_DEBUG("'" << it.first << "': " << it.second.skillName);
 			//        }
 			//    }
 			//    LOG_DEBUG("-----");
@@ -190,7 +190,7 @@ namespace invertika_game.Game
 		{
 			//std::string key = utils::toLower(set) + "_" + utils::toLower(name);
 			//SkillInfo *skillInfo = mNamedSkillsInfo.value(key);
-			//return skillInfo ? skillInfo->id : 0;
+			//return skillInfo ? skillInfo.id : 0;
 
 			return 0; //ssk
 		}
@@ -198,7 +198,7 @@ namespace invertika_game.Game
 		string getSkillName(uint id)
 		{
 			//SkillsInfo::const_iterator it = mSkillsInfo.find(id);
-			//return it != mSkillsInfo.end() ? it->second->skillName : "";
+			//return it != mSkillsInfo.end() ? it.second.skillName : "";
 
 			return ""; //ssk
 		}
@@ -206,7 +206,7 @@ namespace invertika_game.Game
 		string getSetName(uint id)
 		{
 			//SkillsInfo::const_iterator it = mSkillsInfo.find(id);
-			//return it != mSkillsInfo.end() ? it->second->setName : "";
+			//return it != mSkillsInfo.end() ? it.second.setName : "";
 
 			return ""; //ssk
 		}

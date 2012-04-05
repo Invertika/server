@@ -48,27 +48,27 @@ namespace invertika_game.Game
 		//        FixedActorIterator::FixedActorIterator(const ZoneIterator &it)
 		//  : iterator(it), pos(0)
 		//{
-		//    while (iterator && (*iterator)->nbMovingObjects == (*iterator)->objects.size()) ++iterator;
+		//    while (iterator && (*iterator).nbMovingObjects == (*iterator).objects.size()) ++iterator;
 		//    if (iterator)
 		//    {
-		//        pos = (*iterator)->nbMovingObjects;
-		//        current = (*iterator)->objects[pos];
+		//        pos = (*iterator).nbMovingObjects;
+		//        current = (*iterator).objects[pos];
 		//    }
 		//}
 
 		//void FixedActorIterator::operator++()
 		//{
-		//    if (++pos == (*iterator)->objects.size())
+		//    if (++pos == (*iterator).objects.size())
 		//    {
-		//        do ++iterator; while (iterator && (*iterator)->nbMovingObjects == (*iterator)->objects.size());
+		//        do ++iterator; while (iterator && (*iterator).nbMovingObjects == (*iterator).objects.size());
 		//        if (iterator)
 		//        {
-		//            pos = (*iterator)->nbMovingObjects;
+		//            pos = (*iterator).nbMovingObjects;
 		//        }
 		//    }
 		//    if (iterator)
 		//    {
-		//        current = (*iterator)->objects[pos];
+		//        current = (*iterator).objects[pos];
 		//    }
 		//}
 	}

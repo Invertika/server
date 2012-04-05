@@ -106,7 +106,7 @@ namespace invertika_game.Game
 		void sendCharacterData(Character p)
 		{
 			//MessageOut msg(GAMSG_PLAYER_DATA);
-			//msg.writeInt32(p->getDatabaseID());
+			//msg.writeInt32(p.getDatabaseID());
 			//serializeCharacterData(*p, msg);
 			//send(msg);
 		}
@@ -154,7 +154,7 @@ namespace invertika_game.Game
 			//    {
 			//        std::string token = msg.readString(MAGIC_TOKEN_LENGTH);
 			//        Character *ptr = new Character(msg);
-			//        gameHandler->addPendingCharacter(token, ptr);
+			//        gameHandler.addPendingCharacter(token, ptr);
 			//    } break;
 
 			//    case AGMSG_ACTIVE_MAP:
@@ -170,7 +170,7 @@ namespace invertika_game.Game
 			//                std::string key = msg.readString();
 			//                std::string value = msg.readString();
 			//                if (!key.empty() && !value.empty())
-			//                    m->setVariableFromDbserver(key, value);
+			//                    m.setVariableFromDbserver(key, value);
 			//            }
 
 			//            // Recreate potential persistent floor items
@@ -184,12 +184,12 @@ namespace invertika_game.Game
 			//                int posX = msg.readInt16();
 			//                int posY = msg.readInt16();
 
-			//                if (ItemClass *ic = itemManager->getItem(itemId))
+			//                if (ItemClass *ic = itemManager.getItem(itemId))
 			//                {
 			//                    Item *item = new Item(ic, amount);
-			//                    item->setMap(m);
+			//                    item.setMap(m);
 			//                    Point dst(posX, posY);
-			//                    item->setPosition(dst);
+			//                    item.setPosition(dst);
 
 			//                    if (!GameState::insertOrDelete(item))
 			//                    {
@@ -218,7 +218,7 @@ namespace invertika_game.Game
 			//        std::string token = msg.readString(MAGIC_TOKEN_LENGTH);
 			//        std::string address = msg.readString();
 			//        int port = msg.readInt16();
-			//        gameHandler->completeServerChange(id, token, address, port);
+			//        gameHandler.completeServerChange(id, token, address, port);
 			//    } break;
 
 			//    case AGMSG_GET_VAR_CHR_RESPONSE:
@@ -235,13 +235,13 @@ namespace invertika_game.Game
 			//        int charid = msg.readInt32();
 			//        // Party id, 0 for none
 			//        int partyid = msg.readInt32();
-			//        gameHandler->updateCharacter(charid, partyid);
+			//        gameHandler.updateCharacter(charid, partyid);
 			//    } break;
 
 			//    case CGMSG_POST_RESPONSE:
 			//    {
 			//        // get the character
-			//        Character *character = postMan->getCharacter(msg.readInt32());
+			//        Character *character = postMan.getCharacter(msg.readInt32());
 
 			//        // check character is still valid
 			//        if (!character)
@@ -252,14 +252,14 @@ namespace invertika_game.Game
 			//        std::string sender = msg.readString();
 			//        std::string letter = msg.readString();
 
-			//        postMan->gotPost(character, sender, letter);
+			//        postMan.gotPost(character, sender, letter);
 
 			//    } break;
 
 			//    case CGMSG_STORE_POST_RESPONSE:
 			//    {
 			//        // get character
-			//        Character *character = postMan->getCharacter(msg.readInt32());
+			//        Character *character = postMan.getCharacter(msg.readInt32());
 
 			//        // check character is valid
 			//        if (!character)
@@ -290,7 +290,7 @@ namespace invertika_game.Game
 		void requestCharacterVar(Character ch, string name)
 		{
 			//MessageOut msg(GAMSG_GET_VAR_CHR);
-			//msg.writeInt32(ch->getDatabaseID());
+			//msg.writeInt32(ch.getDatabaseID());
 			//msg.writeString(name);
 			//send(msg);
 		}
@@ -298,7 +298,7 @@ namespace invertika_game.Game
 		void updateCharacterVar(Character ch, string name, string value)
 		{
 			//MessageOut msg(GAMSG_SET_VAR_CHR);
-			//msg.writeInt32(ch->getDatabaseID());
+			//msg.writeInt32(ch.getDatabaseID());
 			//msg.writeString(name);
 			//msg.writeString(value);
 			//send(msg);
@@ -307,7 +307,7 @@ namespace invertika_game.Game
 		void updateMapVar(MapComposite map, string name, string value)
 		{
 			//MessageOut msg(GAMSG_SET_VAR_MAP);
-			//msg.writeInt32(map->getID());
+			//msg.writeInt32(map.getID());
 			//msg.writeString(name);
 			//msg.writeString(value);
 			//send(msg);
@@ -324,7 +324,7 @@ namespace invertika_game.Game
 		void banCharacter(Character ch, int duration)
 		{
 			//MessageOut msg(GAMSG_BAN_PLAYER);
-			//msg.writeInt32(ch->getDatabaseID());
+			//msg.writeInt32(ch.getDatabaseID());
 			//msg.writeInt32(duration);
 			//send(msg);
 		}
@@ -336,22 +336,22 @@ namespace invertika_game.Game
 			//for (MapManager::Maps::const_iterator i = maps.begin(),
 			//     i_end = maps.end(); i != i_end; ++i)
 			//{
-			//    MapComposite *m = i->second;
-			//    if (!m->isActive()) continue;
-			//    msg.writeInt16(i->first);
+			//    MapComposite *m = i.second;
+			//    if (!m.isActive()) continue;
+			//    msg.writeInt16(i.first);
 			//    int nbThings = 0, nbMonsters = 0;
 			//    typedef std::vector< Thing * > Things;
-			//    const Things &things = m->getEverything();
+			//    const Things &things = m.getEverything();
 			//    std::vector< int > players;
 			//    for (Things::const_iterator j = things.begin(),
 			//         j_end = things.end(); j != j_end; ++j)
 			//    {
 			//        Thing *t = *j;
-			//        switch (t->getType())
+			//        switch (t.getType())
 			//        {
 			//            case OBJECT_CHARACTER:
 			//                players.push_back
-			//                    (static_cast< Character * >(t)->getDatabaseID());
+			//                    (static_cast< Character * >(t).getDatabaseID());
 			//                break;
 			//            case OBJECT_MONSTER:
 			//                ++nbMonsters;
@@ -378,7 +378,7 @@ namespace invertika_game.Game
 			//// the id of receiving player, the letter receiver and contents, and attachments
 			//LOG_DEBUG("Sending GCMSG_STORE_POST.");
 			//MessageOut out(GCMSG_STORE_POST);
-			//out.writeInt32(c->getDatabaseID());
+			//out.writeInt32(c.getDatabaseID());
 			//out.writeString(msg.readString()); // name of receiver
 			//out.writeString(msg.readString()); // content of letter
 			//while (msg.getUnreadLength()) // attachments
@@ -393,19 +393,19 @@ namespace invertika_game.Game
 		void getPost(Character c)
 		{
 			//// let the postman know to expect some post for this character
-			//postMan->addCharacter(c);
+			//postMan.addCharacter(c);
 
 			//// send message to account server with id of retrieving player
 			//LOG_DEBUG("Sending GCMSG_REQUEST_POST");
 			//MessageOut out(GCMSG_REQUEST_POST);
-			//out.writeInt32(c->getDatabaseID());
+			//out.writeInt32(c.getDatabaseID());
 			//send(out);
 		}
 
 		void changeAccountLevel(Character c, int level)
 		{
 			//MessageOut msg(GAMSG_CHANGE_ACCOUNT_LEVEL);
-			//msg.writeInt32(c->getDatabaseID());
+			//msg.writeInt32(c.getDatabaseID());
 			//msg.writeInt16(level);
 			//send(msg);
 		}
@@ -422,7 +422,7 @@ namespace invertika_game.Game
 			////    d.) buffer holds more then 20 messages
 			//if (force ||
 			//    mSyncMessages > SYNC_BUFFER_LIMIT ||
-			//    mSyncBuffer->getLength() > SYNC_BUFFER_SIZE )
+			//    mSyncBuffer.getLength() > SYNC_BUFFER_SIZE )
 			//{
 			//    LOG_DEBUG("Sending GAMSG_PLAYER_SYNC with "
 			//            << mSyncMessages << " messages." );
@@ -442,40 +442,40 @@ namespace invertika_game.Game
 		void updateCharacterPoints(int charId, int charPoints, int corrPoints)
 		{
 			//++mSyncMessages;
-			//mSyncBuffer->writeInt8(SYNC_CHARACTER_POINTS);
-			//mSyncBuffer->writeInt32(charId);
-			//mSyncBuffer->writeInt32(charPoints);
-			//mSyncBuffer->writeInt32(corrPoints);
+			//mSyncBuffer.writeInt8(SYNC_CHARACTER_POINTS);
+			//mSyncBuffer.writeInt32(charId);
+			//mSyncBuffer.writeInt32(charPoints);
+			//mSyncBuffer.writeInt32(corrPoints);
 			//syncChanges();
 		}
 
 		void updateAttributes(int charId, int attrId, double @base, double mod)
 		{
 			//++mSyncMessages;
-			//mSyncBuffer->writeInt8(SYNC_CHARACTER_ATTRIBUTE);
-			//mSyncBuffer->writeInt32(charId);
-			//mSyncBuffer->writeInt32(attrId);
-			//mSyncBuffer->writeDouble(base);
-			//mSyncBuffer->writeDouble(mod);
+			//mSyncBuffer.writeInt8(SYNC_CHARACTER_ATTRIBUTE);
+			//mSyncBuffer.writeInt32(charId);
+			//mSyncBuffer.writeInt32(attrId);
+			//mSyncBuffer.writeDouble(base);
+			//mSyncBuffer.writeDouble(mod);
 			//syncChanges();
 		}
 
 		void updateExperience(int charId, int skillId, int skillValue)
 		{
 			//++mSyncMessages;
-			//mSyncBuffer->writeInt8(SYNC_CHARACTER_SKILL);
-			//mSyncBuffer->writeInt32(charId);
-			//mSyncBuffer->writeInt8(skillId);
-			//mSyncBuffer->writeInt32(skillValue);
+			//mSyncBuffer.writeInt8(SYNC_CHARACTER_SKILL);
+			//mSyncBuffer.writeInt32(charId);
+			//mSyncBuffer.writeInt8(skillId);
+			//mSyncBuffer.writeInt32(skillValue);
 			//syncChanges();
 		}
 
 		void updateOnlineStatus(int charId, bool online)
 		{
 			//++mSyncMessages;
-			//mSyncBuffer->writeInt8(SYNC_ONLINE_STATUS);
-			//mSyncBuffer->writeInt32(charId);
-			//mSyncBuffer->writeInt8(online ? 1 : 0);
+			//mSyncBuffer.writeInt8(SYNC_ONLINE_STATUS);
+			//mSyncBuffer.writeInt32(charId);
+			//mSyncBuffer.writeInt8(online ? 1 : 0);
 			//syncChanges();
 		}
 

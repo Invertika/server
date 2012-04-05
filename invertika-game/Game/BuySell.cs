@@ -36,12 +36,12 @@ namespace invertika_game.Game
 		BuySell(Character c, bool sell)
 		//mCurrencyId(ATTR_GP), mChar(c), mSell(sell)
 		{
-			//c->setBuySell(this);
+			//c.setBuySell(this);
 		}
 
 		~BuySell()
 		{
-			//mChar->setBuySell(NULL);
+			//mChar.setBuySell(NULL);
 		}
 
 		void cancel()
@@ -75,24 +75,24 @@ namespace invertika_game.Game
 
 			//// We parse the player inventory and add all item
 			//// in a sell list.
-			//const InventoryData &inventoryData = mChar->getPossessions().getInventory();
+			//const InventoryData &inventoryData = mChar.getPossessions().getInventory();
 			//for (InventoryData::const_iterator it = inventoryData.begin(),
 			//    it_end = inventoryData.end(); it != it_end; ++it)
 			//{
-			//    unsigned int nb = it->second.amount;
+			//    unsigned int nb = it.second.amount;
 			//    if (!nb)
 			//        continue;
 
-			//    int id = it->second.itemId;
+			//    int id = it.second.itemId;
 			//    int cost = -1;
-			//    if (itemManager->getItem(id))
+			//    if (itemManager.getItem(id))
 			//    {
-			//        cost = itemManager->getItem(id)->getCost();
+			//        cost = itemManager.getItem(id).getCost();
 			//    }
 			//    else
 			//    {
 			//        LOG_WARN("registerPlayersItems(): The character Id: "
-			//            << mChar->getPublicID() << " has unknown items (Id: " << id
+			//            << mChar.getPublicID() << " has unknown items (Id: " << id
 			//            << "). They have been ignored.");
 			//        continue;
 			//    }
@@ -106,10 +106,10 @@ namespace invertika_game.Game
 			//    for (TradedItems::iterator i = mItems.begin(),
 			//        i_end = mItems.end(); i != i_end; ++i)
 			//    {
-			//        if (i->itemId == id)
+			//        if (i.itemId == id)
 			//        {
 			//            itemAlreadyAdded = true;
-			//            i->amount += nb;
+			//            i.amount += nb;
 			//            break;
 			//        }
 			//    }
@@ -135,15 +135,15 @@ namespace invertika_game.Game
 			//}
 
 			//MessageOut msg(mSell ? GPMSG_NPC_SELL : GPMSG_NPC_BUY);
-			//msg.writeInt16(actor->getPublicID());
+			//msg.writeInt16(actor.getPublicID());
 			//for (TradedItems::const_iterator i = mItems.begin(),
 			//     i_end = mItems.end(); i != i_end; ++i)
 			//{
-			//    msg.writeInt16(i->itemId);
-			//    msg.writeInt16(i->amount);
-			//    msg.writeInt16(i->cost);
+			//    msg.writeInt16(i.itemId);
+			//    msg.writeInt16(i.amount);
+			//    msg.writeInt16(i.cost);
 			//}
-			//mChar->getClient()->send(msg);
+			//mChar.getClient().send(msg);
 			return true;
 		}
 
@@ -153,27 +153,27 @@ namespace invertika_game.Game
 			//for (TradedItems::iterator i = mItems.begin(),
 			//     i_end = mItems.end(); i != i_end; ++i)
 			//{
-			//    if (i->itemId != id) continue;
-			//    if (i->amount && i->amount <= amount) amount = i->amount;
+			//    if (i.itemId != id) continue;
+			//    if (i.amount && i.amount <= amount) amount = i.amount;
 			//    if (mSell)
 			//    {
 			//        amount -= inv.remove(id, amount);
-			//        mChar->setAttribute(mCurrencyId,
-			//                            mChar->getAttribute(mCurrencyId) +
-			//                            amount * i->cost);
+			//        mChar.setAttribute(mCurrencyId,
+			//                            mChar.getAttribute(mCurrencyId) +
+			//                            amount * i.cost);
 			//    }
 			//    else
 			//    {
-			//        amount = std::min(amount, ((int) mChar->getAttribute(mCurrencyId)) / i->cost);
+			//        amount = std::min(amount, ((int) mChar.getAttribute(mCurrencyId)) / i.cost);
 			//        amount -= inv.insert(id, amount);
-			//        mChar->setAttribute(mCurrencyId,
-			//                            mChar->getAttribute(mCurrencyId) -
-			//                            amount * i->cost);
+			//        mChar.setAttribute(mCurrencyId,
+			//                            mChar.getAttribute(mCurrencyId) -
+			//                            amount * i.cost);
 			//    }
-			//    if (i->amount)
+			//    if (i.amount)
 			//    {
-			//        i->amount -= amount;
-			//        if (!i->amount)
+			//        i.amount -= amount;
+			//        if (!i.amount)
 			//        {
 			//            mItems.erase(i);
 			//        }

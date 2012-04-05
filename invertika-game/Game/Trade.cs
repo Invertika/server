@@ -54,30 +54,30 @@ namespace invertika_game.Game
 		//mChar1(c1), mChar2(c2), mMoney1(0), mMoney2(0), mState(TRADE_INIT), mCurrencyId(ATTR_GP)
 		{
 			//MessageOut msg(GPMSG_TRADE_REQUEST);
-			//msg.writeInt16(c1->getPublicID());
-			//c2->getClient()->send(msg);
-			//c1->setTrading(this);
-			//c2->setTrading(this);
+			//msg.writeInt16(c1.getPublicID());
+			//c2.getClient().send(msg);
+			//c1.setTrading(this);
+			//c2.setTrading(this);
 		}
 
 		~Trade()
 		{
-			//mChar1->setTrading(NULL);
-			//mChar2->setTrading(NULL);
+			//mChar1.setTrading(NULL);
+			//mChar2.setTrading(NULL);
 		}
 
 		void cancel()
 		{
 			//MessageOut msg(GPMSG_TRADE_CANCEL);
-			//mChar1->getClient()->send(msg);
-			//mChar2->getClient()->send(msg);
+			//mChar1.getClient().send(msg);
+			//mChar2.getClient().send(msg);
 			//delete this;
 		}
 
 		bool request(Character c, int id)
 		{
 			////The trade isn't confirmed, the player which is request is the same.
-			//if (mState != TRADE_INIT || c != mChar2 || mChar1->getPublicID() != id)
+			//if (mState != TRADE_INIT || c != mChar2 || mChar1.getPublicID() != id)
 			//{
 			//    /* This is not an ack for the current transaction. So assume
 			//       a new one is about to start and cancel the current one. */
@@ -92,8 +92,8 @@ namespace invertika_game.Game
 
 			////Telling both player that the trade has started
 			//MessageOut msg(GPMSG_TRADE_START);
-			//mChar1->getClient()->send(msg);
-			//mChar2->getClient()->send(msg);
+			//mChar1.getClient().send(msg);
+			//mChar2.getClient().send(msg);
 			return true;
 		}
 
@@ -102,9 +102,9 @@ namespace invertika_game.Game
 			//for (TradedItems::const_iterator i = items.begin(),
 			//     i_end = items.end(); i != i_end; ++i)
 			//{
-			//    if (i->id != inv1.getItem(i->slot) ||
-			//        inv1.removeFromSlot(i->slot, i->amount) != 0 ||
-			//        inv2.insert(i->id, i->amount) != 0)
+			//    if (i.id != inv1.getItem(i.slot) ||
+			//        inv1.removeFromSlot(i.slot, i.amount) != 0 ||
+			//        inv2.insert(i.id, i.amount) != 0)
 			//    {
 			//        return false;
 			//    }
@@ -129,7 +129,7 @@ namespace invertika_game.Game
 
 			//    // Send the other player that the first player has confirmed
 			//    MessageOut msg(GPMSG_TRADE_AGREED);
-			//    mChar2->getClient()->send(msg);
+			//    mChar2.getClient().send(msg);
 			//    return;
 			//}
 
@@ -144,14 +144,14 @@ namespace invertika_game.Game
 			//// Check if both player has the objects in their inventories
 			//// and enouth money, then swap them.
 			//Inventory v1(mChar1), v2(mChar2);
-			//if (mChar1->getAttribute(mCurrencyId) >= mMoney1 - mMoney2 &&
-			//    mChar2->getAttribute(mCurrencyId) >= mMoney2 - mMoney1 &&
+			//if (mChar1.getAttribute(mCurrencyId) >= mMoney1 - mMoney2 &&
+			//    mChar2.getAttribute(mCurrencyId) >= mMoney2 - mMoney1 &&
 			//    perform(mItems1, v1, v2) &&
 			//    perform(mItems2, v2, v1))
 			//{
-			//    mChar1->setAttribute(mCurrencyId, mChar1->getAttribute(mCurrencyId)
+			//    mChar1.setAttribute(mCurrencyId, mChar1.getAttribute(mCurrencyId)
 			//                         - mMoney1 + mMoney2);
-			//    mChar2->setAttribute(mCurrencyId, mChar2->getAttribute(mCurrencyId)
+			//    mChar2.setAttribute(mCurrencyId, mChar2.getAttribute(mCurrencyId)
 			//                         - mMoney2 + mMoney1);
 			//}
 			//else
@@ -161,8 +161,8 @@ namespace invertika_game.Game
 			//}
 
 			//MessageOut msg(GPMSG_TRADE_COMPLETE);
-			//mChar1->getClient()->send(msg);
-			//mChar2->getClient()->send(msg);
+			//mChar1.getClient().send(msg);
+			//mChar2.getClient().send(msg);
 			//delete this;
 		}
 
@@ -186,7 +186,7 @@ namespace invertika_game.Game
 
 			//    //Send the other player that the first player has confirmed
 			//    MessageOut msg(GPMSG_TRADE_CONFIRM);
-			//    mChar2->getClient()->send(msg);
+			//    mChar2.getClient().send(msg);
 			//    return;
 			//}
 
@@ -198,8 +198,8 @@ namespace invertika_game.Game
 
 			//mState = TRADE_CONFIRMED;
 			//MessageOut msg(GPMSG_TRADE_BOTH_CONFIRM);
-			//mChar1->getClient()->send(msg);
-			//mChar2->getClient()->send(msg);
+			//mChar1.getClient().send(msg);
+			//mChar2.getClient().send(msg);
 		}
 
 		void setMoney(Character c, int amount)
@@ -218,13 +218,13 @@ namespace invertika_game.Game
 			//if (c == mChar1)
 			//{
 			//    mMoney1 = amount;
-			//    mChar2->getClient()->send(msg);
+			//    mChar2.getClient().send(msg);
 			//}
 			//else
 			//{
 			//    assert(c == mChar2);
 			//    mMoney2 = amount;
-			//    mChar1->getClient()->send(msg);
+			//    mChar1.getClient().send(msg);
 			//}
 
 			//// Go back to normal run.
@@ -252,7 +252,7 @@ namespace invertika_game.Game
 			//}
 
 			//// Arbitrary limit to prevent a client from DOSing the server.
-			//if (items->size() >= 50) return;
+			//if (items.size() >= 50) return;
 
 			//Inventory inv(c);
 			//int id = inv.getItem(slot);
@@ -263,12 +263,12 @@ namespace invertika_game.Game
 			//   the client lied. */
 
 			//TradedItem ti = { id, slot, amount };
-			//items->push_back(ti);
+			//items.push_back(ti);
 
 			//MessageOut msg(GPMSG_TRADE_ADD_ITEM);
 			//msg.writeInt16(id);
 			//msg.writeInt8(amount);
-			//other->getClient()->send(msg);
+			//other.getClient().send(msg);
 		}
 	}
 }

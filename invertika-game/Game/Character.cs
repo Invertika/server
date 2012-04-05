@@ -64,12 +64,12 @@ namespace invertika_game.Game
 		//mTransaction(TRANS_NONE)
 		{
 			//const AttributeScope &attr =
-			//                       attributeManager->getAttributeScope(CharacterScope);
+			//                       attributeManager.getAttributeScope(CharacterScope);
 			//LOG_DEBUG("Character creation: initialisation of "
 			//          << attr.size() << " attributes.");
 			//for (AttributeScope::const_iterator it1 = attr.begin(),
 			//     it1_end = attr.end(); it1 != it1_end; ++it1)
-			//    mAttributes.insert(std::make_pair(it1->first, Attribute(*it1->second)));
+			//    mAttributes.insert(std::make_pair(it1.first, Attribute(*it1.second)));
 
 			//// Get character data.
 			//mDatabaseID = msg.readInt32();
@@ -102,8 +102,8 @@ namespace invertika_game.Game
 			//for (std::map<int, Special*>::iterator i = mSpecials.begin();
 			//     i != mSpecials.end(); i++)
 			//{
-			//    Special * s = i->second;
-			//    if (s->currentMana < s->neededMana)
+			//    Special * s = i.second;
+			//    if (s.currentMana < s.neededMana)
 			//    {
 			//        rechargeNeeded.push_back(s);
 			//        numRechargeNeeded++;
@@ -116,7 +116,7 @@ namespace invertika_game.Game
 			//    for (std::list<Special*>::iterator i = rechargeNeeded.begin();
 			//         i != rechargeNeeded.end(); i++)
 			//    {
-			//        (*i)->currentMana += mRechargePerSpecial;
+			//        (*i).currentMana += mRechargePerSpecial;
 			//    }
 			//}
 
@@ -130,7 +130,7 @@ namespace invertika_game.Game
 			//StatusEffects::iterator it = mStatus.begin();
 			//while (it != mStatus.end())
 			//{
-			//    mStatusEffects[it->first] = it->second.time;
+			//    mStatusEffects[it.first] = it.second.time;
 			//    it++;
 			//}
 			//Being::update();
@@ -156,7 +156,7 @@ namespace invertika_game.Game
 			//{
 			//    int damageBase = getModifiedAttribute(ATTR_STR);
 			//    int damageDelta = damageBase / 2;
-			//    Damage knuckleDamage(skillManager->getDefaultSkillId(),
+			//    Damage knuckleDamage(skillManager.getDefaultSkillId(),
 			//                         damageBase, damageDelta, 2, ELEMENT_NEUTRAL,
 			//                        DAMAGE_PHYSICAL,
 			//                        (getSize() < DEFAULT_TILE_LENGTH) ?
@@ -177,7 +177,7 @@ namespace invertika_game.Game
 			//    for (std::list<AutoAttack>::iterator it = attacksReady.begin();
 			//         it != attacksReady.end(); ++it)
 			//    {
-			//        performAttack(mTarget, it->getDamage());
+			//        performAttack(mTarget, it.getDamage());
 			//    }
 			//}
 		}
@@ -228,16 +228,16 @@ namespace invertika_game.Game
 			//}
 
 			////check if the special is currently recharged
-			//Special *special = i->second;
-			//if (special->currentMana < special->neededMana)
+			//Special *special = i.second;
+			//if (special.currentMana < special.neededMana)
 			//{
 			//    LOG_INFO("Character uses special "<<id<<" which is not recharged. ("
-			//             <<special->currentMana<<"/"<<special->neededMana<<")");
+			//             <<special.currentMana<<"/"<<special.neededMana<<")");
 			//    return;
 			//}
 
 			////tell script engine to cast the spell
-			//special->currentMana = 0;
+			//special.currentMana = 0;
 			//Script::performSpecialAction(id, this);
 			//mSpecialUpdateNeeded = true;
 			return;
@@ -252,20 +252,20 @@ namespace invertika_game.Game
 			//{
 
 			//    MessageOut msg(GPMSG_SPECIAL_STATUS );
-			//    msg.writeInt8(i->first);
-			//    msg.writeInt32(i->second->currentMana);
-			//    msg.writeInt32(i->second->neededMana);
+			//    msg.writeInt8(i.first);
+			//    msg.writeInt32(i.second.currentMana);
+			//    msg.writeInt32(i.second.neededMana);
 			//    msg.writeInt32(mRechargePerSpecial);
 			//    /* Yes, the last one is redundant because it is the same for each
 			//       special, but I would like to keep the netcode flexible enough
 			//       to allow different recharge speed per special when necessary */
-			//    gameHandler->sendTo(this, msg);
+			//    gameHandler.sendTo(this, msg);
 			//}
 		}
 
 		int getMapId()
 		{
-			//return getMap()->getID();
+			//return getMap().getID();
 			return -1; //ssk
 		}
 
@@ -281,10 +281,10 @@ namespace invertika_game.Game
 			//switch (t)
 			//{
 			//    case TRANS_TRADE:
-			//        static_cast< Trade * >(mTransactionHandler)->cancel();
+			//        static_cast< Trade * >(mTransactionHandler).cancel();
 			//        break;
 			//    case TRANS_BUYSELL:
-			//        static_cast< BuySell * >(mTransactionHandler)->cancel();
+			//        static_cast< BuySell * >(mTransactionHandler).cancel();
 			//        break;
 			//    case TRANS_NONE:
 			//        return;
@@ -348,7 +348,7 @@ namespace invertika_game.Game
 			//    attribMsg.writeInt32(getAttribute(attr) * 256);
 			//    attribMsg.writeInt32(getModifiedAttribute(attr) * 256);
 			//}
-			//if (attribMsg.getLength() > 2) gameHandler->sendTo(this, attribMsg);
+			//if (attribMsg.getLength() > 2) gameHandler.sendTo(this, attribMsg);
 			//mModifiedAttributes.clear();
 
 			//MessageOut expMsg(GPMSG_PLAYER_EXP_CHANGE);
@@ -360,7 +360,7 @@ namespace invertika_game.Game
 			//    expMsg.writeInt32(getExpGot(skill));
 			//    expMsg.writeInt32(getExpNeeded(skill));
 			//}
-			//if (expMsg.getLength() > 2) gameHandler->sendTo(this, expMsg);
+			//if (expMsg.getLength() > 2) gameHandler.sendTo(this, expMsg);
 			//mModifiedExperience.clear();
 
 			//if (mUpdateLevelProgress)
@@ -368,7 +368,7 @@ namespace invertika_game.Game
 			//    mUpdateLevelProgress = false;
 			//    MessageOut progressMessage(GPMSG_LEVEL_PROGRESS);
 			//    progressMessage.writeInt8(mLevelProgress);
-			//    gameHandler->sendTo(this, progressMessage);
+			//    gameHandler.sendTo(this, progressMessage);
 			//}
 		}
 
@@ -379,8 +379,8 @@ namespace invertika_game.Game
 			//     it_end = mAttributes.end();
 			//    it != it_end; ++it)
 			//{
-			//    recalculateBaseAttribute(it->first);
-			//    updateDerivedAttributes(it->first);
+			//    recalculateBaseAttribute(it.first);
+			//    updateDerivedAttributes(it.first);
 			//}
 		}
 
@@ -473,7 +473,7 @@ namespace invertika_game.Game
 		void flagAttribute(int attr)
 		{
 			//// Inform the client of this attribute modification.
-			//accountHandler->updateAttributes(getDatabaseID(), attr,
+			//accountHandler.updateAttributes(getDatabaseID(), attr,
 			//                                 getAttribute(attr),
 			//                                 getModifiedAttribute(attr));
 			//mModifiedAttributes.insert(attr);
@@ -529,7 +529,7 @@ namespace invertika_game.Game
 
 			//// Inform account server
 			//if (newExp != oldExp)
-			//    accountHandler->updateExperience(getDatabaseID(), skill, newExp);
+			//    accountHandler.updateExperience(getDatabaseID(), skill, newExp);
 
 			//// Check for skill levelup
 			//if (Character::levelForExp(newExp) >= Character::levelForExp(oldExp))
@@ -557,7 +557,7 @@ namespace invertika_game.Game
 		{
 			//std::map<int, int>::const_iterator i = mKillCount.find(monsterType);
 			//if (i != mKillCount.end())
-			//    return i->second;
+			//    return i.second;
 			return 0;
 		}
 
@@ -569,11 +569,11 @@ namespace invertika_game.Game
 			//for (a = getSkillBegin(); a != getSkillEnd(); a++)
 			//{
 			//    // Only use the first 1000 skill levels in calculation
-			//    if (a->first < 1000)
+			//    if (a.first < 1000)
 			//    {
-			//        float expGot = getExpGot(a->first);
-			//        float expNeed = getExpNeeded(a->first);
-			//        levels.push_back(levelForExp(a->first) + expGot / expNeed);
+			//        float expGot = getExpGot(a.first);
+			//        float expNeed = getExpNeeded(a.first);
+			//        levels.push_back(levelForExp(a.first) + expGot / expNeed);
 			//    }
 			//}
 			//levels.sort();
@@ -634,13 +634,13 @@ namespace invertika_game.Game
 			//levelupMsg.writeInt16(mLevel);
 			//levelupMsg.writeInt16(mCharacterPoints);
 			//levelupMsg.writeInt16(mCorrectionPoints);
-			//gameHandler->sendTo(this, levelupMsg);
+			//gameHandler.sendTo(this, levelupMsg);
 			//LOG_INFO(getName()<<" reached level "<<mLevel);
 		}
 
 		AttribmodResponseCode useCharacterPoint(Int64 attribute)
 		{
-			//if (!attributeManager->isAttributeDirectlyModifiable(attribute))
+			//if (!attributeManager.isAttributeDirectlyModifiable(attribute))
 			//    return ATTRIBMOD_INVALID_ATTRIBUTE;
 			//if (!mCharacterPoints)
 			//    return ATTRIBMOD_NO_POINTS_LEFT;
@@ -653,7 +653,7 @@ namespace invertika_game.Game
 
 		AttribmodResponseCode useCorrectionPoint(Int64 attribute)
 		{
-			//if (!attributeManager->isAttributeDirectlyModifiable(attribute))
+			//if (!attributeManager.isAttributeDirectlyModifiable(attribute))
 			//    return ATTRIBMOD_INVALID_ATTRIBUTE;
 			//if (!mCorrectionPoints)
 			//    return ATTRIBMOD_NO_POINTS_LEFT;
@@ -676,8 +676,8 @@ namespace invertika_game.Game
 			//{
 			//    const EventListener &l = **i;
 			//    ++i; // In case the listener removes itself from the list on the fly.
-			//    if (l.dispatch->disconnected)
-			//        l.dispatch->disconnected(&l, this);
+			//    if (l.dispatch.disconnected)
+			//        l.dispatch.disconnected(&l, this);
 			//}
 		}
 
@@ -697,7 +697,7 @@ namespace invertika_game.Game
 			//std::map<int, Special*>::iterator i = mSpecials.find(id);
 			//if (i != mSpecials.end())
 			//{
-			//    delete i->second;
+			//    delete i.second;
 			//    mSpecials.erase(i);
 			//    mSpecialUpdateNeeded = true;
 			//}
@@ -708,7 +708,7 @@ namespace invertika_game.Game
 			//for (std::map<int, Special*>::iterator i = mSpecials.begin();
 			//     i != mSpecials.end(); i++)
 			//{
-			//    delete i->second;
+			//    delete i.second;
 			//}
 			//mSpecials.clear();
 		}

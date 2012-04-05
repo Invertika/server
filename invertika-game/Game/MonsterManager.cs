@@ -55,7 +55,7 @@ namespace invertika_game.Game
 			//XML::Document doc(mMonsterReferenceFile);
 			//xmlNodePtr rootNode = doc.rootNode();
 
-			//if (!rootNode || !xmlStrEqual(rootNode->name, BAD_CAST "monsters"))
+			//if (!rootNode || !xmlStrEqual(rootNode.name, BAD_CAST "monsters"))
 			//{
 			//    LOG_ERROR("Monster Manager: Error while parsing monster database ("
 			//              << mMonsterReferenceFile << ")!");
@@ -66,7 +66,7 @@ namespace invertika_game.Game
 			//int nbMonsters = 0;
 			//for_each_xml_child_node(node, rootNode)
 			//{
-			//    if (!xmlStrEqual(node->name, BAD_CAST "monster"))
+			//    if (!xmlStrEqual(node.name, BAD_CAST "monster"))
 			//        continue;
 
 			//    int id = XML::getProperty(node, "id", 0);
@@ -93,7 +93,7 @@ namespace invertika_game.Game
 
 			//    if (!name.empty())
 			//    {
-			//        monster->setName(name);
+			//        monster.setName(name);
 
 			//        if (mMonsterClassesByName.contains(name))
 			//            LOG_WARN("Monster Manager: Name not unique for monster " << id);
@@ -107,10 +107,10 @@ namespace invertika_game.Game
 
 			//    for_each_xml_child_node(subnode, node)
 			//    {
-			//        if (xmlStrEqual(subnode->name, BAD_CAST "drop"))
+			//        if (xmlStrEqual(subnode.name, BAD_CAST "drop"))
 			//        {
 			//            MonsterDrop drop;
-			//            drop.item = itemManager->getItem(
+			//            drop.item = itemManager.getItem(
 			//                                      XML::getProperty(subnode, "item", 0));
 			//            drop.probability = XML::getFloatProperty(subnode, "percent",
 			//                                                     0.0) * 100 + 0.5;
@@ -118,70 +118,70 @@ namespace invertika_game.Game
 			//            if (drop.item && drop.probability)
 			//                drops.push_back(drop);
 			//        }
-			//        else if (xmlStrEqual(subnode->name, BAD_CAST "attributes"))
+			//        else if (xmlStrEqual(subnode.name, BAD_CAST "attributes"))
 			//        {
 			//            attributesSet = true;
 
 			//            const int hp = XML::getProperty(subnode, "hp", -1);
-			//            monster->setAttribute(ATTR_MAX_HP, hp);
-			//            monster->setAttribute(ATTR_HP, hp);
+			//            monster.setAttribute(ATTR_MAX_HP, hp);
+			//            monster.setAttribute(ATTR_HP, hp);
 
-			//            monster->setAttribute(MOB_ATTR_PHY_ATK_MIN,
+			//            monster.setAttribute(MOB_ATTR_PHY_ATK_MIN,
 			//                XML::getProperty(subnode, "attack-min", -1));
-			//            monster->setAttribute(MOB_ATTR_PHY_ATK_DELTA,
+			//            monster.setAttribute(MOB_ATTR_PHY_ATK_DELTA,
 			//                XML::getProperty(subnode, "attack-delta", -1));
-			//            monster->setAttribute(MOB_ATTR_MAG_ATK,
+			//            monster.setAttribute(MOB_ATTR_MAG_ATK,
 			//                XML::getProperty(subnode, "attack-magic", -1));
-			//            monster->setAttribute(ATTR_DODGE,
+			//            monster.setAttribute(ATTR_DODGE,
 			//                XML::getProperty(subnode, "evade", -1));
-			//            monster->setAttribute(ATTR_MAGIC_DODGE,
+			//            monster.setAttribute(ATTR_MAGIC_DODGE,
 			//                XML::getProperty(subnode, "magic-evade", -1));
-			//            monster->setAttribute(ATTR_ACCURACY,
+			//            monster.setAttribute(ATTR_ACCURACY,
 			//                XML::getProperty(subnode, "hit", -1));
-			//            monster->setAttribute(ATTR_DEFENSE,
+			//            monster.setAttribute(ATTR_DEFENSE,
 			//                XML::getProperty(subnode, "physical-defence", -1));
-			//            monster->setAttribute(ATTR_MAGIC_DEFENSE,
+			//            monster.setAttribute(ATTR_MAGIC_DEFENSE,
 			//                XML::getProperty(subnode, "magical-defence", -1));
-			//            monster->setSize(XML::getProperty(subnode, "size", -1));
+			//            monster.setSize(XML::getProperty(subnode, "size", -1));
 			//            float speed = (XML::getFloatProperty(subnode, "speed", -1.0f));
-			//            monster->setMutation(XML::getProperty(subnode, "mutation", 0));
+			//            monster.setMutation(XML::getProperty(subnode, "mutation", 0));
 			//            std::string genderString = XML::getProperty(subnode, "gender",
 			//                                                        std::string());
-			//            monster->setGender(getGender(genderString));
+			//            monster.setGender(getGender(genderString));
 
 			//            // Checking attributes for completeness and plausibility
-			//            if (monster->getMutation() > MAX_MUTATION)
+			//            if (monster.getMutation() > MAX_MUTATION)
 			//            {
 			//                LOG_WARN(mMonsterReferenceFile
 			//                << ": Mutation of monster Id:" << id << " more than "
 			//                << MAX_MUTATION << "%. Defaulted to 0.");
-			//                monster->setMutation(0);
+			//                monster.setMutation(0);
 			//            }
 
 			//            bool attributesComplete = true;
 			//            const AttributeScope &mobAttr =
-			//                        attributeManager->getAttributeScope(MonsterScope);
+			//                        attributeManager.getAttributeScope(MonsterScope);
 
 			//            for (AttributeScope::const_iterator it = mobAttr.begin(),
 			//                 it_end = mobAttr.end(); it != it_end; ++it)
 			//            {
-			//                if (!monster->mAttributes.count(it->first))
+			//                if (!monster.mAttributes.count(it.first))
 			//                {
 			//                    LOG_WARN(mMonsterReferenceFile << ": No attribute "
-			//                             << it->first << " for monster Id: "
+			//                             << it.first << " for monster Id: "
 			//                             << id << ". Defaulted to 0.");
 			//                    attributesComplete = false;
-			//                    monster->setAttribute(it->first, 0);
+			//                    monster.setAttribute(it.first, 0);
 			//                }
 			//            }
 
-			//            if (monster->getSize() == -1)
+			//            if (monster.getSize() == -1)
 			//            {
 			//                LOG_WARN(mMonsterReferenceFile
 			//                         << ": No size set for monster Id:" << id << ". "
 			//                         << "Defaulted to " << DEFAULT_MONSTER_SIZE
 			//                         << " pixels.");
-			//                monster->setSize(DEFAULT_MONSTER_SIZE);
+			//                monster.setSize(DEFAULT_MONSTER_SIZE);
 			//                attributesComplete = false;
 			//            }
 
@@ -194,7 +194,7 @@ namespace invertika_game.Game
 			//                speed = DEFAULT_MONSTER_SPEED;
 			//                attributesComplete = false;
 			//            }
-			//            monster->setAttribute(ATTR_MOVE_SPEED_TPS, speed);
+			//            monster.setAttribute(ATTR_MOVE_SPEED_TPS, speed);
 
 			//            if (!attributesComplete)
 			//            {
@@ -204,56 +204,56 @@ namespace invertika_game.Game
 			//            }
 
 			//        }
-			//        else if (xmlStrEqual(subnode->name, BAD_CAST "exp"))
+			//        else if (xmlStrEqual(subnode.name, BAD_CAST "exp"))
 			//        {
-			//            xmlChar *exp = subnode->xmlChildrenNode->content;
-			//            monster->setExp(atoi((const char*)exp));
-			//            monster->setOptimalLevel(XML::getProperty(subnode, "level", 0));
+			//            xmlChar *exp = subnode.xmlChildrenNode.content;
+			//            monster.setExp(atoi((const char*)exp));
+			//            monster.setOptimalLevel(XML::getProperty(subnode, "level", 0));
 			//        }
-			//        else if (xmlStrEqual(subnode->name, BAD_CAST "behavior"))
+			//        else if (xmlStrEqual(subnode.name, BAD_CAST "behavior"))
 			//        {
 			//            behaviorSet = true;
 			//            if (XML::getBoolProperty(subnode, "aggressive", false))
-			//                monster->setAggressive(true);
+			//                monster.setAggressive(true);
 
-			//            monster->setTrackRange(
+			//            monster.setTrackRange(
 			//                           XML::getProperty(subnode, "track-range", 1));
-			//            monster->setStrollRange(
+			//            monster.setStrollRange(
 			//                           XML::getProperty(subnode, "stroll-range", 0));
-			//            monster->setAttackDistance(
+			//            monster.setAttackDistance(
 			//                           XML::getProperty(subnode, "attack-distance", 0));
 			//        }
-			//        else if (xmlStrEqual(subnode->name, BAD_CAST "attack"))
+			//        else if (xmlStrEqual(subnode.name, BAD_CAST "attack"))
 			//        {
 			//            MonsterAttack *att = new MonsterAttack;
-			//            att->id = XML::getProperty(subnode, "id", 0);
-			//            att->priority = XML::getProperty(subnode, "priority", 1);
-			//            att->damageFactor = XML::getFloatProperty(subnode,
+			//            att.id = XML::getProperty(subnode, "id", 0);
+			//            att.priority = XML::getProperty(subnode, "priority", 1);
+			//            att.damageFactor = XML::getFloatProperty(subnode,
 			//                                                     "damage-factor", 1.0f);
-			//            att->preDelay = XML::getProperty(subnode, "pre-delay", 1);
-			//            att->aftDelay = XML::getProperty(subnode, "aft-delay", 0);
-			//            att->range = XML::getProperty(subnode, "range", 0);
-			//            att->scriptFunction = XML::getProperty(subnode,
+			//            att.preDelay = XML::getProperty(subnode, "pre-delay", 1);
+			//            att.aftDelay = XML::getProperty(subnode, "aft-delay", 0);
+			//            att.range = XML::getProperty(subnode, "range", 0);
+			//            att.scriptFunction = XML::getProperty(subnode,
 			//                                                   "script-function",
 			//                                                   std::string());
 			//            std::string sElement = XML::getProperty(subnode,
 			//                                                    "element", "neutral");
-			//            att->element = elementFromString(sElement);
+			//            att.element = elementFromString(sElement);
 			//            std::string sType = XML::getProperty(subnode,
 			//                                                 "type", "physical");
 
 			//            bool validMonsterAttack = true;
 			//            if (sType == "physical")
 			//            {
-			//                att->type = DAMAGE_PHYSICAL;
+			//                att.type = DAMAGE_PHYSICAL;
 			//            }
 			//            else if (sType == "magical" || sType == "magic")
 			//            {
-			//                att->type = DAMAGE_MAGICAL;
+			//                att.type = DAMAGE_MAGICAL;
 			//            }
 			//            else if (sType == "other")
 			//            {
-			//                att->type = DAMAGE_OTHER;
+			//                att.type = DAMAGE_OTHER;
 			//            }
 			//            else
 			//            {
@@ -262,14 +262,14 @@ namespace invertika_game.Game
 			//                validMonsterAttack = false;
 			//            }
 
-			//            if (att->id < 1)
+			//            if (att.id < 1)
 			//            {
 			//                LOG_WARN(mMonsterReferenceFile
 			//                         << ": Attack without ID for monster Id:"
 			//                         << id << " (" << name << ") - attack ignored");
 			//                validMonsterAttack = false;
 			//            }
-			//            else if (att->element == ELEMENT_ILLEGAL)
+			//            else if (att.element == ELEMENT_ILLEGAL)
 			//            {
 			//                LOG_WARN(mMonsterReferenceFile
 			//                         << ": Attack with unknown element \""
@@ -277,7 +277,7 @@ namespace invertika_game.Game
 			//                         << " (" << name << ") - attack ignored");
 			//                validMonsterAttack = false;
 			//            }
-			//            else if (att->type == -1)
+			//            else if (att.type == -1)
 			//            {
 			//                LOG_WARN(mMonsterReferenceFile
 			//                         << ": Attack with unknown type \"" << sType << "\""
@@ -288,7 +288,7 @@ namespace invertika_game.Game
 
 			//            if (validMonsterAttack)
 			//            {
-			//                monster->addAttack(att);
+			//                monster.addAttack(att);
 			//            }
 			//            else
 			//            {
@@ -297,15 +297,15 @@ namespace invertika_game.Game
 			//            }
 
 			//        }
-			//        else if (xmlStrEqual(subnode->name, BAD_CAST "script"))
+			//        else if (xmlStrEqual(subnode.name, BAD_CAST "script"))
 			//        {
-			//            xmlChar *filename = subnode->xmlChildrenNode->content;
+			//            xmlChar *filename = subnode.xmlChildrenNode.content;
 			//            std::string val = (char *)filename;
-			//            monster->setScript(val);
+			//            monster.setScript(val);
 			//        }
 			//    }
 
-			//    monster->setDrops(drops);
+			//    monster.setDrops(drops);
 			//    if (!attributesSet)
 			//    {
 			//        LOG_WARN(mMonsterReferenceFile
@@ -318,12 +318,12 @@ namespace invertika_game.Game
 			//            << ": No behavior defined for monster Id:" << id
 			//            << " (" << name << ")");
 			//    }
-			//    if (monster->getExp() == -1)
+			//    if (monster.getExp() == -1)
 			//    {
 			//        LOG_WARN(mMonsterReferenceFile
 			//                << ": No experience defined for monster Id:" << id
 			//                << " (" << name << ")");
-			//        monster->setExp(0);
+			//        monster.setExp(0);
 			//    }
 			//    ++nbMonsters;
 			//}
@@ -337,7 +337,7 @@ namespace invertika_game.Game
 			//for (MonsterClasses::iterator i = mMonsterClasses.begin(),
 			//     i_end = mMonsterClasses.end(); i != i_end; ++i)
 			//{
-			//    delete i->second;
+			//    delete i.second;
 			//}
 			//mMonsterClasses.clear();
 			//mMonsterClassesByName.clear();
@@ -353,7 +353,7 @@ namespace invertika_game.Game
 		MonsterClass getMonster(int id)
 		{
 			//MonsterClasses::const_iterator i = mMonsterClasses.find(id);
-			//return i != mMonsterClasses.end() ? i->second : 0;
+			//return i != mMonsterClasses.end() ? i.second : 0;
 
 			return null; //ssk
 		}

@@ -111,7 +111,7 @@ namespace invertika_game.Network
 
 		public bool isConnected()
 		{
-			//return mRemote && mRemote->state == ENET_PEER_STATE_CONNECTED;
+			//return mRemote && mRemote.state == ENET_PEER_STATE_CONNECTED;
 
 			return true; //ssk
 		}
@@ -135,7 +135,7 @@ namespace invertika_game.Network
 			//    return;
 			//}
 
-			//gBandwidth->increaseInterServerOutput(msg.getLength());
+			//gBandwidth.increaseInterServerOutput(msg.getLength());
 
 			//ENetPacket *packet;
 			//packet = enet_packet_create(msg.getData(),
@@ -157,11 +157,11 @@ namespace invertika_game.Network
 			//    switch (event.type)
 			//    {
 			//        case ENET_EVENT_TYPE_RECEIVE:
-			//            if (event.packet->dataLength >= 2)
+			//            if (event.packet.dataLength >= 2)
 			//            {
-			//                MessageIn msg((char *)event.packet->data,
-			//                              event.packet->dataLength);
-			//                gBandwidth->increaseInterServerInput(event.packet->dataLength);
+			//                MessageIn msg((char *)event.packet.data,
+			//                              event.packet.dataLength);
+			//                gBandwidth.increaseInterServerInput(event.packet.dataLength);
 			//                processMessage(msg);
 			//            }
 			//            else

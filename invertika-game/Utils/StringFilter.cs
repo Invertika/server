@@ -74,7 +74,7 @@ namespace invertika_game.Utils
 			//    ++i;
 			//    if (i != mSlangs.end()) slangsList += ",";
 			//}
-			//////mConfig->setValue("SlangsList", slangsList); //war schon auskommentiert
+			//////mConfig.setValue("SlangsList", slangsList); //war schon auskommentiert
 		}
 
 		bool filterContent(string text)

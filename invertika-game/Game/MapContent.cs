@@ -89,14 +89,14 @@ namespace invertika_game.Game
 		//  : last_bucket(0), zones(NULL)
 		//{
 		//    buckets[0] = new ObjectBucket;
-		//    buckets[0]->allocate(); // Skip ID 0
+		//    buckets[0].allocate(); // Skip ID 0
 		//    for (int i = 1; i < 256; ++i)
 		//    {
 		//        buckets[i] = NULL;
 		//    }
-		//    mapWidth = (map->getWidth() * map->getTileWidth() + zoneDiam - 1)
+		//    mapWidth = (map.getWidth() * map.getTileWidth() + zoneDiam - 1)
 		//               / zoneDiam;
-		//    mapHeight = (map->getHeight() * map->getTileHeight() + zoneDiam - 1)
+		//    mapHeight = (map.getHeight() * map.getTileHeight() + zoneDiam - 1)
 		//                / zoneDiam;
 		//    zones = new MapZone[mapWidth * mapHeight];
 		//}
@@ -114,11 +114,11 @@ namespace invertika_game.Game
 		//{
 		//    // First, try allocating from the last used bucket.
 		//    ObjectBucket *b = buckets[last_bucket];
-		//    int i = b->allocate();
+		//    int i = b.allocate();
 		//    if (i >= 0)
 		//    {
-		//        b->objects[i] = obj;
-		//        obj->setPublicID(last_bucket * 256 + i);
+		//        b.objects[i] = obj;
+		//        obj.setPublicID(last_bucket * 256 + i);
 		//        return true;
 		//    }
 
@@ -136,12 +136,12 @@ namespace invertika_game.Game
 		//            buckets[i] = b;
 		//            LOG_DEBUG("New bucket created");
 		//        }
-		//        int j = b->allocate();
+		//        int j = b.allocate();
 		//        if (j >= 0)
 		//        {
 		//            last_bucket = i;
-		//            b->objects[j] = obj;
-		//            obj->setPublicID(last_bucket * 256 + j);
+		//            b.objects[j] = obj;
+		//            obj.setPublicID(last_bucket * 256 + j);
 		//            return true;
 		//        }
 		//    }
@@ -153,8 +153,8 @@ namespace invertika_game.Game
 
 		//void MapContent::deallocate(Actor *obj)
 		//{
-		//    unsigned short id = obj->getPublicID();
-		//    buckets[id / 256]->deallocate(id % 256);
+		//    unsigned short id = obj.getPublicID();
+		//    buckets[id / 256].deallocate(id % 256);
 		//}
 
 		//void MapContent::fillRegion(MapRegion &r, const Point &p, int radius) const

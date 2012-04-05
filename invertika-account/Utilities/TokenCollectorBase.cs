@@ -74,9 +74,9 @@ namespace invertika_account.Utilities
 			//for (std::list<Item>::reverse_iterator it = mPendingConnects.rbegin(),
 			//     it_end = mPendingConnects.rend(); it != it_end; ++it)
 			//{
-			//    if (it->token == token)
+			//    if (it.token == token)
 			//    {
-			//        foundMatch(data, it->data);
+			//        foundMatch(data, it.data);
 			//        mPendingConnects.erase(--it.base());
 			//        return;
 			//    }
@@ -98,9 +98,9 @@ namespace invertika_account.Utilities
 			//for (std::list<Item>::reverse_iterator it = mPendingClients.rbegin(),
 			//     it_end = mPendingClients.rend(); it != it_end; ++it)
 			//{
-			//    if (it->token == token)
+			//    if (it.token == token)
 			//    {
-			//        foundMatch(it->data, data);
+			//        foundMatch(it.data, data);
 			//        mPendingClients.erase(--it.base());
 			//        return;
 			//    }
@@ -122,7 +122,7 @@ namespace invertika_account.Utilities
 			//for (std::list<Item>::iterator it = mPendingClients.begin(),
 			//     it_end = mPendingClients.end(); it != it_end; ++it)
 			//{
-			//    if (it->data == data)
+			//    if (it.data == data)
 			//    {
 			//        mPendingClients.erase(it);
 			//        return;
@@ -139,16 +139,16 @@ namespace invertika_account.Utilities
 			//std::list<Item>::iterator it;
 
 			//it = mPendingConnects.begin();
-			//while (it != mPendingConnects.end() && it->timeStamp < threshold)
+			//while (it != mPendingConnects.end() && it.timeStamp < threshold)
 			//{
-			//    removedConnect(it->data);
+			//    removedConnect(it.data);
 			//    it = mPendingConnects.erase(it);
 			//}
 
 			//it = mPendingClients.begin();
-			//while (it != mPendingClients.end() && it->timeStamp < threshold)
+			//while (it != mPendingClients.end() && it.timeStamp < threshold)
 			//{
-			//    removedClient(it->data);
+			//    removedClient(it.data);
 			//    it = mPendingClients.erase(it);
 			//}
 

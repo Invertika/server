@@ -52,8 +52,8 @@ namespace invertika_account.Chat
 		{
 			//// create new guild member
 			//GuildMember *member = new GuildMember;
-			//member->mId = playerId;
-			//member->mPermissions = permissions;
+			//member.mId = playerId;
+			//member.mPermissions = permissions;
 
 			//// add new guild member to guild
 			//mMembers.push_back(member);
@@ -72,7 +72,7 @@ namespace invertika_account.Chat
 			//    std::list<GuildMember*>::iterator itr = mMembers.begin();
 			//    ++itr;
 			//    if (itr != mMembers.end())
-			//        setOwner((*itr)->mId);
+			//        setOwner((*itr).mId);
 			//}
 			//GuildMember *member = getMember(playerId);
 			//if (member)
@@ -86,8 +86,8 @@ namespace invertika_account.Chat
 
 			//while (itr != itr_end)
 			//{
-			//    if ((*itr)->mPermissions == GAL_OWNER)
-			//        return (*itr)->mId;
+			//    if ((*itr).mPermissions == GAL_OWNER)
+			//        return (*itr).mId;
 			//    ++itr;
 			//}
 
@@ -99,7 +99,7 @@ namespace invertika_account.Chat
 			//GuildMember *member = getMember(playerId);
 			//if (member)
 			//{
-			//    member->mPermissions = GAL_OWNER;
+			//    member.mPermissions = GAL_OWNER;
 			//}
 		}
 
@@ -126,7 +126,7 @@ namespace invertika_account.Chat
 			//                                        itr_end = mMembers.end();
 			//while (itr != itr_end)
 			//{
-			//    if ((*itr)->mId == playerId)
+			//    if ((*itr).mId == playerId)
 			//        return (*itr);
 			//    ++itr;
 			//}
@@ -139,7 +139,7 @@ namespace invertika_account.Chat
 			//// Guild members with permissions above NONE can invite
 			//// Check that guild members permissions are not NONE
 			//GuildMember *member = getMember(playerId);
-			//if (member->mPermissions & GAL_INVITE)
+			//if (member.mPermissions & GAL_INVITE)
 			//    return true;
 			return false;
 		}
@@ -147,7 +147,7 @@ namespace invertika_account.Chat
 		public int getUserPermissions(int playerId)
 		{
 			//GuildMember *member = getMember(playerId);
-			//return member->mPermissions;
+			//return member.mPermissions;
 
 			return 0; //ssk
 		}
@@ -155,7 +155,7 @@ namespace invertika_account.Chat
 		void setUserPermissions(int playerId, int level)
 		{
 			//GuildMember *member = getMember(playerId);
-			//member->mPermissions = level;
+			//member.mPermissions = level;
 		}
 
 		/**

@@ -55,18 +55,18 @@ namespace invertika_game.Game
 			//    mGender(GENDER_UNSPECIFIED),
 			//    mDirection(DOWN)
 
-			//    const AttributeScope &attr = attributeManager->getAttributeScope(BeingScope);
+			//    const AttributeScope &attr = attributeManager.getAttributeScope(BeingScope);
 			//    LOG_DEBUG("Being creation: initialisation of " << attr.size() << " attributes.");
 			//    for (AttributeScope::const_iterator it1 = attr.begin(),
 			//         it1_end = attr.end();
 			//        it1 != it1_end;
 			//        ++it1)
 			//    {
-			//        if (mAttributes.count(it1->first))
-			//            LOG_WARN("Redefinition of attribute '" << it1->first << "'!");
-			//        LOG_DEBUG("Attempting to create attribute '" << it1->first << "'.");
-			//        mAttributes.insert(std::make_pair(it1->first,
-			//                                          Attribute(*it1->second)));
+			//        if (mAttributes.count(it1.first))
+			//            LOG_WARN("Redefinition of attribute '" << it1.first << "'!");
+			//        LOG_DEBUG("Attempting to create attribute '" << it1.first << "'.");
+			//        mAttributes.insert(std::make_pair(it1.first,
+			//                                          Attribute(*it1.second)));
 
 			//    }
 			//    // TODO: Way to define default base values?
@@ -195,7 +195,7 @@ namespace invertika_game.Game
 			//{
 			//    const EventListener &l = **i;
 			//    ++i; // In case the listener removes itself from the list on the fly.
-			//    if (l.dispatch->died) l.dispatch->died(&l, this);
+			//    if (l.dispatch.died) l.dispatch.died(&l, this);
 			//}
 		}
 
@@ -208,14 +208,14 @@ namespace invertika_game.Game
 
 		List<Point> findPath()
 		{
-			//Map *map = getMap()->getMap();
-			//int tileWidth = map->getTileWidth();
-			//int tileHeight = map->getTileHeight();
+			//Map *map = getMap().getMap();
+			//int tileWidth = map.getTileWidth();
+			//int tileHeight = map.getTileHeight();
 			//int startX = getPosition().x / tileWidth;
 			//int startY = getPosition().y / tileHeight;
 			//int destX = mDst.x / tileWidth, destY = mDst.y / tileHeight;
 
-			//return map->findPath(startX, startY, destX, destY, getWalkMask());
+			//return map.findPath(startX, startY, destX, destY, getWalkMask());
 
 			return null; //ssk
 		}
@@ -322,9 +322,9 @@ namespace invertika_game.Game
 			//    return;
 			//}
 
-			//Map *map = getMap()->getMap();
-			//int tileWidth = map->getTileWidth();
-			//int tileHeight = map->getTileHeight();
+			//Map *map = getMap().getMap();
+			//int tileWidth = map.getTileWidth();
+			//int tileHeight = map.getTileHeight();
 			//int tileSX = getPosition().x / tileWidth;
 			//int tileSY = getPosition().y / tileHeight;
 			//int tileDX = mDst.x / tileWidth;
@@ -352,7 +352,7 @@ namespace invertika_game.Game
 			//for (PathIterator pathIterator = mPath.begin();
 			//        pathIterator != mPath.end(); pathIterator++)
 			//{
-			//    if (!map->getWalk(pathIterator->x, pathIterator->y, getWalkMask()))
+			//    if (!map.getWalk(pathIterator.x, pathIterator.y, getWalkMask()))
 			//    {
 			//        mPath.clear();
 			//        break;
@@ -428,26 +428,26 @@ namespace invertika_game.Game
 			//// check target legality
 			//if (!target
 			//        || target == this
-			//        || target->getAction() == DEAD
-			//        || !target->canFight())
+			//        || target.getAction() == DEAD
+			//        || !target.canFight())
 			//    return -1;
 
-			//if (getMap()->getPvP() == PVP_NONE
-			//        && target->getType() == OBJECT_CHARACTER
+			//if (getMap().getPvP() == PVP_NONE
+			//        && target.getType() == OBJECT_CHARACTER
 			//        && getType() == OBJECT_CHARACTER)
 			//    return -1;
 
 			//// check if target is in range using the pythagorean theorem
-			//int distx = this->getPosition().x - target->getPosition().x;
-			//int disty = this->getPosition().y - target->getPosition().y;
+			//int distx = this.getPosition().x - target.getPosition().x;
+			//int disty = this.getPosition().y - target.getPosition().y;
 			//int distSquare = (distx * distx + disty * disty);
-			//int maxDist = damage.range + target->getSize();
+			//int maxDist = damage.range + target.getSize();
 			//if (maxDist * maxDist < distSquare)
 			//    return -1;
 
 			//// Note: The auto-attack system will handle the delay between two attacks.
 
-			//return (mTarget->damage(this, damage));
+			//return (mTarget.damage(this, damage));
 
 			return 0; //ssk
 		}
@@ -496,7 +496,7 @@ namespace invertika_game.Game
 			//}
 			//else
 			//{
-			//    ret->second.setBase(value);
+			//    ret.second.setBase(value);
 			//    updateDerivedAttributes(id);
 			//}
 		}
@@ -510,7 +510,7 @@ namespace invertika_game.Game
 			//              << id << " not found! Returning 0.");
 			//    return 0;
 			//}
-			//return ret->second.getBase();
+			//return ret.second.getBase();
 
 			return 0; //ssk
 		}
@@ -525,7 +525,7 @@ namespace invertika_game.Game
 			//              << id << " not found! Returning 0.");
 			//    return 0;
 			//}
-			//return ret->second.getModifiedAttribute();
+			//return ret.second.getModifiedAttribute();
 
 			return 0; //ssk
 		}
@@ -636,7 +636,7 @@ namespace invertika_game.Game
 			//StatusEffects::const_iterator it = mStatus.begin();
 			//while (it != mStatus.end())
 			//{
-			//    if (it->second.status->getId() == id)
+			//    if (it.second.status.getId() == id)
 			//        return true;
 			//    it++;
 			//}
@@ -646,7 +646,7 @@ namespace invertika_game.Game
 		uint getStatusEffectTime(int id)
 		{
 			//StatusEffects::const_iterator it = mStatus.find(id);
-			//if (it != mStatus.end()) return it->second.time;
+			//if (it != mStatus.end()) return it.second.time;
 			//else return 0;
 
 			return 0; //ssk
@@ -655,7 +655,7 @@ namespace invertika_game.Game
 		void setStatusEffectTime(int id, int time)
 		{
 			//StatusEffects::iterator it = mStatus.find(id);
-			//if (it != mStatus.end()) it->second.time = time;
+			//if (it != mStatus.end()) it.second.time = time;
 		}
 
 		void update()
@@ -663,7 +663,7 @@ namespace invertika_game.Game
 			////update timers
 			//for (Timers::iterator i = mTimers.begin(); i != mTimers.end(); i++)
 			//{
-			//    if (i->second > -1) i->second--;
+			//    if (i.second > -1) i.second--;
 			//}
 
 			//int oldHP = getModifiedAttribute(ATTR_HP);
@@ -692,18 +692,18 @@ namespace invertika_game.Game
 			//for (AttributeMap::iterator it = mAttributes.begin();
 			//     it != mAttributes.end();
 			//     ++it)
-			//    if (it->second.tick())
-			//        updateDerivedAttributes(it->first);
+			//    if (it.second.tick())
+			//        updateDerivedAttributes(it.first);
 
 			//// Update and run status effects
 			//StatusEffects::iterator it = mStatus.begin();
 			//while (it != mStatus.end())
 			//{
-			//    it->second.time--;
-			//    if (it->second.time > 0 && mAction != DEAD)
-			//        it->second.status->tick(this, it->second.time);
+			//    it.second.time--;
+			//    if (it.second.time > 0 && mAction != DEAD)
+			//        it.second.status.tick(this, it.second.time);
 
-			//    if (it->second.time <= 0 || mAction == DEAD)
+			//    if (it.second.time <= 0 || mAction == DEAD)
 			//    {
 			//        mStatus.erase(it);
 			//        it = mStatus.begin();
@@ -732,9 +732,9 @@ namespace invertika_game.Game
 			//{
 			//    mTimers[id] = value;
 			//}
-			//else if (i->second < value)
+			//else if (i.second < value)
 			//{
-			//    i->second = value;
+			//    i.second = value;
 			//}
 		}
 
@@ -746,7 +746,7 @@ namespace invertika_game.Game
 		int getTimer(TimerID id)
 		{
 			//Timers::const_iterator i = mTimers.find(id);
-			//return (i == mTimers.end()) ? -1 : i->second;
+			//return (i == mTimers.end()) ? -1 : i.second;
 
 			return 0; //ssk
 		}

@@ -62,10 +62,10 @@ namespace invertika_game.Scripting
 		{
 			//if (engines)
 			//{
-			//    Engines::const_iterator i = engines->find(engine);
-			//    if (i != engines->end())
+			//    Engines::const_iterator i = engines.find(engine);
+			//    if (i != engines.end())
 			//    {
-			//        return i->second();
+			//        return i.second();
 			//    }
 			//}
 			//LOG_ERROR("No scripting engine named " << engine);
@@ -120,7 +120,7 @@ namespace invertika_game.Scripting
 			//if (Script *script = Script::create(engineName))
 			//{
 			//    globalEventScript = script;
-			//    return globalEventScript->loadFile(file);
+			//    return globalEventScript.loadFile(file);
 			//}
 			return false;
 		}
@@ -130,11 +130,11 @@ namespace invertika_game.Scripting
 			bool isScriptHandled=false;
 			//if (Script *script = globalEventScript)
 			//{
-			//    script->setMap(obj->getMap());
-			//    script->prepare(function);
-			//    script->push(obj);
-			//    script->execute();
-			//    script->setMap(NULL);
+			//    script.setMap(obj.getMap());
+			//    script.prepare(function);
+			//    script.push(obj);
+			//    script.execute();
+			//    script.setMap(NULL);
 			//    isScriptHandled = true; // TODO: don't set to true when execution failed
 			//}
 			return isScriptHandled;
@@ -152,10 +152,10 @@ namespace invertika_game.Scripting
 			//{
 			//    if (Script *script = globalEventScript)
 			//    {
-			//        script->prepare("get_special_recharge_cost");
-			//        script->push(id);
-			//        int scriptReturn = script->execute();
-			//        special->neededMana = scriptReturn;
+			//        script.prepare("get_special_recharge_cost");
+			//        script.push(id);
+			//        int scriptReturn = script.execute();
+			//        special.neededMana = scriptReturn;
 			//    }
 			//}
 
@@ -165,10 +165,10 @@ namespace invertika_game.Scripting
 		{
 			//if (Script *script = globalEventScript)
 			//{
-			//    script->prepare("use_special");
-			//    script->push(caster);
-			//    script->push(specialId);
-			//    script->execute();
+			//    script.prepare("use_special");
+			//    script.push(caster);
+			//    script.push(specialId);
+			//    script.execute();
 			//}
 			return true;
 		}
@@ -177,10 +177,10 @@ namespace invertika_game.Scripting
 		{
 			//if (Script *script = globalEventScript)
 			//{
-			//    script->prepare("on_craft");
-			//    script->push(crafter);
-			//    script->push(recipe);
-			//    script->execute();
+			//    script.prepare("on_craft");
+			//    script.push(crafter);
+			//    script.push(recipe);
+			//    script.execute();
 			//}
 			return true;
 		}

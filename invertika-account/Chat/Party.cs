@@ -53,7 +53,7 @@ namespace invertika_account.Chat
 			//    MessageOut out(ManaServ::CPMSG_PARTY_NEW_MEMBER);
 			//    out.writeString(name);
 			//    out.writeString(inviter);
-			//    chatHandler->getClient(mUsers[i])->send(out);
+			//    chatHandler.getClient(mUsers[i]).send(out);
 			//}
 		}
 

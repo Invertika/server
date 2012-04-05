@@ -48,11 +48,11 @@ namespace invertika_game.Game
 		{
 			//if (mScript)
 			//{
-			//    mScript->setMap(target->getMap());
-			//    mScript->prepare("tick");
-			//    mScript->push(target);
-			//    mScript->push(count);
-			//    mScript->execute();
+			//    mScript.setMap(target.getMap());
+			//    mScript.prepare("tick");
+			//    mScript.push(target);
+			//    mScript.push(count);
+			//    mScript.execute();
 			//}
 		}
 	}

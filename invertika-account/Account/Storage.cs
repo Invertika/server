@@ -105,7 +105,7 @@ namespace invertika_account.Account
 
 		~Storage()
 		{
-			//if (mDb->isConnected()) close();
+			//if (mDb.isConnected()) close();
 		}
 
 		public void open()
@@ -162,7 +162,7 @@ namespace invertika_account.Account
 		{
 			//try
 			//{
-			//    const dal::RecordSet &accountInfo = mDb->processSql();
+			//    const dal::RecordSet &accountInfo = mDb.processSql();
 
 			//    // If the account is not even in the database then
 			//    // we have no choice but to return nothing.
@@ -177,22 +177,22 @@ namespace invertika_account.Account
 			//    // Create an Account instance
 			//    // and initialize it with information about the user.
 			//    Account *account = new Account(id);
-			//    account->setName(accountInfo(0, 1));
-			//    account->setPassword(accountInfo(0, 2));
-			//    account->setEmail(accountInfo(0, 3));
-			//    account->setRegistrationDate(toUint(accountInfo(0, 6)));
-			//    account->setLastLogin(toUint(accountInfo(0, 7)));
+			//    account.setName(accountInfo(0, 1));
+			//    account.setPassword(accountInfo(0, 2));
+			//    account.setEmail(accountInfo(0, 3));
+			//    account.setRegistrationDate(toUint(accountInfo(0, 6)));
+			//    account.setLastLogin(toUint(accountInfo(0, 7)));
 
 			//    int level = toUint(accountInfo(0, 4));
 			//    // Check if the user is permanently banned, or temporarily banned.
 			//    if (level == AL_BANNED
 			//        || time(0) <= (int) toUint(accountInfo(0, 5)))
 			//    {
-			//        account->setLevel(AL_BANNED);
+			//        account.setLevel(AL_BANNED);
 			//        // It is, so skip character loading.
 			//        return account;
 			//    }
-			//    account->setLevel(level);
+			//    account.setLevel(level);
 
 			//    // Correct on-the-fly the old 0 slot characters
 			//    // NOTE: Will be deprecated and removed at some point.
@@ -202,7 +202,7 @@ namespace invertika_account.Account
 			//    std::ostringstream sql;
 			//    sql << "select id from " << CHARACTERS_TBL_NAME << " where user_id = '"
 			//        << id << "';";
-			//    const dal::RecordSet &charInfo = mDb->execSql(sql.str());
+			//    const dal::RecordSet &charInfo = mDb.execSql(sql.str());
 
 			//    if (!charInfo.isEmpty())
 			//    {
@@ -222,7 +222,7 @@ namespace invertika_account.Account
 			//        {
 			//            if (Character *ptr = getCharacter(characterIDs[k], account))
 			//            {
-			//                characters[ptr->getCharacterSlot()] = ptr;
+			//                characters[ptr.getCharacterSlot()] = ptr;
 			//            }
 			//            else
 			//            {
@@ -231,7 +231,7 @@ namespace invertika_account.Account
 			//            }
 			//        }
 
-			//        account->setCharacters(characters);
+			//        account.setCharacters(characters);
 			//    }
 
 			//    return account;
@@ -255,7 +255,7 @@ namespace invertika_account.Account
 			//    std::ostringstream sql;
 			//    sql << "SELECT id, slot FROM " << CHARACTERS_TBL_NAME
 			//        << " where user_id = " << accountId;
-			//    const dal::RecordSet &charInfo = mDb->execSql(sql.str());
+			//    const dal::RecordSet &charInfo = mDb.execSql(sql.str());
 
 			//    // If the account is not even in the database then
 			//    // we can quit now.
@@ -301,9 +301,9 @@ namespace invertika_account.Account
 			//            sql.clear();
 			//            sql.str("");
 			//            sql << "UPDATE " << CHARACTERS_TBL_NAME
-			//                << " SET slot = " << i->second
-			//                << " where id = " << i->first;
-			//            mDb->execSql(sql.str());
+			//                << " SET slot = " << i.second
+			//                << " where id = " << i.first;
+			//            mDb.execSql(sql.str());
 			//        }
 
 			//        transaction.commit();
@@ -320,9 +320,9 @@ namespace invertika_account.Account
 		{
 			//std::ostringstream sql;
 			//sql << "SELECT * FROM " << ACCOUNTS_TBL_NAME << " WHERE username = ?";
-			//if (mDb->prepareSql(sql.str()))
+			//if (mDb.prepareSql(sql.str()))
 			//{
-			//    mDb->bindValue(1, userName);
+			//    mDb.bindValue(1, userName);
 			//    return getAccountBySQL();
 			//}
 			//return 0;
@@ -334,9 +334,9 @@ namespace invertika_account.Account
 		{
 			//std::ostringstream sql;
 			//sql << "SELECT * FROM " << ACCOUNTS_TBL_NAME << " WHERE id = ?";
-			//if (mDb->prepareSql(sql.str()))
+			//if (mDb.prepareSql(sql.str()))
 			//{
-			//    mDb->bindValue(1, accountID);
+			//    mDb.bindValue(1, accountID);
 			//    return getAccountBySQL();
 			//}
 			//return 0;
@@ -355,7 +355,7 @@ namespace invertika_account.Account
 
 			//try
 			//{
-			//    const dal::RecordSet &charInfo = mDb->processSql();
+			//    const dal::RecordSet &charInfo = mDb.processSql();
 
 			//    // If the character is not even in the database then
 			//    // we have no choice but to return nothing.
@@ -368,44 +368,44 @@ namespace invertika_account.Account
 			//    string_to< double > toDouble;
 
 			//    character = new Character(charInfo(0, 2), toUint(charInfo(0, 0)));
-			//    character->setGender(toUshort(charInfo(0, 3)));
-			//    character->setHairStyle(toUshort(charInfo(0, 4)));
-			//    character->setHairColor(toUshort(charInfo(0, 5)));
-			//    character->setLevel(toUshort(charInfo(0, 6)));
-			//    character->setCharacterPoints(toUshort(charInfo(0, 7)));
-			//    character->setCorrectionPoints(toUshort(charInfo(0, 8)));
+			//    character.setGender(toUshort(charInfo(0, 3)));
+			//    character.setHairStyle(toUshort(charInfo(0, 4)));
+			//    character.setHairColor(toUshort(charInfo(0, 5)));
+			//    character.setLevel(toUshort(charInfo(0, 6)));
+			//    character.setCharacterPoints(toUshort(charInfo(0, 7)));
+			//    character.setCorrectionPoints(toUshort(charInfo(0, 8)));
 			//    Point pos(toInt(charInfo(0, 9)), toInt(charInfo(0, 10)));
-			//    character->setPosition(pos);
+			//    character.setPosition(pos);
 
 			//    int mapId = toUint(charInfo(0, 11));
 			//    if (mapId > 0)
 			//    {
-			//        character->setMapId(mapId);
+			//        character.setMapId(mapId);
 			//    }
 			//    else
 			//    {
 			//        // Set character to default map and one of the default location
 			//        // Default map is to be 1, as not found return value will be 0.
-			//        character->setMapId(Configuration::getValue("char_defaultMap", 1));
+			//        character.setMapId(Configuration::getValue("char_defaultMap", 1));
 			//    }
 
-			//    character->setCharacterSlot(toUint(charInfo(0, 12)));
+			//    character.setCharacterSlot(toUint(charInfo(0, 12)));
 
 			//    // Fill the account-related fields. Last step, as it may require a new
 			//    // SQL query.
 			//    if (owner)
 			//    {
-			//        character->setAccount(owner);
+			//        character.setAccount(owner);
 			//    }
 			//    else
 			//    {
 			//        int id = toUint(charInfo(0, 1));
-			//        character->setAccountID(id);
+			//        character.setAccountID(id);
 			//        std::ostringstream s;
 			//        s << "select level from " << ACCOUNTS_TBL_NAME
 			//          << " where id = '" << id << "';";
-			//        const dal::RecordSet &levelInfo = mDb->execSql(s.str());
-			//        character->setAccountLevel(toUint(levelInfo(0, 0)), true);
+			//        const dal::RecordSet &levelInfo = mDb.execSql(s.str());
+			//        character.setAccountLevel(toUint(levelInfo(0, 0)), true);
 			//    }
 
 			//    std::ostringstream s;
@@ -413,17 +413,17 @@ namespace invertika_account.Account
 			//    // Load attributes.
 			//    s << "SELECT attr_id, attr_base, attr_mod "
 			//      << "FROM " << CHAR_ATTR_TBL_NAME << " "
-			//      << "WHERE char_id = " << character->getDatabaseID();
+			//      << "WHERE char_id = " << character.getDatabaseID();
 
-			//    const dal::RecordSet &attrInfo = mDb->execSql(s.str());
+			//    const dal::RecordSet &attrInfo = mDb.execSql(s.str());
 			//    if (!attrInfo.isEmpty())
 			//    {
 			//        const unsigned int nRows = attrInfo.rows();
 			//        for (unsigned int row = 0; row < nRows; ++row)
 			//        {
 			//            unsigned int id = toUint(attrInfo(row, 0));
-			//            character->setAttribute(id,    toDouble(attrInfo(row, 1)));
-			//            character->setModAttribute(id, toDouble(attrInfo(row, 2)));
+			//            character.setAttribute(id,    toDouble(attrInfo(row, 1)));
+			//            character.setModAttribute(id, toDouble(attrInfo(row, 2)));
 			//        }
 			//    }
 
@@ -433,15 +433,15 @@ namespace invertika_account.Account
 			//    // Load the skills of the char from CHAR_SKILLS_TBL_NAME
 			//    s << "select status_id, status_time FROM "
 			//      << CHAR_STATUS_EFFECTS_TBL_NAME
-			//      << " WHERE char_id = " << character->getDatabaseID();
+			//      << " WHERE char_id = " << character.getDatabaseID();
 
-			//    const dal::RecordSet &skillInfo = mDb->execSql(s.str());
+			//    const dal::RecordSet &skillInfo = mDb.execSql(s.str());
 			//    if (!skillInfo.isEmpty())
 			//    {
 			//        const unsigned int nRows = skillInfo.rows();
 			//        for (unsigned int row = 0; row < nRows; row++)
 			//        {
-			//            character->setExperience(
+			//            character.setExperience(
 			//                toUint(skillInfo(row, 0)),  // Skill Id
 			//                toUint(skillInfo(row, 1))); // Experience
 			//        }
@@ -452,14 +452,14 @@ namespace invertika_account.Account
 			//    s.str("");
 			//    s << "select status_id, status_time FROM "
 			//      << CHAR_STATUS_EFFECTS_TBL_NAME
-			//      << " WHERE char_id = " << character->getDatabaseID();
-			//    const dal::RecordSet &statusInfo = mDb->execSql(s.str());
+			//      << " WHERE char_id = " << character.getDatabaseID();
+			//    const dal::RecordSet &statusInfo = mDb.execSql(s.str());
 			//    if (!statusInfo.isEmpty())
 			//    {
 			//        const unsigned int nRows = statusInfo.rows();
 			//        for (unsigned int row = 0; row < nRows; row++)
 			//        {
-			//            character->applyStatusEffect(
+			//            character.applyStatusEffect(
 			//                toUint(statusInfo(row, 0)), // Status Id
 			//                toUint(statusInfo(row, 1))); // Time
 			//        }
@@ -469,14 +469,14 @@ namespace invertika_account.Account
 			//    s.clear();
 			//    s.str("");
 			//    s << "select monster_id, kills FROM " << CHAR_KILL_COUNT_TBL_NAME
-			//      << " WHERE char_id = " << character->getDatabaseID();
-			//    const dal::RecordSet &killsInfo = mDb->execSql(s.str());
+			//      << " WHERE char_id = " << character.getDatabaseID();
+			//    const dal::RecordSet &killsInfo = mDb.execSql(s.str());
 			//    if (!killsInfo.isEmpty())
 			//    {
 			//        const unsigned int nRows = killsInfo.rows();
 			//        for (unsigned int row = 0; row < nRows; row++)
 			//        {
-			//            character->setKillCount(
+			//            character.setKillCount(
 			//                toUint(killsInfo(row, 0)), // MonsterID
 			//                toUint(killsInfo(row, 1))); // Kills
 			//        }
@@ -486,13 +486,13 @@ namespace invertika_account.Account
 			//    s.clear();
 			//    s.str("");
 			//    s << "select special_id FROM " << CHAR_SPECIALS_TBL_NAME
-			//      << " WHERE char_id = " << character->getDatabaseID();
-			//    const dal::RecordSet &specialsInfo = mDb->execSql(s.str());
+			//      << " WHERE char_id = " << character.getDatabaseID();
+			//    const dal::RecordSet &specialsInfo = mDb.execSql(s.str());
 			//    if (!specialsInfo.isEmpty())
 			//    {
 			//        const unsigned int nRows = specialsInfo.rows();
 			//        for (unsigned int row = 0; row < nRows; row++)
-			//            character->giveSpecial(toUint(specialsInfo(row, 0)));
+			//            character.giveSpecial(toUint(specialsInfo(row, 0)));
 			//    }
 			//}
 			//catch (const dal::DbSqlQueryExecFailure &e)
@@ -501,7 +501,7 @@ namespace invertika_account.Account
 			//                      e);
 			//}
 
-			//Possessions &poss = character->getPossessions();
+			//Possessions &poss = character.getPossessions();
 
 			//try
 			//{
@@ -509,10 +509,10 @@ namespace invertika_account.Account
 			//    sql << " select slot_type, item_id, item_instance from "
 			//        << CHAR_EQUIPS_TBL_NAME
 			//        << " where owner_id = '"
-			//        << character->getDatabaseID() << "' order by slot_type desc;";
+			//        << character.getDatabaseID() << "' order by slot_type desc;";
 
 			//    EquipData equipData;
-			//    const dal::RecordSet &equipInfo = mDb->execSql(sql.str());
+			//    const dal::RecordSet &equipInfo = mDb.execSql(sql.str());
 			//    if (!equipInfo.isEmpty())
 			//    {
 			//        EquipmentItem equipItem;
@@ -538,10 +538,10 @@ namespace invertika_account.Account
 			//    std::ostringstream sql;
 			//    sql << " select * from " << INVENTORIES_TBL_NAME
 			//        << " where owner_id = '"
-			//        << character->getDatabaseID() << "' order by slot asc;";
+			//        << character.getDatabaseID() << "' order by slot asc;";
 
 			//    InventoryData inventoryData;
-			//    const dal::RecordSet &itemInfo = mDb->execSql(sql.str());
+			//    const dal::RecordSet &itemInfo = mDb.execSql(sql.str());
 			//    if (!itemInfo.isEmpty())
 			//    {
 			//        for (int k = 0, size = itemInfo.rows(); k < size; ++k)
@@ -588,10 +588,10 @@ namespace invertika_account.Account
 			//    sql << "SELECT COUNT(username) FROM " << ACCOUNTS_TBL_NAME
 			//        << " WHERE username = ?";
 
-			//    if (mDb->prepareSql(sql.str()))
+			//    if (mDb.prepareSql(sql.str()))
 			//    {
-			//        mDb->bindValue(1, name);
-			//        const dal::RecordSet &accountInfo = mDb->processSql();
+			//        mDb.bindValue(1, name);
+			//        const dal::RecordSet &accountInfo = mDb.processSql();
 
 			//        std::istringstream ssStream(accountInfo(0, 0));
 			//        unsigned int iReturn = 1;
@@ -621,10 +621,10 @@ namespace invertika_account.Account
 			//    std::ostringstream sql;
 			//    sql << "SELECT COUNT(email) FROM " << ACCOUNTS_TBL_NAME
 			//        << " WHERE UPPER(email) = UPPER(?)";
-			//    if (mDb->prepareSql(sql.str()))
+			//    if (mDb.prepareSql(sql.str()))
 			//    {
-			//        mDb->bindValue(1, email);
-			//        const dal::RecordSet &accountInfo = mDb->processSql();
+			//        mDb.bindValue(1, email);
+			//        const dal::RecordSet &accountInfo = mDb.processSql();
 
 			//        std::istringstream ssStream(accountInfo(0, 0));
 			//        unsigned int iReturn = 1;
@@ -654,11 +654,11 @@ namespace invertika_account.Account
 			//    std::ostringstream sql;
 			//    sql << "SELECT COUNT(name) FROM " << CHARACTERS_TBL_NAME
 			//        << " WHERE name = ?";
-			//    if (mDb->prepareSql(sql.str()))
+			//    if (mDb.prepareSql(sql.str()))
 			//    {
-			//        mDb->bindValue(1, name);
+			//        mDb.bindValue(1, name);
 
-			//        const dal::RecordSet &accountInfo = mDb->processSql();
+			//        const dal::RecordSet &accountInfo = mDb.processSql();
 
 			//        std::istringstream ssStream(accountInfo(0, 0));
 			//        int iReturn = 1;
@@ -692,19 +692,19 @@ namespace invertika_account.Account
 			//    sqlUpdateCharacterInfo
 			//        << "update "        << CHARACTERS_TBL_NAME << " "
 			//        << "set "
-			//        << "gender = '"     << character->getGender() << "', "
-			//        << "hair_style = '" << character->getHairStyle() << "', "
-			//        << "hair_color = '" << character->getHairColor() << "', "
-			//        << "level = '"      << character->getLevel() << "', "
-			//        << "char_pts = '"   << character->getCharacterPoints() << "', "
-			//        << "correct_pts = '"<< character->getCorrectionPoints() << "', "
-			//        << "x = '"          << character->getPosition().x << "', "
-			//        << "y = '"          << character->getPosition().y << "', "
-			//        << "map_id = '"     << character->getMapId() << "', "
-			//        << "slot = '"     << character->getCharacterSlot() << "' "
-			//        << "where id = '"   << character->getDatabaseID() << "';";
+			//        << "gender = '"     << character.getGender() << "', "
+			//        << "hair_style = '" << character.getHairStyle() << "', "
+			//        << "hair_color = '" << character.getHairColor() << "', "
+			//        << "level = '"      << character.getLevel() << "', "
+			//        << "char_pts = '"   << character.getCharacterPoints() << "', "
+			//        << "correct_pts = '"<< character.getCorrectionPoints() << "', "
+			//        << "x = '"          << character.getPosition().x << "', "
+			//        << "y = '"          << character.getPosition().y << "', "
+			//        << "map_id = '"     << character.getMapId() << "', "
+			//        << "slot = '"     << character.getCharacterSlot() << "' "
+			//        << "where id = '"   << character.getDatabaseID() << "';";
 
-			//    mDb->execSql(sqlUpdateCharacterInfo.str());
+			//    mDb.execSql(sqlUpdateCharacterInfo.str());
 			//}
 			//catch (const dal::DbSqlQueryExecFailure& e)
 			//{
@@ -715,10 +715,10 @@ namespace invertika_account.Account
 			//// Character attributes.
 			//try
 			//{
-			//    for (AttributeMap::const_iterator it = character->mAttributes.begin(),
-			//         it_end = character->mAttributes.end(); it != it_end; ++it)
-			//        updateAttribute(character->getDatabaseID(), it->first,
-			//                        it->second.base, it->second.modified);
+			//    for (AttributeMap::const_iterator it = character.mAttributes.begin(),
+			//         it_end = character.mAttributes.end(); it != it_end; ++it)
+			//        updateAttribute(character.getDatabaseID(), it.first,
+			//                        it.second.base, it.second.modified);
 			//}
 			//catch (const dal::DbSqlQueryExecFailure &e)
 			//{
@@ -730,11 +730,11 @@ namespace invertika_account.Account
 			//try
 			//{
 			//    std::map<int, int>::const_iterator skill_it;
-			//    for (skill_it = character->mExperience.begin();
-			//         skill_it != character->mExperience.end(); skill_it++)
+			//    for (skill_it = character.mExperience.begin();
+			//         skill_it != character.mExperience.end(); skill_it++)
 			//    {
-			//        updateExperience(character->getDatabaseID(),
-			//                         skill_it->first, skill_it->second);
+			//        updateExperience(character.getDatabaseID(),
+			//                         skill_it.first, skill_it.second);
 			//    }
 			//}
 			//catch (const dal::DbSqlQueryExecFailure& e)
@@ -747,11 +747,11 @@ namespace invertika_account.Account
 			//try
 			//{
 			//    std::map<int, int>::const_iterator kill_it;
-			//    for (kill_it = character->getKillCountBegin();
-			//         kill_it != character->getKillCountEnd(); kill_it++)
+			//    for (kill_it = character.getKillCountBegin();
+			//         kill_it != character.getKillCountEnd(); kill_it++)
 			//    {
-			//        updateKillCount(character->getDatabaseID(),
-			//                        kill_it->first, kill_it->second);
+			//        updateKillCount(character.getDatabaseID(),
+			//                        kill_it.first, kill_it.second);
 			//    }
 			//}
 			//catch (const dal::DbSqlQueryExecFailure& e)
@@ -768,19 +768,19 @@ namespace invertika_account.Account
 			//    std::ostringstream insertSql;
 			//    deleteSql   << "DELETE FROM " << CHAR_SPECIALS_TBL_NAME
 			//                << " WHERE char_id='"
-			//                << character->getDatabaseID() << "';";
-			//    mDb->execSql(deleteSql.str());
+			//                << character.getDatabaseID() << "';";
+			//    mDb.execSql(deleteSql.str());
 			//    // In with the new
 			//    std::map<int, Special*>::const_iterator special_it;
-			//    for (special_it = character->getSpecialBegin();
-			//         special_it != character->getSpecialEnd(); special_it++)
+			//    for (special_it = character.getSpecialBegin();
+			//         special_it != character.getSpecialEnd(); special_it++)
 			//    {
 			//        insertSql.str("");
 			//        insertSql   << "INSERT INTO " << CHAR_SPECIALS_TBL_NAME
 			//                    << " (char_id, special_id) VALUES ("
-			//                    << " '" << character->getDatabaseID() << "',"
-			//                    << " '" << special_it->first << "');";
-			//        mDb->execSql(insertSql.str());
+			//                    << " '" << character.getDatabaseID() << "',"
+			//                    << " '" << special_it.first << "');";
+			//        mDb.execSql(insertSql.str());
 			//    }
 			//}
 			//catch (const dal::DbSqlQueryExecFailure& e)
@@ -796,14 +796,14 @@ namespace invertika_account.Account
 			//    std::ostringstream sqlDeleteCharacterEquipment;
 			//    sqlDeleteCharacterEquipment
 			//        << "delete from " << CHAR_EQUIPS_TBL_NAME
-			//        << " where owner_id = '" << character->getDatabaseID() << "';";
-			//    mDb->execSql(sqlDeleteCharacterEquipment.str());
+			//        << " where owner_id = '" << character.getDatabaseID() << "';";
+			//    mDb.execSql(sqlDeleteCharacterEquipment.str());
 
 			//    std::ostringstream sqlDeleteCharacterInventory;
 			//    sqlDeleteCharacterInventory
 			//        << "delete from " << INVENTORIES_TBL_NAME
-			//        << " where owner_id = '" << character->getDatabaseID() << "';";
-			//    mDb->execSql(sqlDeleteCharacterInventory.str());
+			//        << " where owner_id = '" << character.getDatabaseID() << "';";
+			//    mDb.execSql(sqlDeleteCharacterInventory.str());
 			//}
 			//catch (const dal::DbSqlQueryExecFailure& e)
 			//{
@@ -818,25 +818,25 @@ namespace invertika_account.Account
 
 			//    sql << "insert into " << CHAR_EQUIPS_TBL_NAME
 			//        << " (owner_id, slot_type, item_id, item_instance) values ("
-			//        << character->getDatabaseID() << ", ";
+			//        << character.getDatabaseID() << ", ";
 			//    std::string base = sql.str();
 
-			//    const Possessions &poss = character->getPossessions();
+			//    const Possessions &poss = character.getPossessions();
 			//    const EquipData &equipData = poss.getEquipment();
 			//    for (EquipData::const_iterator it = equipData.begin(),
 			//         it_end = equipData.end(); it != it_end; ++it)
 			//    {
 			//            sql.str("");
-			//            sql << base << it->first << ", " << it->second.itemId
-			//                << ", " << it->second.itemInstance << ");";
-			//            mDb->execSql(sql.str());
+			//            sql << base << it.first << ", " << it.second.itemId
+			//                << ", " << it.second.itemInstance << ");";
+			//            mDb.execSql(sql.str());
 			//    }
 
 			//    sql.str("");
 
 			//    sql << "insert into " << INVENTORIES_TBL_NAME
 			//        << " (owner_id, slot, class_id, amount) values ("
-			//        << character->getDatabaseID() << ", ";
+			//        << character.getDatabaseID() << ", ";
 			//    base = sql.str();
 
 			//    const InventoryData &inventoryData = poss.getInventory();
@@ -844,12 +844,12 @@ namespace invertika_account.Account
 			//         j_end = inventoryData.end(); j != j_end; ++j)
 			//    {
 			//        sql.str("");
-			//        unsigned short slot = j->first;
-			//        unsigned int itemId = j->second.itemId;
-			//        unsigned int amount = j->second.amount;
+			//        unsigned short slot = j.first;
+			//        unsigned int itemId = j.second.itemId;
+			//        unsigned int amount = j.second.amount;
 			//        assert(itemId);
 			//        sql << base << slot << ", " << itemId << ", " << amount << ");";
-			//        mDb->execSql(sql.str());
+			//        mDb.execSql(sql.str());
 			//    }
 
 			//}
@@ -867,9 +867,9 @@ namespace invertika_account.Account
 			//    std::ostringstream sql;
 
 			//    sql << "delete from " << CHAR_STATUS_EFFECTS_TBL_NAME
-			//        << " where char_id = '" << character->getDatabaseID() << "';";
+			//        << " where char_id = '" << character.getDatabaseID() << "';";
 
-			//     mDb->execSql(sql.str());
+			//     mDb.execSql(sql.str());
 			//}
 			//catch (const dal::DbSqlQueryExecFailure& e)
 			//{
@@ -879,11 +879,11 @@ namespace invertika_account.Account
 			//try
 			//{
 			//    std::map<int, int>::const_iterator status_it;
-			//    for (status_it = character->getStatusEffectBegin();
-			//         status_it != character->getStatusEffectEnd(); status_it++)
+			//    for (status_it = character.getStatusEffectBegin();
+			//         status_it != character.getStatusEffectEnd(); status_it++)
 			//    {
-			//        insertStatusEffect(character->getDatabaseID(),
-			//                           status_it->first, status_it->second);
+			//        insertStatusEffect(character.getDatabaseID(),
+			//                           status_it.first, status_it.second);
 			//    }
 			//}
 			//catch (const dal::DbSqlQueryExecFailure& e)
@@ -900,13 +900,13 @@ namespace invertika_account.Account
 		{
 			// Note: Deprecated, use DALStorage::updateExperience instead!!!
 			// TODO: Remove calls of flushSkill for updateExperience instead.
-			//updateExperience(character->getDatabaseID(), skillId,
-			//    character->getExperience(skillId));
+			//updateExperience(character.getDatabaseID(), skillId,
+			//    character.getExperience(skillId));
 		}
 
 		void addAccount(ISL.Server.Account.Account account)
 		{
-			//assert(account->getCharacters().size() == 0);
+			//assert(account.getCharacters().size() == 0);
 
 			//using namespace dal;
 
@@ -918,18 +918,18 @@ namespace invertika_account.Account
 			//         << " (username, password, email, level, "
 			//         << "banned, registration, lastlogin)"
 			//         << " VALUES (?, ?, ?, "
-			//         << account->getLevel() << ", 0, "
-			//         << account->getRegistrationDate() << ", "
-			//         << account->getLastLogin() << ");";
+			//         << account.getLevel() << ", 0, "
+			//         << account.getRegistrationDate() << ", "
+			//         << account.getLastLogin() << ");";
 
-			//    if (mDb->prepareSql(sql.str()))
+			//    if (mDb.prepareSql(sql.str()))
 			//    {
-			//        mDb->bindValue(1, account->getName());
-			//        mDb->bindValue(2, account->getPassword());
-			//        mDb->bindValue(3, account->getEmail());
+			//        mDb.bindValue(1, account.getName());
+			//        mDb.bindValue(2, account.getPassword());
+			//        mDb.bindValue(3, account.getEmail());
 
-			//        mDb->processSql();
-			//        account->setID(mDb->getLastId());
+			//        mDb.processSql();
+			//        account.setID(mDb.getLastId());
 			//    }
 			//    else
 			//    {
@@ -945,7 +945,7 @@ namespace invertika_account.Account
 
 		void flush(ISL.Server.Account.Account account)
 		{
-			//assert(account->getID() >= 0);
+			//assert(account.getID() >= 0);
 
 			//using namespace dal;
 
@@ -960,16 +960,16 @@ namespace invertika_account.Account
 			//         << " set username = ?, password = ?, email = ?, "
 			//         << "level = ?, lastlogin = ? where id = ?;";
 
-			//    if (mDb->prepareSql(sqlUpdateAccountTable.str()))
+			//    if (mDb.prepareSql(sqlUpdateAccountTable.str()))
 			//    {
-			//        mDb->bindValue(1, account->getName());
-			//        mDb->bindValue(2, account->getPassword());
-			//        mDb->bindValue(3, account->getEmail());
-			//        mDb->bindValue(4, account->getLevel());
-			//        mDb->bindValue(5, account->getLastLogin());
-			//        mDb->bindValue(6, account->getID());
+			//        mDb.bindValue(1, account.getName());
+			//        mDb.bindValue(2, account.getPassword());
+			//        mDb.bindValue(3, account.getEmail());
+			//        mDb.bindValue(4, account.getLevel());
+			//        mDb.bindValue(5, account.getLastLogin());
+			//        mDb.bindValue(6, account.getID());
 
-			//        mDb->processSql();
+			//        mDb.processSql();
 			//    }
 			//    else
 			//    {
@@ -978,14 +978,14 @@ namespace invertika_account.Account
 			//    }
 
 			//    // Get the list of characters that belong to this account.
-			//    Characters &characters = account->getCharacters();
+			//    Characters &characters = account.getCharacters();
 
 			//    // Insert or update the characters.
 			//    for (Characters::const_iterator it = characters.begin(),
 			//         it_end = characters.end(); it != it_end; ++it)
 			//    {
 			//        Character *character = (*it).second;
-			//        if (character->getDatabaseID() >= 0)
+			//        if (character.getDatabaseID() >= 0)
 			//        {
 			//            updateCharacter(character);
 			//        }
@@ -1000,43 +1000,43 @@ namespace invertika_account.Account
 			//                 << " (user_id, name, gender, hair_style, hair_color,"
 			//                 << " level, char_pts, correct_pts,"
 			//                 << " x, y, map_id, slot) values ("
-			//                 << account->getID() << ", \""
-			//                 << character->getName() << "\", "
-			//                 << character->getGender() << ", "
-			//                 << (int)character->getHairStyle() << ", "
-			//                 << (int)character->getHairColor() << ", "
-			//                 << (int)character->getLevel() << ", "
-			//                 << (int)character->getCharacterPoints() << ", "
-			//                 << (int)character->getCorrectionPoints() << ", "
-			//                 << character->getPosition().x << ", "
-			//                 << character->getPosition().y << ", "
-			//                 << character->getMapId() << ", "
-			//                 << character->getCharacterSlot()
+			//                 << account.getID() << ", \""
+			//                 << character.getName() << "\", "
+			//                 << character.getGender() << ", "
+			//                 << (int)character.getHairStyle() << ", "
+			//                 << (int)character.getHairColor() << ", "
+			//                 << (int)character.getLevel() << ", "
+			//                 << (int)character.getCharacterPoints() << ", "
+			//                 << (int)character.getCorrectionPoints() << ", "
+			//                 << character.getPosition().x << ", "
+			//                 << character.getPosition().y << ", "
+			//                 << character.getMapId() << ", "
+			//                 << character.getCharacterSlot()
 			//                 << ");";
 
-			//            mDb->execSql(sqlInsertCharactersTable.str());
+			//            mDb.execSql(sqlInsertCharactersTable.str());
 
 			//            // Update the character ID.
-			//            character->setDatabaseID(mDb->getLastId());
+			//            character.setDatabaseID(mDb.getLastId());
 
 			//            // Update all attributes.
 			//            AttributeMap::const_iterator attr_it, attr_end;
-			//            for (attr_it =  character->mAttributes.begin(),
-			//                 attr_end = character->mAttributes.end();
+			//            for (attr_it =  character.mAttributes.begin(),
+			//                 attr_end = character.mAttributes.end();
 			//                 attr_it != attr_end; ++attr_it)
 			//            {
-			//                updateAttribute(character->getDatabaseID(), attr_it->first,
-			//                                attr_it->second.base,
-			//                                attr_it->second.modified);
+			//                updateAttribute(character.getDatabaseID(), attr_it.first,
+			//                                attr_it.second.base,
+			//                                attr_it.second.modified);
 			//            }
 
 			//            // Update the characters skill
 			//            std::map<int, int>::const_iterator skill_it;
-			//            for (skill_it = character->mExperience.begin();
-			//                 skill_it != character->mExperience.end(); skill_it++)
+			//            for (skill_it = character.mExperience.begin();
+			//                 skill_it != character.mExperience.end(); skill_it++)
 			//            {
-			//                updateExperience(character->getDatabaseID(),
-			//                                 skill_it->first, skill_it->second);
+			//                updateExperience(character.getDatabaseID(),
+			//                                 skill_it.first, skill_it.second);
 			//            }
 			//        }
 			//    }
@@ -1052,10 +1052,10 @@ namespace invertika_account.Account
 			//    std::ostringstream sqlSelectNameIdCharactersTable;
 			//    sqlSelectNameIdCharactersTable
 			//        << "select name, id from " << CHARACTERS_TBL_NAME
-			//        << " where user_id = '" << account->getID() << "';";
+			//        << " where user_id = '" << account.getID() << "';";
 
 			//    const RecordSet& charInMemInfo =
-			//        mDb->execSql(sqlSelectNameIdCharactersTable.str());
+			//        mDb.execSql(sqlSelectNameIdCharactersTable.str());
 
 			//    // We compare chars from memory and those existing in db,
 			//    // and delete those not in mem but existing in db.
@@ -1066,7 +1066,7 @@ namespace invertika_account.Account
 			//        for (Characters::const_iterator it = characters.begin(),
 			//             it_end = characters.end(); it != it_end; ++it) // In memory
 			//        {
-			//            if (charInMemInfo(i, 0) == (*it).second->getName())
+			//            if (charInMemInfo(i, 0) == (*it).second.getName())
 			//            {
 			//                charFound = true;
 			//                break;
@@ -1102,11 +1102,11 @@ namespace invertika_account.Account
 			//    // Delete the account.
 			//    std::ostringstream sql;
 			//    sql << "delete from " << ACCOUNTS_TBL_NAME
-			//        << " where id = '" << account->getID() << "';";
-			//    mDb->execSql(sql.str());
+			//        << " where id = '" << account.getID() << "';";
+			//    mDb.execSql(sql.str());
 
 			//    // Remove the account's characters.
-			//    account->setCharacters(Characters());
+			//    account.setCharacters(Characters());
 			//}
 			//catch (const std::exception &e)
 			//{
@@ -1120,9 +1120,9 @@ namespace invertika_account.Account
 			//{
 			//    std::ostringstream sql;
 			//    sql << "UPDATE " << ACCOUNTS_TBL_NAME
-			//        << "   SET lastlogin = '" << account->getLastLogin() << "'"
-			//        << " WHERE id = '" << account->getID() << "';";
-			//    mDb->execSql(sql.str());
+			//        << "   SET lastlogin = '" << account.getLastLogin() << "'"
+			//        << " WHERE id = '" << account.getID() << "';";
+			//    mDb.execSql(sql.str());
 			//}
 			//catch (const dal::DbSqlQueryExecFailure &e)
 			//{
@@ -1141,7 +1141,7 @@ namespace invertika_account.Account
 			//        << " correct_pts = " << corrPoints << ", "
 			//        << " WHERE id = " << charId;
 
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 			//}
 			//catch (dal::DbSqlQueryExecFailure &e)
 			//{
@@ -1162,7 +1162,7 @@ namespace invertika_account.Account
 			//        sql << "DELETE FROM " << CHAR_SKILLS_TBL_NAME
 			//            << " WHERE char_id = " << charId
 			//            << " AND skill_id = " << skillId;
-			//        mDb->execSql(sql.str());
+			//        mDb.execSql(sql.str());
 			//        return;
 			//    }
 
@@ -1173,10 +1173,10 @@ namespace invertika_account.Account
 			//        << " SET skill_exp = " << skillValue
 			//        << " WHERE char_id = " << charId
 			//        << " AND skill_id = " << skillId;
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 
 			//    // Check if the update has modified a row
-			//    if (mDb->getModifiedRows() > 0)
+			//    if (mDb.getModifiedRows() > 0)
 			//        return;
 
 			//    sql.clear();
@@ -1186,7 +1186,7 @@ namespace invertika_account.Account
 			//        << charId << ", "
 			//        << skillId << ", "
 			//        << skillValue << ")";
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 			//}
 			//catch (const dal::DbSqlQueryExecFailure &e)
 			//{
@@ -1205,10 +1205,10 @@ namespace invertika_account.Account
 			//        << "attr_mod = '" << mod << "' "
 			//        << "WHERE char_id = '" << charId << "' "
 			//        << "AND attr_id = '" << attrId << "';";
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 
 			//    // If this has modified a row, we're done, it updated sucessfully.
-			//    if (mDb->getModifiedRows() > 0)
+			//    if (mDb.getModifiedRows() > 0)
 			//        return;
 
 			//    // If it did not change anything,
@@ -1219,7 +1219,7 @@ namespace invertika_account.Account
 			//        << " (char_id, attr_id, attr_base, attr_mod) VALUES ( "
 			//        << charId << ", " << attrId << ", " << base << ", "
 			//        << mod << ")";
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 			//}
 			//catch (const dal::DbSqlQueryExecFailure &e)
 			//{
@@ -1238,10 +1238,10 @@ namespace invertika_account.Account
 			//        << " SET kills = " << kills
 			//        << " WHERE char_id = " << charId
 			//        << " AND monster_id = " << monsterId;
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 
 			//    // Check if the update has modified a row
-			//    if (mDb->getModifiedRows() > 0)
+			//    if (mDb.getModifiedRows() > 0)
 			//        return;
 
 			//    sql.clear();
@@ -1251,7 +1251,7 @@ namespace invertika_account.Account
 			//        << charId << ", "
 			//        << monsterId << ", "
 			//        << kills << ")";
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 			//}
 			//catch (const dal::DbSqlQueryExecFailure &e)
 			//{
@@ -1271,7 +1271,7 @@ namespace invertika_account.Account
 			//        << charId << ", "
 			//        << statusId << ", "
 			//        << time << ")";
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 			//}
 			//catch (const dal::DbSqlQueryExecFailure &e)
 			//{
@@ -1287,10 +1287,10 @@ namespace invertika_account.Account
 			//    std::ostringstream sqlQuery;
 			//    sqlQuery << "insert into " << GUILDS_TBL_NAME
 			//             << " (name) VALUES (?)";
-			//    if (mDb->prepareSql(sqlQuery.str()))
+			//    if (mDb.prepareSql(sqlQuery.str()))
 			//    {
-			//        mDb->bindValue(1, guild->getName());
-			//        mDb->processSql();
+			//        mDb.bindValue(1, guild.getName());
+			//        mDb.processSql();
 			//    }
 			//    else
 			//    {
@@ -1303,14 +1303,14 @@ namespace invertika_account.Account
 			//    sqlQuery << "SELECT id FROM " << GUILDS_TBL_NAME
 			//             << " WHERE name = ?";
 
-			//    if (mDb->prepareSql(sqlQuery.str()))
+			//    if (mDb.prepareSql(sqlQuery.str()))
 			//    {
-			//        mDb->bindValue(1, guild->getName());
-			//        const dal::RecordSet& guildInfo = mDb->processSql();
+			//        mDb.bindValue(1, guild.getName());
+			//        const dal::RecordSet& guildInfo = mDb.processSql();
 
 			//        string_to<unsigned int> toUint;
 			//        unsigned id = toUint(guildInfo(0, 0));
-			//        guild->setId(id);
+			//        guild.setId(id);
 			//    }
 			//    else
 			//    {
@@ -1331,8 +1331,8 @@ namespace invertika_account.Account
 			//    std::ostringstream sql;
 			//    sql << "delete from " << GUILDS_TBL_NAME
 			//        << " where id = '"
-			//        << guild->getId() << "';";
-			//    mDb->execSql(sql.str());
+			//        << guild.getId() << "';";
+			//    mDb.execSql(sql.str());
 			//}
 			//catch (const dal::DbSqlQueryExecFailure &e)
 			//{
@@ -1351,7 +1351,7 @@ namespace invertika_account.Account
 			//    << guildId << ", \""
 			//    << memberId << "\", "
 			//    << 0 << ");";
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 			//}
 			//catch (const dal::DbSqlQueryExecFailure& e)
 			//{
@@ -1369,7 +1369,7 @@ namespace invertika_account.Account
 			//    << " where member_id = \""
 			//    << memberId << "\" and guild_id = '"
 			//    << guildId << "';";
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 			//}
 			//catch (const dal::DbSqlQueryExecFailure& e)
 			//{
@@ -1391,7 +1391,7 @@ namespace invertika_account.Account
 			//    << amount << ", "
 			//    << posX << ", "
 			//    << posY << ");";
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 			//}
 			//catch (const dal::DbSqlQueryExecFailure& e)
 			//{
@@ -1411,7 +1411,7 @@ namespace invertika_account.Account
 			//    << amount << " AND pos_x = "
 			//    << posX << " AND pos_y = "
 			//    << posY << ";";
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 			//}
 			//catch (const dal::DbSqlQueryExecFailure& e)
 			//{
@@ -1450,7 +1450,7 @@ namespace invertika_account.Account
 			//    << " set rights = '" << rights << "'"
 			//    << " where member_id = \""
 			//    << memberId << "\";";
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 			//}
 			//catch (const dal::DbSqlQueryExecFailure& e)
 			//{
@@ -1470,7 +1470,7 @@ namespace invertika_account.Account
 			//try
 			//{
 			//    sql << "select id, name from " << GUILDS_TBL_NAME << ";";
-			//    const dal::RecordSet& guildInfo = mDb->execSql(sql.str());
+			//    const dal::RecordSet& guildInfo = mDb.execSql(sql.str());
 
 			//    // Check that at least 1 guild was returned
 			//    if (guildInfo.isEmpty())
@@ -1480,7 +1480,7 @@ namespace invertika_account.Account
 			//    for ( unsigned int i = 0; i < guildInfo.rows(); ++i)
 			//    {
 			//        Guild* guild = new Guild(guildInfo(i,1));
-			//        guild->setId(toShort(guildInfo(i,0)));
+			//        guild.setId(toShort(guildInfo(i,0)));
 			//        guilds.push_back(guild);
 			//    }
 			//    string_to< unsigned > toUint;
@@ -1492,8 +1492,8 @@ namespace invertika_account.Account
 			//        std::ostringstream memberSql;
 			//        memberSql << "select member_id, rights from "
 			//                  << GUILD_MEMBERS_TBL_NAME
-			//                  << " where guild_id = '" << (*itr)->getId() << "';";
-			//        const dal::RecordSet& memberInfo = mDb->execSql(memberSql.str());
+			//                  << " where guild_id = '" << (*itr).getId() << "';";
+			//        const dal::RecordSet& memberInfo = mDb.execSql(memberSql.str());
 
 			//        std::list<std::pair<int, int> > members;
 			//        for (unsigned int j = 0; j < memberInfo.rows(); ++j)
@@ -1508,8 +1508,8 @@ namespace invertika_account.Account
 			//            Character *character = getCharacter((*i).first, 0);
 			//            if (character)
 			//            {
-			//                character->addGuild((*itr)->getName());
-			//                (*itr)->addMember(character->getDatabaseID(), (*i).second);
+			//                character.addGuild((*itr).getName());
+			//                (*itr).addMember(character.getDatabaseID(), (*i).second);
 			//            }
 			//        }
 			//    }
@@ -1631,7 +1631,7 @@ namespace invertika_account.Account
 			//    query1 << "delete from " << QUESTS_TBL_NAME
 			//           << " where owner_id = '" << id << "' and name = '"
 			//           << name << "';";
-			//    mDb->execSql(query1.str());
+			//    mDb.execSql(query1.str());
 
 			//    if (value.empty())
 			//        return;
@@ -1640,7 +1640,7 @@ namespace invertika_account.Account
 			//    query2 << "insert into " << QUESTS_TBL_NAME
 			//           << " (owner_id, name, value) values ('"
 			//           << id << "', '" << name << "', '" << value << "');";
-			//    mDb->execSql(query2.str());
+			//    mDb.execSql(query2.str());
 			//}
 			//catch (const dal::DbSqlQueryExecFailure &e)
 			//{
@@ -1656,7 +1656,7 @@ namespace invertika_account.Account
 			//    std::ostringstream query;
 			//    query << "select user_id from " << CHARACTERS_TBL_NAME
 			//          << " where id = '" << id << "';";
-			//    const dal::RecordSet &info = mDb->execSql(query.str());
+			//    const dal::RecordSet &info = mDb.execSql(query.str());
 			//    if (info.isEmpty())
 			//    {
 			//        LOG_ERROR("Tried to ban an unknown user.");
@@ -1670,7 +1670,7 @@ namespace invertika_account.Account
 			//        << " set level = '" << AL_BANNED << "', banned = '"
 			//        << bantime
 			//        << "' where id = '" << info(0, 0) << "';";
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 			//}
 			//catch (const dal::DbSqlQueryExecFailure &e)
 			//{
@@ -1688,49 +1688,49 @@ namespace invertika_account.Account
 			//    // Delete the inventory of the character
 			//    sql << "DELETE FROM " << INVENTORIES_TBL_NAME
 			//        << " WHERE owner_id = '" << charId << "';";
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 
 			//    // Delete the skills of the character
 			//    sql.clear();
 			//    sql.str("");
 			//    sql << "DELETE FROM " << CHAR_SKILLS_TBL_NAME
 			//        << " WHERE char_id = '" << charId << "';";
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 
 			//    // Delete from the quests table
 			//    sql.clear();
 			//    sql.str("");
 			//    sql << "DELETE FROM " << QUESTS_TBL_NAME
 			//        << " WHERE owner_id = '" << charId << "';";
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 
 			//    // Delete from the guilds table
 			//    sql.clear();
 			//    sql.str("");
 			//    sql << "DELETE FROM " << GUILD_MEMBERS_TBL_NAME
 			//        << " WHERE member_id = '" << charId << "';";
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 
 			//    // Delete auctions of the character
 			//    sql.clear();
 			//    sql.str("");
 			//    sql << "DELETE FROM " << AUCTION_TBL_NAME
 			//        << " WHERE char_id = '" << charId << "';";
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 
 			//    // Delete bids made on auctions made by the character
 			//    sql.clear();
 			//    sql.str("");
 			//    sql << "DELETE FROM " << AUCTION_BIDS_TBL_NAME
 			//        << " WHERE char_id = '" << charId << "';";
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 
 			//    // Now delete the character itself.
 			//    sql.clear();
 			//    sql.str("");
 			//    sql << "DELETE FROM " << CHARACTERS_TBL_NAME
 			//        << " WHERE id = '" << charId << "';";
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 
 			//    transaction.commit();
 			//}
@@ -1742,7 +1742,7 @@ namespace invertika_account.Account
 
 		void delCharacter(Character character)
 		{
-			//delCharacter(character->getDatabaseID());
+			//delCharacter(character.getDatabaseID());
 		}
 
 		public void checkBannedAccounts()
@@ -1755,7 +1755,7 @@ namespace invertika_account.Account
 			//    << " set level = " << AL_PLAYER << ", banned = 0"
 			//    << " where level = " << AL_BANNED
 			//    << " AND banned <= " << time(0) << ";";
-			//    mDb->execSql(sql.str());
+			//    mDb.execSql(sql.str());
 			//}
 			//catch (const dal::DbSqlQueryExecFailure &e)
 			//{
@@ -1781,22 +1781,22 @@ namespace invertika_account.Account
 			//try
 			//{
 			//    std::ostringstream sql;
-			//    if (letter->getId() == 0)
+			//    if (letter.getId() == 0)
 			//    {
 			//        // The letter was never saved before
 			//        sql << "INSERT INTO " << POST_TBL_NAME << " VALUES ( "
 			//            << "NULL, "
-			//            << letter->getSender()->getDatabaseID() << ", "
-			//            << letter->getReceiver()->getDatabaseID() << ", "
-			//            << letter->getExpiry() << ", "
+			//            << letter.getSender().getDatabaseID() << ", "
+			//            << letter.getReceiver().getDatabaseID() << ", "
+			//            << letter.getExpiry() << ", "
 			//            << time(0) << ", "
 			//            << "?)";
-			//        if (mDb->prepareSql(sql.str()))
+			//        if (mDb.prepareSql(sql.str()))
 			//        {
-			//            mDb->bindValue(1, letter->getContents());
-			//            mDb->processSql();
+			//            mDb.bindValue(1, letter.getContents());
+			//            mDb.processSql();
 
-			//            letter->setId(mDb->getLastId());
+			//            letter.setId(mDb.getLastId());
 
 			//            // TODO: Store attachments in the database
 
@@ -1813,22 +1813,22 @@ namespace invertika_account.Account
 			//        // The letter has a unique id, update the record in the db
 			//        sql << "UPDATE " << POST_TBL_NAME
 			//            << "   SET sender_id       = '"
-			//            << letter->getSender()->getDatabaseID() << "', "
+			//            << letter.getSender().getDatabaseID() << "', "
 			//            << "       receiver_id     = '"
-			//            << letter->getReceiver()->getDatabaseID() << "', "
-			//            << "       letter_type     = '" << letter->getType() << "', "
-			//            << "       expiration_date = '" << letter->getExpiry() << "', "
+			//            << letter.getReceiver().getDatabaseID() << "', "
+			//            << "       letter_type     = '" << letter.getType() << "', "
+			//            << "       expiration_date = '" << letter.getExpiry() << "', "
 			//            << "       sending_date    = '" << time(0) << "', "
 			//            << "       letter_text = ? "
-			//            << " WHERE letter_id       = '" << letter->getId() << "'";
+			//            << " WHERE letter_id       = '" << letter.getId() << "'";
 
-			//        if (mDb->prepareSql(sql.str()))
+			//        if (mDb.prepareSql(sql.str()))
 			//        {
-			//            mDb->bindValue(1, letter->getContents());
+			//            mDb.bindValue(1, letter.getContents());
 
-			//            mDb->processSql();
+			//            mDb.processSql();
 
-			//            if (mDb->getModifiedRows() == 0)
+			//            if (mDb.getModifiedRows() == 0)
 			//            {
 			//                // This should never happen...
 			//                utils::throwError("(DALStorage::storePost) "
@@ -1864,7 +1864,7 @@ namespace invertika_account.Account
 			//    sql << "SELECT * FROM " << POST_TBL_NAME
 			//        << " WHERE receiver_id = " << playerId;
 
-			//    const dal::RecordSet &post = mDb->execSql(sql.str());
+			//    const dal::RecordSet &post = mDb.execSql(sql.str());
 
 			//    if (post.isEmpty())
 			//    {
@@ -1880,14 +1880,14 @@ namespace invertika_account.Account
 
 			//        Letter *letter = new Letter(toUint( post(0,3) ), sender, receiver);
 
-			//        letter->setId( toUint(post(0, 0)) );
-			//        letter->setExpiry( toUint(post(0, 4)) );
-			//        letter->addText( post(0, 6) );
+			//        letter.setId( toUint(post(0, 0)) );
+			//        letter.setExpiry( toUint(post(0, 4)) );
+			//        letter.addText( post(0, 6) );
 
 			//        // TODO: Load attachments per letter from POST_ATTACHMENTS_TBL_NAME
 			//        // needs redesign of struct ItemInventroy
 
-			//        p->addLetter(letter);
+			//        p.addLetter(letter);
 			//    }
 			//}
 			//catch (const std::exception &e)
@@ -1910,18 +1910,18 @@ namespace invertika_account.Account
 			//    // First delete all attachments of the letter
 			//    // This could leave "dead" items in the item_instances table
 			//    sql << "DELETE FROM " << POST_ATTACHMENTS_TBL_NAME
-			//        << " WHERE letter_id = " << letter->getId();
-			//    mDb->execSql(sql.str());
+			//        << " WHERE letter_id = " << letter.getId();
+			//    mDb.execSql(sql.str());
 
 			//    // Delete the letter itself
 			//    sql.clear();
 			//    sql.str("");
 			//    sql << "DELETE FROM " << POST_TBL_NAME
-			//        << " WHERE letter_id = " << letter->getId();
-			//    mDb->execSql(sql.str());
+			//        << " WHERE letter_id = " << letter.getId();
+			//    mDb.execSql(sql.str());
 
 			//    transaction.commit();
-			//    letter->setId(0);
+			//    letter.setId(0);
 			//}
 			//catch (const dal::DbSqlQueryExecFailure &e)
 			//{
@@ -1934,7 +1934,7 @@ namespace invertika_account.Account
 			//XML::Document doc(DEFAULT_ITEM_FILE);
 			//xmlNodePtr rootNode = doc.rootNode();
 
-			//if (!rootNode || !xmlStrEqual(rootNode->name, BAD_CAST "items"))
+			//if (!rootNode || !xmlStrEqual(rootNode.name, BAD_CAST "items"))
 			//{
 			//    std::ostringstream errMsg;
 			//    errMsg << "Item Manager: Error while loading item database"
@@ -1948,7 +1948,7 @@ namespace invertika_account.Account
 			//for_each_xml_child_node(node, rootNode)
 			//{
 			//    // Try to load the version of the item database.
-			//    if (xmlStrEqual(node->name, BAD_CAST "version"))
+			//    if (xmlStrEqual(node.name, BAD_CAST "version"))
 			//    {
 			//        std::string revision = XML::getProperty(node, "revision",
 			//                                                std::string());
@@ -1956,10 +1956,10 @@ namespace invertika_account.Account
 			//        LOG_INFO("Loading item database version " << mItemDbVersion);
 			//    }
 
-			//    if (!xmlStrEqual(node->name, BAD_CAST "item"))
+			//    if (!xmlStrEqual(node.name, BAD_CAST "item"))
 			//        continue;
 
-			//    if (xmlStrEqual(node->name, BAD_CAST "item"))
+			//    if (xmlStrEqual(node.name, BAD_CAST "item"))
 			//    {
 			//        int id = XML::getProperty(node, "id", 0);
 
@@ -1996,14 +1996,14 @@ namespace invertika_account.Account
 			//                << "     dyestring = '" << dye << "' "
 			//                << " WHERE id = " << id;
 
-			//            if (mDb->prepareSql(sql.str()))
+			//            if (mDb.prepareSql(sql.str()))
 			//            {
-			//                mDb->bindValue(1, name);
-			//                mDb->bindValue(2, desc);
-			//                mDb->bindValue(3, eff);
+			//                mDb.bindValue(1, name);
+			//                mDb.bindValue(2, desc);
+			//                mDb.bindValue(3, eff);
 
-			//                mDb->processSql();
-			//                if (mDb->getModifiedRows() == 0)
+			//                mDb.processSql();
+			//                if (mDb.getModifiedRows() == 0)
 			//                {
 			//                    sql.clear();
 			//                    sql.str("");
@@ -2011,12 +2011,12 @@ namespace invertika_account.Account
 			//                        << "  VALUES ( " << id << ", ?, ?, '"
 			//                        << image << "', " << weight << ", '"
 			//                        << type << "', ?, '" << dye << "' )";
-			//                    if (mDb->prepareSql(sql.str()))
+			//                    if (mDb.prepareSql(sql.str()))
 			//                    {
-			//                        mDb->bindValue(1, name);
-			//                        mDb->bindValue(2, desc);
-			//                        mDb->bindValue(3, eff);
-			//                        mDb->processSql();
+			//                        mDb.bindValue(1, name);
+			//                        mDb.bindValue(2, desc);
+			//                        mDb.bindValue(3, eff);
+			//                        mDb.processSql();
 			//                    }
 			//                    else
 			//                    {
@@ -2054,7 +2054,7 @@ namespace invertika_account.Account
 			//        // in case we get the online status twice
 			//        sql << "SELECT COUNT(*) FROM " << ONLINE_USERS_TBL_NAME
 			//            << " WHERE char_id = " << charId;
-			//        const std::string res = mDb->execSql(sql.str())(0, 0);
+			//        const std::string res = mDb.execSql(sql.str())(0, 0);
 
 			//        if (res != "0")
 			//            return;
@@ -2063,13 +2063,13 @@ namespace invertika_account.Account
 			//        sql.str("");
 			//        sql << "INSERT INTO " << ONLINE_USERS_TBL_NAME
 			//            << " VALUES (" << charId << ", " << time(0) << ")";
-			//        mDb->execSql(sql.str());
+			//        mDb.execSql(sql.str());
 			//    }
 			//    else
 			//    {
 			//        sql << "DELETE FROM " << ONLINE_USERS_TBL_NAME
 			//            << " WHERE char_id = " << charId;
-			//        mDb->execSql(sql.str());
+			//        mDb.execSql(sql.str());
 			//    }
 
 
@@ -2091,10 +2091,10 @@ namespace invertika_account.Account
 			//        << trans.mAction << ", "
 			//        << "?, "
 			//        << time(0) << ")";
-			//    if (mDb->prepareSql(sql.str()))
+			//    if (mDb.prepareSql(sql.str()))
 			//    {
-			//        mDb->bindValue(1, trans.mMessage);
-			//        mDb->processSql();
+			//        mDb.bindValue(1, trans.mMessage);
+			//        mDb.processSql();
 			//    }
 			//    else
 			//    {
@@ -2118,7 +2118,7 @@ namespace invertika_account.Account
 			//{
 			//    std::stringstream sql;
 			//    sql << "SELECT * FROM " << TRANSACTION_TBL_NAME;
-			//    const dal::RecordSet &rec = mDb->execSql(sql.str());
+			//    const dal::RecordSet &rec = mDb.execSql(sql.str());
 
 			//    int size = rec.rows();
 			//    int start = size - num;
@@ -2153,7 +2153,7 @@ namespace invertika_account.Account
 			//    std::stringstream sql;
 			//    sql << "SELECT * FROM " << TRANSACTION_TBL_NAME << " WHERE time > "
 			//        << date;
-			//    const dal::RecordSet &rec = mDb->execSql(sql.str());
+			//    const dal::RecordSet &rec = mDb.execSql(sql.str());
 
 			//    for (unsigned int i = 0; i < rec.rows(); ++i)
 			//    {

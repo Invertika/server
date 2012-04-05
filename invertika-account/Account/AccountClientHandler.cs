@@ -47,7 +47,7 @@ namespace invertika_account.Account
 
 		public static void deinitialize()
 		{
-			//accountHandler->stopListen();
+			//accountHandler.stopListen();
 			//delete accountHandler;
 			//accountHandler = 0;
 		}

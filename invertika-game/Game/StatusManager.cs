@@ -48,7 +48,7 @@ namespace invertika_game.Game
 			//    XML::Document doc(statusReferenceFile);
 			//    xmlNodePtr rootNode = doc.rootNode();
 
-			//    if (!rootNode || !xmlStrEqual(rootNode->name, BAD_CAST "status-effects"))
+			//    if (!rootNode || !xmlStrEqual(rootNode.name, BAD_CAST "status-effects"))
 			//    {
 			//        LOG_ERROR("Status Manager: Error while parsing status database ("
 			//                  << statusReferenceFile << ")!");
@@ -58,7 +58,7 @@ namespace invertika_game.Game
 			//    LOG_INFO("Loading status reference: " << statusReferenceFile);
 			//    for_each_xml_child_node(node, rootNode)
 			//    {
-			//        if (!xmlStrEqual(node->name, BAD_CAST "status-effect"))
+			//        if (!xmlStrEqual(node.name, BAD_CAST "status-effect"))
 			//            continue;
 
 			//        int id = XML::getProperty(node, "id", 0);
@@ -95,8 +95,8 @@ namespace invertika_game.Game
 			//                std::string engineName =
 			//                        Script::determineEngineByFilename(filename.str());
 			//                Script *s = Script::create(engineName);
-			//                s->loadFile(filename.str());
-			//                statusEffect->setScript(s);
+			//                s.loadFile(filename.str());
+			//                statusEffect.setScript(s);
 			//            } else {
 			//                LOG_WARN("Could not find script file \"" << filename.str()
 			//                         << "\" for status #"<<id);
@@ -111,7 +111,7 @@ namespace invertika_game.Game
 			//for (StatusEffectsMap::iterator i = statusEffects.begin(),
 			//       i_end = statusEffects.end(); i != i_end; ++i)
 			//{
-			//    delete i->second;
+			//    delete i.second;
 			//}
 			//statusEffects.clear();
 		}
@@ -119,7 +119,7 @@ namespace invertika_game.Game
 		static StatusEffect getStatus(int statusId)
 		{
 			//StatusEffectsMap::const_iterator i = statusEffects.find(statusId);
-			//return i != statusEffects.end() ? i->second : NULL;
+			//return i != statusEffects.end() ? i.second : NULL;
 
 			return null; //ssk
 		}

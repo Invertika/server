@@ -84,7 +84,7 @@ namespace invertika_account.Account
 			//XML::Document doc(attributesFile);
 			//xmlNodePtr node = doc.rootNode();
 
-			//if (!node || !xmlStrEqual(node->name, BAD_CAST "attributes"))
+			//if (!node || !xmlStrEqual(node.name, BAD_CAST "attributes"))
 			//{
 			//    LOG_FATAL("Account handler: " << attributesFile << ": "
 			//              << " is not a valid database file!");
@@ -93,7 +93,7 @@ namespace invertika_account.Account
 
 			//for_each_xml_child_node(attributenode, node)
 			//{
-			//    if (xmlStrEqual(attributenode->name, BAD_CAST "attribute"))
+			//    if (xmlStrEqual(attributenode.name, BAD_CAST "attribute"))
 			//    {
 			//        int id = XML::getProperty(attributenode, "id", 0);
 			//        if (!id)
@@ -117,7 +117,7 @@ namespace invertika_account.Account
 			//            mDefaultAttributes.insert(std::make_pair(id, val));
 			//        }
 			//    }
-			//    else if (xmlStrEqual(attributenode->name, BAD_CAST "points"))
+			//    else if (xmlStrEqual(attributenode.name, BAD_CAST "points"))
 			//    {
 			//        mStartingPoints = XML::getProperty(attributenode, "start", 0);
 			//        mAttributeMinimum = XML::getProperty(attributenode, "minimum", 0);
@@ -192,9 +192,9 @@ namespace invertika_account.Account
 			//    ++it)
 			//{
 			//    // {id, base value in 256ths, modified value in 256ths }*
-			//    charInfo.writeInt32(it->first);
-			//    charInfo.writeInt32((int) (it->second.base * 256));
-			//    charInfo.writeInt32((int) (it->second.modified * 256));
+			//    charInfo.writeInt32(it.first);
+			//    charInfo.writeInt32((int) (it.second.base * 256));
+			//    charInfo.writeInt32((int) (it.second.modified * 256));
 			//}
 
 			//client.send(charInfo);
@@ -205,9 +205,9 @@ namespace invertika_account.Account
 			//std::string salt = getRandomString(4);
 			//std::string username = msg.readString();
 
-			//if (Account *acc = storage->getAccount(username))
+			//if (Account *acc = storage.getAccount(username))
 			//{
-			//    acc->setRandomSalt(salt);
+			//    acc.setRandomSalt(salt);
 			//    mPendingAccounts.push_back(acc);
 			//}
 			//MessageOut reply(APMSG_LOGIN_RNDTRGR_RESPONSE);
@@ -241,7 +241,7 @@ namespace invertika_account.Account
 			//IPsToTime::const_iterator it = mLastLoginAttemptForIP.find(address);
 			//if (it != mLastLoginAttemptForIP.end())
 			//{
-			//    const time_t lastAttempt = it->second;
+			//    const time_t lastAttempt = it.second;
 			//    if (now < lastAttempt + 1)
 			//    {
 			//        reply.writeInt8(LOGIN_INVALID_TIME);
@@ -254,7 +254,7 @@ namespace invertika_account.Account
 			//const std::string username = msg.readString();
 			//const std::string password = msg.readString();
 
-			//if (stringFilter->findDoubleQuotes(username))
+			//if (stringFilter.findDoubleQuotes(username))
 			//{
 			//    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
 			//    client.send(reply);
@@ -275,11 +275,11 @@ namespace invertika_account.Account
 			//Account *acc = 0;
 			//std::list<Account*>::iterator ita;
 			//for ( ita = mPendingAccounts.begin() ; ita != mPendingAccounts.end(); ita++ )
-			//    if ((*ita)->getName() == username)
+			//    if ((*ita).getName() == username)
 			//        acc = *ita;
 			//mPendingAccounts.remove(acc);
 
-			//if (!acc || sha256(acc->getPassword() + acc->getRandomSalt()) != password)
+			//if (!acc || sha256(acc.getPassword() + acc.getRandomSalt()) != password)
 			//{
 			//    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
 			//    client.send(reply);
@@ -287,7 +287,7 @@ namespace invertika_account.Account
 			//    return;
 			//}
 
-			//if (acc->getLevel() == AL_BANNED)
+			//if (acc.getLevel() == AL_BANNED)
 			//{
 			//    reply.writeInt8(LOGIN_BANNED);
 			//    client.send(reply);
@@ -300,8 +300,8 @@ namespace invertika_account.Account
 			//// Set lastLogin date of the account.
 			//time_t login;
 			//time(&login);
-			//acc->setLastLogin(login);
-			//storage->updateLastLogin(acc);
+			//acc.setLastLogin(login);
+			//storage.updateLastLogin(acc);
 
 			//// Associate account with connection.
 			//client.setAccount(acc);
@@ -312,7 +312,7 @@ namespace invertika_account.Account
 			//client.send(reply); // Acknowledge login
 
 			//// Return information about available characters
-			//Characters &chars = acc->getCharacters();
+			//Characters &chars = acc.getCharacters();
 
 			//// Send characters list
 			//for (Characters::const_iterator i = chars.begin(), i_end = chars.end();
@@ -380,20 +380,20 @@ namespace invertika_account.Account
 			//{
 			//    reply.writeInt8(REGISTER_INVALID_VERSION);
 			//}
-			//else if (stringFilter->findDoubleQuotes(username)
-			//         || stringFilter->findDoubleQuotes(email)
+			//else if (stringFilter.findDoubleQuotes(username)
+			//         || stringFilter.findDoubleQuotes(email)
 			//         || username.length() < mMinNameLength
 			//         || username.length() > mMaxNameLength
-			//         || !stringFilter->isEmailValid(email)
-			//         || !stringFilter->filterContent(username))
+			//         || !stringFilter.isEmailValid(email)
+			//         || !stringFilter.filterContent(username))
 			//{
 			//    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
 			//}
-			//else if (storage->doesUserNameExist(username))
+			//else if (storage.doesUserNameExist(username))
 			//{
 			//    reply.writeInt8(REGISTER_EXISTS_USERNAME);
 			//}
-			//else if (storage->doesEmailAddressExist(sha256(email)))
+			//else if (storage.doesEmailAddressExist(sha256(email)))
 			//{
 			//    reply.writeInt8(REGISTER_EXISTS_EMAIL);
 			//}
@@ -404,21 +404,21 @@ namespace invertika_account.Account
 			//else
 			//{
 			//    Account *acc = new Account;
-			//    acc->setName(username);
-			//    acc->setPassword(sha256(password));
+			//    acc.setName(username);
+			//    acc.setPassword(sha256(password));
 			//    // We hash email server-side for additional privacy
 			//    // we ask for it again when we need it and verify it
 			//    // through comparing it with the hash.
-			//    acc->setEmail(sha256(email));
-			//    acc->setLevel(AL_PLAYER);
+			//    acc.setEmail(sha256(email));
+			//    acc.setLevel(AL_PLAYER);
 
 			//    // Set the date and time of the account registration, and the last login
 			//    time_t regdate;
 			//    time(&regdate);
-			//    acc->setRegistrationDate(regdate);
-			//    acc->setLastLogin(regdate);
+			//    acc.setRegistrationDate(regdate);
+			//    acc.setLastLogin(regdate);
 
-			//    storage->addAccount(acc);
+			//    storage.addAccount(acc);
 			//    reply.writeInt8(ERRMSG_OK);
 			//    addServerInfo(&reply);
 
@@ -446,7 +446,7 @@ namespace invertika_account.Account
 			//std::string username = msg.readString();
 			//std::string password = msg.readString();
 
-			//if (stringFilter->findDoubleQuotes(username))
+			//if (stringFilter.findDoubleQuotes(username))
 			//{
 			//    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
 			//    client.send(reply);
@@ -454,9 +454,9 @@ namespace invertika_account.Account
 			//}
 
 			//// See whether the account exists
-			//Account *acc = storage->getAccount(username);
+			//Account *acc = storage.getAccount(username);
 
-			//if (!acc || acc->getPassword() != sha256(password))
+			//if (!acc || acc.getPassword() != sha256(password))
 			//{
 			//    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
 			//    client.send(reply);
@@ -466,8 +466,8 @@ namespace invertika_account.Account
 
 			//// Delete account and associated characters
 			//LOG_INFO("Unregistered \"" << username
-			//         << "\", AccountID: " << acc->getID());
-			//storage->delAccount(acc);
+			//         << "\", AccountID: " << acc.getID());
+			//storage.delAccount(acc);
 			//reply.writeInt8(ERRMSG_OK);
 
 			//client.send(reply);
@@ -509,23 +509,23 @@ namespace invertika_account.Account
 			//const std::string email = msg.readString();
 			//const std::string emailHash = sha256(email);
 
-			//if (!stringFilter->isEmailValid(email))
+			//if (!stringFilter.isEmailValid(email))
 			//{
 			//    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
 			//}
-			//else if (stringFilter->findDoubleQuotes(email))
+			//else if (stringFilter.findDoubleQuotes(email))
 			//{
 			//    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
 			//}
-			//else if (storage->doesEmailAddressExist(emailHash))
+			//else if (storage.doesEmailAddressExist(emailHash))
 			//{
 			//    reply.writeInt8(ERRMSG_EMAIL_ALREADY_EXISTS);
 			//}
 			//else
 			//{
-			//    acc->setEmail(emailHash);
+			//    acc.setEmail(emailHash);
 			//    // Keep the database up to date otherwise we will go out of sync
-			//    storage->flush(acc);
+			//    storage.flush(acc);
 			//    reply.writeInt8(ERRMSG_OK);
 			//}
 			//client.send(reply);
@@ -543,19 +543,19 @@ namespace invertika_account.Account
 			//{
 			//    reply.writeInt8(ERRMSG_NO_LOGIN);
 			//}
-			//else if (stringFilter->findDoubleQuotes(newPassword))
+			//else if (stringFilter.findDoubleQuotes(newPassword))
 			//{
 			//    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
 			//}
-			//else if (oldPassword != acc->getPassword())
+			//else if (oldPassword != acc.getPassword())
 			//{
 			//    reply.writeInt8(ERRMSG_FAILURE);
 			//}
 			//else
 			//{
-			//    acc->setPassword(newPassword);
+			//    acc.setPassword(newPassword);
 			//    // Keep the database up to date otherwise we will go out of sync
-			//    storage->flush(acc);
+			//    storage.flush(acc);
 			//    reply.writeInt8(ERRMSG_OK);
 			//}
 
@@ -581,11 +581,11 @@ namespace invertika_account.Account
 			//{
 			//    reply.writeInt8(ERRMSG_NO_LOGIN);
 			//}
-			//else if (!stringFilter->filterContent(name))
+			//else if (!stringFilter.filterContent(name))
 			//{
 			//    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
 			//}
-			//else if (stringFilter->findDoubleQuotes(name))
+			//else if (stringFilter.findDoubleQuotes(name))
 			//{
 			//    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
 			//}
@@ -608,7 +608,7 @@ namespace invertika_account.Account
 			//}
 			//else
 			//{
-			//    if (storage->doesCharacterNameExist(name))
+			//    if (storage.doesCharacterNameExist(name))
 			//    {
 			//        reply.writeInt8(CREATE_EXISTS_NAME);
 			//        client.send(reply);
@@ -617,9 +617,9 @@ namespace invertika_account.Account
 
 			//    // An account shouldn't have more
 			//    // than <account_maxCharacters> characters.
-			//    Characters &chars = acc->getCharacters();
+			//    Characters &chars = acc.getCharacters();
 			//    if (slot < 1 || slot > mMaxCharacters
-			//        || !acc->isSlotEmpty((unsigned int) slot))
+			//        || !acc.isSlotEmpty((unsigned int) slot))
 			//    {
 			//        reply.writeInt8(CREATE_INVALID_SLOT);
 			//        client.send(reply);
@@ -671,35 +671,35 @@ namespace invertika_account.Account
 			//        // Set the initial attributes provided by the client
 			//        for (unsigned int i = 0; i < mModifiableAttributes.size(); ++i)
 			//        {
-			//            newCharacter->mAttributes.insert(
+			//            newCharacter.mAttributes.insert(
 			//                        std::make_pair(mModifiableAttributes.at(i), attributes[i]));
 			//        }
 
-			//        newCharacter->mAttributes.insert(mDefaultAttributes.begin(),
+			//        newCharacter.mAttributes.insert(mDefaultAttributes.begin(),
 			//                                         mDefaultAttributes.end());
-			//        newCharacter->setAccount(acc);
-			//        newCharacter->setCharacterSlot(slot);
-			//        newCharacter->setGender(gender);
-			//        newCharacter->setHairStyle(hairStyle);
-			//        newCharacter->setHairColor(hairColor);
-			//        newCharacter->setMapId(Configuration::getValue("char_startMap", 1));
+			//        newCharacter.setAccount(acc);
+			//        newCharacter.setCharacterSlot(slot);
+			//        newCharacter.setGender(gender);
+			//        newCharacter.setHairStyle(hairStyle);
+			//        newCharacter.setHairColor(hairColor);
+			//        newCharacter.setMapId(Configuration::getValue("char_startMap", 1));
 			//        Point startingPos(Configuration::getValue("char_startX", 1024),
 			//                          Configuration::getValue("char_startY", 1024));
-			//        newCharacter->setPosition(startingPos);
-			//        acc->addCharacter(newCharacter);
+			//        newCharacter.setPosition(startingPos);
+			//        acc.addCharacter(newCharacter);
 
 			//        LOG_INFO("Character " << name << " was created for "
-			//                 << acc->getName() << "'s account.");
+			//                 << acc.getName() << "'s account.");
 
-			//        storage->flush(acc); // flush changes
+			//        storage.flush(acc); // flush changes
 
 			//        // log transaction
 			//        Transaction trans;
-			//        trans.mCharacterId = newCharacter->getDatabaseID();
+			//        trans.mCharacterId = newCharacter.getDatabaseID();
 			//        trans.mAction = TRANS_CHAR_CREATE;
-			//        trans.mMessage = acc->getName() + " created character ";
+			//        trans.mMessage = acc.getName() + " created character ";
 			//        trans.mMessage.append("called " + name);
-			//        storage->addTransaction(trans);
+			//        storage.addTransaction(trans);
 
 			//        reply.writeInt8(ERRMSG_OK);
 			//        client.send(reply);
@@ -726,7 +726,7 @@ namespace invertika_account.Account
 			//}
 
 			//int slot = msg.readInt8();
-			//Characters &chars = acc->getCharacters();
+			//Characters &chars = acc.getCharacters();
 
 			//if (chars.find(slot) == chars.end())
 			//{
@@ -741,9 +741,9 @@ namespace invertika_account.Account
 			//std::string address;
 			//int port;
 			//if (!GameServerHandler::getGameServerFromMap
-			//        (selectedChar->getMapId(), address, port))
+			//        (selectedChar.getMapId(), address, port))
 			//{
-			//    LOG_ERROR("Character Selection: No game server for map #"<<selectedChar->getMapId());
+			//    LOG_ERROR("Character Selection: No game server for map #"<<selectedChar.getMapId());
 			//    reply.writeInt8(ERRMSG_FAILURE);
 			//    client.send(reply);
 			//    return;
@@ -751,7 +751,7 @@ namespace invertika_account.Account
 
 			//reply.writeInt8(ERRMSG_OK);
 
-			//LOG_DEBUG(selectedChar->getName() << " is trying to enter the servers.");
+			//LOG_DEBUG(selectedChar.getName() << " is trying to enter the servers.");
 
 			//std::string magic_token(utils::getMagicToken());
 			//reply.writeString(magic_token, MAGIC_TOKEN_LENGTH);
@@ -772,15 +772,15 @@ namespace invertika_account.Account
 			//                                         alternativePort));
 
 			//GameServerHandler::registerClient(magic_token, selectedChar);
-			//registerChatClient(magic_token, selectedChar->getName(), acc->getLevel());
+			//registerChatClient(magic_token, selectedChar.getName(), acc.getLevel());
 
 			//client.send(reply);
 
 			//// log transaction
 			//Transaction trans;
-			//trans.mCharacterId = selectedChar->getDatabaseID();
+			//trans.mCharacterId = selectedChar.getDatabaseID();
 			//trans.mAction = TRANS_CHAR_SELECTED;
-			//storage->addTransaction(trans);
+			//storage.addTransaction(trans);
 		}
 
 		void handleCharacterDeleteMessage(AccountClient client, MessageIn msg)
@@ -796,9 +796,9 @@ namespace invertika_account.Account
 			//}
 
 			//int slot = msg.readInt8();
-			//Characters &chars = acc->getCharacters();
+			//Characters &chars = acc.getCharacters();
 
-			//if (slot < 1 || acc->isSlotEmpty(slot))
+			//if (slot < 1 || acc.isSlotEmpty(slot))
 			//{
 			//    // Invalid char selection
 			//    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
@@ -806,19 +806,19 @@ namespace invertika_account.Account
 			//    return;
 			//}
 
-			//std::string characterName = chars[slot]->getName();
+			//std::string characterName = chars[slot].getName();
 			//LOG_INFO("Character deleted:" << characterName);
 
 			//// Log transaction
 			//Transaction trans;
-			//trans.mCharacterId = chars[slot]->getDatabaseID();
+			//trans.mCharacterId = chars[slot].getDatabaseID();
 			//trans.mAction = TRANS_CHAR_DELETED;
-			//trans.mMessage = chars[slot]->getName() + " deleted by ";
-			//trans.mMessage.append(acc->getName());
-			//storage->addTransaction(trans);
+			//trans.mMessage = chars[slot].getName() + " deleted by ";
+			//trans.mMessage.append(acc.getName());
+			//storage.addTransaction(trans);
 
-			//acc->delCharacter(slot);
-			//storage->flush(acc);
+			//acc.delCharacter(slot);
+			//storage.flush(acc);
 
 			//reply.writeInt8(ERRMSG_OK);
 			//client.send(reply);

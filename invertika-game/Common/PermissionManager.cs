@@ -46,7 +46,7 @@ namespace invertika_game.Common
 			//{
 			//    permissions.insert(std::make_pair<std::string, unsigned char>(permission, mask));
 			//} else {
-			//    i->second |= mask;
+			//    i.second |= mask;
 			//}
 		}
 
@@ -61,7 +61,7 @@ namespace invertika_game.Common
 			//XML::Document doc(permissionFile);
 			//xmlNodePtr rootNode = doc.rootNode();
 
-			//if (!rootNode || !xmlStrEqual(rootNode->name, BAD_CAST "permissions"))
+			//if (!rootNode || !xmlStrEqual(rootNode.name, BAD_CAST "permissions"))
 			//{
 			//    LOG_ERROR("Permission Manager: " << permissionFile
 			//              << " is not a valid database file!");
@@ -72,7 +72,7 @@ namespace invertika_game.Common
 			//for_each_xml_child_node(node, rootNode)
 			//{
 			//    unsigned char classmask = 0x01;
-			//    if (!xmlStrEqual(node->name, BAD_CAST "class"))
+			//    if (!xmlStrEqual(node.name, BAD_CAST "class"))
 			//    {
 			//        continue;
 			//    }
@@ -90,20 +90,20 @@ namespace invertika_game.Common
 
 
 			//    xmlNodePtr perNode;
-			//    for (perNode = node->xmlChildrenNode; perNode != NULL; perNode = perNode->next)
+			//    for (perNode = node.xmlChildrenNode; perNode != NULL; perNode = perNode.next)
 			//    {
-			//        if (xmlStrEqual(perNode->name, BAD_CAST "allow"))
+			//        if (xmlStrEqual(perNode.name, BAD_CAST "allow"))
 			//        {
-			//            const char* permission = (const char*)perNode->xmlChildrenNode->content;
+			//            const char* permission = (const char*)perNode.xmlChildrenNode.content;
 			//            if (permission && strlen(permission) > 0)
 			//            {
 			//                addPermission(permission, classmask);
 			//            }
-			//        } else if (xmlStrEqual(perNode->name, BAD_CAST "deny")){
-			//            //const char* permission = (const char*)perNode->xmlChildrenNode->content;
+			//        } else if (xmlStrEqual(perNode.name, BAD_CAST "deny")){
+			//            //const char* permission = (const char*)perNode.xmlChildrenNode.content;
 			//            // To be implemented
-			//        } else if (xmlStrEqual(perNode->name, BAD_CAST "alias")){
-			//            const char* alias = (const char*)perNode->xmlChildrenNode->content;
+			//        } else if (xmlStrEqual(perNode.name, BAD_CAST "alias")){
+			//            const char* alias = (const char*)perNode.xmlChildrenNode.content;
 			//            if (alias && strlen(alias) > 0)
 			//            aliases[alias] = classmask;
 			//        }
@@ -128,7 +128,7 @@ namespace invertika_game.Common
 			//    LOG_WARN("PermissionManager: Check for unknown permission \""<<permission<<"\" requested.");
 			//    return PMR_UNKNOWN;
 			//}
-			//if (level & iP->second)
+			//if (level & iP.second)
 			//{
 			//    return PMR_ALLOWED;
 			//} else {
@@ -146,7 +146,7 @@ namespace invertika_game.Common
 			//{
 			//    return 0x00;
 			//} else {
-			//    return i->second;
+			//    return i.second;
 			//}
 
 			return 0; //ssk
@@ -157,13 +157,13 @@ namespace invertika_game.Common
 			//std::list<std::string> result;
 			//std::map<std::string, unsigned char>::iterator i;
 
-			//unsigned char mask = character->getAccountLevel();
+			//unsigned char mask = character.getAccountLevel();
 
 			//for (i = permissions.begin(); i != permissions.end(); i++)
 			//{
-			//    if (i->second & mask)
+			//    if (i.second & mask)
 			//    {
-			//        result.push_back(i->first);
+			//        result.push_back(i.first);
 			//    }
 			//}
 
@@ -177,13 +177,13 @@ namespace invertika_game.Common
 			//std::list<std::string> result;
 			//std::map<std::string, unsigned char>::iterator i;
 
-			//unsigned char mask = character->getAccountLevel();
+			//unsigned char mask = character.getAccountLevel();
 
 			//for (i = aliases.begin(); i != aliases.end(); i++)
 			//{
-			//    if (i->second & mask)
+			//    if (i.second & mask)
 			//    {
-			//        result.push_back(i->first);
+			//        result.push_back(i.first);
 			//    }
 			//}
 

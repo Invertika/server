@@ -63,15 +63,15 @@ namespace invertika_game.Game
 			//     i != mAttributeMap.end(); ++i)
 			//{
 			//    unsigned int lCount = 0;
-			//    LOG_DEBUG("  "<<i->first<<" : ");
-			//    for (std::vector<struct AttributeInfoType>::const_iterator j = i->second.second.begin();
-			//         j != i->second.second.end();
+			//    LOG_DEBUG("  "<<i.first<<" : ");
+			//    for (std::vector<struct AttributeInfoType>::const_iterator j = i.second.second.begin();
+			//         j != i.second.second.end();
 			//         ++j)
 			//    {
-			//        tag = getTag(ModifierLocation(i->first, lCount));
+			//        tag = getTag(ModifierLocation(i.first, lCount));
 			//        std::string end = tag ? "tag of '" + (*tag) + "'." : "no tag.";
-			//        LOG_DEBUG("    stackableType: " << j->stackableType
-			//                  << ", effectType: " << j->effectType << ", and " << end);
+			//        LOG_DEBUG("    stackableType: " << j.stackableType
+			//                  << ", effectType: " << j.effectType << ", and " << end);
 			//        ++lCount;
 			//        ++count;
 			//    }
@@ -82,8 +82,8 @@ namespace invertika_game.Game
 			//for (TagMap::const_iterator i = mTagMap.begin(), i_end = mTagMap.end();
 			//     i != i_end; ++i)
 			//{
-			//    LOG_DEBUG("Tag '" << i->first << "': '" << i->second.attributeId
-			//              << "', '" << i->second.layer << "'.");
+			//    LOG_DEBUG("Tag '" << i.first << "': '" << i.second.attributeId
+			//              << "', '" << i.second.layer << "'.");
 			//}
 
 			//LOG_INFO("Loaded '" << mTagMap.size() << "' modifier tags.");
@@ -94,7 +94,7 @@ namespace invertika_game.Game
 			//AttributeMap::const_iterator ret = mAttributeMap.find(id);
 			//if (ret == mAttributeMap.end())
 			//    return 0;
-			//return &ret->second.second;
+			//return &ret.second.second;
 
 			return null; //ssk
 		}
@@ -114,7 +114,7 @@ namespace invertika_game.Game
 			//AttributeMap::const_iterator ret = mAttributeMap.find(id);
 			//if (ret == mAttributeMap.end())
 			//    return false;
-			//return ret->second.first;
+			//return ret.second.first;
 
 			return true; //ssk
 		}
@@ -133,8 +133,8 @@ namespace invertika_game.Game
 		{
 			//for (TagMap::const_iterator it = mTagMap.begin(),
 			//     it_end = mTagMap.end(); it != it_end; ++it)
-			//    if (it->second == location)
-			//        return &it->first;
+			//    if (it.second == location)
+			//        return &it.first;
 			return null;
 		}
 
@@ -143,7 +143,7 @@ namespace invertika_game.Game
 			//XML::Document doc(mAttributeReferenceFile);
 			//xmlNodePtr node = doc.rootNode();
 
-			//if (!node || !xmlStrEqual(node->name, BAD_CAST "attributes"))
+			//if (!node || !xmlStrEqual(node.name, BAD_CAST "attributes"))
 			//{
 			//    LOG_FATAL("Attribute Manager: " << mAttributeReferenceFile
 			//              << " is not a valid database file!");
@@ -154,7 +154,7 @@ namespace invertika_game.Game
 
 			//for_each_xml_child_node(childNode, node)
 			//{
-			//    if (xmlStrEqual(childNode->name, BAD_CAST "attribute"))
+			//    if (xmlStrEqual(childNode.name, BAD_CAST "attribute"))
 			//        readAttributeNode(childNode);
 			//}
 		}
@@ -175,7 +175,7 @@ namespace invertika_game.Game
 
 			//for_each_xml_child_node(subNode, attributeNode)
 			//{
-			//    if (xmlStrEqual(subNode->name, BAD_CAST "modifier"))
+			//    if (xmlStrEqual(subNode.name, BAD_CAST "modifier"))
 			//    {
 			//        readModifierNode(subNode, id);
 			//    }

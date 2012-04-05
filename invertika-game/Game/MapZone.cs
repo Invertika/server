@@ -57,7 +57,7 @@ namespace invertika_game.Game
 
 		void insert(Actor obj)
 		{
-			//int type = obj->getType();
+			//int type = obj.getType();
 			//switch (type)
 			//{
 			//    case OBJECT_CHARACTER:
@@ -102,7 +102,7 @@ namespace invertika_game.Game
 		void remove(Actor obj)
 		{
 			//std::vector< Actor * >::iterator i_beg = objects.begin(), i, i_end;
-			//int type = obj->getType();
+			//int type = obj.getType();
 			//switch (type)
 			//{
 			//    case OBJECT_CHARACTER:

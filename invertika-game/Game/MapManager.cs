@@ -106,7 +106,7 @@ namespace invertika_game.Game
 		{
 			//for (Maps::iterator i = maps.begin(), i_end = maps.end(); i != i_end; ++i)
 			//{
-			//    delete i->second;
+			//    delete i.second;
 			//}
 			//maps.clear();
 		}
@@ -114,7 +114,7 @@ namespace invertika_game.Game
 		static MapComposite getMap(int mapId)
 		{
 			//Maps::const_iterator i = maps.find(mapId);
-			//return (i != maps.end()) ? i->second : NULL;
+			//return (i != maps.end()) ? i.second : NULL;
 
 			return null; //ssk
 		}
@@ -122,8 +122,8 @@ namespace invertika_game.Game
 		static MapComposite getMap(string mapName)
 		{
 			//for (Maps::const_iterator i = maps.begin(); i != maps.end(); ++i)
-			//    if (i->second->getName() == mapName)
-			//        return i->second;
+			//    if (i.second.getName() == mapName)
+			//        return i.second;
 
 			return null;
 		}
@@ -132,20 +132,20 @@ namespace invertika_game.Game
 		{
 			//Maps::iterator i = maps.find(mapId);
 			//assert(i != maps.end());
-			//MapComposite *composite = i->second;
+			//MapComposite *composite = i.second;
 
-			//if (composite->isActive())
+			//if (composite.isActive())
 			//    return true;
 
-			//if (composite->activate())
+			//if (composite.activate())
 			//{
-			//    LOG_INFO("Activated map \"" << composite->getName()
+			//    LOG_INFO("Activated map \"" << composite.getName()
 			//             << "\" (id " << mapId << ")");
 			//    return true;
 			//}
 			//else
 			//{
-			//    LOG_WARN("Couldn't activate invalid map \"" << composite->getName()
+			//    LOG_WARN("Couldn't activate invalid map \"" << composite.getName()
 			//             << "\" (id " << mapId << ")");
 			//    return false;
 			//}

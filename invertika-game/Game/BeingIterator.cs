@@ -48,23 +48,23 @@ namespace invertika_game.Game
 		//        BeingIterator::BeingIterator(const ZoneIterator &it)
 		//  : iterator(it), pos(0)
 		//{
-		//    while (iterator && (*iterator)->nbMovingObjects == 0) ++iterator;
+		//    while (iterator && (*iterator).nbMovingObjects == 0) ++iterator;
 		//    if (iterator)
 		//    {
-		//        current = static_cast< Being * >((*iterator)->objects[pos]);
+		//        current = static_cast< Being * >((*iterator).objects[pos]);
 		//    }
 		//}
 
 		//void BeingIterator::operator++()
 		//{
-		//    if (++pos == (*iterator)->nbMovingObjects)
+		//    if (++pos == (*iterator).nbMovingObjects)
 		//    {
-		//        do ++iterator; while (iterator && (*iterator)->nbMovingObjects == 0);
+		//        do ++iterator; while (iterator && (*iterator).nbMovingObjects == 0);
 		//        pos = 0;
 		//    }
 		//    if (iterator)
 		//    {
-		//        current = static_cast< Being * >((*iterator)->objects[pos]);
+		//        current = static_cast< Being * >((*iterator).objects[pos]);
 		//    }
 		//}
 	}

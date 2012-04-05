@@ -121,12 +121,12 @@ namespace invertika_game.Game
 		//    {
 		//        while (mEffects.begin() != mEffects.end())
 		//        {
-		//            delete mEffects.begin()->second;
+		//            delete mEffects.begin().second;
 		//            mEffects.erase(mEffects.begin());
 		//        }
 		//        while (mDispells.begin() != mDispells.end())
 		//        {
-		//            delete mDispells.begin()->second;
+		//            delete mDispells.begin().second;
 		//            mDispells.erase(mDispells.begin());
 		//        }
 		//    }

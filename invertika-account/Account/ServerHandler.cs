@@ -318,7 +318,7 @@ namespace invertika_account.Account
 						//while (message.getUnreadLength()!=0)
 						//{
 						//    int mapId = message.readInt16();
-						//    ServerStatistics::iterator i = server->maps.find(mapId);
+						//    ServerStatistics::iterator i = server.maps.find(mapId);
 
 						//    if (i == server.maps.end())
 						//    {
@@ -327,7 +327,7 @@ namespace invertika_account.Account
 						//        break;
 						//    }
 
-						//    MapStatistics m = i->second;
+						//    MapStatistics m = i.second;
 						//    m.nbThings =(ushort) message.readInt16();
 						//    m.nbMonsters=(ushort)message.readInt16();
 						//    int nb = message.readInt16();
