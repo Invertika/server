@@ -847,18 +847,15 @@ namespace invertika_account.Chat
 
 		void informPartyMemberQuit(ChatClient client)
 		{
-			//std::map<std::string, ChatClient*>::iterator itr;
-			//std::map<std::string, ChatClient*>::const_iterator itr_end = mPlayerMap.end();
-
-			//for (itr = mPlayerMap.begin(); itr != itr_end; ++itr)
-			//{
-			//    if (itr->second->party == client.party)
-			//    {
-			//        MessageOut out(CPMSG_PARTY_MEMBER_LEFT);
-			//        out.writeInt32(client.characterId);
-			//        itr->second->send(out);
-			//    }
-			//}
+			foreach(KeyValuePair<string, ChatClient> pair in mPlayerMap)
+			{
+				if(pair.Value.party==client.party)
+				{
+					MessageOut outmsg=new MessageOut(Protocol.CPMSG_PARTY_MEMBER_LEFT);
+			        outmsg.writeInt32((int)client.characterId);
+					pair.Value.send(outmsg);
+				}
+			}
 		}
 
 
