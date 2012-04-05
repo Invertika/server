@@ -1091,27 +1091,28 @@ namespace invertika_account.Chat
 
 		void handleGuildMemberLevelChange(ChatClient client, MessageIn msg)
 		{
-			//// get the guild, the user to change the permissions, and the new permission
-			//// check theyre valid, and then change them
-			//MessageOut reply(CPMSG_GUILD_PROMOTE_MEMBER_RESPONSE);
-			//short guildId = msg.readInt16();
-			//std::string user = msg.readString();
-			//short level = msg.readInt8();
-			//Guild *guild = guildManager->findById(guildId);
-			//Character *c = storage->getCharacter(user);
+			// get the guild, the user to change the permissions, and the new permission
+			// check theyre valid, and then change them
+			MessageOut reply=new MessageOut(Protocol.CPMSG_GUILD_PROMOTE_MEMBER_RESPONSE);
+			short guildId = msg.readInt16();
+			string user = msg.readString();
+			short level = msg.readInt8();
 
-			//if (guild && c)
-			//{
-			//    int rights = guild->getUserPermissions(c->getDatabaseID()) | level;
-			//    if (guildManager->changeMemberLevel(&client, guild, c->getDatabaseID(), rights) == 0)
-			//    {
-			//        reply.writeInt8(ERRMSG_OK);
-			//        client.send(reply);
-			//    }
-			//}
+			Guild guild = Program.guildManager.findById(guildId);
+			Character c = Program.storage.getCharacter(user);
 
-			//reply.writeInt8(ERRMSG_FAILURE);
-			//client.send(reply);
+			if (guild!=null && c!=null)
+			{
+			    int rights = guild.getUserPermissions(c.getDatabaseID()) | level;
+				if(Program.guildManager.changeMemberLevel(client, guild, c.getDatabaseID(), rights)==0)
+			    {
+			        reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
+			        client.send(reply);
+			    }
+			}
+
+			reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE); //TODO Muss das so oder fehlt oben ein return?
+			client.send(reply);
 		}
 
 		void handleGuildKickMember(ChatClient client, MessageIn msg)

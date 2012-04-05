@@ -174,7 +174,7 @@ namespace invertika_account.Chat
 			//}
 		}
 
-		int changeMemberLevel(ChatClient player, Guild guild, int playerId, int level)
+		public int changeMemberLevel(ChatClient player, Guild guild, int playerId, int level)
 		{
 			//if (guild->checkInGuild(player->characterId) && guild->checkInGuild(playerId))
 			//{
