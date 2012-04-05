@@ -52,7 +52,7 @@ namespace invertika_account.Chat
 			//mGuilds.clear();
 		}
 
-		Guild createGuild(string name, int playerId)
+		public Guild createGuild(string name, int playerId)
 		{
 			//Guild *guild = new Guild(name);
 			//// Add guild to db
@@ -190,7 +190,7 @@ namespace invertika_account.Chat
 			return -1;
 		}
 
-		bool alreadyOwner(int playerId)
+		public bool alreadyOwner(int playerId)
 		{
 			//std::list<int>::const_iterator itr = mOwners.begin();
 			//std::list<int>::const_iterator itr_end = mOwners.end();

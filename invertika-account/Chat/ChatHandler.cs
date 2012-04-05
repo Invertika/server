@@ -937,37 +937,38 @@ namespace invertika_account.Chat
 
 		void handleGuildCreate(ChatClient client, MessageIn msg)
 		{
-			//MessageOut reply(CPMSG_GUILD_CREATE_RESPONSE);
+			MessageOut reply=new MessageOut(Protocol.CPMSG_GUILD_CREATE_RESPONSE);
 
-			//// Check if guild already exists and if so, return error
-			//std::string guildName = msg.readString();
-			//if (!guildManager->doesExist(guildName))
-			//{
-			//    // check the player hasnt already created a guild
-			//    if (guildManager->alreadyOwner(client.characterId))
-			//    {
-			//        reply.writeInt8(ERRMSG_LIMIT_REACHED);
-			//    }
-			//    else
-			//    {
-			//        // Guild doesnt already exist so create it
-			//        Guild *guild = guildManager->createGuild(guildName, client.characterId);
-			//        reply.writeInt8(ERRMSG_OK);
-			//        reply.writeString(guildName);
-			//        reply.writeInt16(guild->getId());
-			//        reply.writeInt16(guild->getUserPermissions(client.characterId));
+			// Check if guild already exists and if so, return error
+			string guildName = msg.readString();
 
-			//        // Send autocreated channel id
-			//        ChatChannel* channel = joinGuildChannel(guildName, client);
-			//        reply.writeInt16(channel->getId());
-			//    }
-			//}
-			//else
-			//{
-			//    reply.writeInt8(ERRMSG_ALREADY_TAKEN);
-			//}
+			if (!Program.guildManager.doesExist(guildName))
+			{
+			    // check the player hasnt already created a guild
+				if(Program.guildManager.alreadyOwner((int)client.characterId))
+			    {
+			        reply.writeInt8((int)ErrorMessage.ERRMSG_LIMIT_REACHED);
+			    }
+			    else
+			    {
+			        // Guild doesnt already exist so create it
+					Guild guild=Program.guildManager.createGuild(guildName, (int)client.characterId);
+					reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
+			        reply.writeString(guildName);
+			        reply.writeInt16(guild.getId());
+					reply.writeInt16(guild.getUserPermissions((int)client.characterId));
 
-			//client.send(reply);
+			        // Send autocreated channel id
+			        ChatChannel channel = joinGuildChannel(guildName, client);
+			        reply.writeInt16(channel.getId());
+			    }
+			}
+			else
+			{
+				reply.writeInt8((int)ErrorMessage.ERRMSG_ALREADY_TAKEN);
+			}
+
+			client.send(reply);
 		}
 
 		void handleGuildInvite(ChatClient client, MessageIn msg)
