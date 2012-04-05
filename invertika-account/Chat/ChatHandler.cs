@@ -889,26 +889,25 @@ namespace invertika_account.Chat
 
 		ChatChannel joinGuildChannel(string guildName, ChatClient client)
 		{
-			//// Automatically make the character join the guild chat channel
-			//ChatChannel *channel = chatChannelManager->getChannel(guildName);
-			//if (!channel)
-			//{
-			//    // Channel doesnt exist so create it
-			//    int channelId = chatChannelManager->createNewChannel(
-			//                guildName, "Guild Channel", std::string(), false);
-			//    channel = chatChannelManager->getChannel(channelId);
-			//}
+			// Automatically make the character join the guild chat channel
+			ChatChannel channel = Program.chatChannelManager.getChannel(guildName);
+			
+			if (channel==null)
+			{
+			    // Channel doesnt exist so create it
+			    int channelId = Program.chatChannelManager.createNewChannel(guildName, "Guild Channel", "", false);
+				channel=Program.chatChannelManager.getChannel(channelId);
+			}
 
-			//// Add user to the channel
-			//if (channel->addUser(&client))
-			//{
-			//    // Send an CPMSG_UPDATE_CHANNEL to warn other clients a user went
-			//    // in the channel.
-			//    warnUsersAboutPlayerEventInChat(channel, client.characterName,
-			//            CHAT_EVENT_NEW_PLAYER);
-			//}
+			// Add user to the channel
+			if (channel.addUser(client))
+			{
+			    // Send an CPMSG_UPDATE_CHANNEL to warn other clients a user went
+			    // in the channel.
+			    warnUsersAboutPlayerEventInChat(channel, client.characterName, (int)ChatValues.CHAT_EVENT_NEW_PLAYER);
+			}
 
-			//return channel;
+			return channel;
 
 			return null; //ssk
 		}

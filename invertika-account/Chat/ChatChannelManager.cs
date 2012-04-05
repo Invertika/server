@@ -50,7 +50,7 @@ namespace invertika_account.Chat
 			mChannelsNoLongerUsed=new List<int>();
 		}
 
-		int createNewChannel(string channelName, string channelAnnouncement, string channelPassword, bool joinable)
+		public int createNewChannel(string channelName, string channelAnnouncement, string channelPassword, bool joinable)
 		{
 			int channelId=nextUsable();
 
