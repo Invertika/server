@@ -38,7 +38,6 @@ namespace invertika_account.Chat
 		List<GuildMember> mMembers;
 		List<int> mInvited;
 
-
 		Guild(string name)
 		{
 			mName=name;
@@ -62,17 +61,17 @@ namespace invertika_account.Chat
 
 		void removeMember(int playerId)
 		{
-			//if (getOwner() == playerId)
-			//{
-			//    // if the leader is leaving, assign next member as leader
-			//    std::list<GuildMember*>::iterator itr = mMembers.begin();
-			//    ++itr;
-			//    if (itr != mMembers.end())
-			//        setOwner((*itr).mId);
-			//}
-			//GuildMember *member = getMember(playerId);
-			//if (member)
-			//    mMembers.remove(member);
+			if(getOwner()==playerId)
+			{
+				// if the leader is leaving, assign next member as leader
+				if(mMembers.Count>0)
+				{
+					setOwner(mMembers[0].mId);
+				}
+			}
+
+			GuildMember member=getMember(playerId);
+			if(member!=null) mMembers.Remove(member); //Überprüfen ob Ausage sorum richtig ist
 		}
 
 		int getOwner()
