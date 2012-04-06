@@ -44,24 +44,20 @@ namespace invertika_account.Chat
 			mName=name;
 		}
 
-		~Guild()
-		{
-		}
-
 		void addMember(int playerId, int permissions)
 		{
-			//// create new guild member
-			//GuildMember *member = new GuildMember;
-			//member.mId = playerId;
-			//member.mPermissions = permissions;
+			// create new guild member
+			GuildMember member = new GuildMember();
+			member.mId = playerId;
+			member.mPermissions = permissions;
 
-			//// add new guild member to guild
-			//mMembers.push_back(member);
+			// add new guild member to guild
+			mMembers.Add(member);
 
-			//if (checkInvited(playerId))
-			//{
-			//    mInvited.remove(playerId);
-			//}
+			if (checkInvited(playerId))
+			{
+			    mInvited.Remove(playerId);
+			}
 		}
 
 		void removeMember(int playerId)
