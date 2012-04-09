@@ -33,15 +33,14 @@ namespace invertika_account.Chat
 {
 	public class Party
 	{
+		static int id=0;
 		List<string> mUsers;
-
 		uint mId;
 
 		public Party()
 		{
-			//static int id = 0;
-			//id++;
-			//mId = id;
+			id++;
+			mId=(uint)id;
 		}
 
 		public void addUser(string name, string inviter)
