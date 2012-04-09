@@ -910,7 +910,7 @@ namespace invertika_account.Chat
 			return channel;
 		}
 
-		void sendGuildListUpdate(string guildName, string characterName, byte eventId)
+		public void sendGuildListUpdate(string guildName, string characterName, byte eventId)
 		{
 			Guild guild=Program.guildManager.findByName(guildName);
 

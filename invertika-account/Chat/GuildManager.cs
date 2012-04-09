@@ -133,15 +133,12 @@ namespace invertika_account.Chat
 
 		public void disconnectPlayer(ChatClient player)
 		{
-			//std::vector<Guild*> guildList = getGuildsForPlayer(player.characterId);
+			List<Guild> guildList = getGuildsForPlayer((int)player.characterId);
 
-			//for (std::vector<Guild*>::const_iterator itr = guildList.begin();
-			//     itr != guildList.end(); ++itr)
-			//{
-			//    chatHandler.sendGuildListUpdate((*itr).getName(),
-			//                                     player.characterName,
-			//                                     GUILD_EVENT_OFFLINE_PLAYER);
-			//}
+			foreach(Guild guild in guildList)
+			{
+				Program.chatHandler.sendGuildListUpdate(guild.getName(), player.characterName, (byte)GuildValues.GUILD_EVENT_OFFLINE_PLAYER);
+			}
 		}
 
 		public int changeMemberLevel(ChatClient player, Guild guild, int playerId, int level)
