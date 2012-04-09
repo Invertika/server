@@ -103,14 +103,11 @@ namespace invertika_account.Chat
 
 		public Guild findByName(string name)
 		{
-			//for (std::list<Guild*>::const_iterator itr = mGuilds.begin(),
-			//        itr_end = mGuilds.end();
-			//        itr != itr_end; ++itr)
-			//{
-			//    Guild *guild = (*itr);
-			//    if (guild.getName() == name)
-			//        return guild;
-			//}
+			foreach(Guild guild in mGuilds)
+			{
+				if(guild.getName()==name) return guild;
+			}
+
 			return null;
 		}
 
