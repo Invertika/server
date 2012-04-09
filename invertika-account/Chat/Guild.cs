@@ -122,12 +122,11 @@ namespace invertika_account.Chat
 
 		public bool canInvite(int playerId)
 		{
-			//// Guild members with permissions above NONE can invite
-			//// Check that guild members permissions are not NONE
-			//GuildMember *member = getMember(playerId);
-			//if (member.mPermissions & GAL_INVITE)
-			//    return true;
-			return false;
+			// Guild members with permissions above NONE can invite
+			// Check that guild members permissions are not NONE
+			GuildMember member=getMember(playerId);
+			if((member.mPermissions&(int)(GuildAccessLevel.GAL_INVITE))!=0) return true; //TODO schauen ob Vergleich so richtig rum
+			else return false;
 		}
 
 		public int getUserPermissions(int playerId)
