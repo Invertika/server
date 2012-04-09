@@ -36,19 +36,6 @@ namespace invertika_account.Chat
 	{
 		List<Letter> mLetters;
 
-		~Post()
-		{
-			//std::vector<Letter*>::iterator itr_end = mLetters.end();
-			//for (std::vector<Letter*>::iterator itr = mLetters.begin();
-			//     itr != itr_end;
-			//     ++itr)
-			//{
-			//    delete (*itr);
-			//}
-
-			//mLetters.clear();
-		}
-
 		bool addLetter(Letter letter)
 		{
 			uint max=(uint)Configuration.getValue("mail_maxLetters", 10);
