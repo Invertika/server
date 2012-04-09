@@ -132,10 +132,8 @@ namespace invertika_account.Chat
 
 		public int getUserPermissions(int playerId)
 		{
-			//GuildMember *member = getMember(playerId);
-			//return member.mPermissions;
-
-			return 0; //ssk
+			GuildMember member=getMember(playerId);
+			return member.mPermissions;
 		}
 
 		void setUserPermissions(int playerId, int level)
