@@ -60,11 +60,7 @@ namespace invertika_account.Chat
 
 		public void removeUser(string name)
 		{
-			//PartyUsers::iterator itr = std::find(mUsers.begin(), mUsers.end(), name);
-			//if (itr != mUsers.end())
-			//{
-			//    mUsers.erase(itr);
-			//}
+			mUsers.Remove(name);
 		}
 
 
