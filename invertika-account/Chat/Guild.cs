@@ -112,14 +112,10 @@ namespace invertika_account.Chat
 
 		GuildMember getMember(int playerId)
 		{
-			//std::list<GuildMember*>::const_iterator itr = mMembers.begin(),
-			//                                        itr_end = mMembers.end();
-			//while (itr != itr_end)
-			//{
-			//    if ((*itr).mId == playerId)
-			//        return (*itr);
-			//    ++itr;
-			//}
+			foreach(GuildMember member in mMembers)
+			{
+				if(member.mId==playerId) return member;
+			}
 
 			return null;
 		}
