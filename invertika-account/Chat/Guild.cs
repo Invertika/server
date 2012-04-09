@@ -87,11 +87,12 @@ namespace invertika_account.Chat
 
 		void setOwner(int playerId)
 		{
-			//GuildMember *member = getMember(playerId);
-			//if (member)
-			//{
-			//    member.mPermissions = GAL_OWNER;
-			//}
+			GuildMember member=getMember(playerId);
+
+			if(member!=null)
+			{
+				member.mPermissions=(int)GuildAccessLevel.GAL_OWNER;
+			}
 		}
 
 		public bool checkInvited(int playerId)
