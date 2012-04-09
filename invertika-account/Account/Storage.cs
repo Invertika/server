@@ -1280,7 +1280,7 @@ namespace invertika_account.Account
 			//}
 		}
 
-		void addGuild(Guild guild)
+		public void addGuild(Guild guild)
 		{
 			//try
 			//{
@@ -1441,7 +1441,7 @@ namespace invertika_account.Account
 			return floorItems;
 		}
 
-		void setMemberRights(int guildId, int memberId, int rights)
+		public void setMemberRights(int guildId, int memberId, int rights)
 		{
 			//try
 			//{

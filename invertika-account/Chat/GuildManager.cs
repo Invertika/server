@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ISL.Server.Enums;
 
 namespace invertika_account.Chat
 {
@@ -42,37 +43,25 @@ namespace invertika_account.Chat
 			mGuilds=Program.storage.getGuildList();
 		}
 
-		~GuildManager()
-		{
-			//for (std::list<Guild*>::iterator itr = mGuilds.begin();
-			//        itr != mGuilds.end(); ++itr)
-			//{
-			//    delete *itr;
-			//}
-			//mGuilds.clear();
-		}
-
 		public Guild createGuild(string name, int playerId)
 		{
-			//Guild *guild = new Guild(name);
-			//// Add guild to db
-			//storage.addGuild(guild);
+			Guild guild=new Guild(name);
+			// Add guild to db
+			Program.storage.addGuild(guild);
 
-			//// Add guild, and add owner
-			//mGuilds.push_back(guild);
-			//mOwners.push_back(playerId);
+			// Add guild, and add owner
+			mGuilds.Add(guild);
+			mOwners.Add(playerId);
 
-			//// put the owner in the guild
-			//addGuildMember(guild, playerId);
+			// put the owner in the guild
+			addGuildMember(guild, playerId);
 
-			//// Set and save the member rights
-			//storage.setMemberRights(guild.getId(), playerId, GAL_OWNER);
+			// Set and save the member rights
+			Program.storage.setMemberRights(guild.getId(), playerId, (int)GuildAccessLevel.GAL_OWNER);
 
-			//guild.setOwner(playerId);
+			guild.setOwner(playerId);
 
-			//return guild;
-
-			return null; //ssk
+			return guild;
 		}
 
 		void removeGuild(Guild guild)

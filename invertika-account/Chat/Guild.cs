@@ -39,7 +39,7 @@ namespace invertika_account.Chat
 		List<GuildMember> mMembers;
 		List<int> mInvited;
 
-		Guild(string name)
+		public Guild(string name)
 		{
 			mName=name;
 		}
@@ -85,7 +85,7 @@ namespace invertika_account.Chat
 			return 0;
 		}
 
-		void setOwner(int playerId)
+		public void setOwner(int playerId)
 		{
 			GuildMember member=getMember(playerId);
 
