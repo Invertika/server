@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ISL.Server.Enums;
 
 namespace invertika_account.Chat
 {
@@ -76,15 +77,10 @@ namespace invertika_account.Chat
 
 		int getOwner()
 		{
-			//std::list<GuildMember*>::const_iterator itr = mMembers.begin();
-			//std::list<GuildMember*>::const_iterator itr_end = mMembers.end();
-
-			//while (itr != itr_end)
-			//{
-			//    if ((*itr).mPermissions == GAL_OWNER)
-			//        return (*itr).mId;
-			//    ++itr;
-			//}
+			foreach(GuildMember member in mMembers)
+			{
+				if(member.mPermissions==(int)GuildAccessLevel.GAL_OWNER) return member.mId;
+			}
 
 			return 0;
 		}
