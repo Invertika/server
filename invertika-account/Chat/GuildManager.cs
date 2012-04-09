@@ -166,11 +166,11 @@ namespace invertika_account.Chat
 
 		void setUserRights(Guild guild, int playerId, int rights)
 		{
-			//// Set and save the member rights
-			//storage.setMemberRights(guild.getId(), playerId, rights);
+			// Set and save the member rights
+			Program.storage.setMemberRights(guild.getId(), playerId, rights);
 
-			//// Set with guild
-			//guild.setUserPermissions(playerId, rights);
+			// Set with guild
+			guild.setUserPermissions(playerId, rights);
 		}
 	}
 }
