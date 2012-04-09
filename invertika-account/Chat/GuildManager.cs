@@ -39,7 +39,7 @@ namespace invertika_account.Chat
 		public GuildManager()
 		{
 			// Load stored guilds from db
-			//mGuilds = storage.getGuildList();
+			mGuilds=Program.storage.getGuildList();
 		}
 
 		~GuildManager()

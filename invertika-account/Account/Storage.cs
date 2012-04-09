@@ -1459,7 +1459,7 @@ namespace invertika_account.Account
 			//}
 		}
 
-		List<Guild> getGuildList()
+		public List<Guild> getGuildList()
 		{
 			//std::list<Guild*> guilds;
 			//std::stringstream sql;
