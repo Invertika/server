@@ -49,11 +49,11 @@ namespace invertika_account.Chat
 		{
 			mUsers.Add(name);
 
-			for (int i = 0; i < userCount(); ++i)
+			for(int i=0; i<userCount(); ++i)
 			{
-			    MessageOut outmsg=new MessageOut(Protocol.CPMSG_PARTY_NEW_MEMBER);
-			    outmsg.writeString(name);
-			    outmsg.writeString(inviter);
+				MessageOut outmsg=new MessageOut(Protocol.CPMSG_PARTY_NEW_MEMBER);
+				outmsg.writeString(name);
+				outmsg.writeString(inviter);
 				Program.chatHandler.getClient(mUsers[i]).send(outmsg);
 			}
 		}
@@ -63,23 +63,24 @@ namespace invertika_account.Chat
 			mUsers.Remove(name);
 		}
 
-
 		public List<string> getUsers()
 		{
 			return mUsers;
 		}
 
-		/**
- * Return the party id
- */
+		/// <summary>
+		/// Return the party id
+		/// </summary>
+		/// <returns></returns>
 		public uint getId()
 		{
 			return mId;
 		}
 
-		/**
-   * Return number of users in party
-   */
+		/// <summary>
+		/// Return number of users in party
+		/// </summary>
+		/// <returns></returns>
 		public int userCount()
 		{
 			return mUsers.Count;
