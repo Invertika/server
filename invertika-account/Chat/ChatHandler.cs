@@ -656,7 +656,7 @@ namespace invertika_account.Chat
 			}
 		}
 
-		ChatClient getClient(string name)
+		public ChatClient getClient(string name)
 		{
 			if(mPlayerMap.ContainsKey(name))
 			{

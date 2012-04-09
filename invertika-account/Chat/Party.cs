@@ -28,6 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ISL.Server.Common;
+using ISL.Server.Network;
 
 namespace invertika_account.Chat
 {
@@ -45,15 +47,15 @@ namespace invertika_account.Chat
 
 		public void addUser(string name, string inviter)
 		{
-			//mUsers.push_back(name);
+			mUsers.Add(name);
 
-			//for (size_t i = 0; i < userCount(); ++i)
-			//{
-			//    MessageOut out(ManaServ::CPMSG_PARTY_NEW_MEMBER);
-			//    out.writeString(name);
-			//    out.writeString(inviter);
-			//    chatHandler.getClient(mUsers[i]).send(out);
-			//}
+			for (int i = 0; i < userCount(); ++i)
+			{
+			    MessageOut outmsg=new MessageOut(Protocol.CPMSG_PARTY_NEW_MEMBER);
+			    outmsg.writeString(name);
+			    outmsg.writeString(inviter);
+				Program.chatHandler.getClient(mUsers[i]).send(outmsg);
+			}
 		}
 
 		public void removeUser(string name)
