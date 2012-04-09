@@ -73,8 +73,8 @@ namespace invertika_account.Chat
 
 		public void addGuildMember(Guild guild, int playerId)
 		{
-			//storage.addGuildMember(guild.getId(), playerId);
-			//guild.addMember(playerId);
+			Program.storage.addGuildMember(guild.getId(), playerId);
+			guild.addMember(playerId, (int)GuildAccessLevel.GAL_NONE);
 		}
 
 		public void removeGuildMember(Guild guild, int playerId)

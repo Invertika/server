@@ -44,7 +44,7 @@ namespace invertika_account.Chat
 			mName=name;
 		}
 
-		void addMember(int playerId, int permissions)
+		public void addMember(int playerId, int permissions)
 		{
 			// create new guild member
 			GuildMember member=new GuildMember();

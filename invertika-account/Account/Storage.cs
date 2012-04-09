@@ -1340,7 +1340,7 @@ namespace invertika_account.Account
 			//}
 		}
 
-		void addGuildMember(int guildId, int memberId)
+		public void addGuildMember(int guildId, int memberId)
 		{
 			//try
 			//{
