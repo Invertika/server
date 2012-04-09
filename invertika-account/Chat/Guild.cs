@@ -102,7 +102,7 @@ namespace invertika_account.Chat
 
 		public void addInvited(int playerId)
 		{
-			//mInvited.push_back(playerId);
+			mInvited.Add(playerId);
 		}
 
 		public bool checkInGuild(int playerId)
