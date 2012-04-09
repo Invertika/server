@@ -160,17 +160,8 @@ namespace invertika_account.Chat
 
 		public bool alreadyOwner(int playerId)
 		{
-			//std::list<int>::const_iterator itr = mOwners.begin();
-			//std::list<int>::const_iterator itr_end = mOwners.end();
-
-			//while (itr != itr_end)
-			//{
-			//    if ((*itr) == playerId)
-			//        return true;
-			//    ++itr;
-			//}
-
-			return false;
+			if(mOwners.IndexOf(playerId)!=-1) return true;
+			else return false;
 		}
 
 		void setUserRights(Guild guild, int playerId, int rights)
