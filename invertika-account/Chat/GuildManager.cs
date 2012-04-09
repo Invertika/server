@@ -143,17 +143,17 @@ namespace invertika_account.Chat
 
 		public int changeMemberLevel(ChatClient player, Guild guild, int playerId, int level)
 		{
-			//if (guild.checkInGuild(player.characterId) && guild.checkInGuild(playerId))
-			//{
-			//    int playerLevel = guild.getUserPermissions(player.characterId);
+			if(guild.checkInGuild((int)player.characterId)&&guild.checkInGuild(playerId))
+			{
+				int playerLevel=guild.getUserPermissions((int)player.characterId);
 
-			//    if (playerLevel == GAL_OWNER)
-			//    {
-			//        // player can modify anyones permissions
-			//        setUserRights(guild, playerId, level);
-			//        return 0;
-			//    }
-			//}
+				if(playerLevel==(int)GuildAccessLevel.GAL_OWNER)
+				{
+					// player can modify anyones permissions
+					setUserRights(guild, playerId, level);
+					return 0;
+				}
+			}
 
 			return -1;
 		}
