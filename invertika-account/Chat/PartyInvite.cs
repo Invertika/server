@@ -33,11 +33,12 @@ namespace invertika_account.Chat
 {
 	public class PartyInvite
 	{
+		const int validTimeframe=60;
+
 		public PartyInvite(string inviterName, string inviteeName)
 		{
 			mInviter=inviterName;
 			mInvitee=inviteeName;
-			const int validTimeframe=60;
 			mExpireTime=DateTime.Now.Ticks+validTimeframe; //	time(NULL) + validTimeframe;
 		}
 
