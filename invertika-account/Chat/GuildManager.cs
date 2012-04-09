@@ -79,26 +79,16 @@ namespace invertika_account.Chat
 
 		public void removeGuildMember(Guild guild, int playerId)
 		{
-			//// remove the user from the guild
-			//storage.removeGuildMember(guild.getId(), playerId);
-			//guild.removeMember(playerId);
+			// remove the user from the guild
+			Program.storage.removeGuildMember(guild.getId(), playerId);
+			guild.removeMember(playerId);
 
-			//// if theres no more members left delete the guild
-			//if (guild.memberCount() == 0)
-			//    removeGuild(guild);
+			// if theres no more members left delete the guild
+			if (guild.memberCount() == 0)
+			    removeGuild(guild);
 
-			//// remove the user from owners list
-			//std::list<int>::iterator itr = mOwners.begin();
-			//std::list<int>::iterator itr_end = mOwners.end();
-			//while (itr != itr_end)
-			//{
-			//    if ((*itr) == playerId)
-			//    {
-			//        mOwners.remove(playerId);
-			//        break;
-			//    }
-			//    ++itr;
-			//}
+			// remove the user from owners list
+			mOwners.Remove(playerId);
 		}
 
 		public Guild findById(short id)

@@ -1360,7 +1360,7 @@ namespace invertika_account.Account
 			//}
 		}
 
-		void removeGuildMember(int guildId, int memberId)
+		public void removeGuildMember(int guildId, int memberId)
 		{
 			//try
 			//{

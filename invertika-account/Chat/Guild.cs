@@ -60,7 +60,7 @@ namespace invertika_account.Chat
 			}
 		}
 
-		void removeMember(int playerId)
+		public void removeMember(int playerId)
 		{
 			if(getOwner()==playerId)
 			{
