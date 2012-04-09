@@ -53,15 +53,6 @@ namespace invertika_account.Chat
 			mReceiver=receiver;
 		}
 
-		~Letter()
-		{
-			//if (mSender)
-			//    delete mSender;
-
-			//if (mReceiver)
-			//    delete mReceiver;
-		}
-
 		void setExpiry(ulong expiry)
 		{
 			mExpiry=expiry;
