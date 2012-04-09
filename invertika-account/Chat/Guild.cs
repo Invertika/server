@@ -75,7 +75,7 @@ namespace invertika_account.Chat
 			if(member!=null) mMembers.Remove(member); //Überprüfen ob Ausage sorum richtig ist
 		}
 
-		int getOwner()
+		public int getOwner()
 		{
 			foreach(GuildMember member in mMembers)
 			{

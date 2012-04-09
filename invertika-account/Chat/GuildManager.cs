@@ -66,10 +66,9 @@ namespace invertika_account.Chat
 
 		void removeGuild(Guild guild)
 		{
-			//storage.removeGuild(guild);
-			//mOwners.remove(guild.getOwner());
-			//mGuilds.remove(guild);
-			//delete guild;
+			Program.storage.removeGuild(guild);
+			mOwners.Remove(guild.getOwner());
+			mGuilds.Remove(guild);
 		}
 
 		public void addGuildMember(Guild guild, int playerId)

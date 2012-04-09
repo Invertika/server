@@ -1324,7 +1324,7 @@ namespace invertika_account.Account
 			//}
 		}
 
-		void removeGuild(Guild guild)
+		public void removeGuild(Guild guild)
 		{
 			//try
 			//{
