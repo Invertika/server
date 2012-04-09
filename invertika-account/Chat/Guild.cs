@@ -47,16 +47,16 @@ namespace invertika_account.Chat
 		void addMember(int playerId, int permissions)
 		{
 			// create new guild member
-			GuildMember member = new GuildMember();
-			member.mId = playerId;
-			member.mPermissions = permissions;
+			GuildMember member=new GuildMember();
+			member.mId=playerId;
+			member.mPermissions=permissions;
 
 			// add new guild member to guild
 			mMembers.Add(member);
 
-			if (checkInvited(playerId))
+			if(checkInvited(playerId))
 			{
-			    mInvited.Remove(playerId);
+				mInvited.Remove(playerId);
 			}
 		}
 
@@ -141,34 +141,37 @@ namespace invertika_account.Chat
 			member.mPermissions=level;
 		}
 
-		/**
- * Returns the ID of the guild.
- */
+		/// <summary>
+		///  Returns the ID of the guild.
+		/// </summary>
+		/// <returns></returns>
 		public int getId()
 		{
 			return mId;
 		}
 
-		/**
- * Returns the name of the guild.
- */
+		/// <summary>
+		/// Returns the name of the guild.
+		/// </summary>
+		/// <returns></returns>
 		public string getName()
 		{
 			return mName;
 		}
 
-		/**
- * Returns a list of the members in this guild.
- */
+		/// <summary>
+		/// Returns a list of the members in this guild.
+		/// </summary>
+		/// <returns></returns>
 		public List<GuildMember> getMembers()
 		{
 			return mMembers;
 		}
 
-
-		/**
-		 * Returns the number of members in the guild.
-		 */
+		/// <summary>
+		/// Returns the number of members in the guild.
+		/// </summary>
+		/// <returns></returns>
 		public int memberCount()
 		{
 			return mMembers.Count;
