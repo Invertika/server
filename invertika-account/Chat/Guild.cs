@@ -97,9 +97,7 @@ namespace invertika_account.Chat
 
 		public bool checkInvited(int playerId)
 		{
-			//return std::find(mInvited.begin(), mInvited.end(), playerId) != mInvited.end();
-
-			return true; //ssk
+			return mInvited.Contains(playerId);
 		}
 
 		public void addInvited(int playerId)
