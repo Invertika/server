@@ -120,14 +120,13 @@ namespace invertika_account.Chat
 		{
 			List<Guild> guildList=new List<Guild>();
 
-			//for (std::list<Guild*>::const_iterator itr = mGuilds.begin();
-			//        itr != mGuilds.end(); ++itr)
-			//{
-			//    if ((*itr).checkInGuild(playerId))
-			//    {
-			//        guildList.push_back((*itr));
-			//    }
-			//}
+			foreach(Guild guild in mGuilds)
+			{
+				if(guild.checkInGuild(playerId))
+				{
+					guildList.Add(guild);
+				}
+			}
 
 			return guildList;
 		}
