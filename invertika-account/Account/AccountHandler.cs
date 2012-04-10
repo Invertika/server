@@ -59,28 +59,24 @@ namespace invertika_account.Account
 
 		Dictionary<int, DateTime> mLastLoginAttemptForIP;
 
-		/**
- * Token collector for connecting a client coming from a game server
- * without having to provide username and password a second time.
- */
+		//Token collector for connecting a client coming from a game server
+		//without having to provide username and password a second time.
 		public TokenCollector<AccountHandler, AccountClient, int> mTokenCollector;
 
 
 		public AccountHandler(string attributesFile)
-		//mTokenCollector(this),
-		//mStartingPoints(0),
-		//mAttributeMinimum(0),
-		//mAttributeMaximum(0),
-		//mNumHairStyles(Configuration::getValue("char_numHairStyles", 17)),
-		//mNumHairColors(Configuration::getValue("char_numHairColors", 11)),
-		//mNumGenders(Configuration::getValue("char_numGenders", 2)),
-		//mMinNameLength(Configuration::getValue("char_minNameLength", 4)),
-		//mMaxNameLength(Configuration::getValue("char_maxNameLength", 25)),
-		//mMaxCharacters(Configuration::getValue("account_maxCharacters", 3)),
-		//mRegistrationAllowed(Configuration::getBoolValue("account_allowRegister", true)),
-		//mUpdateHost(Configuration::getValue("net_defaultUpdateHost", std::string())),
-		//mDataUrl(Configuration::getValue("net_clientDataUrl", std::string()))
 		{
+			mTokenCollector=new TokenCollector<AccountHandler, AccountClient, int>();
+			mNumHairStyles=Configuration.getValue("char_numHairStyles", 17);
+			mNumHairColors=Configuration.getValue("char_numHairColors", 11);
+			mNumGenders=Configuration.getValue("char_numGenders", 2);
+			mMinNameLength=(uint)Configuration.getValue("char_minNameLength", 4);
+			mMaxNameLength=(uint)Configuration.getValue("char_maxNameLength", 25);
+			mMaxCharacters=Configuration.getValue("account_maxCharacters", 3);
+			mRegistrationAllowed=Configuration.getBoolValue("account_allowRegister", true);
+			mUpdateHost=Configuration.getValue("net_defaultUpdateHost", "");
+			mDataUrl=Configuration.getValue("net_clientDataUrl", "");
+
 			//XML::Document doc(attributesFile);
 			//xmlNodePtr node = doc.rootNode();
 
@@ -856,7 +852,7 @@ namespace invertika_account.Account
 			client.send(reply);
 
 			// Return information about available characters
-			Dictionary<uint, Character> chars = acc.getCharacters();
+			Dictionary<uint, Character> chars=acc.getCharacters();
 
 			// Send characters list
 			foreach(Character character in chars.Values)
