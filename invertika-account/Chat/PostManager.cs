@@ -55,10 +55,12 @@ namespace invertika_account.Chat
 
 		public Post getPost(Character player)
 		{
-			//std::map<Character*, Post*>::const_iterator itr = mPostBox.find(player);
-			//return (itr == mPostBox.end()) ? NULL : itr.second;
+			if(mPostBox.ContainsKey(player))
+			{
+				return mPostBox[player];
+			}
 				
-			return null; //ssk
+			return null;
 		}
 
 		public void clearPost(Character player)
