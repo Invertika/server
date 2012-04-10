@@ -65,13 +65,10 @@ namespace invertika_account.Chat
 
 		public void clearPost(Character player)
 		{
-			//std::map<Character*, Post*>::iterator itr =
-			//    mPostBox.find(player);
-			//if (itr != mPostBox.end())
-			//{
-			//    delete itr.second;
-			//    mPostBox.erase(itr);
-			//}
+			if(mPostBox.ContainsKey(player))
+			{
+				mPostBox.Remove(player);
+			}
 		}
 	}
 }
