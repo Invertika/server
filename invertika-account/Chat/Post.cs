@@ -36,7 +36,7 @@ namespace invertika_account.Chat
 	{
 		List<Letter> mLetters;
 
-		bool addLetter(Letter letter)
+		public bool addLetter(Letter letter)
 		{
 			uint max=(uint)Configuration.getValue("mail_maxLetters", 10);
 			if(mLetters.Count>max)

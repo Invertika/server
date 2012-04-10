@@ -39,27 +39,25 @@ namespace invertika_account.Chat
 
 		public void addLetter(Letter letter)
 		{
-			//std::map<Character*, Post*>::iterator itr =
-			//    mPostBox.find(letter.getReceiver());
-			//if (itr != mPostBox.end())
-			//{
-			//    itr.second.addLetter(letter);
-			//}
-			//else
-			//{
-			//    Post *post = new Post();
-			//    post.addLetter(letter);
-			//    mPostBox.insert(
-			//        std::pair<Character*, Post*>(letter.getReceiver(), post)
-			//        );
-			//}
+			Character character=letter.getReceiver();
+
+			if(mPostBox.ContainsKey(character))
+			{
+				mPostBox[character].addLetter(letter);
+			}
+			else
+			{
+				Post post=new Post();
+				post.addLetter(letter);
+				mPostBox.Add(character, post);
+			}
 		}
 
 		public Post getPost(Character player)
 		{
 			//std::map<Character*, Post*>::const_iterator itr = mPostBox.find(player);
 			//return (itr == mPostBox.end()) ? NULL : itr.second;
-
+				
 			return null; //ssk
 		}
 

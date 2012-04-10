@@ -86,7 +86,7 @@ namespace invertika_account.Chat
 			return true;
 		}
 
-		Character getReceiver()
+		public Character getReceiver()
 		{
 			return mReceiver;
 		}
