@@ -322,12 +322,12 @@ namespace invertika_game.Game
 			send(msg);
 		}
 
-		void updateWorldVar(string name, string value)
+		void updateWorldVar(string name, string @value)
 		{
-			//MessageOut msg(GAMSG_SET_VAR_WORLD);
-			//msg.writeString(name);
-			//msg.writeString(value);
-			//send(msg);
+			MessageOut msg=new MessageOut(Protocol.GAMSG_SET_VAR_WORLD);
+			msg.writeString(name);
+			msg.writeString(@value);
+			send(msg);
 		}
 
 		void banCharacter(Character ch, int duration)
