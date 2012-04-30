@@ -415,39 +415,37 @@ namespace invertika_game.Game
 
 		void changeAccountLevel(Character c, int level)
 		{
-			//MessageOut msg(GAMSG_CHANGE_ACCOUNT_LEVEL);
-			//msg.writeInt32(c.getDatabaseID());
-			//msg.writeInt16(level);
-			//send(msg);
+			MessageOut msg=new MessageOut(Protocol.GAMSG_CHANGE_ACCOUNT_LEVEL);
+			msg.writeInt32(c.getDatabaseID());
+			msg.writeInt16(level);
+			send(msg);
 		}
 
 		public void syncChanges(bool force)
 		{
-			//if (mSyncMessages == 0)
-			//    return;
+			if(mSyncMessages==0)
+				return;
 
-			//// send buffer if:
-			////    a.) forced by any process
-			////    b.) every 10 seconds
-			////    c.) buffer reaches size of 1kb
-			////    d.) buffer holds more then 20 messages
-			//if (force ||
-			//    mSyncMessages > SYNC_BUFFER_LIMIT ||
-			//    mSyncBuffer.getLength() > SYNC_BUFFER_SIZE )
-			//{
-			//    LOG_DEBUG("Sending GAMSG_PLAYER_SYNC with "
-			//            << mSyncMessages << " messages." );
+			// send buffer if:
+			//    a.) forced by any process
+			//    b.) every 10 seconds
+			//    c.) buffer reaches size of 1kb
+			//    d.) buffer holds more then 20 messages
+			if(force||
+			    mSyncMessages>SYNC_BUFFER_LIMIT||
+			    mSyncBuffer.getLength()>SYNC_BUFFER_SIZE)
+			{
+				Logger.Write(LogLevel.Debug, "Sending GAMSG_PLAYER_SYNC with {0} messages.", mSyncMessages);
+			
+				send(mSyncBuffer);
 
-			//    send(*mSyncBuffer);
-			//    delete mSyncBuffer;
-
-			//    mSyncBuffer = new MessageOut(GAMSG_PLAYER_SYNC);
-			//    mSyncMessages = 0;
-			//}
-			//else
-			//{
-			//    LOG_DEBUG("No changes to sync with account server.");
-			//}
+				mSyncBuffer=new MessageOut(Protocol.GAMSG_PLAYER_SYNC);
+				mSyncMessages=0;
+			}
+			else
+			{
+				Logger.Write(LogLevel.Debug, "No changes to sync with account server.");
+			}
 		}
 
 		void updateCharacterPoints(int charId, int charPoints, int corrPoints)
