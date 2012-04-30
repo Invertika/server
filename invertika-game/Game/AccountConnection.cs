@@ -48,13 +48,8 @@ namespace invertika_game.Game
 
 		public AccountConnection()
 		{
-			// mSyncBuffer(0),
-			//mSyncMessages(0)
-		}
-
-		~AccountConnection()
-		{
-			//delete mSyncBuffer;
+			mSyncBuffer=new MessageOut();
+			mSyncMessages=0;
 		}
 
 		public bool start(int gameServerPort)
@@ -76,7 +71,6 @@ namespace invertika_game.Game
 			}
 
 			Logger.Write(LogLevel.Information, "Connection established to the account server.");
-
 
 			string gameServerAddress=Configuration.getValue("net_gameHost", "localhost");
 			string password=Configuration.getValue("net_password", "changeMe");
@@ -100,15 +94,15 @@ namespace invertika_game.Game
 			// initialize sync buffer
 			if(mSyncBuffer==null) mSyncBuffer=new MessageOut(Protocol.GAMSG_PLAYER_SYNC);
 
-			return true; //ssk
+			return true;
 		}
 
 		void sendCharacterData(Character p)
 		{
-			//MessageOut msg(GAMSG_PLAYER_DATA);
-			//msg.writeInt32(p.getDatabaseID());
-			//serializeCharacterData(*p, msg);
-			//send(msg);
+			MessageOut msg=new MessageOut(Protocol.GAMSG_PLAYER_DATA);
+			msg.writeInt32(p.getDatabaseID());
+			//serializeCharacterData(p, msg); //TODO noch einbauen
+			send(msg);
 		}
 
 		void processMessage(MessageIn msg)

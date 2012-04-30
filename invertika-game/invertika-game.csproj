@@ -93,6 +93,7 @@
     <Compile Include="Scripting\Script.cs" />
     <Compile Include="Utils\StringFilter.cs" />
     <Compile Include="Utils\Timer.cs" />
+    <Compile Include="Enums\TransactionType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -115,5 +116,8 @@
       <Project>{0E720343-5366-4C3A-BC59-7B7FD2C311B5}</Project>
       <Name>CSCL</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Enums\" />
   </ItemGroup>
 </Project>
