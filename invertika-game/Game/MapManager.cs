@@ -111,7 +111,7 @@ namespace invertika_game.Game
 			//maps.clear();
 		}
 
-		static MapComposite getMap(int mapId)
+		public static MapComposite getMap(int mapId)
 		{
 			//Maps::const_iterator i = maps.find(mapId);
 			//return (i != maps.end()) ? i.second : NULL;
@@ -128,7 +128,7 @@ namespace invertika_game.Game
 			return null;
 		}
 
-		static bool activateMap(int mapId)
+		public static bool activateMap(int mapId)
 		{
 			//Maps::iterator i = maps.find(mapId);
 			//assert(i != maps.end());

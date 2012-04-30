@@ -23,7 +23,6 @@
 // 
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +32,7 @@ namespace invertika_game.Game
 {
 	public class PostMan
 	{
-		Character getCharacter(int id)
+		public Character getCharacter(int id)
 		{
 			//std::map<int, Character*>::const_iterator itr = mCharacters.find(id);
 			//if (itr != mCharacters.end())
@@ -58,7 +57,7 @@ namespace invertika_game.Game
 			//accountHandler.getPost(player);
 		}
 
-		void gotPost(Character player, string sender, string letter)
+		public void gotPost(Character player, string sender, string letter)
 		{
 			//std::map<Character*, PostCallback>::iterator itr = mCallbacks.find(player);
 			//if (itr != mCallbacks.end())

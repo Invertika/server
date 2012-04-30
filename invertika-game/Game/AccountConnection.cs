@@ -23,7 +23,6 @@
 // 
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +31,7 @@ using ISL.Server.Network;
 using invertika_game.Network;
 using ISL.Server.Common;
 using ISL.Server.Utilities;
+using ISL.Server.Enums;
 
 namespace invertika_game.Game
 {
@@ -60,7 +60,8 @@ namespace invertika_game.Game
 			// Otherwise, we use the accountListenToClientPort + 1 if the option is set.
 			// If neither, the DEFAULT_SERVER_PORT + 1 is used.
 			int alternativePort=Configuration.getValue("net_accountListenToClientPort", 0)+1;
-			if(alternativePort==1) alternativePort=Configuration.DEFAULT_SERVER_PORT+1;
+			if(alternativePort==1)
+				alternativePort=Configuration.DEFAULT_SERVER_PORT+1;
 
 			int accountServerPort=Configuration.getValue("net_accountListenToGamePort", alternativePort);
 
@@ -92,7 +93,8 @@ namespace invertika_game.Game
 			send(msg);
 
 			// initialize sync buffer
-			if(mSyncBuffer==null) mSyncBuffer=new MessageOut(Protocol.GAMSG_PLAYER_SYNC);
+			if(mSyncBuffer==null)
+				mSyncBuffer=new MessageOut(Protocol.GAMSG_PLAYER_SYNC);
 
 			return true;
 		}
@@ -107,169 +109,182 @@ namespace invertika_game.Game
 
 		void processMessage(MessageIn msg)
 		{
-			//switch (msg.getId())
-			//{
-			//    case AGMSG_REGISTER_RESPONSE:
-			//    {
-			//        if (msg.readInt16() != DATA_VERSION_OK)
-			//        {
-			//            LOG_ERROR("Item database is outdated! Please update to "
-			//                      "prevent inconsistencies");
-			//            stop();  // Disconnect gracefully from account server.
-			//            // Stop gameserver to prevent inconsistencies.
-			//            exit(EXIT_DB_EXCEPTION);
-			//        }
-			//        else
-			//        {
-			//            LOG_DEBUG("Local item database is "
-			//                      "in sync with account server.");
-			//        }
-			//        if (msg.readInt16() != PASSWORD_OK)
-			//        {
-			//            LOG_ERROR("This game server sent a invalid password");
-			//            stop();
-			//            exit(EXIT_BAD_CONFIG_PARAMETER);
-			//        }
+			switch(msg.getId())
+			{
+				case Protocol.AGMSG_REGISTER_RESPONSE:
+					{
+						if(msg.readInt16()!=(short)DataVersion.DATA_VERSION_OK)
+						{
+							Logger.Write(LogLevel.Error, "Item database is outdated! Please update to prevent inconsistencies");
+							stop();   //Disconnect gracefully from account server.
+							//Stop gameserver to prevent inconsistencies.
+							System.Environment.Exit((int)ExitValue.EXIT_DB_EXCEPTION);
+						}
+						else
+						{
+							Logger.Write(LogLevel.Debug, "Local item database is in sync with account server.");
+						}
+					
+						if(msg.readInt16()!=(short)Password.PASSWORD_OK)
+						{
+							Logger.Write(LogLevel.Error, "This game server sent a invalid password");
+							stop();
+							System.Environment.Exit((int)ExitValue.EXIT_BAD_CONFIG_PARAMETER);
+						}
 
-			//        // read world state variables
-			//        while (msg.getUnreadLength())
-			//        {
-			//            std::string key = msg.readString();
-			//            std::string value = msg.readString();
-			//            if (!key.empty() && !value.empty())
-			//            {
-			//                GameState::setVariableFromDbserver(key, value);
-			//            }
-			//        }
+						//read world state variables
+						while(msg.getUnreadLength()>0)
+						{
+							string key=msg.readString();
+							string @value=msg.readString();
+						
+							if(key!=""&&@value!="")
+							{
+								GameState.setVariableFromDbserver(key, @value);
+							}
+						}
 
-			//    } break;
+					}
+					break;
 
-			//    case AGMSG_PLAYER_ENTER:
-			//    {
-			//        std::string token = msg.readString(MAGIC_TOKEN_LENGTH);
-			//        Character *ptr = new Character(msg);
-			//        gameHandler.addPendingCharacter(token, ptr);
-			//    } break;
+				case Protocol.AGMSG_PLAYER_ENTER:
+					{
+						string token=msg.readString();
+						Character ptr=new Character(msg);
+						Program.gameHandler.addPendingCharacter(token, ptr);
+					}
+					break;
 
-			//    case AGMSG_ACTIVE_MAP:
-			//    {
-			//        int mapId = msg.readInt16();
-			//        if (MapManager::activateMap(mapId))
-			//        {
-			//            // Set map variables
-			//            MapComposite *m = MapManager::getMap(mapId);
-			//            int mapVarsNumber = msg.readInt16();
-			//            for(int i = 0; i < mapVarsNumber; ++i)
-			//            {
-			//                std::string key = msg.readString();
-			//                std::string value = msg.readString();
-			//                if (!key.empty() && !value.empty())
-			//                    m.setVariableFromDbserver(key, value);
-			//            }
+				case Protocol.AGMSG_ACTIVE_MAP:
+					{
+						int mapId=msg.readInt16();
+						if(MapManager.activateMap(mapId))
+						{
+							// Set map variables
+							MapComposite m=MapManager.getMap(mapId);
+							int mapVarsNumber=msg.readInt16();
+							for(int i = 0;i < mapVarsNumber;++i)
+							{
+								string key=msg.readString();
+								string @value=msg.readString();
+								if(key!=""&&@value!="")
+								{
+									m.setVariableFromDbserver(key, @value);
+								}
+							}
 
-			//            // Recreate potential persistent floor items
-			//            LOG_DEBUG("Recreate persistant items on map " << mapId);
-			//            int floorItemsNumber = msg.readInt16();
+							//Recreate potential persistent floor items
+							Logger.Write(LogLevel.Debug, "Recreate persistant items on map {0}", mapId);
+							int floorItemsNumber=msg.readInt16();
 
-			//            for(int i = 0; i < floorItemsNumber; i += 4)
-			//            {
-			//                int itemId = msg.readInt32();
-			//                int amount = msg.readInt16();
-			//                int posX = msg.readInt16();
-			//                int posY = msg.readInt16();
+							for(int i = 0;i < floorItemsNumber;i += 4)
+							{
+								int itemId=msg.readInt32();
+								int amount=msg.readInt16();
+								int posX=msg.readInt16();
+								int posY=msg.readInt16();
+							
+								ItemClass ic=Program.itemManager.getItem(itemId);
+							
+								if(ic!=null)
+								{
+									Item item=new Item(ic,amount);
+									item.setMap(m);
+									Point dst=new Point(posX,posY);
+									item.setPosition(dst);
 
-			//                if (ItemClass *ic = itemManager.getItem(itemId))
-			//                {
-			//                    Item *item = new Item(ic, amount);
-			//                    item.setMap(m);
-			//                    Point dst(posX, posY);
-			//                    item.setPosition(dst);
+									if(!GameState.insertOrDelete((Thing)item))
+									{
+										// The map is full.
+										Logger.Write(LogLevel.Debug, "Couldn't add floor item(s) {0}  into map {1}", itemId, mapId);
+										return;
+									}
+								}
+							}
+						}
+					}
+					break;
 
-			//                    if (!GameState::insertOrDelete(item))
-			//                    {
-			//                        // The map is full.
-			//                        LOG_WARN("Couldn't add floor item(s) " << itemId
-			//                            << " into map " << mapId);
-			//                        return;
-			//                    }
-			//                }
-			//            }
-			//        }
-			//    } break;
+				case Protocol.AGMSG_SET_VAR_WORLD:
+					{
+						string key=msg.readString();
+						string @value=msg.readString();
+						GameState.setVariableFromDbserver(key, value);
+						Logger.Write(LogLevel.Debug, "Global variable \"{0}\" has changed to \"{1}\"", key, @value);
+					}
+					break;
 
-			//    case AGMSG_SET_VAR_WORLD:
-			//    {
-			//        std::string key = msg.readString();
-			//        std::string value = msg.readString();
-			//        GameState::setVariableFromDbserver(key, value);
-			//        LOG_DEBUG("Global variable \"" << key << "\" has changed to \""
-			//                  << value << "\"");
-			//    } break;
+				case Protocol.AGMSG_REDIRECT_RESPONSE:
+					{
+						int id=msg.readInt32();
+						string token=msg.readString();
+						string address=msg.readString();
+						int port=msg.readInt16();
+						Program.gameHandler.completeServerChange(id, token, address, port);
+					}
+					break;
 
-			//    case AGMSG_REDIRECT_RESPONSE:
-			//    {
-			//        int id = msg.readInt32();
-			//        std::string token = msg.readString(MAGIC_TOKEN_LENGTH);
-			//        std::string address = msg.readString();
-			//        int port = msg.readInt16();
-			//        gameHandler.completeServerChange(id, token, address, port);
-			//    } break;
+				case Protocol.AGMSG_GET_VAR_CHR_RESPONSE:
+					{
+						int id=msg.readInt32();
+						string name=msg.readString();
+						string @value=msg.readString();
+						Quest.recoveredQuestVar(id, name, @value);
+					}
+					break;
 
-			//    case AGMSG_GET_VAR_CHR_RESPONSE:
-			//    {
-			//        int id = msg.readInt32();
-			//        std::string name = msg.readString();
-			//        std::string value = msg.readString();
-			//        recoveredQuestVar(id, name, value);
-			//    } break;
+				case Protocol.CGMSG_CHANGED_PARTY:
+					{
+						// Character DB id
+						int charid=msg.readInt32();
+						// Party id, 0 for none
+						int partyid=msg.readInt32();
+						Program.gameHandler.updateCharacter(charid, partyid);
+					}
+					break;
 
-			//    case CGMSG_CHANGED_PARTY:
-			//    {
-			//        // Character DB id
-			//        int charid = msg.readInt32();
-			//        // Party id, 0 for none
-			//        int partyid = msg.readInt32();
-			//        gameHandler.updateCharacter(charid, partyid);
-			//    } break;
+				case Protocol.CGMSG_POST_RESPONSE:
+					{
+						// get the character
+						Character character=Program.postMan.getCharacter(msg.readInt32());
 
-			//    case CGMSG_POST_RESPONSE:
-			//    {
-			//        // get the character
-			//        Character *character = postMan.getCharacter(msg.readInt32());
+						// check character is still valid
+						if(character==null)
+						{
+							break;
+						}
 
-			//        // check character is still valid
-			//        if (!character)
-			//        {
-			//            break;
-			//        }
+						string sender=msg.readString();
+						string letter=msg.readString();
 
-			//        std::string sender = msg.readString();
-			//        std::string letter = msg.readString();
+						Program.postMan.gotPost(character, sender, letter);
 
-			//        postMan.gotPost(character, sender, letter);
+					}
+					break;
 
-			//    } break;
+				case Protocol.CGMSG_STORE_POST_RESPONSE:
+					{
+						// get character
+						Character character=Program.postMan.getCharacter(msg.readInt32());
 
-			//    case CGMSG_STORE_POST_RESPONSE:
-			//    {
-			//        // get character
-			//        Character *character = postMan.getCharacter(msg.readInt32());
+						// check character is valid
+						if(character==null)
+						{
+							break;
+						}
 
-			//        // check character is valid
-			//        if (!character)
-			//        {
-			//            break;
-			//        }
+						//TODO: Get NPC to tell character if the sending of post
+						//was successful or not
 
-			//        // TODO: Get NPC to tell character if the sending of post
-			//        // was successful or not
+					}
+					break;
 
-			//    } break;
-
-			//    default:
-			//        LOG_WARN("Invalid message type");
-			//        break;
-			//}
+				default:
+					{
+						Logger.Write(LogLevel.Warning, "Invalid message type");
+						break;
+					}
+			}
 		}
 
 		void playerReconnectAccount(int id, string magic_token)

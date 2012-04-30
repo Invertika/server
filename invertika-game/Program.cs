@@ -23,7 +23,6 @@
 // 
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,31 +53,29 @@ namespace invertika_game
 		const string DEFAULT_STATUSDB_FILE="status-effects.xml";
 		const string DEFAULT_PERMISSION_FILE="permissions.xml";
 		const string DEFAULT_GLOBAL_EVENT_SCRIPT_FILE="scripts/main.lua";
-
 		const int WORLD_TICK_SKIP=2; /** tolerance for lagging behind in world calculation) **/
 
 		/** Timer for world ticks */
 		//utils::Timer worldTimer(WORLD_TICK_MS);
-		static Utils.Timer worldTimer=new Utils.Timer(ManaServ.WORLD_TICK_MS, false);
-
+		static Utils.Timer worldTimer=new Utils.Timer(ManaServ.WORLD_TICK_MS,false);
 		static int worldTime=0;              /**< Current world time in ticks */
 		static bool running=true;            /**< Determines if server keeps running */
 
 		static StringFilter stringFilter; /**< Slang's Filter */
 
 		static AttributeManager attributeManager=new AttributeManager(DEFAULT_ATTRIBUTEDB_FILE);
-		public static ItemManager itemManager=new ItemManager(DEFAULT_ITEMSDB_FILE, DEFAULT_EQUIPDB_FILE);
+		public static ItemManager itemManager=new ItemManager(DEFAULT_ITEMSDB_FILE,DEFAULT_EQUIPDB_FILE);
 		static MonsterManager monsterManager=new MonsterManager(DEFAULT_MONSTERSDB_FILE);
 		static SkillManager skillManager=new SkillManager(DEFAULT_SKILLSDB_FILE);
 
 		///** Core game message handler */
-		static GameHandler gameHandler;
+		public static GameHandler gameHandler;
 
 		///** Account server message handler */
 		static AccountConnection accountHandler;
 
 		///** Post Man **/
-		static PostMan postMan;
+		public static PostMan postMan;
 
 		///** Bandwidth Monitor */
 		static BandwidthMonitor gBandwidth;
@@ -132,7 +129,6 @@ namespace invertika_game
 			postMan=new PostMan();
 			gBandwidth=new BandwidthMonitor();
 		}
-
 
 		static void deinitializeServer()
 		{
@@ -235,7 +231,8 @@ namespace invertika_game
 
 			try
 			{
-				if(options.configPath==null) options.configPath=Configuration.DEFAULT_CONFIG_FILE;
+				if(options.configPath==null)
+					options.configPath=Configuration.DEFAULT_CONFIG_FILE;
 				Configuration.Init(options.configPath);
 			}
 			catch
@@ -275,7 +272,8 @@ namespace invertika_game
 			{
 				// Prepare the fallback value
 				options.port=Configuration.getValue("net_accountListenToClientPort", 0)+3;
-				if(options.port==3) options.port=Configuration.DEFAULT_SERVER_PORT+3;
+				if(options.port==3)
+					options.port=Configuration.DEFAULT_SERVER_PORT+3;
 
 				// Set the actual value of options.port
 				options.port=Configuration.getValue("net_gameListenToClientPort", options.port);
@@ -314,7 +312,8 @@ namespace invertika_game
 			while(running)
 			{
 				elapsedWorldTicks=worldTimer.poll();
-				if(elapsedWorldTicks==0) worldTimer.sleep();
+				if(elapsedWorldTicks==0)
+					worldTimer.sleep();
 
 				while(elapsedWorldTicks>0)
 				{

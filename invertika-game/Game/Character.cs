@@ -23,13 +23,13 @@
 // 
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ISL.Server.Network;
 using ISL.Server.Common;
+using invertika_game.Enums;
 
 namespace invertika_game.Game
 {
@@ -45,39 +45,37 @@ namespace invertika_game.Game
 		const float EXPCURVE_FACTOR=10.0f;
 		const float LEVEL_SKILL_PRECEDENCE_FACTOR=0.75f;
 		const float EXP_LEVEL_FLEXIBILITY=1.0f;
-		
 		GameClient mClient;   /**< Client computer. */
-        /** Handler of the transaction the character is involved in. */
-        //void *mTransactionHandler;
+		/** Handler of the transaction the character is involved in. */
+		//void *mTransactionHandler;
 
-        //Possessions mPossessions;    /**< Possesssions of the character. */
+		//Possessions mPossessions;    /**< Possesssions of the character. */
 
-        /** Attributes modified since last update. */
-        //std::set<size_t> mModifiedAttributes;
-        //std::set<size_t> mModifiedExperience;
+		/** Attributes modified since last update. */
+		//std::set<size_t> mModifiedAttributes;
+		//std::set<size_t> mModifiedExperience;
 
-        Dictionary<int, int> mExperience; /**< experience collected for each skill.*/
+		Dictionary<int, int> mExperience; /**< experience collected for each skill.*/
 
-        Dictionary<int, Special> mSpecials;
-     	Dictionary<int, int> mStatusEffects; /**< only used by select functions
+		Dictionary<int, Special> mSpecials;
+		Dictionary<int, int> mStatusEffects; /**< only used by select functions
                                                 to make it easier to make the accountserver
                                                 do not modify or use anywhere else*/
-        int mRechargePerSpecial;
-        bool mSpecialUpdateNeeded;
-
-        int mDatabaseID;             /**< Character's database ID. */
-        byte mHairStyle;    /**< Hair Style of the character. */
-        byte mHairColor;    /**< Hair Color of the character. */
-        int mLevel;                  /**< Level of the character. */
-        int mLevelProgress;          /**< progress to next level in percent */
-        int mCharacterPoints;        /**< Unused attribute points that can be distributed */
-        int mCorrectionPoints;       /**< Unused attribute correction points */
-        bool mUpdateLevelProgress;   /**< Flag raised when percent to next level changed */
-        bool mRecalculateLevel;      /**< Flag raised when the character level might have increased */
-        byte mAccountLevel; /**< Account level of the user. */
-        int mParty;                  /**< Party id of the character */
-        TransactionType mTransaction; /**< Trade/buy/sell action the character is involved in. */
-        Dictionary<int, int> mKillCount;  /**< How many monsters the character has slain of each type */
+		int mRechargePerSpecial;
+		bool mSpecialUpdateNeeded;
+		int mDatabaseID;             /**< Character's database ID. */
+		byte mHairStyle;    /**< Hair Style of the character. */
+		byte mHairColor;    /**< Hair Color of the character. */
+		int mLevel;                  /**< Level of the character. */
+		int mLevelProgress;          /**< progress to next level in percent */
+		int mCharacterPoints;        /**< Unused attribute points that can be distributed */
+		int mCorrectionPoints;       /**< Unused attribute correction points */
+		bool mUpdateLevelProgress;   /**< Flag raised when percent to next level changed */
+		bool mRecalculateLevel;      /**< Flag raised when the character level might have increased */
+		byte mAccountLevel; /**< Account level of the user. */
+		int mParty;                  /**< Party id of the character */
+		TransactionType mTransaction; /**< Trade/buy/sell action the character is involved in. */
+		Dictionary<int, int> mKillCount;  /**< How many monsters the character has slain of each type */
 
 		public Character(MessageIn msg) : base(ThingType.OBJECT_CHARACTER)
 		//:
@@ -594,7 +592,6 @@ namespace invertika_game.Game
 			return 0;
 		}
 
-
 		void recalculateLevel()
 		{
 			//std::list<float> levels;
@@ -746,7 +743,7 @@ namespace invertika_game.Game
 			//mSpecials.clear();
 		}
 		
-		public int getDatabaseID() 
+		public int getDatabaseID()
 		{ 
 			return mDatabaseID;
 		}

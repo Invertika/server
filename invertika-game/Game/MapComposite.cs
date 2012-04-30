@@ -48,6 +48,14 @@ namespace invertika_game.Game
 		   in dealing with zone changes. */
 		const int zoneDiam=256;
 
+        //Map mMap;            /**< Actual map. */
+        //MapContent *mContent; /**< Entities on the map. */
+        //Script mScript;      /**< Script associated to this map. */
+        string mName;    /**< Name of the map. */
+        ushort mID;   /**< ID of the map. */
+        /** Cached persistent variables */
+        Dictionary<string, string> mScriptVariables;
+        //PvPRules mPvPRules;
 
 		static void addZone(List<uint> r, uint z)
 		{
@@ -410,6 +418,16 @@ namespace invertika_game.Game
 			//        }
 			//    }
 			//}
+		}
+		
+		
+        /**
+         * Changes a script variable without notifying the database server
+         * about the change
+         */
+        public void setVariableFromDbserver (string key, string value)
+        { 
+			mScriptVariables[key] = @value; 
 		}
 	}
 }

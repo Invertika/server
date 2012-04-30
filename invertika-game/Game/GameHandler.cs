@@ -23,7 +23,6 @@
 // 
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -99,7 +98,7 @@ namespace invertika_game.Game
 			//client.status = CLIENT_CHANGE_SERVER;
 		}
 
-		void completeServerChange(int id, string token, string address, int port)
+		public void completeServerChange(int id, string token, string address, int port)
 		{
 			//for (NetComputers::const_iterator i = clients.begin(),
 			//     i_end = clients.end(); i != i_end; ++i)
@@ -122,7 +121,7 @@ namespace invertika_game.Game
 			//}
 		}
 
-		void updateCharacter(int charid, int partyid)
+		public void updateCharacter(int charid, int partyid)
 		{
 			//for (NetComputers::const_iterator i = clients.begin(),
 			//     i_end = clients.end(); i != i_end; ++i)
@@ -304,7 +303,7 @@ namespace invertika_game.Game
 			//client.send(msg);
 		}
 
-		void addPendingCharacter(string token, Character ch)
+		public void addPendingCharacter(string token, Character ch)
 		{
 			///* First, check if the character is already on the map. This may happen if
 			//   a client just lost its connection, and logged to the account server

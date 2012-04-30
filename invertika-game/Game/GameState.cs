@@ -23,7 +23,6 @@
 // 
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -606,7 +605,7 @@ namespace invertika_game.Game
 			return true;
 		}
 
-		static bool insertOrDelete(Thing ptr)
+		public static bool insertOrDelete(Thing ptr)
 		{
 			//if (insert(ptr)) return true;
 			//delete ptr;
@@ -750,7 +749,7 @@ namespace invertika_game.Game
 			//enqueueEvent(ptr, e);
 		}
 
-		static void enqueueRemove(Actor ptr)
+		public static void enqueueRemove(Actor ptr)
 		{
 			//DelayedEvent e = { EVENT_REMOVE, 0, 0, 0 };
 			//enqueueEvent(ptr, e);
@@ -811,7 +810,6 @@ namespace invertika_game.Game
 			//gameHandler.sendToEveryone(msg);
 		}
 
-
 		static string getVariable(string key)
 		{
 			//std::map<std::string, std::string>::iterator iValue =
@@ -830,7 +828,7 @@ namespace invertika_game.Game
 			//accountHandler.updateWorldVar(key, value);
 		}
 
-		static void setVariableFromDbserver(string key, string value)
+		public static void setVariableFromDbserver(string key, string value)
 		{
 			//mScriptVariables[key] = value ;
 		}

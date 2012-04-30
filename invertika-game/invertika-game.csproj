@@ -94,6 +94,10 @@
     <Compile Include="Utils\StringFilter.cs" />
     <Compile Include="Utils\Timer.cs" />
     <Compile Include="Enums\TransactionType.cs" />
+    <Compile Include="Game\Item.cs" />
+    <Compile Include="Enums\BlockType.cs" />
+    <Compile Include="Game\Quest.cs" />
+    <Compile Include="Game\QuestCallback.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

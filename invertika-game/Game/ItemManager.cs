@@ -23,7 +23,6 @@
 // 
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -94,7 +93,7 @@ namespace invertika_game.Game
 			//mItemClassesByName.clear();
 		}
 
-		ItemClass getItem(int itemId)
+		public ItemClass getItem(int itemId)
 		{
 			//ItemClasses::const_iterator i = mItemClasses.find(itemId);
 			//return i != mItemClasses.end() ? i.second : 0;
