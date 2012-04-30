@@ -513,11 +513,11 @@ namespace invertika_game.Game
 
 		void sendTransaction(int id, int action, string message)
 		{
-			//MessageOut msg(GAMSG_TRANSACTION);
-			//msg.writeInt32(id);
-			//msg.writeInt32(action);
-			//msg.writeString(message);
-			//send(msg);
+			MessageOut msg=new MessageOut(Protocol.GAMSG_TRANSACTION);
+			msg.writeInt32(id);
+			msg.writeInt32(action);
+			msg.writeString(message);
+			send(msg);
 		}
 
 		void createFloorItems(int mapId, int itemId, int amount, int posX, int posY)
