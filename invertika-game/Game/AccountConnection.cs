@@ -289,11 +289,11 @@ namespace invertika_game.Game
 
 		void playerReconnectAccount(int id, string magic_token)
 		{
-			//LOG_DEBUG("Send GAMSG_PLAYER_RECONNECT.");
-			//MessageOut msg(GAMSG_PLAYER_RECONNECT);
-			//msg.writeInt32(id);
-			//msg.writeString(magic_token, MAGIC_TOKEN_LENGTH);
-			//send(msg);
+			Logger.Write(LogLevel.Debug, "Send GAMSG_PLAYER_RECONNECT.");
+			MessageOut msg=new MessageOut(Protocol.GAMSG_PLAYER_RECONNECT);
+			msg.writeInt32(id);
+			msg.writeString(magic_token);
+			send(msg);
 		}
 
 		void requestCharacterVar(Character ch, string name)
