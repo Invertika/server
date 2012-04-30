@@ -522,24 +522,24 @@ namespace invertika_game.Game
 
 		void createFloorItems(int mapId, int itemId, int amount, int posX, int posY)
 		{
-			//MessageOut msg(GAMSG_CREATE_ITEM_ON_MAP);
-			//msg.writeInt32(mapId);
-			//msg.writeInt32(itemId);
-			//msg.writeInt16(amount);
-			//msg.writeInt16(posX);
-			//msg.writeInt16(posY);
-			//send(msg);
+			MessageOut msg=new MessageOut(Protocol.GAMSG_CREATE_ITEM_ON_MAP);
+			msg.writeInt32(mapId);
+			msg.writeInt32(itemId);
+			msg.writeInt16(amount);
+			msg.writeInt16(posX);
+			msg.writeInt16(posY);
+			send(msg);
 		}
 
 		void removeFloorItems(int mapId, int itemId, int amount, int posX, int posY)
 		{
-			//MessageOut msg(GAMSG_REMOVE_ITEM_ON_MAP);
-			//msg.writeInt32(mapId);
-			//msg.writeInt32(itemId);
-			//msg.writeInt16(amount);
-			//msg.writeInt16(posX);
-			//msg.writeInt16(posY);
-			//send(msg);
+			MessageOut msg=new MessageOut(Protocol.GAMSG_REMOVE_ITEM_ON_MAP);
+			msg.writeInt32(mapId);
+			msg.writeInt32(itemId);
+			msg.writeInt16(amount);
+			msg.writeInt16(posX);
+			msg.writeInt16(posY);
+			send(msg);
 		}
 	}
 }
