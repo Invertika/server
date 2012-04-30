@@ -306,11 +306,11 @@ namespace invertika_game.Game
 
 		void updateCharacterVar(Character ch, string name, string value)
 		{
-			//MessageOut msg(GAMSG_SET_VAR_CHR);
-			//msg.writeInt32(ch.getDatabaseID());
-			//msg.writeString(name);
-			//msg.writeString(value);
-			//send(msg);
+			MessageOut msg=new MessageOut(Protocol.GAMSG_SET_VAR_CHR);
+			msg.writeInt32(ch.getDatabaseID());
+			msg.writeString(name);
+			msg.writeString(value);
+			send(msg);
 		}
 
 		void updateMapVar(MapComposite map, string name, string value)
