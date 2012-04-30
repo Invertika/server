@@ -332,10 +332,10 @@ namespace invertika_game.Game
 
 		void banCharacter(Character ch, int duration)
 		{
-			//MessageOut msg(GAMSG_BAN_PLAYER);
-			//msg.writeInt32(ch.getDatabaseID());
-			//msg.writeInt32(duration);
-			//send(msg);
+			MessageOut msg=new MessageOut(Protocol.GAMSG_BAN_PLAYER);
+			msg.writeInt32(ch.getDatabaseID());
+			msg.writeInt32(duration);
+			send(msg);
 		}
 
 		public void sendStatistics()
