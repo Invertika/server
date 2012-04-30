@@ -42,7 +42,7 @@ namespace invertika_game.Game
 			return null; //ssk
 		}
 
-		void addCharacter(Character player)
+		public void addCharacter(Character player)
 		{
 			//std::map<int, Character*>::iterator itr = mCharacters.find(player.getDatabaseID());
 			//if (itr == mCharacters.end())

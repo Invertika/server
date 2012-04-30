@@ -386,12 +386,12 @@ namespace invertika_game.Game
 			// send message to account server with id of sending player,
 			// the id of receiving player, the letter receiver and contents, and attachments
 			Logger.Write(LogLevel.Debug, "Sending GCMSG_STORE_POST.");
-			MessageOut outmsg=new MessageOut(GCMSG_STORE_POST);
+			MessageOut outmsg=new MessageOut(Protocol.GCMSG_STORE_POST);
 			outmsg.writeInt32(c.getDatabaseID());
 			outmsg.writeString(msg.readString()); // name of receiver
 			outmsg.writeString(msg.readString()); // content of letter
 			
-			while(msg.getUnreadLength()) // attachments
+			while(msg.getUnreadLength()>0) // attachments
 			{
 				// write the item id and amount for each attachment
 				outmsg.writeInt32(msg.readInt16());
@@ -403,14 +403,14 @@ namespace invertika_game.Game
 
 		void getPost(Character c)
 		{
-			//// let the postman know to expect some post for this character
-			//postMan.addCharacter(c);
+			// let the postman know to expect some post for this character
+			Program.postMan.addCharacter(c);
 
-			//// send message to account server with id of retrieving player
-			//LOG_DEBUG("Sending GCMSG_REQUEST_POST");
-			//MessageOut out(GCMSG_REQUEST_POST);
-			//out.writeInt32(c.getDatabaseID());
-			//send(out);
+			// send message to account server with id of retrieving player
+			Logger.Write(LogLevel.Debug, "Sending GCMSG_REQUEST_POST");
+			MessageOut outmsg=new MessageOut(Protocol.GCMSG_REQUEST_POST);
+			outmsg.writeInt32(c.getDatabaseID());
+			send(outmsg);
 		}
 
 		void changeAccountLevel(Character c, int level)
