@@ -31,7 +31,6 @@ using System.Text;
 using ISL.Server.Common;
 using CSCL.Database;
 using CSCL.Database.MySQL;
-using CSCL.Database.SQLite;
 
 namespace invertika_account.DAL
 {
@@ -49,8 +48,9 @@ namespace invertika_account.DAL
 			{
 				case "sqlite":
 					{
-						SQLite provider=new SQLite();
-						return provider;
+						//SQLite provider=new SQLite();
+						//return provider;
+						return null;
 					}
 				case "mysql":
 					{
