@@ -420,6 +420,29 @@ namespace invertika_game.Game
 			msg.writeInt16(level);
 			send(msg);
 		}
+		
+		/**
+         * Sends all changed player data to the account server to minimize
+         * dataloss due to failure of one server component.
+         *
+         * The gameserver holds a buffer with all changes made by a character.
+         * The changes are added at the time they occur. When the buffer
+         * reaches one of the following limits, the buffer is sent to the
+         * account server and applied to the database.
+         *
+         * The sync buffer is sent when:
+         * - forced by any process (param force = true)
+         * - every 10 seconds
+         * - buffer reaches size of 1kb (SYNC_BUFFER_SIZE)
+         * - buffer holds more then 20 messages (SYNC_BUFFER_LIMIT)
+         *
+         * @param force Send changes even if buffer hasn't reached its size
+         *              or message limit. (used to send in timed schedules)
+         */
+		void syncChanges()
+		{
+			syncChanges(false);
+		}
 
 		public void syncChanges(bool force)
 		{
@@ -450,12 +473,12 @@ namespace invertika_game.Game
 
 		void updateCharacterPoints(int charId, int charPoints, int corrPoints)
 		{
-			//++mSyncMessages;
-			//mSyncBuffer.writeInt8(SYNC_CHARACTER_POINTS);
-			//mSyncBuffer.writeInt32(charId);
-			//mSyncBuffer.writeInt32(charPoints);
-			//mSyncBuffer.writeInt32(corrPoints);
-			//syncChanges();
+			++mSyncMessages;
+			mSyncBuffer.writeInt8((int)Sync.SYNC_CHARACTER_POINTS);
+			mSyncBuffer.writeInt32(charId);
+			mSyncBuffer.writeInt32(charPoints);
+			mSyncBuffer.writeInt32(corrPoints);
+			syncChanges();
 		}
 
 		void updateAttributes(int charId, int attrId, double @base, double mod)
