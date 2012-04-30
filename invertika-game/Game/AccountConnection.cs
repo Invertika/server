@@ -298,10 +298,10 @@ namespace invertika_game.Game
 
 		void requestCharacterVar(Character ch, string name)
 		{
-			//MessageOut msg(GAMSG_GET_VAR_CHR);
-			//msg.writeInt32(ch.getDatabaseID());
-			//msg.writeString(name);
-			//send(msg);
+			MessageOut msg=new MessageOut(Protocol.GAMSG_GET_VAR_CHR);
+			msg.writeInt32(ch.getDatabaseID());
+			msg.writeString(name);
+			send(msg);
 		}
 
 		void updateCharacterVar(Character ch, string name, string value)
