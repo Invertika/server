@@ -23,7 +23,6 @@
 // 
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +35,7 @@ using ISL.Server.Common;
 using System.Diagnostics;
 using ISL.Server.Serialize;
 using ISL.Server.Account;
+using ISL.Server.Enums;
 
 namespace invertika_account.Account
 {

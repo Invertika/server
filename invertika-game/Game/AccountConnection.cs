@@ -483,32 +483,32 @@ namespace invertika_game.Game
 
 		void updateAttributes(int charId, int attrId, double @base, double mod)
 		{
-			//++mSyncMessages;
-			//mSyncBuffer.writeInt8(SYNC_CHARACTER_ATTRIBUTE);
-			//mSyncBuffer.writeInt32(charId);
-			//mSyncBuffer.writeInt32(attrId);
-			//mSyncBuffer.writeDouble(base);
-			//mSyncBuffer.writeDouble(mod);
-			//syncChanges();
+			++mSyncMessages;
+			mSyncBuffer.writeInt8((int)Sync.SYNC_CHARACTER_ATTRIBUTE);
+			mSyncBuffer.writeInt32(charId);
+			mSyncBuffer.writeInt32(attrId);
+			mSyncBuffer.writeDouble(@base);
+			mSyncBuffer.writeDouble(mod);
+			syncChanges();
 		}
 
 		void updateExperience(int charId, int skillId, int skillValue)
 		{
-			//++mSyncMessages;
-			//mSyncBuffer.writeInt8(SYNC_CHARACTER_SKILL);
-			//mSyncBuffer.writeInt32(charId);
-			//mSyncBuffer.writeInt8(skillId);
-			//mSyncBuffer.writeInt32(skillValue);
-			//syncChanges();
+			++mSyncMessages;
+			mSyncBuffer.writeInt8((int)Sync.SYNC_CHARACTER_SKILL);
+			mSyncBuffer.writeInt32(charId);
+			mSyncBuffer.writeInt8(skillId);
+			mSyncBuffer.writeInt32(skillValue);
+			syncChanges();
 		}
 
 		void updateOnlineStatus(int charId, bool online)
 		{
-			//++mSyncMessages;
-			//mSyncBuffer.writeInt8(SYNC_ONLINE_STATUS);
-			//mSyncBuffer.writeInt32(charId);
-			//mSyncBuffer.writeInt8(online ? 1 : 0);
-			//syncChanges();
+			++mSyncMessages;
+			mSyncBuffer.writeInt8((int)Sync.SYNC_ONLINE_STATUS);
+			mSyncBuffer.writeInt32(charId);
+			mSyncBuffer.writeInt8(online?1:0);
+			syncChanges();
 		}
 
 		void sendTransaction(int id, int action, string message)
