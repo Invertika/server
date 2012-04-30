@@ -315,11 +315,11 @@ namespace invertika_game.Game
 
 		void updateMapVar(MapComposite map, string name, string value)
 		{
-			//MessageOut msg(GAMSG_SET_VAR_MAP);
-			//msg.writeInt32(map.getID());
-			//msg.writeString(name);
-			//msg.writeString(value);
-			//send(msg);
+			MessageOut msg=new MessageOut(Protocol.GAMSG_SET_VAR_MAP);
+			msg.writeInt32(map.getID());
+			msg.writeString(name);
+			msg.writeString(value);
+			send(msg);
 		}
 
 		void updateWorldVar(string name, string value)

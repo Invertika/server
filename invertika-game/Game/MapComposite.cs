@@ -23,7 +23,6 @@
 // 
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,14 +47,14 @@ namespace invertika_game.Game
 		   in dealing with zone changes. */
 		const int zoneDiam=256;
 
-        //Map mMap;            /**< Actual map. */
-        //MapContent *mContent; /**< Entities on the map. */
-        //Script mScript;      /**< Script associated to this map. */
-        string mName;    /**< Name of the map. */
-        ushort mID;   /**< ID of the map. */
-        /** Cached persistent variables */
-        Dictionary<string, string> mScriptVariables;
-        //PvPRules mPvPRules;
+		//Map mMap;            /**< Actual map. */
+		//MapContent *mContent; /**< Entities on the map. */
+		//Script mScript;      /**< Script associated to this map. */
+		string mName;    /**< Name of the map. */
+		ushort mID;   /**< ID of the map. */
+		/** Cached persistent variables */
+		Dictionary<string, string> mScriptVariables;
+		//PvPRules mPvPRules;
 
 		static void addZone(List<uint> r, uint z)
 		{
@@ -256,7 +255,6 @@ namespace invertika_game.Game
 			return null; //ssk
 		}
 
-
 		string getVariable(string key)
 		{
 			//std::map<std::string, std::string>::const_iterator i = mScriptVariables.find(key);
@@ -421,13 +419,21 @@ namespace invertika_game.Game
 		}
 		
 		
-        /**
+		/**
          * Changes a script variable without notifying the database server
          * about the change
          */
-        public void setVariableFromDbserver (string key, string value)
-        { 
-			mScriptVariables[key] = @value; 
+		public void setVariableFromDbserver(string key, string value)
+		{ 
+			mScriptVariables[key]=@value; 
+		}
+		
+		/**
+         * Gets the game ID of this map.
+         */
+		public int getID()
+		{
+			return mID;
 		}
 	}
 }
