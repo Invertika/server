@@ -126,6 +126,5 @@ namespace invertika_game.Game
 		{
 			return mPos;
 		}
-		
 	}
 }
