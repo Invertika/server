@@ -98,6 +98,10 @@
     <Compile Include="Enums\BlockType.cs" />
     <Compile Include="Game\Quest.cs" />
     <Compile Include="Game\QuestCallback.cs" />
+    <Compile Include="Game\EventListener.cs" />
+    <Compile Include="Game\Map.cs" />
+    <Compile Include="Game\MetaTile.cs" />
+    <Compile Include="Game\MapObject.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

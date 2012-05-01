@@ -46,8 +46,7 @@ namespace invertika_game.Game
 		   regress to quadratic behavior; the lower the value, the more we waste time
 		   in dealing with zone changes. */
 		const int zoneDiam=256;
-
-		//Map mMap;            /**< Actual map. */
+		Map mMap;            /**< Actual map. */
 		//MapContent *mContent; /**< Entities on the map. */
 		//Script mScript;      /**< Script associated to this map. */
 		string mName;    /**< Name of the map. */
@@ -434,6 +433,14 @@ namespace invertika_game.Game
 		public int getID()
 		{
 			return mID;
+		}
+		
+		/**
+         * Gets the underlying pathfinding map.
+         */
+		public Map getMap()
+		{
+			return mMap;
 		}
 	}
 }

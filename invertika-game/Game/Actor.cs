@@ -55,15 +55,16 @@ namespace invertika_game.Game
 		
 		~Actor()
 		{
-//    // Free the map position
-//    if (MapComposite *mapComposite = getMap())
-//    {
-//        Map *map = mapComposite->getMap();
-//        int tileWidth = map->getTileWidth();
-//        int tileHeight = map->getTileHeight();
-//        Point oldP = getPosition();
-//        map->freeTile(oldP.x / tileWidth, oldP.y / tileHeight, getBlockType());
-//    }
+			// Free the map position
+			MapComposite mapComposite=getMap();
+			if(mapComposite!=null)
+			{
+				Map map=mapComposite.getMap();
+				int tileWidth=map.getTileWidth();
+				int tileHeight=map.getTileHeight();
+				Point oldP=getPosition();
+				map.freeTile(oldP.x/tileWidth, oldP.y/tileHeight, getBlockType());
+			}
 		}
 
 		public void setPosition(Point p)
@@ -110,6 +111,16 @@ namespace invertika_game.Game
 //     * position. When we don't block the position now the occupation counting
 //     * will be off.
 //     */
+		}
+		
+		/**
+         * Gets the coordinates.
+         *
+         * @return the coordinates.
+         */
+		Point getPosition()
+		{
+			return mPos;
 		}
 		
 	}

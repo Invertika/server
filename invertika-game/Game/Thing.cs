@@ -23,15 +23,70 @@
 // 
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ISL.Server.Common;
 
 namespace invertika_game.Game
 {
 	public class Thing
 	{
+		protected List<EventListener> mListeners;   /**< List of event listeners. */
+
+		MapComposite mMap;     /**< Map the thing is on */
+		ThingType mType;        /**< Type of this thing. */
+		
+		~Thing()
+		{
+//    /* As another object will stop listening and call removeListener when it is
+//       deleted, the following assertion ensures that all the calls to
+//       removeListener have been performed will this object was still alive. It
+//       is not strictly necessary, as there are cases where no removal is
+//       performed (e.g. ~SpawnArea). But this is rather exceptional, so keep the
+//       assertion to catch all the other forgotten calls to removeListener. */
+//    assert(mListeners.empty());
+		}
+
+		void addListener(EventListener one)
+		{
+			mListeners.Add(one);
+		}
+
+		void removeListener(EventListener one)
+		{
+			mListeners.Remove(one);
+		}
+
+		void inserted()
+		{
+//    for (Listeners::iterator i = mListeners.begin(),
+//         i_end = mListeners.end(); i != i_end;)
+//    {
+//        const EventListener &l = **i;
+//        ++i; // In case the listener removes itself from the list on the fly.
+//        if (l.dispatch->inserted) l.dispatch->inserted(&l, this);
+//    }
+		}
+
+		void removed()
+		{
+//    for (Listeners::iterator i = mListeners.begin(),
+//         i_end = mListeners.end(); i != i_end;)
+//    {
+//        const EventListener &l = **i;
+//        ++i; // In case the listener removes itself from the list on the fly.
+//        if (l.dispatch->removed) l.dispatch->removed(&l, this);
+//    }
+		}
+		
+		/**
+         * Gets the map this thing is located on.
+         */
+		public MapComposite getMap()
+		{
+			return mMap;
+		}
 	}
 }
