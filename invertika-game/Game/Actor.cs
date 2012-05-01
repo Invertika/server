@@ -69,22 +69,24 @@ namespace invertika_game.Game
 
 		public void setPosition(Point p)
 		{
-//    // Update blockmap
-//    if (MapComposite *mapComposite = getMap())
-//    {
-//        Map *map = mapComposite->getMap();
-//        int tileWidth = map->getTileWidth();
-//        int tileHeight = map->getTileHeight();
-//        if ((mPos.x / tileWidth != p.x / tileWidth
-//            || mPos.y / tileHeight != p.y / tileHeight))
-//        {
-//            map->freeTile(mPos.x / tileWidth, mPos.y / tileHeight,
-//                          getBlockType());
-//            map->blockTile(p.x / tileWidth, p.y / tileHeight, getBlockType());
-//        }
-//    }
-//
-//    mPos = p;
+			// Update blockmap
+			MapComposite mapComposite=getMap();
+			
+			if(mapComposite!=null)
+			{
+				Map map=mapComposite.getMap();
+				int tileWidth=map.getTileWidth();
+				int tileHeight=map.getTileHeight();
+				if((mPos.x/tileWidth!=p.x/tileWidth
+            ||mPos.y/tileHeight!=p.y/tileHeight))
+				{
+					map.freeTile(mPos.x/tileWidth, mPos.y/tileHeight,
+                          getBlockType());
+					map.blockTile(p.x/tileWidth, p.y/tileHeight, getBlockType());
+				}
+			}
+
+			mPos=p;
 		}
 
 		public void setMap(MapComposite mapComposite)

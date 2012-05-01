@@ -76,7 +76,7 @@ namespace invertika_game.Game
 			return ""; //ssk
 		}
 
-		void blockTile(int x, int y, BlockType type)
+		public void blockTile(int x, int y, BlockType type)
 		{
 //    if (type == BLOCKTYPE_NONE || !contains(x, y))
 //        return;
