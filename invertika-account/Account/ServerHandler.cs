@@ -23,7 +23,6 @@
 // 
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +43,7 @@ namespace invertika_account.Account
 {
 	public class ServerHandler : ConnectionHandler
 	{
-		//    internal GameServer getGameServerFromMap(int);
+		//internal GameServer getGameServerFromMap(int);
 		//internal void GameServerHandler::dumpStatistics(std::ostream &);
 
 		/// <summary>
@@ -158,7 +157,8 @@ namespace invertika_account.Account
 								//m.nbMonsters=0;
 							}
 						}
-					} break;
+					}
+					break;
 
 				case Protocol.GAMSG_PLAYER_DATA:
 					{
@@ -179,13 +179,15 @@ namespace invertika_account.Account
 						{
 							Logger.Write(LogLevel.Error, "Received data for non-existing character {0}.", id);
 						}
-					} break;
+					}
+					break;
 
 				case Protocol.GAMSG_PLAYER_SYNC:
 					{
 						Logger.Write(LogLevel.Debug, "GAMSG_PLAYER_SYNC");
 						GameServerHandler.syncDatabase(message);
-					} break;
+					}
+					break;
 
 				case Protocol.GAMSG_REDIRECT:
 					{
@@ -220,7 +222,8 @@ namespace invertika_account.Account
 						{
 							Logger.Write(LogLevel.Error, "Received data for non-existing character {0}.", id);
 						}
-					} break;
+					}
+					break;
 
 				case Protocol.GAMSG_PLAYER_RECONNECT:
 					{
@@ -239,7 +242,8 @@ namespace invertika_account.Account
 						{
 							Logger.Write(LogLevel.Error, "Received data for non-existing character {0}.", id);
 						}
-					} break;
+					}
+					break;
 
 				case Protocol.GAMSG_GET_VAR_CHR:
 					{
@@ -250,7 +254,8 @@ namespace invertika_account.Account
 						result.writeInt32(id);
 						result.writeString(name);
 						result.writeString(value);
-					} break;
+					}
+					break;
 
 				case Protocol.GAMSG_SET_VAR_CHR:
 					{
@@ -258,7 +263,8 @@ namespace invertika_account.Account
 						string name=message.readString();
 						string value=message.readString();
 						Program.storage.setQuestVar(id, name, value);
-					} break;
+					}
+					break;
 
 				case Protocol.GAMSG_SET_VAR_WORLD:
 					{
@@ -275,7 +281,8 @@ namespace invertika_account.Account
 							varUpdateMessage.writeString(value);
 							client.send(varUpdateMessage);
 						}
-					} break;
+					}
+					break;
 
 				case Protocol.GAMSG_SET_VAR_MAP:
 					{
@@ -283,21 +290,24 @@ namespace invertika_account.Account
 						string name=message.readString();
 						string value=message.readString();
 						Program.storage.setWorldStateVar(name, mapid, value);
-					} break;
+					}
+					break;
 
 				case Protocol.GAMSG_BAN_PLAYER:
 					{
 						int id=message.readInt32();
 						int duration=message.readInt32();
 						Program.storage.banCharacter(id, duration);
-					} break;
+					}
+					break;
 
 				case Protocol.GAMSG_CHANGE_PLAYER_LEVEL:
 					{
 						int id=message.readInt32();
 						int level=message.readInt16();
 						Program.storage.setPlayerLevel(id, level);
-					} break;
+					}
+					break;
 
 				case Protocol.GAMSG_CHANGE_ACCOUNT_LEVEL:
 					{
@@ -311,7 +321,8 @@ namespace invertika_account.Account
 						{
 							Program.storage.setAccountLevel(c.getAccountID(), level);
 						}
-					} break;
+					}
+					break;
 
 				case Protocol.GAMSG_STATISTICS:
 					{
@@ -337,7 +348,8 @@ namespace invertika_account.Account
 						//        m.players[j] = message.readInt32();
 						//    }
 						//}
-					} break;
+					}
+					break;
 
 				case Protocol.GCMSG_REQUEST_POST:
 					{
@@ -366,7 +378,7 @@ namespace invertika_account.Account
 						// send the post if valid
 						if(post!=null)
 						{
-							for(int i=0; i<post.getNumberOfLetters(); ++i)
+							for(int i=0;i<post.getNumberOfLetters();++i)
 							{
 								// get each letter, send the sender's name,
 								// the contents and any attachments
@@ -375,7 +387,7 @@ namespace invertika_account.Account
 								result.writeString(letter.getContents());
 								List<InventoryItem> items=letter.getAttachments();
 
-								for(uint j=0; j<items.Count; ++j)
+								for(uint j=0;j<items.Count;++j)
 								{
 									result.writeInt16((int)items[(int)j].itemId);
 									result.writeInt16((int)items[(int)j].amount);
@@ -386,60 +398,62 @@ namespace invertika_account.Account
 							Program.postalManager.clearPost(ptr);
 						}
 
-					} break;
+					}
+					break;
 
 				case Protocol.GCMSG_STORE_POST:
 					{
-						//// Store the letter for the user
-						//Logger.Add(LogLevel.Debug, "GCMSG_STORE_POST");
-						//result.writeInt16((int)Protocol.CGMSG_STORE_POST_RESPONSE);
+						// Store the letter for the user
+						Logger.Write(LogLevel.Debug, "GCMSG_STORE_POST");
+						result.writeInt16((int)Protocol.CGMSG_STORE_POST_RESPONSE);
 
-						//// get the sender and receiver
-						//int senderId = message.readInt32();
-						//string receiverName = message.readString();
+						// get the sender and receiver
+						int senderId=message.readInt32();
+						string receiverName=message.readString();
 
-						//// for sending it back
-						//result.writeInt32(senderId);
+						// for sending it back
+						result.writeInt32(senderId);
 
-						//// get their characters
-						//Character sender = Program.storage.getCharacter(senderId, null);
-						//Character receiver=Program.storage.getCharacter(receiverName);
+						// get their characters
+						Character sender=Program.storage.getCharacter(senderId, null);
+						Character receiver=Program.storage.getCharacter(receiverName);
 
-						//if (sender!=null || receiver!=null)
-						//{
-						//    // Invalid character
-						//    Logger.Add(LogLevel.Error, "Error finding character id for post");
-						//    result.writeInt8(ManaServ.ERRMSG_INVALID_ARGUMENT);
-						//    break;
-						//}
+						if(sender!=null||receiver!=null)
+						{
+							// Invalid character
+							Logger.Write(LogLevel.Error, "Error finding character id for post");
+							result.writeInt8((int)ErrorMessage.ERRMSG_INVALID_ARGUMENT);
+							break;
+						}
 
-						//// get the letter contents
-						//string contents = message.readString();
+						// get the letter contents
+						string contents=message.readString();
 
-						//List<Pair<int>> items;
+						List<Pair<int>> items=new List<Pair<int>>();
 
-						//while (message.getUnreadLength()!=0)
-						//{
-						//    items.Add(new Pair<int>(message.readInt16(), message.readInt16()));
-						//}
+						while(message.getUnreadLength()!=0)
+						{
+							items.Add(new Pair<int>(message.readInt16(),message.readInt16()));
+						}
 
-						//// save the letter
-						//Logger.Add(LogLevel.Debug, "Creating letter");
-						//Letter letter = new Letter(0, sender, receiver);
-						//letter.addText(contents);
+						// save the letter
+						Logger.Write(LogLevel.Debug, "Creating letter");
+						Letter letter=new Letter(0,sender,receiver);
+						letter.addText(contents);
 
-						//for (uint i = 0; i < items.Count; ++i)
-						//{
-						//    InventoryItem item;
-						//    item.itemId = items[i].first;
-						//    item.amount = items[i].second;
-						//    letter.addAttachment(item);
-						//}
+						for(int i = 0;i < items.Count;++i)
+						{
+							InventoryItem item=new InventoryItem();
+							item.itemId=(uint)items[i].First;
+							item.amount=(uint)items[i].Second;
+							letter.addAttachment(item);
+						}
 
-						//Program.postalManager.addLetter(letter);
-
-						//result.writeInt8(ManaServ.ERRMSG_OK);
-					} break;
+						Program.postalManager.addLetter(letter);
+						
+						result.writeInt8((int)ErrorMessage.ERRMSG_OK);
+					}
+					break;
 
 				case Protocol.GAMSG_TRANSACTION:
 					{
@@ -453,7 +467,8 @@ namespace invertika_account.Account
 						trans.mAction=(uint)action;
 						trans.mMessage=messageS;
 						Program.storage.addTransaction(trans);
-					} break;
+					}
+					break;
 
 				case Protocol.GCMSG_PARTY_INVITE:
 					Program.chatHandler.handlePartyInvite(message);
@@ -470,7 +485,8 @@ namespace invertika_account.Account
 						Logger.Write(LogLevel.Debug, "Gameserver create item {0} on map {1} ", itemId, mapId);
 
 						Program.storage.addFloorItem(mapId, itemId, amount, posX, posY);
-					} break;
+					}
+					break;
 
 				case Protocol.GAMSG_REMOVE_ITEM_ON_MAP:
 					{
@@ -483,7 +499,8 @@ namespace invertika_account.Account
 						Logger.Write(LogLevel.Debug, "Gameserver removed item {0} from map {1}", itemId, mapId);
 
 						Program.storage.removeFloorItem(mapId, itemId, amount, posX, posY);
-					} break;
+					}
+					break;
 
 				default:
 					{
