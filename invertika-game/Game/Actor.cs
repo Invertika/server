@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using ISL.Server.Utilities;
 using invertika_game.Enums;
+using System.Diagnostics;
 
 namespace invertika_game.Game
 {
@@ -89,30 +90,31 @@ namespace invertika_game.Game
 			mPos=p;
 		}
 
-		public void setMap(MapComposite mapComposite)
+		public new void setMap(MapComposite mapComposite)
 		{
-//    assert(mapComposite);
-//    const Point p = getPosition();
-//
-//    if (MapComposite *oldMapComposite = getMap())
-//    {
-//        Map *oldMap = oldMapComposite->getMap();
-//        int oldTileWidth = oldMap->getTileWidth();
-//        int oldTileHeight = oldMap->getTileHeight();
-//        oldMap->freeTile(p.x / oldTileWidth, p.y / oldTileHeight,
-//                         getBlockType());
-//    }
-//    Thing::setMap(mapComposite);
-//    Map *map = mapComposite->getMap();
-//    int tileWidth = map->getTileWidth();
-//    int tileHeight = map->getTileHeight();
-//    map->blockTile(p.x / tileWidth, p.y / tileHeight, getBlockType());
-//    /* the last line might look illogical because the current position is
-//     * invalid on the new map, but it is necessary to block the old position
-//     * because the next call of setPosition() will automatically free the old
-//     * position. When we don't block the position now the occupation counting
-//     * will be off.
-//     */
+			Point p=getPosition();
+			
+			MapComposite oldMapComposite=getMap();
+			
+			if(oldMapComposite!=null)
+			{
+				Map oldMap=oldMapComposite.getMap();
+				int oldTileWidth=oldMap.getTileWidth();
+				int oldTileHeight=oldMap.getTileHeight();
+				oldMap.freeTile(p.x/oldTileWidth, p.y/oldTileHeight, getBlockType());
+			}
+			
+			base.setMap(mapComposite); //TODO Überprüfen ob es wie im ORiginal funktioniert
+			Map map=mapComposite.getMap();
+			int tileWidth=map.getTileWidth();
+			int tileHeight=map.getTileHeight();
+			map.blockTile(p.x/tileWidth, p.y/tileHeight, getBlockType());
+			/* the last line might look illogical because the current position is
+     * invalid on the new map, but it is necessary to block the old position
+     * because the next call of setPosition() will automatically free the old
+     * position. When we don't block the position now the occupation counting
+     * will be off.
+     */
 		}
 		
 		/**

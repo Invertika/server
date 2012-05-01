@@ -88,5 +88,13 @@ namespace invertika_game.Game
 		{
 			return mMap;
 		}
+		
+		/**
+         * Sets the map this thing is located on.
+         */
+		public virtual void setMap(MapComposite map)
+		{
+			mMap=map;
+		}
 	}
 }
