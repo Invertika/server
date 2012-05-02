@@ -23,7 +23,6 @@
 // 
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +40,7 @@ using ISL.Server.Common;
 using ISL.Server.Enums;
 using ISL.Server.Network;
 using System.Diagnostics;
+using System.Xml;
 
 namespace invertika_account
 {
@@ -50,7 +50,6 @@ namespace invertika_account
 		const string DEFAULT_LOG_FILE="manaserv-account.log";
 		const string DEFAULT_STATS_FILE="manaserv.stats";
 		const string DEFAULT_ATTRIBUTEDB_FILE="attributes.xml";
-
 		static bool running=true;        /**< Determines if server keeps running */
 
 		public static StringFilter stringFilter; /**< Slang's Filter */
@@ -62,7 +61,6 @@ namespace invertika_account
 
 		/** Communications (chat) message handler */
 		public static ChatHandler chatHandler;
-
 		public static ChatChannelManager chatChannelManager;
 		public static GuildManager guildManager;
 		public static PostManager postalManager;
@@ -107,8 +105,8 @@ namespace invertika_account
 //			try
 //			{
 //#endif
-				storage=new Storage();
-				storage.open();
+			storage=new Storage();
+			storage.open();
 //#if! DEBUG
 //			}
 //			catch(Exception ex)
@@ -119,7 +117,7 @@ namespace invertika_account
 //#endif
 
 			// --- Initialize the managers
-			stringFilter = new StringFilter();  // The slang's and double quotes filter.
+			stringFilter=new StringFilter();  // The slang's and double quotes filter.
 			chatChannelManager=new ChatChannelManager();
 			guildManager=new GuildManager();
 			postalManager=new PostManager();
@@ -270,20 +268,25 @@ namespace invertika_account
 		 * Main function, initializes and runs server.
 		 */
 		static int Main(string[] args)
-		{
+		{		
 			//Logger
 			Logger.ChangeLogMode(LogMode.Debug);
 
-			 //Parse command line options
+			//Parse command line options
 			CommandLineOptions options;
 			parseOptions(args, out options);
 
 			try
 			{
-				if(options.configPath==null) options.configPath=Configuration.DEFAULT_CONFIG_FILE;
+				if(options.configPath==null)
+				{
+					options.configPath=Configuration.DEFAULT_CONFIG_FILE;
+				}
+				
+				options.configPath=FileSystem.ApplicationPath+Configuration.DEFAULT_CONFIG_FILE;
 				Configuration.Init(options.configPath);
 			}
-			catch
+			catch(Exception ex)
 			{
 				Logger.Write(LogLevel.Error, "Refusing to run without configuration!");
 				System.Environment.Exit((int)ExitValue.EXIT_CONFIG_NOT_FOUND);
@@ -294,7 +297,7 @@ namespace invertika_account
 			Logger.ChangeLogMode(LogMode.Debug); //TODO hier könnte auf File gestellt werden
 
 			// Check inter-server password.
-			if (Configuration.getValue("net_password", "")=="")
+			if(Configuration.getValue("net_password", "")=="")
 			{
 				Logger.Write(LogLevel.Error, "SECURITY WARNING: 'net_password' not set!");
 				System.Environment.Exit((int)ExitValue.EXIT_BAD_CONFIG_PARAMETER);
@@ -306,9 +309,9 @@ namespace invertika_account
 			Logger.Write(LogLevel.Information, "The Mana Account+Chat Server v{0}", Various.AssemblyVersion);
 			Logger.Write(LogLevel.Information, "Manaserv Protocol version {0}, Database version {1}", ManaServ.PROTOCOL_VERSION, ManaServ.SUPPORTED_DB_VERSION);
 
-			if (!options.verbosityChanged)
+			if(!options.verbosityChanged)
 			{
-			    options.verbosity = (LogLevel)Configuration.getValue("log_accountServerLogLevel", (int)options.verbosity);
+				options.verbosity=(LogLevel)Configuration.getValue("log_accountServerLogLevel", (int)options.verbosity);
 			}
 			//Logger::setVerbosity(options.verbosity); //TODO wird das überhaupt benutzt? //es müssten wohl nicht dem Ding entsprehcende Level entfern werden
 
@@ -324,18 +327,18 @@ namespace invertika_account
 			// or to DEFAULT_SERVER_PORT otherwise.
 			if(!options.portChanged)
 			{
-			    options.port = Configuration.getValue("net_accountListenToClientPort", options.port);
+				options.port=Configuration.getValue("net_accountListenToClientPort", options.port);
 			}
 
-			int accountGamePort = Configuration.getValue("net_accountListenToGamePort", options.port + 1);
-			ushort chatClientPort = (ushort)Configuration.getValue("net_chatListenToClientPort", options.port + 2);
+			int accountGamePort=Configuration.getValue("net_accountListenToGamePort", options.port+1);
+			ushort chatClientPort=(ushort)Configuration.getValue("net_chatListenToClientPort", options.port+2);
 
-			if (!AccountClientHandler.initialize(DEFAULT_ATTRIBUTEDB_FILE, options.port, accountHost) || 
-				!GameServerHandler.initialize(accountGamePort, accountHost) || 
+			if(!AccountClientHandler.initialize(DEFAULT_ATTRIBUTEDB_FILE, options.port, accountHost)||
+				!GameServerHandler.initialize(accountGamePort, accountHost)||
 				!chatHandler.startListen(chatClientPort, chatHost))
 			{
-			    Logger.Write(LogLevel.Error, "Unable to create an ENet server host.");
-			    System.Environment.Exit((int)ExitValue.EXIT_NET_EXCEPTION);
+				Logger.Write(LogLevel.Error, "Unable to create an ENet server host.");
+				System.Environment.Exit((int)ExitValue.EXIT_NET_EXCEPTION);
 			}
 
 			// Dump statistics every 10 seconds.
@@ -368,7 +371,7 @@ namespace invertika_account
 			// world state variable
 			DateTime startup=DateTime.Now;
 			storage.setWorldStateVar("accountserver_startup", startup.ToString());
-			const string revision = "$Revision$";
+			const string revision="$Revision$";
 			storage.setWorldStateVar("accountserver_version", revision);
 			// -------------------------------------------------------------------------
 
