@@ -30,18 +30,19 @@ using System.Text;
 using ISL.Server.Utilities;
 using invertika_game.Enums;
 using System.Diagnostics;
+using ISL.Server.Common;
 
 namespace invertika_game.Game
 {
-	public class Actor: Thing
+	public class Actor : Thing
 	{
-		char mUpdateFlags;          /**< Changes in actor status. */
+		byte mUpdateFlags;          /**< Changes in actor status. */
 
 		/** Actor ID sent to clients (unique with respect to the map). */
 		ushort mPublicID;
 		Point mPos;                 /**< Coordinates. */
 		byte mSize;        /**< Radius of bounding circle. */
-		
+
 		//protected
 		/**
          * Gets the way the actor blocks pathfinding for other actors.
@@ -53,7 +54,15 @@ namespace invertika_game.Game
 
 		/** Delay until move to next tile in miliseconds. */
 		ushort mMoveTime;
-		
+
+		public Actor(ThingType type): base(type)
+		{
+			mMoveTime=0;
+			mUpdateFlags=0;
+			mPublicID=65535;
+			mSize=0;
+		}
+
 		~Actor()
 		{
 			// Free the map position
@@ -72,17 +81,17 @@ namespace invertika_game.Game
 		{
 			// Update blockmap
 			MapComposite mapComposite=getMap();
-			
+
 			if(mapComposite!=null)
 			{
 				Map map=mapComposite.getMap();
 				int tileWidth=map.getTileWidth();
 				int tileHeight=map.getTileHeight();
 				if((mPos.x/tileWidth!=p.x/tileWidth
-            ||mPos.y/tileHeight!=p.y/tileHeight))
+			||mPos.y/tileHeight!=p.y/tileHeight))
 				{
 					map.freeTile(mPos.x/tileWidth, mPos.y/tileHeight,
-                          getBlockType());
+						  getBlockType());
 					map.blockTile(p.x/tileWidth, p.y/tileHeight, getBlockType());
 				}
 			}
@@ -93,9 +102,9 @@ namespace invertika_game.Game
 		public new void setMap(MapComposite mapComposite)
 		{
 			Point p=getPosition();
-			
+
 			MapComposite oldMapComposite=getMap();
-			
+
 			if(oldMapComposite!=null)
 			{
 				Map oldMap=oldMapComposite.getMap();
@@ -103,7 +112,7 @@ namespace invertika_game.Game
 				int oldTileHeight=oldMap.getTileHeight();
 				oldMap.freeTile(p.x/oldTileWidth, p.y/oldTileHeight, getBlockType());
 			}
-			
+
 			base.setMap(mapComposite); //TODO Überprüfen ob es wie im ORiginal funktioniert
 			Map map=mapComposite.getMap();
 			int tileWidth=map.getTileWidth();
@@ -116,12 +125,12 @@ namespace invertika_game.Game
      * will be off.
      */
 		}
-		
+
 		/**
-         * Gets the coordinates.
-         *
-         * @return the coordinates.
-         */
+		 * Gets the coordinates.
+		 *
+		 * @return the coordinates.
+		 */
 		Point getPosition()
 		{
 			return mPos;

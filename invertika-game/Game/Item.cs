@@ -19,6 +19,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using ISL.Server.Common;
 
 namespace invertika_game.Game
 {
@@ -28,12 +29,14 @@ namespace invertika_game.Game
 	public class Item: Actor
 	{
 		ItemClass mType;
-		byte mAmount;
+		int mAmount;
 		int mLifetime;
 		
-		public Item(ItemClass type, int amount) //: Actor(OBJECT_ITEM), mType(type), mAmount(amount)
+		public Item(ItemClass type, int amount) : base (ThingType.OBJECT_ITEM)
 		{
-			//mLifetime = Configuration.getValue("game_floorItemDecayTime", 0) * 10;
+			mType=type;
+			mAmount=amount;
+			mLifetime = Configuration.getValue("game_floorItemDecayTime", 0) * 10;
 		}
 
 		void update()

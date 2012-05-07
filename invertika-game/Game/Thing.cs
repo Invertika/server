@@ -38,6 +38,18 @@ namespace invertika_game.Game
 		MapComposite mMap;     /**< Map the thing is on */
 		ThingType mType;        /**< Type of this thing. */
 		
+		public  Thing(ThingType type)//, MapComposite *map = 0)
+		{
+           mMap=null;
+		   mType=type;
+		}
+
+		public Thing(ThingType type, MapComposite map)
+		{
+			mMap=map;
+			mType=type;
+		}
+
 		~Thing()
 		{
 //    /* As another object will stop listening and call removeListener when it is

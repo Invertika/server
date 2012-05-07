@@ -34,7 +34,7 @@ using invertika_game.Common;
 
 namespace invertika_game.Game
 {
-	public class Being
+	public class Being: Actor
 	{
 		const int TICKS_PER_HP_REGENERATION=100;
 
@@ -47,9 +47,13 @@ namespace invertika_game.Game
 		protected Point mDst;                 /**< Target coordinates. */
 		protected BeingGender mGender;        /**< Gender of the being. */
 
-		public Being(ThingType type)
+		public Being(ThingType type) : base(type)
 		{
-			//        Actor(type),
+			//base=new Actor(type);
+			//Actor=type; // Actor(type),
+			mAction=BeingAction.STAND;
+
+			       
 			//    mAction(STAND),
 			//    mTarget(NULL),
 			//    mGender(GENDER_UNSPECIFIED),
