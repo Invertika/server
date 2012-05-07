@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using invertika_game.Common;
 
 namespace invertika_game.Game
 {
@@ -37,30 +38,25 @@ namespace invertika_game.Game
 	 */
 	public class Damage
 	{
-		//uint skill;             /**< Skill used by source (needed for exp calculation) */
-		//ushort @base;            /**< Base amount of damage. */
-		//ushort delta;           /**< Additional damage when lucky. */
-		//ushort cth;             /**< Chance to hit. Opposes the evade attribute. */
-		//byte element;          /**< Elemental damage. */
-		//DamageType type;                /**< Damage type: Physical or magical? */
-		//bool trueStrike;                /**< Override dodge calculation */
-		//unsigned short range;           /**< Maximum distance that this attack can be used from, in pixels */
+		uint skill;             /**< Skill used by source (needed for exp calculation) */
+		ushort @base;            /**< Base amount of damage. */
+		ushort delta;           /**< Additional damage when lucky. */
+		ushort cth;             /**< Chance to hit. Opposes the evade attribute. */
+		byte element;          /**< Elemental damage. */
+		DamageType type;                /**< Damage type: Physical or magical? */
+		bool trueStrike;                /**< Override dodge calculation */
+		ushort range;           /**< Maximum distance that this attack can be used from, in pixels */
 
-		//Damage(unsigned int skill,
-		//       unsigned short base,
-		//       unsigned short delta,
-		//       unsigned short cth,
-		//       unsigned char element,
-		//       DamageType type = DAMAGE_OTHER,
-		//       unsigned short range = DEFAULT_TILE_LENGTH):
-		//    skill(skill),
-		//    base(base),
-		//    delta(delta),
-		//    cth(cth),
-		//    element(element),
-		//    type(type),
-		//    trueStrike(false),
-		//    range(range)
-		//{}
+		Damage(uint skill, ushort @base, ushort delta, ushort cth, byte element, DamageType type=DamageType.DAMAGE_OTHER, ushort range=DEFAULT_TILE_LENGTH)
+		{
+			this.skill=skill;
+			this.@base=@base;
+			this.delta=delta;
+			this.cth=cth;
+			this.element=element;
+			this.type=type;
+			this.trueStrike=false;
+			this.range=range;
+		}
 	}
 }
