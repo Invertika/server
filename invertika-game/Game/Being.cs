@@ -46,36 +46,36 @@ namespace invertika_game.Game
 		protected Point mOld;                 /**< Old coordinates. */
 		protected Point mDst;                 /**< Target coordinates. */
 		protected BeingGender mGender;        /**< Gender of the being. */
+		BeingDirection mDirection;
 
 		public Being(ThingType type) : base(type)
 		{
-			//base=new Actor(type);
-			//Actor=type; // Actor(type),
 			mAction=BeingAction.STAND;
+			mTarget=null;
+			mGender=BeingGender.GENDER_UNSPECIFIED;
+			mDirection=BeingDirection.DOWN;
 
-			       
-			//    mAction(STAND),
-			//    mTarget(NULL),
-			//    mGender(GENDER_UNSPECIFIED),
-			//    mDirection(DOWN)
+			
+			    Dictionary<int, List<AttributeInfoType>> attr = Program.attributeManager.getAttributeScope(ScopeType.BeingScope);
+			    Logger.Write(LogLevel.Debug, "Being creation: initialisation of {0} attributes.", attr.Count);
 
-			//    const AttributeScope &attr = attributeManager.getAttributeScope(BeingScope);
-			//    LOG_DEBUG("Being creation: initialisation of " << attr.size() << " attributes.");
-			//    for (AttributeScope::const_iterator it1 = attr.begin(),
-			//         it1_end = attr.end();
-			//        it1 != it1_end;
-			//        ++it1)
-			//    {
-			//        if (mAttributes.count(it1.first))
-			//            LOG_WARN("Redefinition of attribute '" << it1.first << "'!");
-			//        LOG_DEBUG("Attempting to create attribute '" << it1.first << "'.");
-			//        mAttributes.insert(std::make_pair(it1.first,
-			//                                          Attribute(*it1.second)));
+				foreach(KeyValuePair<int, List<AttributeInfoType>> pair in attr)
+				{
+					int debug=555; //TODO hier mal reinschauen
+					//if(mAttributes.Count
 
-			//    }
-			//    // TODO: Way to define default base values?
-			//    // Should this be handled by the virtual modifiedAttribute?
-			//    // URGENT either way
+			  
+					//if (mAttributes.count(it1.first))
+					//    LOG_WARN("Redefinition of attribute '" << it1.first << "'!");
+					//LOG_DEBUG("Attempting to create attribute '" << it1.first << "'.");
+					//mAttributes.insert(std::make_pair(it1.first,
+					//                                  Attribute(*it1.second)));
+
+			    }
+			    // TODO: Way to define default base values?
+			    // Should this be handled by the virtual modifiedAttribute?
+			    // URGENT either way
+
 			//#if 0
 			//    // Initialize element resistance to 100 (normal damage).
 			//    for (i = BASE_ELEM_BEGIN; i < BASE_ELEM_END; ++i)
@@ -158,9 +158,9 @@ namespace invertika_game.Game
 
 		void heal()
 		{
-			//Attribute &hp = mAttributes.at(ATTR_HP);
-			//Attribute &maxHp = mAttributes.at(ATTR_MAX_HP);
-			//if (maxHp.getModifiedAttribute() == hp.getModifiedAttribute())
+			//Attribute hp=mAttributes[ATTR_HP];
+			//Attribute maxHp=mAttributes.at(ATTR_MAX_HP);
+			//if(maxHp.getModifiedAttribute()==hp.getModifiedAttribute())
 			//    return; // Full hp, do nothing.
 
 			//// Reset all modifications present in hp.

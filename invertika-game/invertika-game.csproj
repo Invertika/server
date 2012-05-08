@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -39,11 +39,13 @@
   <ItemGroup>
     <Compile Include="Common\AttributeInfoType.cs" />
     <Compile Include="Common\BeingAction.cs" />
+    <Compile Include="Common\BeingDirection.cs" />
     <Compile Include="Common\BeingGender.cs" />
     <Compile Include="Common\DamageType.cs" />
     <Compile Include="Common\InventoryItem.cs" />
     <Compile Include="Common\PermissionManager.cs" />
     <Compile Include="Common\Result.cs" />
+    <Compile Include="Enums\ScopeType.cs" />
     <Compile Include="Game\ActorIterator.cs" />
     <Compile Include="Game\AutoAttacks.cs" />
     <Compile Include="Game\Being.cs" />
@@ -125,7 +127,5 @@
       <Name>CSCL</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Enums\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

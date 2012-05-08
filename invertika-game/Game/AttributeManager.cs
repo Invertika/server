@@ -102,7 +102,7 @@ namespace invertika_game.Game
 		//typedef std::map<int, std::vector<struct AttributeInfoType> *> AttributeScope;
 
 
-		Dictionary<int, List<AttributeInfoType>> getAttributeScope(ScopeType type)
+		public Dictionary<int, List<AttributeInfoType>> getAttributeScope(ScopeType type)
 		{
 			//return mAttributeScopes[type];
 
