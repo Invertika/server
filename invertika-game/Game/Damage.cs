@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using invertika_game.Common;
+using ISL.Server.Common;
 
 namespace invertika_game.Game
 {
@@ -47,7 +48,7 @@ namespace invertika_game.Game
 		bool trueStrike;                /**< Override dodge calculation */
 		ushort range;           /**< Maximum distance that this attack can be used from, in pixels */
 
-		Damage(uint skill, ushort @base, ushort delta, ushort cth, byte element, DamageType type=DamageType.DAMAGE_OTHER, ushort range=DEFAULT_TILE_LENGTH)
+		Damage(uint skill, ushort @base, ushort delta, ushort cth, byte element, DamageType type=DamageType.DAMAGE_OTHER, ushort range=ManaServ.DEFAULT_TILE_LENGTH)
 		{
 			this.skill=skill;
 			this.@base=@base;
