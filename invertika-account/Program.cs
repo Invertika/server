@@ -25,22 +25,17 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
+using System.Threading;
+using System.Timers;
+using CSCL;
 using invertika_account.Account;
 using invertika_account.Chat;
-using invertika_account.Common;
 using invertika_account.Utilities;
-using CSCL;
-using System.IO;
-using System.Timers;
-using System.Threading;
-using ISL.Server.Utilities;
 using ISL.Server.Common;
 using ISL.Server.Enums;
 using ISL.Server.Network;
-using System.Diagnostics;
-using System.Xml;
+using ISL.Server.Utilities;
 
 namespace invertika_account
 {
