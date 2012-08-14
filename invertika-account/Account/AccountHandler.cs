@@ -38,6 +38,8 @@ using ISL.Server.Account;
 using ISL.Server.Enums;
 using System.Net;
 using ISL.Server.Account;
+using CSCL;
+using CSCL.Crypto;
 
 namespace invertika_account.Account
 {
@@ -290,13 +292,18 @@ namespace invertika_account.Account
 
             mPendingAccounts.Remove(acc); 
 
-            //if (!acc || sha256(acc.getPassword() + acc.getRandomSalt()) != password)
-            //{
-            //    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
-            //    client.send(reply);
-            //    delete acc;
-            //    return;
-            //}
+            //TODO Überprüfen ob SHA256 das gewünschte Ergebniss liefert
+           
+            if (acc != null)
+            {
+                if (SHA256.HashStringToSHA256(acc.getPassword() + acc.getRandomSalt()) != password)
+                {
+                    reply.writeInt8((int)ErrorMessage.ERRMSG_INVALID_ARGUMENT);
+                    client.send(reply);
+                    //delete acc;
+                    return;
+                }
+            }
 
             //if (acc.getLevel() == AL_BANNED)
             //{
