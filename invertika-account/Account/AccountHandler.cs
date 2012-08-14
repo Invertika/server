@@ -37,6 +37,7 @@ using ISL.Server.Common;
 using ISL.Server.Account;
 using ISL.Server.Enums;
 using System.Net;
+using ISL.Server.Account;
 
 namespace invertika_account.Account
 {
@@ -60,10 +61,14 @@ namespace invertika_account.Account
 
         Dictionary<IPAddress, DateTime> mLastLoginAttemptForIP;
 
+        /** List of all accounts which requested a random seed, but are not logged
+     *  yet. This list will be regularly remove (after timeout) old accounts
+     */
+        List<ISL.Server.Account.Account> mPendingAccounts = new List<ISL.Server.Account.Account>();
+           
         //Token collector for connecting a client coming from a game server
         //without having to provide username and password a second time.
         public TokenCollector<AccountHandler, AccountClient, int> mTokenCollector;
-
 
         public AccountHandler(string attributesFile)
         {
@@ -252,33 +257,38 @@ namespace invertika_account.Account
 
             mLastLoginAttemptForIP [address] = now;
 
-            //const std::string username = msg.readString();
-            //const std::string password = msg.readString();
+            string username = msg.readString();
+            string password = msg.readString();
 
-            //if (stringFilter.findDoubleQuotes(username))
-            //{
-            //    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
-            //    client.send(reply);
-            //    return;
-            //}
+            if (Program.stringFilter.findDoubleQuotes(username))
+            {
+                reply.writeInt8((int)ErrorMessage.ERRMSG_INVALID_ARGUMENT);
+                client.send(reply);
+                return;
+            }
 
-            //const unsigned maxClients =
-            //        (unsigned) Configuration::getValue("net_maxClients", 1000);
+            uint maxClients = (uint)Configuration.getValue("net_maxClients", 1000);
 
-            //if (getClientCount() >= maxClients)
-            //{
-            //    reply.writeInt8(ERRMSG_SERVER_FULL);
-            //    client.send(reply);
-            //    return;
-            //}
+            if (getClientCount() >= maxClients)
+            {
+                reply.writeInt8((int)ErrorMessage.ERRMSG_SERVER_FULL);
+                client.send(reply);
+                return;
+            }
 
-            //// Check if the account exists
-            //Account *acc = 0;
-            //std::list<Account*>::iterator ita;
-            //for ( ita = mPendingAccounts.begin() ; ita != mPendingAccounts.end(); ita++ )
-            //    if ((*ita).getName() == username)
-            //        acc = *ita;
-            //mPendingAccounts.remove(acc);
+            // Check if the account exists
+            ISL.Server.Account.Account acc = null;
+
+            foreach (ISL.Server.Account.Account tmp in mPendingAccounts)
+            {
+                if (tmp.getName() == username)
+                {
+                    acc = tmp;
+                    break;
+                }
+            }
+
+            mPendingAccounts.Remove(acc); 
 
             //if (!acc || sha256(acc.getPassword() + acc.getRandomSalt()) != password)
             //{
