@@ -36,6 +36,7 @@ using ISL.Server.Network;
 using ISL.Server.Common;
 using ISL.Server.Account;
 using ISL.Server.Enums;
+using System.Net;
 
 namespace invertika_account.Account
 {
@@ -57,7 +58,7 @@ namespace invertika_account.Account
         string mUpdateHost;
         string mDataUrl;
 
-        Dictionary<int, DateTime> mLastLoginAttemptForIP;
+        Dictionary<IPAddress, DateTime> mLastLoginAttemptForIP;
 
         //Token collector for connecting a client coming from a game server
         //without having to provide username and password a second time.
@@ -233,20 +234,23 @@ namespace invertika_account.Account
             }
 
             // Check whether the last login attempt for this IP is still too fresh
-            const int address = client.getI
-            const time_t now = time(NULL);
-            IPsToTime::const_iterator it = mLastLoginAttemptForIP.find(address);
-            if (it != mLastLoginAttemptForIP.end())
+            IPAddress address = client.getIP();
+            DateTime now = DateTime.Now;
+
+            if (mLastLoginAttemptForIP.ContainsKey(address)) //TODO Schauen ob der Vergleich gegen das IPAdress Objekt funktioniert
             {
-                const time_t lastAttempt = it.second;
-                if (now < lastAttempt + 1)
+                DateTime lastAttempt = mLastLoginAttemptForIP [address];
+                lastAttempt.AddSeconds(1); //TODO schauen ob hier im Original wirklich Sekunden gemeint sind
+
+                if (now < lastAttempt)
                 {
-                    reply.writeInt8(LOGIN_INVALID_TIME);
+                    reply.writeInt8((int)Login.LOGIN_INVALID_TIME);
                     client.send(reply);
                     return;
                 }
             }
-            mLastLoginAttemptForIP[address] = now;
+
+            mLastLoginAttemptForIP [address] = now;
 
             //const std::string username = msg.readString();
             //const std::string password = msg.readString();
