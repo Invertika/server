@@ -181,27 +181,23 @@ namespace invertika_account.Account
         {
             MessageOut charInfo = new MessageOut(Protocol.APMSG_CHAR_INFO);
 
-            //charInfo.writeInt8(ch.getCharacterSlot());
-            //charInfo.writeString(ch.getName());
-            //charInfo.writeInt8(ch.getGender());
-            //charInfo.writeInt8(ch.getHairStyle());
-            //charInfo.writeInt8(ch.getHairColor());
-            //charInfo.writeInt16(ch.getLevel());
-            //charInfo.writeInt16(ch.getCharacterPoints());
-            //charInfo.writeInt16(ch.getCorrectionPoints());
+            charInfo.writeInt8((int)ch.getCharacterSlot());
+            charInfo.writeString(ch.getName());
+            charInfo.writeInt8(ch.getGender());
+            charInfo.writeInt8(ch.getHairStyle());
+            charInfo.writeInt8(ch.getHairColor());
+            charInfo.writeInt16(ch.getLevel());
+            charInfo.writeInt16(ch.getCharacterPoints());
+            charInfo.writeInt16(ch.getCorrectionPoints());
 
-            //for (AttributeMap::const_iterator it = ch.mAttributes.begin(),
-            //                                  it_end = ch.mAttributes.end();
-            //    it != it_end;
-            //    ++it)
-            //{
-            //    // {id, base value in 256ths, modified value in 256ths }*
-            //    charInfo.writeInt32(it.first);
-            //    charInfo.writeInt32((int) (it.second.base * 256));
-            //    charInfo.writeInt32((int) (it.second.modified * 256));
-            //}
+            foreach (KeyValuePair<uint, AttributeValue> at in ch.mAttributes)
+            {
+                charInfo.writeInt32((int)at.Key);
+                charInfo.writeInt32((int)(at.Value.@base * 256));
+                charInfo.writeInt32((int)(at.Value.modified * 256));
+            }
 
-            //client.send(charInfo);
+            client.send(charInfo);
         }
 
         void handleLoginRandTriggerMessage(AccountClient client, MessageIn msg)
@@ -293,7 +289,6 @@ namespace invertika_account.Account
             mPendingAccounts.Remove(acc); 
 
             //TODO Überprüfen ob SHA256 das gewünschte Ergebniss liefert
-           
             if (acc != null)
             {
                 if (SHA256.HashStringToSHA256(acc.getPassword() + acc.getRandomSalt()) != password)
@@ -305,37 +300,37 @@ namespace invertika_account.Account
                 }
             }
 
-            //if (acc.getLevel() == AL_BANNED)
-            //{
-            //    reply.writeInt8(LOGIN_BANNED);
-            //    client.send(reply);
-            //    delete acc;
-            //    return;
-            //}
+            if (acc.getLevel() == (int)AccessLevel.AL_BANNED)
+            {
+                reply.writeInt8((int)Login.LOGIN_BANNED);
+                client.send(reply);
+                //delete acc;
+                return;
+            }
 
-            //// The client successfully logged in...
+            // The client successfully logged in...
 
-            //// Set lastLogin date of the account.
-            //time_t login;
-            //time(&login);
-            //acc.setLastLogin(login);
-            //storage.updateLastLogin(acc);
+            // Set lastLogin date of the account.
+            DateTime login = DateTime.Now;
+            acc.setLastLogin(login);
+            Program.storage.updateLastLogin(acc);  
 
-            //// Associate account with connection.
-            //client.setAccount(acc);
-            //client.status = CLIENT_CONNECTED;
+            // Associate account with connection.
+            client.setAccount(acc);
+            client.status = AccountClientStatus.CLIENT_CONNECTED;
 
-            //reply.writeInt8(ERRMSG_OK);
-            //addServerInfo(&reply);
-            //client.send(reply); // Acknowledge login
+            reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
+            addServerInfo(reply);
+            client.send(reply); // Acknowledge login
 
-            //// Return information about available characters
-            //Characters &chars = acc.getCharacters();
+            // Return information about available characters
+            Dictionary<uint, Character> chars = acc.getCharacters();
 
-            //// Send characters list
-            //for (Characters::const_iterator i = chars.begin(), i_end = chars.end();
-            //     i != i_end; ++i)
-            //    sendCharacterData(client, *(*i).second);
+            // Send characters list
+            foreach (ISL.Server.Account.Character character in chars.Values)
+            {
+                sendCharacterData(client, character);
+            }
         }
 
         void handleLogoutMessage(AccountClient client)
