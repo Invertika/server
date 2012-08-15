@@ -61,7 +61,7 @@ namespace invertika_account.Account
         string mUpdateHost;
         string mDataUrl;
 
-        Dictionary<IPAddress, DateTime> mLastLoginAttemptForIP;
+		Dictionary<IPAddress, DateTime> mLastLoginAttemptForIP=new Dictionary<IPAddress, DateTime>();
 
         /** List of all accounts which requested a random seed, but are not logged
      *  yet. This list will be regularly remove (after timeout) old accounts
