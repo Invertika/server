@@ -1094,21 +1094,8 @@ namespace invertika_account.Account
 
         public void updateCharacterPoints(int charId, int charPoints, int corrPoints)
         {
-            //try
-            //{
-            //    std::ostringstream sql;
-            //    sql << "UPDATE " << CHARACTERS_TBL_NAME
-            //        << " SET char_pts = " << charPoints << ", "
-            //        << " correct_pts = " << corrPoints << ", "
-            //        << " WHERE id = " << charId;
-
-            //    mDb.execSql(sql.str());
-            //}
-            //catch (dal::DbSqlQueryExecFailure &e)
-            //{
-            //    utils::throwError("(DALStorage::updateCharacterPoints) "
-            //                      "SQL query failure: ", e);
-            //}
+            string sql = String.Format("UPDATE {0} SET char_pts = '{1}', correct_pts = '{2}' WHERE id = '{3}';", CHARACTERS_TBL_NAME, charPoints, corrPoints, charId);
+            mDb.ExecuteNonQuery(sql);
         }
 
         public void updateExperience(int charId, int skillId, int skillValue)
