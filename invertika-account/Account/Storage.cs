@@ -907,41 +907,12 @@ namespace invertika_account.Account
 
         public void addAccount(ISL.Server.Account.Account account)
         {
-            //assert(account.getCharacters().size() == 0);
+            string sql = String.Format("INSERT INTO {0} (username, password, email, level, banned, registration, lastlogin)", ACCOUNTS_TBL_NAME);
+            sql += String.Format("VALUES ({0}, {1}, {2}, {3}, 0, {4}, {5});", 
+                               account.getName(), account.getPassword(), account.getEmail(),
+                               account.getLevel(), account.getRegistrationDate(), account.getLastLogin());
 
-            //using namespace dal;
-
-            //try
-            //{
-            //    // Insert the account
-            //    std::ostringstream sql;
-            //    sql << "insert into " << ACCOUNTS_TBL_NAME
-            //         << " (username, password, email, level, "
-            //         << "banned, registration, lastlogin)"
-            //         << " VALUES (?, ?, ?, "
-            //         << account.getLevel() << ", 0, "
-            //         << account.getRegistrationDate() << ", "
-            //         << account.getLastLogin() << ");";
-
-            //    if (mDb.prepareSql(sql.str()))
-            //    {
-            //        mDb.bindValue(1, account.getName());
-            //        mDb.bindValue(2, account.getPassword());
-            //        mDb.bindValue(3, account.getEmail());
-
-            //        mDb.processSql();
-            //        account.setID(mDb.getLastId());
-            //    }
-            //    else
-            //    {
-            //        utils::throwError("(DALStorage::addAccount) "
-            //                          "SQL preparation query failure.");
-            //    }
-            //}
-            //catch (const dal::DbSqlQueryExecFailure &e)
-            //{
-            //    utils::throwError("(DALStorage::addAccount) SQL query failure: ", e);
-            //}
+            mDb.ExecuteNonQuery(sql);
         }
 
         void flush(ISL.Server.Account.Account account)
