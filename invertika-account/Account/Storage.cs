@@ -581,7 +581,7 @@ namespace invertika_account.Account
             return getCharacterBySQL(null);
         }
 
-        bool doesUserNameExist(string name)
+        public bool doesUserNameExist(string name)
         {
             //try
             //{
@@ -615,7 +615,7 @@ namespace invertika_account.Account
             return true;
         }
 
-        bool doesEmailAddressExist(string email)
+        public bool doesEmailAddressExist(string email)
         {
             //try
             //{
@@ -905,7 +905,7 @@ namespace invertika_account.Account
             //    character.getExperience(skillId));
         }
 
-        void addAccount(ISL.Server.Account.Account account)
+        public void addAccount(ISL.Server.Account.Account account)
         {
             //assert(account.getCharacters().size() == 0);
 
