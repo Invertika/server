@@ -61,7 +61,7 @@ namespace invertika_account.Account
         string mUpdateHost;
         string mDataUrl;
 
-		Dictionary<IPAddress, DateTime> mLastLoginAttemptForIP=new Dictionary<IPAddress, DateTime>();
+        Dictionary<IPAddress, DateTime> mLastLoginAttemptForIP = new Dictionary<IPAddress, DateTime>();
 
         /** List of all accounts which requested a random seed, but are not logged
      *  yet. This list will be regularly remove (after timeout) old accounts
@@ -373,13 +373,13 @@ namespace invertika_account.Account
 
         void handleRegisterMessage(AccountClient client, MessageIn msg)
         {
-            //int clientVersion = msg.readInt32();
-            //std::string username = msg.readString();
-            //std::string password = msg.readString();
-            //std::string email = msg.readString();
-            //std::string captcha = msg.readString();
+            int clientVersion = msg.readInt32();
+            string username = msg.readString();
+            string password = msg.readString();
+            string email = msg.readString();
+            string captcha = msg.readString();
 
-            //MessageOut reply(APMSG_REGISTER_RESPONSE);
+            MessageOut reply = new MessageOut(Protocol.APMSG_REGISTER_RESPONSE);
 
             //if (client.status != CLIENT_LOGIN)
             //{
