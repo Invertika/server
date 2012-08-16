@@ -1167,23 +1167,9 @@ namespace invertika_account.Account
 
         public void removeFloorItem(int mapId, int itemId, int amount, int posX, int posY)
         {
-            //try
-            //{
-            //    std::ostringstream sql;
-            //    sql << "DELETE FROM " << FLOOR_ITEMS_TBL_NAME
-            //    << " WHERE map_id = "
-            //    << mapId << " AND item_id = "
-            //    << itemId << " AND amount = "
-            //    << amount << " AND pos_x = "
-            //    << posX << " AND pos_y = "
-            //    << posY << ";";
-            //    mDb.execSql(sql.str());
-            //}
-            //catch (const dal::DbSqlQueryExecFailure& e)
-            //{
-            //    utils::throwError("(DALStorage::removeFloorItem) SQL query failure: ",
-            //                      e);
-            //}
+			string sql=String.Format("DELETE FROM {0} WHERE map_id = {1} AND item_id = {2} AND amount = {3} AND pos_x = {4} AND pos_y = {5};",
+									FLOOR_ITEMS_TBL_NAME, mapId, itemId, amount, posX, posY);
+			mDb.ExecuteNonQuery(sql);
         }
 
         public List<FloorItem> getFloorItemsFromMap(int mapId)
