@@ -111,8 +111,7 @@ namespace invertika_account.Account
         public void open()
         {
             // Do nothing if already connected.
-            if (mDb.Connected)
-                return;
+            if (mDb.Connected) return;
 
             // Open a connection to the database.
             mDb.Connect();
@@ -583,36 +582,11 @@ namespace invertika_account.Account
 
         public bool doesUserNameExist(string name)
         {
-            //try
-            //{
-            //    std::ostringstream sql;
-            //    sql << "SELECT COUNT(username) FROM " << ACCOUNTS_TBL_NAME
-            //        << " WHERE username = ?";
+			string sql=String.Format("SELECT COUNT(username) FROM {0}  WHERE username = {1}", ACCOUNTS_TBL_NAME, name);
+			DataTable table=mDb.ExecuteQuery(sql);
 
-            //    if (mDb.prepareSql(sql.str()))
-            //    {
-            //        mDb.bindValue(1, name);
-            //        const dal::RecordSet &accountInfo = mDb.processSql();
-
-            //        std::istringstream ssStream(accountInfo(0, 0));
-            //        unsigned int iReturn = 1;
-            //        ssStream >> iReturn;
-            //        return iReturn != 0;
-            //    }
-            //    else
-            //    {
-            //        utils::throwError("(DALStorage::doesUserNameExist) "
-            //                          "SQL query preparation failure.");
-            //    }
-            //}
-            //catch (const std::exception &e)
-            //{
-            //    utils::throwError("(DALStorage::doesUserNameExist) SQL query failure: ",
-            //                      e);
-            //}
-
-            // Should never happen
-            return true;
+			if(table.Rows.Count>0) return true;
+			else return false;
         }
 
         public bool doesEmailAddressExist(string email)
