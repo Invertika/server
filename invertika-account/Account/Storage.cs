@@ -998,7 +998,7 @@ namespace invertika_account.Account
 			mDb.ExecuteNonQuery(sql);
 
 			// Remove the account's characters.
-			account.setCharacters(Characters());
+			account.setCharacters(account.getCharacters()); //TODO Überprüfen ob das so funktioniert?
 		}
 
         public void updateLastLogin(ISL.Server.Account.Account account)
@@ -1125,22 +1125,8 @@ namespace invertika_account.Account
 
         void insertStatusEffect(int charId, int statusId, int time)
         {
-            //try
-            //{
-            //    std::ostringstream sql;
-
-            //    sql << "insert into " << CHAR_STATUS_EFFECTS_TBL_NAME
-            //        << " (char_id, status_id, status_time) VALUES ( "
-            //        << charId << ", "
-            //        << statusId << ", "
-            //        << time << ")";
-            //    mDb.execSql(sql.str());
-            //}
-            //catch (const dal::DbSqlQueryExecFailure &e)
-            //{
-            //    utils::throwError("(DALStorage::insertStatusEffect) "
-            //                      "SQL query failure: ", e);
-            //}
+			string sql=String.Format("INSERT INTO {0} (char_id, status_id, status_time) VALUES ({1}, {2}, {3})", CHAR_STATUS_EFFECTS_TBL_NAME, charId, statusId, time);
+			mDb.ExecuteNonQuery(sql);
         }
 
         public void addGuild(Guild guild)
