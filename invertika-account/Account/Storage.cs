@@ -1129,49 +1129,17 @@ namespace invertika_account.Account
 			mDb.ExecuteNonQuery(sql);
         }
 
-        public void addGuild(Guild guild)
-        {
-            //try
-            //{
-            //    std::ostringstream sqlQuery;
-            //    sqlQuery << "insert into " << GUILDS_TBL_NAME
-            //             << " (name) VALUES (?)";
-            //    if (mDb.prepareSql(sqlQuery.str()))
-            //    {
-            //        mDb.bindValue(1, guild.getName());
-            //        mDb.processSql();
-            //    }
-            //    else
-            //    {
-            //        utils::throwError("(DALStorage::addGuild) "
-            //                          "SQL query preparation failure #1.");
-            //    }
+		public void addGuild(Guild guild)
+		{
+			string sql=String.Format("INSERT INTO {0} name VALUES \"{1}\";", GUILDS_TBL_NAME, guild.getName());
+			mDb.ExecuteNonQuery(sql);
 
-            //    sqlQuery.clear();
-            //    sqlQuery.str("");
-            //    sqlQuery << "SELECT id FROM " << GUILDS_TBL_NAME
-            //             << " WHERE name = ?";
+			sql=String.Format("SELECT id FROM {0} WHERE name = \"{1}\"", GUILDS_TBL_NAME, guild.getName());
+			DataTable table=mDb.ExecuteQuery(sql);
 
-            //    if (mDb.prepareSql(sqlQuery.str()))
-            //    {
-            //        mDb.bindValue(1, guild.getName());
-            //        const dal::RecordSet& guildInfo = mDb.processSql();
-
-            //        string_to<unsigned int> toUint;
-            //        unsigned id = toUint(guildInfo(0, 0));
-            //        guild.setId(id);
-            //    }
-            //    else
-            //    {
-            //        utils::throwError("(DALStorage::addGuild) "
-            //                          "SQL query preparation failure #2.");
-            //    }
-            //}
-            //catch (const std::exception &e)
-            //{
-            //    utils::throwError("(DALStorage::addGuild) SQL query failure: ", e);
-            //}
-        }
+			long id=(long)table.Rows[0]["id"];
+			guild.setId((int)id);
+		}
 
         public void removeGuild(Guild guild)
         {

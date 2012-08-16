@@ -176,5 +176,11 @@ namespace invertika_account.Chat
 		{
 			return mMembers.Count;
 		}
+
+		/**
+ * Set the ID of the guild.
+ */
+		public void setId(int id)
+		{ mId=(short)id; }
 	}
 }
