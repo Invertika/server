@@ -841,10 +841,7 @@ namespace invertika_account.Account
         public void addAccount(ISL.Server.Account.Account account)
         {
             string sql = String.Format("INSERT INTO {0} (username, password, email, level, banned, registration, lastlogin) ", ACCOUNTS_TBL_NAME);
-            sql += "VALUES (" + account.getName() + ", " + account.getPassword() + ", ";
-            sql += String.Format("{0}, {1}, 0, {2}, {3});", account.getEmail(), account.getLevel(), account.getRegistrationDate(), account.getLastLogin());
-           
-            //string sqlT = String.Format("VALUES ({0}, {1}, {2}, {3}, 0, {4}, {5});", account.getName(), account.getPassword(), account.getEmail(), account.getLevel(), account.getRegistrationDate(), account.getLastLogin());
+            sql += String.Format("VALUES (\"{0}\", \"{1}\", \"{2}\", {3}, 0, {4}, {5});", account.getName(), account.getPassword(), account.getEmail(), account.getLevel(), account.getRegistrationDate().Ticks, account.getLastLogin().Ticks);
 
             mDb.ExecuteNonQuery(sql);
         }
