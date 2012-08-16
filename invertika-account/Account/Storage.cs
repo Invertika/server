@@ -1155,41 +1155,14 @@ namespace invertika_account.Account
 
         public void removeGuildMember(int guildId, int memberId)
         {
-            //try
-            //{
-            //    std::ostringstream sql;
-            //    sql << "delete from " << GUILD_MEMBERS_TBL_NAME
-            //    << " where member_id = \""
-            //    << memberId << "\" and guild_id = '"
-            //    << guildId << "';";
-            //    mDb.execSql(sql.str());
-            //}
-            //catch (const dal::DbSqlQueryExecFailure& e)
-            //{
-            //    utils::throwError("(DALStorage::removeGuildMember) SQL query failure: ",
-            //                      e);
-            //}
+			string sql=String.Format("DELETE FROM {0} WHERE member_id = \"{1}\" and guild_id = '{2}';", GUILD_MEMBERS_TBL_NAME, memberId, guildId);
+			mDb.ExecuteNonQuery(sql);
         }
 
         public void addFloorItem(int mapId, int itemId, int amount, int posX, int posY)
         {
-            //try
-            //{
-            //    std::ostringstream sql;
-            //    sql << "INSERT INTO " << FLOOR_ITEMS_TBL_NAME
-            //    << " (map_id, item_id, amount, pos_x, pos_y)"
-            //    << " VALUES ("
-            //    << mapId << ", "
-            //    << itemId << ", "
-            //    << amount << ", "
-            //    << posX << ", "
-            //    << posY << ");";
-            //    mDb.execSql(sql.str());
-            //}
-            //catch (const dal::DbSqlQueryExecFailure& e)
-            //{
-            //    utils::throwError("(DALStorage::addFloorItem) SQL query failure: ", e);
-            //}
+			string sql=String.Format("INSERT INTO {0} (map_id, item_id, amount, pos_x, pos_y)  VALUES ({0}, {1}, {2} {3}, {4});", FLOOR_ITEMS_TBL_NAME, mapId, itemId, amount, posX, posY);
+			mDb.ExecuteNonQuery(sql);
         }
 
         public void removeFloorItem(int mapId, int itemId, int amount, int posX, int posY)
