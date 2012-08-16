@@ -822,13 +822,13 @@ namespace invertika_account.Account
             return true;
         }
 
-        void flushSkill(Character character, int skillId)
-        {
-            // Note: Deprecated, use DALStorage::updateExperience instead!!!
-            // TODO: Remove calls of flushSkill for updateExperience instead.
-            //updateExperience(character.getDatabaseID(), skillId,
-            //    character.getExperience(skillId));
-        }
+		//void flushSkill(Character character, int skillId)
+		//{
+		//    // Note: Deprecated, use DALStorage::updateExperience instead!!!
+		//    // TODO: Remove calls of flushSkill for updateExperience instead.
+		//    //updateExperience(character.getDatabaseID(), skillId,
+		//    //    character.getExperience(skillId));
+		//}
 
         public void addAccount(ISL.Server.Account.Account account)
         {
@@ -989,27 +989,17 @@ namespace invertika_account.Account
             //}
         }
 
-        void delAccount(ISL.Server.Account.Account account)
-        {
-            //// Sync the account info into the database.
-            //flush(account);
+		void delAccount(ISL.Server.Account.Account account)
+		{
+			// Sync the account info into the database.
+			flush(account);
 
-            //try
-            //{
-            //    // Delete the account.
-            //    std::ostringstream sql;
-            //    sql << "delete from " << ACCOUNTS_TBL_NAME
-            //        << " where id = '" << account.getID() << "';";
-            //    mDb.execSql(sql.str());
+			string sql=String.Format("DELETE FROM {0} WHERE id = '{1}';", ACCOUNTS_TBL_NAME, account.getID());
+			mDb.ExecuteNonQuery(sql);
 
-            //    // Remove the account's characters.
-            //    account.setCharacters(Characters());
-            //}
-            //catch (const std::exception &e)
-            //{
-            //    utils::throwError("(DALStorage::delAccount) SQL query failure: ", e);
-            //}
-        }
+			// Remove the account's characters.
+			account.setCharacters(Characters());
+		}
 
         public void updateLastLogin(ISL.Server.Account.Account account)
         {
