@@ -1143,18 +1143,8 @@ namespace invertika_account.Account
 
         public void removeGuild(Guild guild)
         {
-            //try
-            //{
-            //    std::ostringstream sql;
-            //    sql << "delete from " << GUILDS_TBL_NAME
-            //        << " where id = '"
-            //        << guild.getId() << "';";
-            //    mDb.execSql(sql.str());
-            //}
-            //catch (const dal::DbSqlQueryExecFailure &e)
-            //{
-            //    utils::throwError("(DALStorage::removeGuild) SQL query failure: ", e);
-            //}
+			string sql=String.Format("DELETE FROM {0} WHERE ID = '{0}';", GUILDS_TBL_NAME, guild.getId());
+			mDb.ExecuteNonQuery(sql);
         }
 
         public void addGuildMember(int guildId, int memberId)
