@@ -1149,22 +1149,8 @@ namespace invertika_account.Account
 
         public void addGuildMember(int guildId, int memberId)
         {
-            //try
-            //{
-            //    std::ostringstream sql;
-            //    sql << "insert into " << GUILD_MEMBERS_TBL_NAME
-            //    << " (guild_id, member_id, rights)"
-            //    << " values ("
-            //    << guildId << ", \""
-            //    << memberId << "\", "
-            //    << 0 << ");";
-            //    mDb.execSql(sql.str());
-            //}
-            //catch (const dal::DbSqlQueryExecFailure& e)
-            //{
-            //    utils::throwError("(DALStorage::addGuildMember) SQL query failure: ",
-            //                      e);
-            //}
+			string sql=String.Format("INSERT INTO {0} (guild_id, member_id, rights) VALUES ({1}, \"{2}\", \"{3}\");", GUILD_MEMBERS_TBL_NAME, guildId, memberId, 0);
+			mDb.ExecuteNonQuery(sql);
         }
 
         public void removeGuildMember(int guildId, int memberId)
