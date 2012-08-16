@@ -582,44 +582,20 @@ namespace invertika_account.Account
 
         public bool doesUserNameExist(string name)
         {
-			string sql=String.Format("SELECT COUNT(username) FROM {0}  WHERE username = {1}", ACCOUNTS_TBL_NAME, name);
+			string sql=String.Format("SELECT COUNT(username) AS COUNT FROM {0}  WHERE username = \"{1}\"", ACCOUNTS_TBL_NAME, name);
 			DataTable table=mDb.ExecuteQuery(sql);
 
-			if(table.Rows.Count>0) return true;
+			if((long)(table.Rows[0]["COUNT"])>0) return true;
 			else return false;
         }
 
         public bool doesEmailAddressExist(string email)
         {
-            //try
-            //{
-            //    std::ostringstream sql;
-            //    sql << "SELECT COUNT(email) FROM " << ACCOUNTS_TBL_NAME
-            //        << " WHERE UPPER(email) = UPPER(?)";
-            //    if (mDb.prepareSql(sql.str()))
-            //    {
-            //        mDb.bindValue(1, email);
-            //        const dal::RecordSet &accountInfo = mDb.processSql();
+			string sql=String.Format("SELECT COUNT(email) AS COUNT FROM {0}  WHERE UPPER(email) = UPPER(\"{1}\")", ACCOUNTS_TBL_NAME, email);
+			DataTable table=mDb.ExecuteQuery(sql);
 
-            //        std::istringstream ssStream(accountInfo(0, 0));
-            //        unsigned int iReturn = 1;
-            //        ssStream >> iReturn;
-            //        return iReturn != 0;
-            //    }
-            //    else
-            //    {
-            //        utils::throwError("(DALStorage::doesEmailAddressExist) "
-            //                          "SQL query preparation failure.");
-            //    }
-            //}
-            //catch (const std::exception &e)
-            //{
-            //    utils::throwError("(DALStorage::doesEmailAddressExist) "
-            //                      "SQL query failure: ", e);
-            //}
-
-            // Should never happen
-            return true;
+			if((long)(table.Rows[0]["COUNT"])>0) return true;
+			else return false;
         }
 
         bool doesCharacterNameExist(string name)
