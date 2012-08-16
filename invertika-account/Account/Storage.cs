@@ -1195,20 +1195,8 @@ namespace invertika_account.Account
 
         public void setMemberRights(int guildId, int memberId, int rights)
         {
-            //try
-            //{
-            //    std::ostringstream sql;
-            //    sql << "update " << GUILD_MEMBERS_TBL_NAME
-            //    << " set rights = '" << rights << "'"
-            //    << " where member_id = \""
-            //    << memberId << "\";";
-            //    mDb.execSql(sql.str());
-            //}
-            //catch (const dal::DbSqlQueryExecFailure& e)
-            //{
-            //    utils::throwError("(DALStorage::setMemberRights) SQL query failure: ",
-            //                      e);
-            //}
+			string sql=String.Format("UPDATE {0} SET rights = '{1}' WHERE member_id = \"{2}\"", GUILD_MEMBERS_TBL_NAME, rights, memberId);
+			mDb.ExecuteNonQuery(sql);
         }
 
         public List<Guild> getGuildList()
