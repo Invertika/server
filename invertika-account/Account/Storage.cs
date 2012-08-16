@@ -600,36 +600,11 @@ namespace invertika_account.Account
 
         bool doesCharacterNameExist(string name)
         {
-            //try
-            //{
-            //    std::ostringstream sql;
-            //    sql << "SELECT COUNT(name) FROM " << CHARACTERS_TBL_NAME
-            //        << " WHERE name = ?";
-            //    if (mDb.prepareSql(sql.str()))
-            //    {
-            //        mDb.bindValue(1, name);
+			string sql=String.Format("SELECT COUNT(name) AS COUNT FROM {0}  WHERE name = \"{1}\"", CHARACTERS_TBL_NAME, name);
+			DataTable table=mDb.ExecuteQuery(sql);
 
-            //        const dal::RecordSet &accountInfo = mDb.processSql();
-
-            //        std::istringstream ssStream(accountInfo(0, 0));
-            //        int iReturn = 1;
-            //        ssStream >> iReturn;
-            //        return iReturn != 0;
-            //    }
-            //    else
-            //    {
-            //        utils::throwError("(DALStorage::doesCharacterNameExist) "
-            //                          "SQL query preparation failure.");
-            //    }
-            //}
-            //catch (const std::exception &e)
-            //{
-            //    utils::throwError("(DALStorage::doesCharacterNameExist) "
-            //                      "SQL query failure: ", e);
-            //}
-
-            // Should never happen
-            return true;
+			if((long)(table.Rows[0]["COUNT"])>0) return true;
+			else return false;
         }
 
         public bool updateCharacter(Character character)
