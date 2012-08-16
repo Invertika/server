@@ -291,7 +291,7 @@ namespace invertika_account.Account
             //TODO Überprüfen ob SHA256 das gewünschte Ergebniss liefert
             if (acc != null)
             {
-                if (SHA256.HashStringToSHA256(acc.getPassword() + acc.getRandomSalt()) != password)
+                if (SHA256.HashString(acc.getPassword() + acc.getRandomSalt()) != password)
                 {
                     reply.writeInt8((int)ErrorMessage.ERRMSG_INVALID_ARGUMENT);
                     client.send(reply);
@@ -371,76 +371,69 @@ namespace invertika_account.Account
             //mTokenCollector.addPendingClient(magic_token, &client);
         }
 
-		void handleRegisterMessage(AccountClient client, MessageIn msg)
-		{
-			int clientVersion=msg.readInt32();
-			string username=msg.readString();
-			string password=msg.readString();
-			string email=msg.readString();
-			string captcha=msg.readString();
+        void handleRegisterMessage(AccountClient client, MessageIn msg)
+        {
+            int clientVersion = msg.readInt32();
+            string username = msg.readString();
+            string password = msg.readString();
+            string email = msg.readString();
+            string captcha = msg.readString();
 
-			MessageOut reply=new MessageOut(Protocol.APMSG_REGISTER_RESPONSE);
+            MessageOut reply = new MessageOut(Protocol.APMSG_REGISTER_RESPONSE);
 
-			if(client.status!=AccountClientStatus.CLIENT_LOGIN)
-			{
-				reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
-			}
-			else if(!mRegistrationAllowed)
-			{
-				reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
-			}
-			else if(clientVersion<ManaServ.PROTOCOL_VERSION)
-			{
-				reply.writeInt8((int)Register.REGISTER_INVALID_VERSION);
-			}
-			else if(Program.stringFilter.findDoubleQuotes(username)
-			  ||Program.stringFilter.findDoubleQuotes(email)
-			  ||username.Length<mMinNameLength
-			  ||username.Length>mMaxNameLength
-			  ||!Program.stringFilter.isEmailValid(email)
-			  ||!Program.stringFilter.filterContent(username))
-			{
-				reply.writeInt8((int)ErrorMessage.ERRMSG_INVALID_ARGUMENT);
-			}
-			else if(Program.storage.doesUserNameExist(username))
-			{
-				reply.writeInt8((int)Register.REGISTER_EXISTS_USERNAME);
-			}
-			else if(Program.storage.doesEmailAddressExist(SHA256.HashStringToSHA256(email)))
-			{
-				reply.writeInt8((int)Register.REGISTER_EXISTS_EMAIL);
-			}
-			else if(!checkCaptcha(client, captcha))
-			{
-				reply.writeInt8((int)Register.REGISTER_CAPTCHA_WRONG);
-			}
-			else
-			{
-				ISL.Server.Account.Account acc=new ISL.Server.Account.Account();
-				acc.setName(username);
-				acc.setPassword(SHA256.HashStringToSHA256(password));
-				// We hash email server-side for additional privacy
-				// we ask for it again when we need it and verify it
-				// through comparing it with the hash.
-				acc.setEmail(SHA256.HashStringToSHA256(email));
-				acc.setLevel((int)AccessLevel.AL_PLAYER);
+            if (client.status != AccountClientStatus.CLIENT_LOGIN)
+            {
+                reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
+            } else if (!mRegistrationAllowed)
+            {
+                reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
+            } else if (clientVersion < ManaServ.PROTOCOL_VERSION)
+            {
+                reply.writeInt8((int)Register.REGISTER_INVALID_VERSION);
+            } else if (Program.stringFilter.findDoubleQuotes(username)
+                || Program.stringFilter.findDoubleQuotes(email)
+                || username.Length < mMinNameLength
+                || username.Length > mMaxNameLength
+                || !Program.stringFilter.isEmailValid(email)
+                || !Program.stringFilter.filterContent(username))
+            {
+                reply.writeInt8((int)ErrorMessage.ERRMSG_INVALID_ARGUMENT);
+            } else if (Program.storage.doesUserNameExist(username))
+            {
+                reply.writeInt8((int)Register.REGISTER_EXISTS_USERNAME);
+            } else if (Program.storage.doesEmailAddressExist(SHA256.HashString(email)))
+            {
+                reply.writeInt8((int)Register.REGISTER_EXISTS_EMAIL);
+            } else if (!checkCaptcha(client, captcha))
+            {
+                reply.writeInt8((int)Register.REGISTER_CAPTCHA_WRONG);
+            } else
+            {
+                ISL.Server.Account.Account acc = new ISL.Server.Account.Account();
+                acc.setName(username);
+                acc.setPassword(SHA256.HashString(password));
+                // We hash email server-side for additional privacy
+                // we ask for it again when we need it and verify it
+                // through comparing it with the hash.
+                acc.setEmail(SHA256.HashString(email));
+                acc.setLevel((int)AccessLevel.AL_PLAYER);
 
-				// Set the date and time of the account registration, and the last login
-				DateTime regdate=DateTime.Now;
-				acc.setRegistrationDate(regdate);
-				acc.setLastLogin(regdate);
+                // Set the date and time of the account registration, and the last login
+                DateTime regdate = DateTime.Now;
+                acc.setRegistrationDate(regdate);
+                acc.setLastLogin(regdate);
 
-				Program.storage.addAccount(acc);
-				reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
-				addServerInfo(reply);
+                Program.storage.addAccount(acc);
+                reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
+                addServerInfo(reply);
 
-				// Associate account with connection
-				client.setAccount(acc);
-				client.status=AccountClientStatus.CLIENT_CONNECTED;
-			}
+                // Associate account with connection
+                client.setAccount(acc);
+                client.status = AccountClientStatus.CLIENT_CONNECTED;
+            }
 
-			client.send(reply);
-		}
+            client.send(reply);
+        }
 
         //TODO Captcha Unterstüzung evt ganz raus?
         static bool checkCaptcha(AccountClient client, string captcha)
