@@ -105,7 +105,7 @@ namespace invertika_account.Account
 
         ~Storage()
         {
-            //if (mDb.isConnected()) close();
+			if(mDb.Connected) close();
         }
 
         public void open()
