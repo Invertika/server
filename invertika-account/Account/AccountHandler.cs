@@ -412,6 +412,7 @@ namespace invertika_account.Account
                 ISL.Server.Account.Account acc = new ISL.Server.Account.Account();
                 acc.setName(username);
                 acc.setPassword(SHA256.HashString(password));
+
                 // We hash email server-side for additional privacy
                 // we ask for it again when we need it and verify it
                 // through comparing it with the hash.
