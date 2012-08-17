@@ -209,7 +209,7 @@ namespace invertika_account.Account
             // But care for endianness
             for (int i = 0; i < length; ++i)
             {
-                s.Append((char)rnd.NextBytes(256));
+                s.Append((char)rnd.Next(256));
             }
 
             return s.ToString();
