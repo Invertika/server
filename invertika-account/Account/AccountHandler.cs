@@ -220,14 +220,17 @@ namespace invertika_account.Account
             string salt = getRandomString(4);
             string username = msg.readString();
 
-            //if (Account *acc = storage.getAccount(username))
-            //{
-            //    acc.setRandomSalt(salt);
-            //    mPendingAccounts.push_back(acc);
-            //}
-            //MessageOut reply(APMSG_LOGIN_RNDTRGR_RESPONSE);
-            //reply.writeString(salt);
-            //client.send(reply);
+            ISL.Server.Account.Account acc = Program.storage.getAccount(username);
+
+            if (acc != null)
+            {
+                acc.setRandomSalt(salt);
+                mPendingAccounts.Add(acc);
+            }
+
+            MessageOut reply = new MessageOut(Protocol.APMSG_LOGIN_RNDTRGR_RESPONSE);
+            reply.writeString(salt);
+            client.send(reply);
         }
 
         void handleLoginMessage(AccountClient client, MessageIn msg)
