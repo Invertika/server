@@ -200,10 +200,25 @@ namespace invertika_account.Account
             client.send(charInfo);
         }
 
+        Random rnd = new Random();
+
+        string getRandomString(int length)
+        {
+            StringBuilder s = new StringBuilder();
+            // No need to care about zeros. They can be handled.
+            // But care for endianness
+            for (int i = 0; i < length; ++i)
+            {
+                s.Append((char)rnd.NextBytes(256));
+            }
+
+            return s.ToString();
+        }
+
         void handleLoginRandTriggerMessage(AccountClient client, MessageIn msg)
         {
-            //std::string salt = getRandomString(4);
-            //std::string username = msg.readString();
+            string salt = getRandomString(4);
+            string username = msg.readString();
 
             //if (Account *acc = storage.getAccount(username))
             //{
