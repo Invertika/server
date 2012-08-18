@@ -332,26 +332,26 @@ namespace invertika_account.Account
         {
             Character character = null;
 
-            string sql = String.Format("SELECT * FROM {0},  WHERE id = {1}", CHARACTERS_TBL_NAME, id);
-            DataTable table = charInfo = mDb.ExecuteQuery(sql);
+            string sql = String.Format("SELECT * FROM {0},  WHERE id = {1}", CHARACTERS_TBL_NAME, owner.getID());
+            DataTable charInfo = mDb.ExecuteQuery(sql);
 
             // If the character is not even in the database then
             // we have no choice but to return nothing.
             if (charInfo.Rows.Count == 0)
                 return null;
 
-            character = new Character(charInfo.Rows[0]["name"], charInfo.Rows[0]["id"]);
-            character.setGender(charInfo.Rows[0]["name"]);
-            character.setHairStyle(charInfo.Rows[0]["name"]);
-            character.setHairColor(charInfo.Rows[0]["name"]);
-            character.setLevel(charInfo.Rows[0]["name"]);
-            character.setCharacterPoints(charInfo.Rows[0]["name"]);
-            character.setCorrectionPoints(charInfo.Rows[0]["name"]);
+            character = new Character(charInfo.Rows[0]["name"].ToString(), Convert.ToInt32(charInfo.Rows[0]["id"]));
+            character.setGender(Convert.ToInt32(charInfo.Rows[0]["gender"]));
+            character.setHairStyle(Convert.ToInt32(charInfo.Rows[0]["hair_style"]));
+            character.setHairColor(Convert.ToInt32(charInfo.Rows[0]["hair_color"]));
+            character.setLevel(Convert.ToInt32(charInfo.Rows[0]["level"]));
+            character.setCharacterPoints(Convert.ToInt32(charInfo.Rows[0]["char_pts"]));
+            character.setCorrectionPoints(Convert.ToInt32(charInfo.Rows[0]["correct_pts"]));
 
-            Point pos = new Point(charInfo.Rows[0]["name"], charInfo.Rows[0]["name"]);
-            character.setPosition();
+            Point pos = new Point(Convert.ToInt32(charInfo.Rows[0]["x"]), Convert.ToInt32(charInfo.Rows[0]["y"]));
+            character.setPosition(pos);
 
-            int mapId = toUint(charInfo(0, 11));
+            int mapId = Convert.ToInt32(charInfo.Rows[0]["map_id"]);
             if (mapId > 0)
             {
                 character.setMapId(mapId);
@@ -359,27 +359,26 @@ namespace invertika_account.Account
             {
                 // Set character to default map and one of the default location
                 // Default map is to be 1, as not found return value will be 0.
-                character.setMapId(Configuration::getValue("char_defaultMap", 1));
+                character.setMapId(Configuration.getValue("char_defaultMap", 1));
             }
 
-            character.setCharacterSlot(toUint(charInfo(0, 12)));
+            character.setCharacterSlot(Convert.ToUInt32(charInfo.Rows[0]["slot"]));
 
             // Fill the account-related fields. Last step, as it may require a new
             // SQL query.
-            if (owner)
+            if (owner != null)
             {
                 character.setAccount(owner);
             } else
             {
-                int id = toUint(charInfo(0, 1));
+                int id = Convert.ToInt32(charInfo.Rows[0]["user_id"]);
                 character.setAccountID(id);
                     
                 string s = String.Format("SELECT level FROM {0} WHERE id = '{1}';", ACCOUNTS_TBL_NAME, id);
                 DataTable levelInfo = mDb.ExecuteQuery(s);
 
-                character.setAccountLevel(levelInfo[0]["level"], true);
+                character.setAccountLevel(Convert.ToInt32(levelInfo.Rows[0]["level"]), true);
             }
-
 
             // Load attributes."
             string s2 = String.Format("SELECT attr_id, attr_base, attr_mod FROM {0} WHERE char_id = {1};", CHAR_ATTR_TBL_NAME, character.getDatabaseID());
@@ -387,13 +386,13 @@ namespace invertika_account.Account
 
             if (attrInfo.Rows.Count > 0)
             {
-                uint nRows = attrInfo.Rows.Count;
+                uint nRows = (uint)attrInfo.Rows.Count;
 
                 for (uint row = 0; row < nRows; ++row)
                 {
-                    uint id = toUint(attrInfo(row, 0));
-                    character.setAttribute(id, toDouble(attrInfo(row, 1)));
-                    character.setModAttribute(id, toDouble(attrInfo(row, 2)));
+                    uint id = Convert.ToUInt32(charInfo.Rows[0]["attr_id"]);
+                    character.setAttribute(id, Convert.ToDouble(charInfo.Rows[0]["attr_base"]));
+                    character.setModAttribute(id, Convert.ToDouble(charInfo.Rows[0]["attr_mod"]));
                 }
             }
 
@@ -403,12 +402,12 @@ namespace invertika_account.Account
                 
             if (skillInfo.Rows.Count > 0)
             {
-                uint nRows = skillInfo.Rows.Count;
+                uint nRows = (uint)skillInfo.Rows.Count;
                 for (uint row = 0; row < nRows; row++)
                 {
                     character.setExperience(
-                            toUint(skillInfo(row, 0)),  // Skill Id
-                            toUint(skillInfo(row, 1))); // Experience
+                            Convert.ToInt32(skillInfo.Rows[0]["status_id"]),  // Skill Id
+                            Convert.ToInt32(skillInfo.Rows[0]["status_time"])); // Experience
                 }
             }
 
@@ -422,8 +421,8 @@ namespace invertika_account.Account
                 for (uint row = 0; row < nRows; row++)
                 {
                     character.applyStatusEffect(
-                            toUint(statusInfo(row, 0)), // Status Id
-                            toUint(statusInfo(row, 1))); // Time
+                            Convert.ToInt32(statusInfo.Rows[0]["status_id"]), // Status Id
+                            Convert.ToInt32(statusInfo.Rows[0]["status_time"])); // Time
                 }
             }
 
@@ -437,8 +436,8 @@ namespace invertika_account.Account
                 for (uint row = 0; row < nRows; row++)
                 {
                     character.setKillCount(
-                            toUint(killsInfo(row, 0)), // MonsterID
-                            toUint(killsInfo(row, 1))); // Kills
+                            Convert.ToInt32(killsInfo.Rows[0]["monster_id"]), // MonsterID
+                            Convert.ToInt32(killsInfo.Rows[0]["kills"])); // Kills
                 }
             }
 
