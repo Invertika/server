@@ -8,9 +8,9 @@ CREATE TABLE IF NOT EXISTS `mana_accounts` (
     `password`     varchar(64)           NOT NULL,
     `email`        varchar(64)           NOT NULL,
     `level`        tinyint(3)   unsigned NOT NULL,
-    `banned`       int(10)      unsigned NOT NULL,
-    `registration` int(10)      unsigned NOT NULL,
-    `lastlogin`    int(10)      unsigned NOT NULL,
+    `banned`       BigInt     unsigned NOT NULL,
+    `registration` BigInt       unsigned NOT NULL,
+    `lastlogin`    BigInt      unsigned NOT NULL,
     `authorization` text            NULL,
     `expiration`    int(10)         NULL,
     --
