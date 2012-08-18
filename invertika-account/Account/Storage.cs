@@ -193,16 +193,15 @@ namespace invertika_account.Account
             //fixCharactersSlot(id);
 
             // Load the characters associated with the account.
-            sql = String.Format("SELECT id FROM {0} WHERE user_id = '{1}';", id);
-            Database charInfo = mDb.ExecuteQuery(sql);
+            sql = String.Format("SELECT id FROM {0} WHERE user_id = '{1}';", accountID);
+            DataTable charInfo = mDb.ExecuteQuery(sql);
 
-            if (!charInfo.isEmpty())
+            if (charInfo.Rows.Count > 0)
             {
-                int size = charInfo.rows();
-                List<Character> characters = new List<Character>();
+                int size = charInfo.Rows.Count;
+                Dictionary<uint, Character> characters = new Dictionary<uint, Character>();
 
-                Logger.Write(LogLevel.Debug, "Account {0} has {1} character(s) in database.", id, size);
-
+                Logger.Write(LogLevel.Debug, "Account {0} has {1} character(s) in database.", accountID, size);
 
                 // Two steps: it seems like multiple requests cannot be alive
                 // at the same time.
@@ -210,19 +209,19 @@ namespace invertika_account.Account
 
                 for (int k = 0; k < size; ++k)
                 {
-                    characterIDs.Add(Convert.ToInt32(charInfo(k, 0)));
+                    characterIDs.Add(Convert.ToUInt32(charInfo.Rows[k]["id"]));
                 }
 
                 for (int k = 0; k < size; ++k)
                 {
-                    Character ptr = getCharacter(characterIDs[k], account);
+                    Character ptr = getCharacter((int)characterIDs[k], account);
 
                     if (ptr != null)
                     {
                         characters[ptr.getCharacterSlot()] = ptr;
                     } else
                     {
-                        Logger.Write(LogLevel.Error, "Failed to get character {0} for account {1}.", characterIDs[k], id);
+                        Logger.Write(LogLevel.Error, "Failed to get character {0} for account {1}.", characterIDs[k], accountID);
                     }
                 }
 
