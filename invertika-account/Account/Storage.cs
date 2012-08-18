@@ -333,177 +333,169 @@ namespace invertika_account.Account
             Character character = null;
 
             string sql = String.Format("SELECT * FROM {0},  WHERE id = {1}", CHARACTERS_TBL_NAME, id);
-            DataTable table= charInfo = mDb.ExecuteQuery(sql);
+            DataTable table = charInfo = mDb.ExecuteQuery(sql);
 
-                // If the character is not even in the database then
-                // we have no choice but to return nothing.
-            if(charInfo.Rows.Count==0) return null;
+            // If the character is not even in the database then
+            // we have no choice but to return nothing.
+            if (charInfo.Rows.Count == 0)
+                return null;
 
             character = new Character(charInfo.Rows[0]["name"], charInfo.Rows[0]["id"]);
-                character.setGender(charInfo.Rows[0]["name"]);
-                character.setHairStyle(charInfo.Rows[0]["name"]);
-                character.setHairColor(charInfo.Rows[0]["name"]);
-                character.setLevel(charInfo.Rows[0]["name"]);
-                character.setCharacterPoints(charInfo.Rows[0]["name"]);
-                character.setCorrectionPoints(charInfo.Rows[0]["name"]);
+            character.setGender(charInfo.Rows[0]["name"]);
+            character.setHairStyle(charInfo.Rows[0]["name"]);
+            character.setHairColor(charInfo.Rows[0]["name"]);
+            character.setLevel(charInfo.Rows[0]["name"]);
+            character.setCharacterPoints(charInfo.Rows[0]["name"]);
+            character.setCorrectionPoints(charInfo.Rows[0]["name"]);
 
-            Point pos=new Point(charInfo.Rows[0]["name"], charInfo.Rows[0]["name"]);
-                character.setPosition();
+            Point pos = new Point(charInfo.Rows[0]["name"], charInfo.Rows[0]["name"]);
+            character.setPosition();
 
-                int mapId = toUint(charInfo(0, 11));
-                if (mapId > 0)
-                {
-                    character.setMapId(mapId);
-                }
-                else
-                {
-                    // Set character to default map and one of the default location
-                    // Default map is to be 1, as not found return value will be 0.
-                    character.setMapId(Configuration::getValue("char_defaultMap", 1));
-                }
+            int mapId = toUint(charInfo(0, 11));
+            if (mapId > 0)
+            {
+                character.setMapId(mapId);
+            } else
+            {
+                // Set character to default map and one of the default location
+                // Default map is to be 1, as not found return value will be 0.
+                character.setMapId(Configuration::getValue("char_defaultMap", 1));
+            }
 
-                character.setCharacterSlot(toUint(charInfo(0, 12)));
+            character.setCharacterSlot(toUint(charInfo(0, 12)));
 
-                // Fill the account-related fields. Last step, as it may require a new
-                // SQL query.
-                if (owner)
-                {
-                    character.setAccount(owner);
-                }
-                else
-                {
-                    int id = toUint(charInfo(0, 1));
-                    character.setAccountID(id);
+            // Fill the account-related fields. Last step, as it may require a new
+            // SQL query.
+            if (owner)
+            {
+                character.setAccount(owner);
+            } else
+            {
+                int id = toUint(charInfo(0, 1));
+                character.setAccountID(id);
                     
-                string s=String.Format("SELECT level FROM {0} WHERE id = '{1}';", ACCOUNTS_TBL_NAME, id);
-                DataTable levelInfo=mDb.ExecuteQuery(s);
+                string s = String.Format("SELECT level FROM {0} WHERE id = '{1}';", ACCOUNTS_TBL_NAME, id);
+                DataTable levelInfo = mDb.ExecuteQuery(s);
 
-                    character.setAccountLevel(levelInfo[0]["level"], true);
-                }
+                character.setAccountLevel(levelInfo[0]["level"], true);
+            }
 
 
-                // Load attributes."
-            string s2=String.Format("SELECT attr_id, attr_base, attr_mod FROM {0} WHERE char_id = {1};", CHAR_ATTR_TBL_NAME, character.getDatabaseID());
-            DataTable attrInfo=mDb.ExecuteQuery(s2);
+            // Load attributes."
+            string s2 = String.Format("SELECT attr_id, attr_base, attr_mod FROM {0} WHERE char_id = {1};", CHAR_ATTR_TBL_NAME, character.getDatabaseID());
+            DataTable attrInfo = mDb.ExecuteQuery(s2);
 
-                if (attrInfo.Rows.Count>0)
+            if (attrInfo.Rows.Count > 0)
+            {
+                uint nRows = attrInfo.Rows.Count;
+
+                for (uint row = 0; row < nRows; ++row)
                 {
-                    uint nRows = attrInfo.Rows.Count;
-
-                    for (uint row = 0; row < nRows; ++row)
-                    {
-                        uint id = toUint(attrInfo(row, 0));
-                        character.setAttribute(id,    toDouble(attrInfo(row, 1)));
-                        character.setModAttribute(id, toDouble(attrInfo(row, 2)));
-                    }
+                    uint id = toUint(attrInfo(row, 0));
+                    character.setAttribute(id, toDouble(attrInfo(row, 1)));
+                    character.setModAttribute(id, toDouble(attrInfo(row, 2)));
                 }
+            }
 
-                // Load the skills of the char from CHAR_SKILLS_TBL_NAME
-            string s3=String.Format("SELECT status_id, status_time FROM {0} WHERE char_id = {1};", CHAR_STATUS_EFFECTS_TBL_NAME, character.getDatabaseID());
-            DataTable skillInfo=mDb.ExecuteQuery(s3);
+            // Load the skills of the char from CHAR_SKILLS_TBL_NAME
+            string s3 = String.Format("SELECT status_id, status_time FROM {0} WHERE char_id = {1};", CHAR_STATUS_EFFECTS_TBL_NAME, character.getDatabaseID());
+            DataTable skillInfo = mDb.ExecuteQuery(s3);
                 
-                if (skillInfo.Rows.Count>0)
+            if (skillInfo.Rows.Count > 0)
+            {
+                uint nRows = skillInfo.Rows.Count;
+                for (uint row = 0; row < nRows; row++)
                 {
-                    uint nRows = skillInfo.Rows.Count;
-                    for (uint row = 0; row < nRows; row++)
-                    {
-                        character.setExperience(
+                    character.setExperience(
                             toUint(skillInfo(row, 0)),  // Skill Id
                             toUint(skillInfo(row, 1))); // Experience
-                    }
                 }
+            }
 
-                // Load the status effect
-            string s4=String.Format("SELECT status_id, status_time FROM {0} WHERE char_id = {1};", CHAR_STATUS_EFFECTS_TBL_NAME, character.getDatabaseID());
+            // Load the status effect
+            string s4 = String.Format("SELECT status_id, status_time FROM {0} WHERE char_id = {1};", CHAR_STATUS_EFFECTS_TBL_NAME, character.getDatabaseID());
             DataTable statusInfo = mDb.ExecuteQuery(s4);
 
-                if (statusInfo.Rows.Count>0)
-                {
+            if (statusInfo.Rows.Count > 0)
+            {
                 uint nRows = statusInfo.Rows.Count;
-                    for (uint row = 0; row < nRows; row++)
-                    {
-                        character.applyStatusEffect(
+                for (uint row = 0; row < nRows; row++)
+                {
+                    character.applyStatusEffect(
                             toUint(statusInfo(row, 0)), // Status Id
                             toUint(statusInfo(row, 1))); // Time
-                    }
                 }
+            }
 
-                // Load the kill stats
-            string s5=String.Format("SELECT monster_id, kills FROM {0} WHERE char_id = {1};", CHAR_KILL_COUNT_TBL_NAME,  character.getDatabaseID());
-            DataTable killsInfo=mDb.ExecuteQuery(s5);
+            // Load the kill stats
+            string s5 = String.Format("SELECT monster_id, kills FROM {0} WHERE char_id = {1};", CHAR_KILL_COUNT_TBL_NAME, character.getDatabaseID());
+            DataTable killsInfo = mDb.ExecuteQuery(s5);
 
-                if (killsInfo.Rows.Count>0)
-                {
+            if (killsInfo.Rows.Count > 0)
+            {
                 uint nRows = killsInfo.Rows.Count;
-                    for (uint row = 0; row < nRows; row++)
-                    {
-                        character.setKillCount(
+                for (uint row = 0; row < nRows; row++)
+                {
+                    character.setKillCount(
                             toUint(killsInfo(row, 0)), // MonsterID
                             toUint(killsInfo(row, 1))); // Kills
-                    }
                 }
+            }
 
-                // Load the special status
-            string s6=String.Format("SELECT special_id FROM {0} WHERE char_id = {1};", CHAR_SPECIALS_TBL_NAME, character.getDatabaseID());
-            DataTable specialsInfo=mDb.ExecuteQuery(s6);
+            // Load the special status
+            string s6 = String.Format("SELECT special_id FROM {0} WHERE char_id = {1};", CHAR_SPECIALS_TBL_NAME, character.getDatabaseID());
+            DataTable specialsInfo = mDb.ExecuteQuery(s6);
 
-                if (specialsInfo.Rows.Count>0)
+            if (specialsInfo.Rows.Count > 0)
+            {
+                uint nRows = specialsInfo.Rows.Count;
+                for (uint row = 0; row < nRows; row++)
                 {
-                    uint nRows = specialsInfo.Rows.Count;
-                    for (uint row = 0; row < nRows; row++)
-                {
-                        character.giveSpecial(toUint(specialsInfo(row, 0)));
+                    character.giveSpecial(toUint(specialsInfo(row, 0)));
                 }
-                }
+            }
          
+            Possessions poss = character.getPossessions();
 
-            Possessions &poss = character.getPossessions();
+            string s7 = String.Format("SELECT slot_type, item_id, item_instance FROM {0} WHERE owner_id = '{1}' ORDER BY slot_type desc;", CHAR_EQUIPS_TBL_NAME, character.getDatabaseID());
+            DataTable equipInfo = mDb.ExecuteQuery(s7);
 
-          
-                std::ostringstream sql;
-                sql << " select slot_type, item_id, item_instance from "
-                    << CHAR_EQUIPS_TBL_NAME
-                    << " where owner_id = '"
-                    << character.getDatabaseID() << "' order by slot_type desc;";
+            EquipData equipData;
 
-                EquipData equipData;
-                const dal::RecordSet &equipInfo = mDb.execSql(sql.str());
-                if (!equipInfo.isEmpty())
+            if (equipInfo.Rows.Count > 0)
+            {
+                EquipmentItem equipItem;
+
+                for (int k = 0, size = equipInfo.rows(); k < size; ++k)
                 {
-                    EquipmentItem equipItem;
-                    for (int k = 0, size = equipInfo.rows(); k < size; ++k)
-                    {
-                        equipItem.itemId = toUint(equipInfo(k, 1));
-                        equipItem.itemInstance = toUint(equipInfo(k, 2));
-                        equipData.insert(std::pair<unsigned int, EquipmentItem>(
+                    equipItem.itemId = toUint(equipInfo(k, 1));
+                    equipItem.itemInstance = toUint(equipInfo(k, 2));
+                    equipData.insert(std::pair<uint, EquipmentItem>(
                                              toUint(equipInfo(k, 0)),
-                                             equipItem));
-                    }
+                                             equipItem)
+                    );
                 }
-                poss.setEquipment(equipData);
+            }
+            poss.setEquipment(equipData);
      
+            string s8 = String.Format("SELECT * FROM {0} WHERE owner_id = '{1}' ORDER by slot ASC", INVENTORIES_TBL_NAME, character.getDatabaseID());
+            DataTable itemInfo = mDb.ExecuteQuery(s8);
 
-         
-                std::ostringstream sql;
-                sql << " select * from " << INVENTORIES_TBL_NAME
-                    << " where owner_id = '"
-                    << character.getDatabaseID() << "' order by slot asc;";
-
-                InventoryData inventoryData;
-                const dal::RecordSet &itemInfo = mDb.execSql(sql.str());
-                if (!itemInfo.isEmpty())
+            InventoryData inventoryData;
+       
+            if (itemInfo.Rows.Count > 0)
+            {
+                for (int k = 0, size = itemInfo.Rows.Count; k < size; ++k)
                 {
-                    for (int k = 0, size = itemInfo.rows(); k < size; ++k)
-                    {
-                        InventoryItem item;
-                        ushort slot = toUint(itemInfo(k, 2));
-                        item.itemId   = toUint(itemInfo(k, 3));
-                        item.amount   = toUint(itemInfo(k, 4));
-                        inventoryData[slot] = item;
-                    }
+                    InventoryItem item;
+                    ushort slot = toUint(itemInfo(k, 2));
+                    item.itemId = toUint(itemInfo(k, 3));
+                    item.amount = toUint(itemInfo(k, 4));
+                    inventoryData[slot] = item;
                 }
-                poss.setInventory(inventoryData);
-        
+            }
+
+            poss.setInventory(inventoryData);
 
             return character;
         }
