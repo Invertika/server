@@ -41,10 +41,10 @@ namespace invertika_account.Account
 {
     public class Storage
     {
-        const string DEFAULT_ITEM_FILE = "items.xml";
+        const string DEFAULT_ITEM_FILE="items.xml";
 
         // Defines the supported db version
-        const string DB_VERSION_PARAMETER = "database_version";
+        const string DB_VERSION_PARAMETER="database_version";
 
         Database mDb;         /**< the data provider */
         uint mItemDbVersion;    /**< Version of the item database. */
@@ -75,57 +75,57 @@ namespace invertika_account.Account
 		 */
 
         // Table names
-        const string ACCOUNTS_TBL_NAME = "mana_accounts";
-        const string CHARACTERS_TBL_NAME = "mana_characters";
-        const string CHAR_ATTR_TBL_NAME = "mana_char_attr";
-        const string CHAR_SKILLS_TBL_NAME = "mana_char_skills";
-        const string CHAR_STATUS_EFFECTS_TBL_NAME = "mana_char_status_effects";
-        const string CHAR_KILL_COUNT_TBL_NAME = "mana_char_kill_stats";
-        const string CHAR_SPECIALS_TBL_NAME = "mana_char_specials";
-        const string CHAR_EQUIPS_TBL_NAME = "mana_char_equips";
-        const string INVENTORIES_TBL_NAME = "mana_inventories";
-        const string ITEMS_TBL_NAME = "mana_items";
-        const string GUILDS_TBL_NAME = "mana_guilds";
-        const string GUILD_MEMBERS_TBL_NAME = "mana_guild_members";
-        const string QUESTS_TBL_NAME = "mana_quests";
-        const string WORLD_STATES_TBL_NAME = "mana_world_states";
-        const string POST_TBL_NAME = "mana_post";
-        const string POST_ATTACHMENTS_TBL_NAME = "mana_post_attachments";
-        const string AUCTION_TBL_NAME = "mana_auctions";
-        const string AUCTION_BIDS_TBL_NAME = "mana_auction_bids";
-        const string ONLINE_USERS_TBL_NAME = "mana_online_list";
-        const string TRANSACTION_TBL_NAME = "mana_transactions";
-        const string FLOOR_ITEMS_TBL_NAME = "mana_floor_items";
+        const string ACCOUNTS_TBL_NAME="mana_accounts";
+        const string CHARACTERS_TBL_NAME="mana_characters";
+        const string CHAR_ATTR_TBL_NAME="mana_char_attr";
+        const string CHAR_SKILLS_TBL_NAME="mana_char_skills";
+        const string CHAR_STATUS_EFFECTS_TBL_NAME="mana_char_status_effects";
+        const string CHAR_KILL_COUNT_TBL_NAME="mana_char_kill_stats";
+        const string CHAR_SPECIALS_TBL_NAME="mana_char_specials";
+        const string CHAR_EQUIPS_TBL_NAME="mana_char_equips";
+        const string INVENTORIES_TBL_NAME="mana_inventories";
+        const string ITEMS_TBL_NAME="mana_items";
+        const string GUILDS_TBL_NAME="mana_guilds";
+        const string GUILD_MEMBERS_TBL_NAME="mana_guild_members";
+        const string QUESTS_TBL_NAME="mana_quests";
+        const string WORLD_STATES_TBL_NAME="mana_world_states";
+        const string POST_TBL_NAME="mana_post";
+        const string POST_ATTACHMENTS_TBL_NAME="mana_post_attachments";
+        const string AUCTION_TBL_NAME="mana_auctions";
+        const string AUCTION_BIDS_TBL_NAME="mana_auction_bids";
+        const string ONLINE_USERS_TBL_NAME="mana_online_list";
+        const string TRANSACTION_TBL_NAME="mana_transactions";
+        const string FLOOR_ITEMS_TBL_NAME="mana_floor_items";
 
         public Storage()
         {
-            mDb = DataProviderFactory.createDataProvider();
-            mItemDbVersion = 0;
+            mDb=DataProviderFactory.createDataProvider();
+            mItemDbVersion=0;
         }
 
         ~Storage()
         {
-            if (mDb.Connected)
+            if(mDb.Connected)
                 close();
         }
 
         public void open()
         {
             // Do nothing if already connected.
-            if (mDb.Connected)
+            if(mDb.Connected)
                 return;
 
             // Open a connection to the database.
             mDb.Connect();
 
             // Check database version here
-            string dbversionVal = getWorldStateVar(DB_VERSION_PARAMETER, -1);
-            int dbversion = Convert.ToInt32(dbversionVal);
-            int supportedDbVersion = ManaServ.SUPPORTED_DB_VERSION;
+            string dbversionVal=getWorldStateVar(DB_VERSION_PARAMETER, -1);
+            int dbversion=Convert.ToInt32(dbversionVal);
+            int supportedDbVersion=ManaServ.SUPPORTED_DB_VERSION;
 
-            if (dbversion != supportedDbVersion)
+            if(dbversion!=supportedDbVersion)
             {
-                string errmsg = String.Format("Database version is not supported. Needed version: '{0}', current version: '", supportedDbVersion, dbversion);
+                string errmsg=String.Format("Database version is not supported. Needed version: '{0}', current version: '", supportedDbVersion, dbversion);
                 throw new Exception(errmsg);
             }
 
@@ -133,14 +133,14 @@ namespace invertika_account.Account
             syncDatabase();
 
             // Clean list of online users, this should be empty after restart
-            string sql = String.Format("DELETE FROM {0}", ONLINE_USERS_TBL_NAME);
+            string sql=String.Format("DELETE FROM {0}", ONLINE_USERS_TBL_NAME);
             mDb.ExecuteNonQuery(sql);
 
             // In case where the server shouldn't keep floor item in database,
             // we remove remnants at startup
-            if (Configuration.getValue("game_floorItemDecayTime", 0) > 0)
+            if(Configuration.getValue("game_floorItemDecayTime", 0)>0)
             {
-                sql = String.Format("DELETE FROM {0}", FLOOR_ITEMS_TBL_NAME);
+                sql=String.Format("DELETE FROM {0}", FLOOR_ITEMS_TBL_NAME);
                 mDb.ExecuteNonQuery(sql);
             }
         }
@@ -162,25 +162,25 @@ namespace invertika_account.Account
 
         ISL.Server.Account.Account getAccountBySQL(int accountID)
         {
-            string sql = String.Format("SELECT * FROM {0} WHERE id = {1};", ACCOUNTS_TBL_NAME, accountID);
-            DataTable table = mDb.ExecuteQuery(sql);
+            string sql=String.Format("SELECT * FROM {0} WHERE id = {1};", ACCOUNTS_TBL_NAME, accountID);
+            DataTable table=mDb.ExecuteQuery(sql);
 
-            if (table.Rows.Count == 0)
+            if(table.Rows.Count==0)
                 return null;
 
             // Create an Account instance
             // and initialize it with information about the user.
-            ISL.Server.Account.Account account = new ISL.Server.Account.Account(accountID);
+            ISL.Server.Account.Account account=new ISL.Server.Account.Account(accountID);
             account.setName(table.Rows[0]["username"].ToString());
             account.setPassword(table.Rows[0]["password"].ToString());
             account.setEmail(table.Rows[0]["email"].ToString());
             account.setRegistrationDate(Convert.ToDateTime(table.Rows[0]["registration"]));
             account.setLastLogin(Convert.ToDateTime(table.Rows[0]["lastlogin"]));
 
-            int level = Convert.ToInt32(table.Rows[0]["level"]);
+            int level=Convert.ToInt32(table.Rows[0]["level"]);
 
             // Check if the user is permanently banned, or temporarily banned.
-            if (level == (int)AccessLevel.AL_BANNED || DateTime.Now <= Convert.ToDateTime(table.Rows[0]["banned"]))
+            if(level==(int)AccessLevel.AL_BANNED||DateTime.Now<=Convert.ToDateTime(table.Rows[0]["banned"]))
             {
                 account.setLevel((int)AccessLevel.AL_BANNED);
                 // It is, so skip character loading.
@@ -193,33 +193,34 @@ namespace invertika_account.Account
             //fixCharactersSlot(id);
 
             // Load the characters associated with the account.
-            sql = String.Format("SELECT id FROM {0} WHERE user_id = '{1}';", accountID);
-            DataTable charInfo = mDb.ExecuteQuery(sql);
+            sql=String.Format("SELECT id FROM {0} WHERE user_id = '{1}';", accountID);
+            DataTable charInfo=mDb.ExecuteQuery(sql);
 
-            if (charInfo.Rows.Count > 0)
+            if(charInfo.Rows.Count>0)
             {
-                int size = charInfo.Rows.Count;
-                Dictionary<uint, Character> characters = new Dictionary<uint, Character>();
+                int size=charInfo.Rows.Count;
+                Dictionary<uint, Character> characters=new Dictionary<uint, Character>();
 
                 Logger.Write(LogLevel.Debug, "Account {0} has {1} character(s) in database.", accountID, size);
 
                 // Two steps: it seems like multiple requests cannot be alive
                 // at the same time.
-                List<uint> characterIDs = new List<uint>();
+                List<uint> characterIDs=new List<uint>();
 
-                for (int k = 0; k < size; ++k)
+                for(int k = 0;k < size;++k)
                 {
                     characterIDs.Add(Convert.ToUInt32(charInfo.Rows[k]["id"]));
                 }
 
-                for (int k = 0; k < size; ++k)
+                for(int k = 0;k < size;++k)
                 {
-                    Character ptr = getCharacter((int)characterIDs[k], account);
+                    Character ptr=getCharacter((int)characterIDs[k], account);
 
-                    if (ptr != null)
+                    if(ptr!=null)
                     {
-                        characters[ptr.getCharacterSlot()] = ptr;
-                    } else
+                        characters[ptr.getCharacterSlot()]=ptr;
+                    }
+                    else
                     {
                         Logger.Write(LogLevel.Error, "Failed to get character {0} for account {1}.", characterIDs[k], accountID);
                     }
@@ -302,45 +303,31 @@ namespace invertika_account.Account
 
         public ISL.Server.Account.Account getAccount(string userName)
         {
-            //std::ostringstream sql;
-            //sql << "SELECT * FROM " << ACCOUNTS_TBL_NAME << " WHERE username = ?";
-            //if (mDb.prepareSql(sql.str()))
-            //{
-            //    mDb.bindValue(1, userName);
-            //    return getAccountBySQL();
-            //}
-            //return 0;
+            string sql=String.Format("SELECT id FROM {0} WHERE username = {1};", ACCOUNTS_TBL_NAME, userName);
+            DataTable tmp=mDb.ExecuteQuery(sql);
 
-            return null; //ssk;
+            int id=Convert.ToInt32(tmp.Rows[0]["id"]);
+            return getAccountBySQL(id);
         }
 
         public ISL.Server.Account.Account getAccount(int accountID)
         {
-            //std::ostringstream sql;
-            //sql << "SELECT * FROM " << ACCOUNTS_TBL_NAME << " WHERE id = ?";
-            //if (mDb.prepareSql(sql.str()))
-            //{
-            //    mDb.bindValue(1, accountID);
-            //    return getAccountBySQL();
-            //}
-            //return 0;
-
-            return null; //ssk;
+            return getAccountBySQL(accountID);
         }
 
         Character getCharacterBySQL(ISL.Server.Account.Account owner)
         {
-            Character character = null;
+            Character character=null;
 
-            string sql = String.Format("SELECT * FROM {0},  WHERE id = {1}", CHARACTERS_TBL_NAME, owner.getID());
-            DataTable charInfo = mDb.ExecuteQuery(sql);
+            string sql=String.Format("SELECT * FROM {0},  WHERE id = {1}", CHARACTERS_TBL_NAME, owner.getID());
+            DataTable charInfo=mDb.ExecuteQuery(sql);
 
             // If the character is not even in the database then
             // we have no choice but to return nothing.
-            if (charInfo.Rows.Count == 0)
+            if(charInfo.Rows.Count==0)
                 return null;
 
-            character = new Character(charInfo.Rows[0]["name"].ToString(), Convert.ToInt32(charInfo.Rows[0]["id"]));
+            character=new Character(charInfo.Rows[0]["name"].ToString(), Convert.ToInt32(charInfo.Rows[0]["id"]));
             character.setGender(Convert.ToInt32(charInfo.Rows[0]["gender"]));
             character.setHairStyle(Convert.ToInt32(charInfo.Rows[0]["hair_style"]));
             character.setHairColor(Convert.ToInt32(charInfo.Rows[0]["hair_color"]));
@@ -348,14 +335,15 @@ namespace invertika_account.Account
             character.setCharacterPoints(Convert.ToInt32(charInfo.Rows[0]["char_pts"]));
             character.setCorrectionPoints(Convert.ToInt32(charInfo.Rows[0]["correct_pts"]));
 
-            Point pos = new Point(Convert.ToInt32(charInfo.Rows[0]["x"]), Convert.ToInt32(charInfo.Rows[0]["y"]));
+            Point pos=new Point(Convert.ToInt32(charInfo.Rows[0]["x"]), Convert.ToInt32(charInfo.Rows[0]["y"]));
             character.setPosition(pos);
 
-            int mapId = Convert.ToInt32(charInfo.Rows[0]["map_id"]);
-            if (mapId > 0)
+            int mapId=Convert.ToInt32(charInfo.Rows[0]["map_id"]);
+            if(mapId>0)
             {
                 character.setMapId(mapId);
-            } else
+            }
+            else
             {
                 // Set character to default map and one of the default location
                 // Default map is to be 1, as not found return value will be 0.
@@ -366,44 +354,45 @@ namespace invertika_account.Account
 
             // Fill the account-related fields. Last step, as it may require a new
             // SQL query.
-            if (owner != null)
+            if(owner!=null)
             {
                 character.setAccount(owner);
-            } else
+            }
+            else
             {
-                int id = Convert.ToInt32(charInfo.Rows[0]["user_id"]);
+                int id=Convert.ToInt32(charInfo.Rows[0]["user_id"]);
                 character.setAccountID(id);
                     
-                string s = String.Format("SELECT level FROM {0} WHERE id = '{1}';", ACCOUNTS_TBL_NAME, id);
-                DataTable levelInfo = mDb.ExecuteQuery(s);
+                string s=String.Format("SELECT level FROM {0} WHERE id = '{1}';", ACCOUNTS_TBL_NAME, id);
+                DataTable levelInfo=mDb.ExecuteQuery(s);
 
                 character.setAccountLevel(Convert.ToInt32(levelInfo.Rows[0]["level"]), true);
             }
 
             // Load attributes."
-            string s2 = String.Format("SELECT attr_id, attr_base, attr_mod FROM {0} WHERE char_id = {1};", CHAR_ATTR_TBL_NAME, character.getDatabaseID());
-            DataTable attrInfo = mDb.ExecuteQuery(s2);
+            string s2=String.Format("SELECT attr_id, attr_base, attr_mod FROM {0} WHERE char_id = {1};", CHAR_ATTR_TBL_NAME, character.getDatabaseID());
+            DataTable attrInfo=mDb.ExecuteQuery(s2);
 
-            if (attrInfo.Rows.Count > 0)
+            if(attrInfo.Rows.Count>0)
             {
-                uint nRows = (uint)attrInfo.Rows.Count;
+                uint nRows=(uint)attrInfo.Rows.Count;
 
-                for (uint row = 0; row < nRows; ++row)
+                for(uint row = 0;row < nRows;++row)
                 {
-                    uint id = Convert.ToUInt32(charInfo.Rows[0]["attr_id"]);
+                    uint id=Convert.ToUInt32(charInfo.Rows[0]["attr_id"]);
                     character.setAttribute(id, Convert.ToDouble(charInfo.Rows[0]["attr_base"]));
                     character.setModAttribute(id, Convert.ToDouble(charInfo.Rows[0]["attr_mod"]));
                 }
             }
 
             // Load the skills of the char from CHAR_SKILLS_TBL_NAME
-            string s3 = String.Format("SELECT status_id, status_time FROM {0} WHERE char_id = {1};", CHAR_STATUS_EFFECTS_TBL_NAME, character.getDatabaseID());
-            DataTable skillInfo = mDb.ExecuteQuery(s3);
+            string s3=String.Format("SELECT status_id, status_time FROM {0} WHERE char_id = {1};", CHAR_STATUS_EFFECTS_TBL_NAME, character.getDatabaseID());
+            DataTable skillInfo=mDb.ExecuteQuery(s3);
                 
-            if (skillInfo.Rows.Count > 0)
+            if(skillInfo.Rows.Count>0)
             {
-                uint nRows = (uint)skillInfo.Rows.Count;
-                for (uint row = 0; row < nRows; row++)
+                uint nRows=(uint)skillInfo.Rows.Count;
+                for(uint row = 0;row < nRows;row++)
                 {
                     character.setExperience(
                             Convert.ToInt32(skillInfo.Rows[0]["status_id"]),  // Skill Id
@@ -412,13 +401,13 @@ namespace invertika_account.Account
             }
 
             // Load the status effect
-            string s4 = String.Format("SELECT status_id, status_time FROM {0} WHERE char_id = {1};", CHAR_STATUS_EFFECTS_TBL_NAME, character.getDatabaseID());
-            DataTable statusInfo = mDb.ExecuteQuery(s4);
+            string s4=String.Format("SELECT status_id, status_time FROM {0} WHERE char_id = {1};", CHAR_STATUS_EFFECTS_TBL_NAME, character.getDatabaseID());
+            DataTable statusInfo=mDb.ExecuteQuery(s4);
 
-            if (statusInfo.Rows.Count > 0)
+            if(statusInfo.Rows.Count>0)
             {
-                uint nRows = (uint)statusInfo.Rows.Count;
-                for (uint row = 0; row < nRows; row++)
+                uint nRows=(uint)statusInfo.Rows.Count;
+                for(uint row = 0;row < nRows;row++)
                 {
                     character.applyStatusEffect(
                             Convert.ToInt32(statusInfo.Rows[0]["status_id"]), // Status Id
@@ -427,13 +416,13 @@ namespace invertika_account.Account
             }
 
             // Load the kill stats
-            string s5 = String.Format("SELECT monster_id, kills FROM {0} WHERE char_id = {1};", CHAR_KILL_COUNT_TBL_NAME, character.getDatabaseID());
-            DataTable killsInfo = mDb.ExecuteQuery(s5);
+            string s5=String.Format("SELECT monster_id, kills FROM {0} WHERE char_id = {1};", CHAR_KILL_COUNT_TBL_NAME, character.getDatabaseID());
+            DataTable killsInfo=mDb.ExecuteQuery(s5);
 
-            if (killsInfo.Rows.Count > 0)
+            if(killsInfo.Rows.Count>0)
             {
-                uint nRows = (uint)killsInfo.Rows.Count;
-                for (uint row = 0; row < nRows; row++)
+                uint nRows=(uint)killsInfo.Rows.Count;
+                for(uint row = 0;row < nRows;row++)
                 {
                     character.setKillCount(
                             Convert.ToInt32(killsInfo.Rows[0]["monster_id"]), // MonsterID
@@ -442,54 +431,54 @@ namespace invertika_account.Account
             }
 
             // Load the special status
-            string s6 = String.Format("SELECT special_id FROM {0} WHERE char_id = {1};", CHAR_SPECIALS_TBL_NAME, character.getDatabaseID());
-            DataTable specialsInfo = mDb.ExecuteQuery(s6);
+            string s6=String.Format("SELECT special_id FROM {0} WHERE char_id = {1};", CHAR_SPECIALS_TBL_NAME, character.getDatabaseID());
+            DataTable specialsInfo=mDb.ExecuteQuery(s6);
 
-            if (specialsInfo.Rows.Count > 0)
+            if(specialsInfo.Rows.Count>0)
             {
-                uint nRows = (uint)specialsInfo.Rows.Count;
-                for (uint row = 0; row < nRows; row++)
+                uint nRows=(uint)specialsInfo.Rows.Count;
+                for(uint row = 0;row < nRows;row++)
                 {
                     //TODO Überprüfen ob so sinnvoll? (der 0 Paramater?)
                     character.giveSpecial(Convert.ToInt32(specialsInfo.Rows[0]["special_id"]), 0);
                 }
             }
          
-            Possessions poss = character.getPossessions();
+            Possessions poss=character.getPossessions();
 
-            string s7 = String.Format("SELECT slot_type, item_id, item_instance FROM {0} WHERE owner_id = '{1}' ORDER BY slot_type desc;", CHAR_EQUIPS_TBL_NAME, character.getDatabaseID());
-            DataTable equipInfo = mDb.ExecuteQuery(s7);
+            string s7=String.Format("SELECT slot_type, item_id, item_instance FROM {0} WHERE owner_id = '{1}' ORDER BY slot_type desc;", CHAR_EQUIPS_TBL_NAME, character.getDatabaseID());
+            DataTable equipInfo=mDb.ExecuteQuery(s7);
 
-            Dictionary< uint, EquipmentItem > equipData = new Dictionary<uint, EquipmentItem>();
+            Dictionary< uint, EquipmentItem > equipData=new Dictionary<uint, EquipmentItem>();
 
-            if (equipInfo.Rows.Count > 0)
+            if(equipInfo.Rows.Count>0)
             {
-                EquipmentItem equipItem = new EquipmentItem();
+                EquipmentItem equipItem=new EquipmentItem();
 
-                for (int k = 0, size = equipInfo.Rows.Count; k < size; ++k)
+                for(int k = 0, size = equipInfo.Rows.Count;k < size;++k)
                 {
-                    equipItem.itemId = Convert.ToUInt32(equipInfo.Rows[0]["item_id"]);
-                    equipItem.itemInstance = Convert.ToUInt32(equipInfo.Rows[0]["item_instance"]);
+                    equipItem.itemId=Convert.ToUInt32(equipInfo.Rows[0]["item_id"]);
+                    equipItem.itemInstance=Convert.ToUInt32(equipInfo.Rows[0]["item_instance"]);
                     equipData.Add(Convert.ToUInt32(equipInfo.Rows[0]["slot_type"]), equipItem);
                 }
             }
 
             poss.setEquipment(equipData);
      
-            string s8 = String.Format("SELECT * FROM {0} WHERE owner_id = '{1}' ORDER by slot ASC", INVENTORIES_TBL_NAME, character.getDatabaseID());
-            DataTable itemInfo = mDb.ExecuteQuery(s8);
+            string s8=String.Format("SELECT * FROM {0} WHERE owner_id = '{1}' ORDER by slot ASC", INVENTORIES_TBL_NAME, character.getDatabaseID());
+            DataTable itemInfo=mDb.ExecuteQuery(s8);
 
-            Dictionary<uint, InventoryItem > inventoryData = new Dictionary<uint, InventoryItem>();
+            Dictionary<uint, InventoryItem > inventoryData=new Dictionary<uint, InventoryItem>();
        
-            if (itemInfo.Rows.Count > 0)
+            if(itemInfo.Rows.Count>0)
             {
-                for (int k = 0, size = itemInfo.Rows.Count; k < size; ++k)
+                for(int k = 0, size = itemInfo.Rows.Count;k < size;++k)
                 {
-                    InventoryItem item = new InventoryItem();
-                    ushort slot = Convert.ToUInt16(itemInfo.Rows[0]["slot"]);
-                    item.itemId = Convert.ToUInt32(itemInfo.Rows[0]["class_id"]); 
-                    item.amount = Convert.ToUInt32(itemInfo.Rows[0]["amount"]);
-                    inventoryData[slot] = item;
+                    InventoryItem item=new InventoryItem();
+                    ushort slot=Convert.ToUInt16(itemInfo.Rows[0]["slot"]);
+                    item.itemId=Convert.ToUInt32(itemInfo.Rows[0]["class_id"]); 
+                    item.amount=Convert.ToUInt32(itemInfo.Rows[0]["amount"]);
+                    inventoryData[slot]=item;
                 }
             }
 
@@ -500,24 +489,24 @@ namespace invertika_account.Account
 
         public Character getCharacter(int id, ISL.Server.Account.Account owner)
         {
-            string sql = String.Format("SELECT * FROM {0},  WHERE id = {1}", CHARACTERS_TBL_NAME, id);
+            string sql=String.Format("SELECT * FROM {0},  WHERE id = {1}", CHARACTERS_TBL_NAME, id);
             //TODO Überprüfen was hier genau passiert
             return getCharacterBySQL(owner);
         }
 
         public Character getCharacter(string name)
         {
-            string sql = String.Format("SELECT * FROM {0} WHERE name = {1}", CHARACTERS_TBL_NAME, name);
+            string sql=String.Format("SELECT * FROM {0} WHERE name = {1}", CHARACTERS_TBL_NAME, name);
             //TODO Überprüfen was hier genau passiert
             return getCharacterBySQL(null);
         }
 
         public bool doesUserNameExist(string name)
         {
-            string sql = String.Format("SELECT COUNT(username) AS COUNT FROM {0}  WHERE username = \"{1}\"", ACCOUNTS_TBL_NAME, name);
-            DataTable table = mDb.ExecuteQuery(sql);
+            string sql=String.Format("SELECT COUNT(username) AS COUNT FROM {0}  WHERE username = \"{1}\"", ACCOUNTS_TBL_NAME, name);
+            DataTable table=mDb.ExecuteQuery(sql);
 
-            if ((long)(table.Rows[0]["COUNT"]) > 0)
+            if((long)(table.Rows[0]["COUNT"])>0)
                 return true;
             else
                 return false;
@@ -525,10 +514,10 @@ namespace invertika_account.Account
 
         public bool doesEmailAddressExist(string email)
         {
-            string sql = String.Format("SELECT COUNT(email) AS COUNT FROM {0}  WHERE UPPER(email) = UPPER(\"{1}\")", ACCOUNTS_TBL_NAME, email);
-            DataTable table = mDb.ExecuteQuery(sql);
+            string sql=String.Format("SELECT COUNT(email) AS COUNT FROM {0}  WHERE UPPER(email) = UPPER(\"{1}\")", ACCOUNTS_TBL_NAME, email);
+            DataTable table=mDb.ExecuteQuery(sql);
 
-            if ((long)(table.Rows[0]["COUNT"]) > 0)
+            if((long)(table.Rows[0]["COUNT"])>0)
                 return true;
             else
                 return false;
@@ -536,10 +525,10 @@ namespace invertika_account.Account
 
         bool doesCharacterNameExist(string name)
         {
-            string sql = String.Format("SELECT COUNT(name) AS COUNT FROM {0}  WHERE name = \"{1}\"", CHARACTERS_TBL_NAME, name);
-            DataTable table = mDb.ExecuteQuery(sql);
+            string sql=String.Format("SELECT COUNT(name) AS COUNT FROM {0}  WHERE name = \"{1}\"", CHARACTERS_TBL_NAME, name);
+            DataTable table=mDb.ExecuteQuery(sql);
 
-            if ((long)(table.Rows[0]["COUNT"]) > 0)
+            if((long)(table.Rows[0]["COUNT"])>0)
                 return true;
             else
                 return false;
@@ -770,8 +759,8 @@ namespace invertika_account.Account
 
         public void addAccount(ISL.Server.Account.Account account)
         {
-            string sql = String.Format("INSERT INTO {0} (username, password, email, level, banned, registration, lastlogin) ", ACCOUNTS_TBL_NAME);
-            sql += String.Format("VALUES (\"{0}\", \"{1}\", \"{2}\", {3}, 0, {4}, {5});", account.getName(), account.getPassword(), account.getEmail(), account.getLevel(), account.getRegistrationDate().Ticks, account.getLastLogin().Ticks);
+            string sql=String.Format("INSERT INTO {0} (username, password, email, level, banned, registration, lastlogin) ", ACCOUNTS_TBL_NAME);
+            sql+=String.Format("VALUES (\"{0}\", \"{1}\", \"{2}\", {3}, 0, {4}, {5});", account.getName(), account.getPassword(), account.getEmail(), account.getLevel(), account.getRegistrationDate().Ticks, account.getLastLogin().Ticks);
 
             mDb.ExecuteNonQuery(sql);
         }
@@ -930,7 +919,7 @@ namespace invertika_account.Account
             // Sync the account info into the database.
             flush(account);
 
-            string sql = String.Format("DELETE FROM {0} WHERE id = '{1}';", ACCOUNTS_TBL_NAME, account.getID());
+            string sql=String.Format("DELETE FROM {0} WHERE id = '{1}';", ACCOUNTS_TBL_NAME, account.getID());
             mDb.ExecuteNonQuery(sql);
 
             // Remove the account's characters.
@@ -939,13 +928,13 @@ namespace invertika_account.Account
 
         public void updateLastLogin(ISL.Server.Account.Account account)
         {
-            string sql = String.Format("UPDATE {0} SET lastlogin = '{1}' WHERE id = '{2}';", ACCOUNTS_TBL_NAME, account.getLastLogin(), account.getID());
+            string sql=String.Format("UPDATE {0} SET lastlogin = '{1}' WHERE id = '{2}';", ACCOUNTS_TBL_NAME, account.getLastLogin(), account.getID());
             mDb.ExecuteNonQuery(sql);
         }
 
         public void updateCharacterPoints(int charId, int charPoints, int corrPoints)
         {
-            string sql = String.Format("UPDATE {0} SET char_pts = '{1}', correct_pts = '{2}' WHERE id = '{3}';", CHARACTERS_TBL_NAME, charPoints, corrPoints, charId);
+            string sql=String.Format("UPDATE {0} SET char_pts = '{1}', correct_pts = '{2}' WHERE id = '{3}';", CHARACTERS_TBL_NAME, charPoints, corrPoints, charId);
             mDb.ExecuteNonQuery(sql);
         }
 
@@ -1061,68 +1050,68 @@ namespace invertika_account.Account
 
         void insertStatusEffect(int charId, int statusId, int time)
         {
-            string sql = String.Format("INSERT INTO {0} (char_id, status_id, status_time) VALUES ({1}, {2}, {3})", CHAR_STATUS_EFFECTS_TBL_NAME, charId, statusId, time);
+            string sql=String.Format("INSERT INTO {0} (char_id, status_id, status_time) VALUES ({1}, {2}, {3})", CHAR_STATUS_EFFECTS_TBL_NAME, charId, statusId, time);
             mDb.ExecuteNonQuery(sql);
         }
 
         public void addGuild(Guild guild)
         {
-            string sql = String.Format("INSERT INTO {0} name VALUES \"{1}\";", GUILDS_TBL_NAME, guild.getName());
+            string sql=String.Format("INSERT INTO {0} name VALUES \"{1}\";", GUILDS_TBL_NAME, guild.getName());
             mDb.ExecuteNonQuery(sql);
 
-            sql = String.Format("SELECT id FROM {0} WHERE name = \"{1}\"", GUILDS_TBL_NAME, guild.getName());
-            DataTable table = mDb.ExecuteQuery(sql);
+            sql=String.Format("SELECT id FROM {0} WHERE name = \"{1}\"", GUILDS_TBL_NAME, guild.getName());
+            DataTable table=mDb.ExecuteQuery(sql);
 
-            long id = (long)table.Rows[0]["id"];
+            long id=(long)table.Rows[0]["id"];
             guild.setId((int)id);
         }
 
         public void removeGuild(Guild guild)
         {
-            string sql = String.Format("DELETE FROM {0} WHERE ID = '{0}';", GUILDS_TBL_NAME, guild.getId());
+            string sql=String.Format("DELETE FROM {0} WHERE ID = '{0}';", GUILDS_TBL_NAME, guild.getId());
             mDb.ExecuteNonQuery(sql);
         }
 
         public void addGuildMember(int guildId, int memberId)
         {
-            string sql = String.Format("INSERT INTO {0} (guild_id, member_id, rights) VALUES ({1}, \"{2}\", \"{3}\");", GUILD_MEMBERS_TBL_NAME, guildId, memberId, 0);
+            string sql=String.Format("INSERT INTO {0} (guild_id, member_id, rights) VALUES ({1}, \"{2}\", \"{3}\");", GUILD_MEMBERS_TBL_NAME, guildId, memberId, 0);
             mDb.ExecuteNonQuery(sql);
         }
 
         public void removeGuildMember(int guildId, int memberId)
         {
-            string sql = String.Format("DELETE FROM {0} WHERE member_id = \"{1}\" and guild_id = '{2}';", GUILD_MEMBERS_TBL_NAME, memberId, guildId);
+            string sql=String.Format("DELETE FROM {0} WHERE member_id = \"{1}\" and guild_id = '{2}';", GUILD_MEMBERS_TBL_NAME, memberId, guildId);
             mDb.ExecuteNonQuery(sql);
         }
 
         public void addFloorItem(int mapId, int itemId, int amount, int posX, int posY)
         {
-            string sql = String.Format("INSERT INTO {0} (map_id, item_id, amount, pos_x, pos_y)  VALUES ({0}, {1}, {2} {3}, {4});", FLOOR_ITEMS_TBL_NAME, mapId, itemId, amount, posX, posY);
+            string sql=String.Format("INSERT INTO {0} (map_id, item_id, amount, pos_x, pos_y)  VALUES ({0}, {1}, {2} {3}, {4});", FLOOR_ITEMS_TBL_NAME, mapId, itemId, amount, posX, posY);
             mDb.ExecuteNonQuery(sql);
         }
 
         public void removeFloorItem(int mapId, int itemId, int amount, int posX, int posY)
         {
-            string sql = String.Format("DELETE FROM {0} WHERE map_id = {1} AND item_id = {2} AND amount = {3} AND pos_x = {4} AND pos_y = {5};",
+            string sql=String.Format("DELETE FROM {0} WHERE map_id = {1} AND item_id = {2} AND amount = {3} AND pos_x = {4} AND pos_y = {5};",
 									FLOOR_ITEMS_TBL_NAME, mapId, itemId, amount, posX, posY);
             mDb.ExecuteNonQuery(sql);
         }
 
         public List<FloorItem> getFloorItemsFromMap(int mapId)
         {
-            List<FloorItem> floorItems = new List<FloorItem>();
+            List<FloorItem> floorItems=new List<FloorItem>();
 			 
-            string sql = String.Format("SELECT * FROM {0}  WHERE map_id = {1}", FLOOR_ITEMS_TBL_NAME, mapId);
-            DataTable table = mDb.ExecuteQuery(sql);
+            string sql=String.Format("SELECT * FROM {0}  WHERE map_id = {1}", FLOOR_ITEMS_TBL_NAME, mapId);
+            DataTable table=mDb.ExecuteQuery(sql);
 
-            foreach (DataRow row in table.Rows)
+            foreach(DataRow row in table.Rows)
             {
-                int itemID = Convert.ToInt32(row["item_id"]);
-                int itemAmount = Convert.ToInt32(row["amount"]);
-                int posX = Convert.ToInt32(row["pos_x"]);
-                int posY = Convert.ToInt32(row["pos_y"]);
+                int itemID=Convert.ToInt32(row["item_id"]);
+                int itemAmount=Convert.ToInt32(row["amount"]);
+                int posX=Convert.ToInt32(row["pos_x"]);
+                int posY=Convert.ToInt32(row["pos_y"]);
 
-                FloorItem fitem = new FloorItem(itemID, itemAmount, posX, posY);
+                FloorItem fitem=new FloorItem(itemID, itemAmount, posX, posY);
                 floorItems.Add(fitem);
             }
 
@@ -1131,7 +1120,7 @@ namespace invertika_account.Account
 
         public void setMemberRights(int guildId, int memberId, int rights)
         {
-            string sql = String.Format("UPDATE {0} SET rights = '{1}' WHERE member_id = \"{2}\"", GUILD_MEMBERS_TBL_NAME, rights, memberId);
+            string sql=String.Format("UPDATE {0} SET rights = '{1}' WHERE member_id = \"{2}\"", GUILD_MEMBERS_TBL_NAME, rights, memberId);
             mDb.ExecuteNonQuery(sql);
         }
 
@@ -1202,48 +1191,48 @@ namespace invertika_account.Account
 
         public string getQuestVar(int id, string name)
         {
-            string query = String.Format("select value from {0}  WHERE owner_id = {1} AND name = {2}", QUESTS_TBL_NAME, id, name);
-            DataTable table = mDb.ExecuteQuery(query);
+            string query=String.Format("select value from {0}  WHERE owner_id = {1} AND name = {2}", QUESTS_TBL_NAME, id, name);
+            DataTable table=mDb.ExecuteQuery(query);
             return table.Rows[0]["value"].ToString(); //TODO Testen ob Ergebnis kommt
         }
 
         string getWorldStateVar(string name, int mapId)
         {
-            string query = String.Format("SELECT value FROM {0} WHERE state_name LIKE '{1}'", WORLD_STATES_TBL_NAME, name);
-            if (mapId >= 0)
-                query += String.Format(" AND map_id = {0}", mapId);
+            string query=String.Format("SELECT value FROM {0} WHERE state_name LIKE '{1}'", WORLD_STATES_TBL_NAME, name);
+            if(mapId>=0)
+                query+=String.Format(" AND map_id = {0}", mapId);
 
-            DataTable rs = mDb.ExecuteQuery(query);
+            DataTable rs=mDb.ExecuteQuery(query);
             return (string)rs.Rows[0][0];
         }
 
         public Dictionary<string, string> getAllWorldStateVars(int mapId)
         {
-            Dictionary<string, string> variables = new Dictionary<string, string>();
+            Dictionary<string, string> variables=new Dictionary<string, string>();
 
             // Avoid a crash because prepared statements must have at least one binding.
-            if (mapId < 0)
+            if(mapId<0)
             {
                 Logger.Write(LogLevel.Error, "getAllWorldStateVars was called with a negative map Id: {0}", mapId);
                 return variables;
             }
 
-            string query = String.Format("SELECT `state_name`, `value` FROM {0}", WORLD_STATES_TBL_NAME);
+            string query=String.Format("SELECT `state_name`, `value` FROM {0}", WORLD_STATES_TBL_NAME);
 
 
             // Add map filter if map_id is given
-            if (mapId >= 0)
+            if(mapId>=0)
             {
-                query += String.Format(" WHERE `map_id` = {0}", mapId);
+                query+=String.Format(" WHERE `map_id` = {0}", mapId);
             }
 
             //query << ";"; <-- No ';' at the end of prepared statements.
-            DataTable table = mDb.ExecuteQuery(query);
+            DataTable table=mDb.ExecuteQuery(query);
 
-            foreach (DataRow row in table.Rows)
+            foreach(DataRow row in table.Rows)
             {
-                string state_name = row["state_name"].ToString();
-                string state_value = row["value"].ToString();
+                string state_name=row["state_name"].ToString();
+                string state_value=row["value"].ToString();
                 variables.Add(state_name, state_value);
             }
 
@@ -1258,16 +1247,16 @@ namespace invertika_account.Account
         public void setWorldStateVar(string name, int mapId, string value)
         {
             //Set the value to empty means: delete the variable
-            if (value == null || value == "")
+            if(value==null||value=="")
             {
-                string deleteStateVar = String.Format("DELETE FROM {0} WHERE state_name = '{1}'", WORLD_STATES_TBL_NAME, name);
+                string deleteStateVar=String.Format("DELETE FROM {0} WHERE state_name = '{1}'", WORLD_STATES_TBL_NAME, name);
 
-                if (mapId >= 0)
+                if(mapId>=0)
                 {
-                    deleteStateVar += String.Format(" AND map_id = '{0}'", mapId);
+                    deleteStateVar+=String.Format(" AND map_id = '{0}'", mapId);
                 }
 
-                deleteStateVar += ";";
+                deleteStateVar+=";";
 
                 mDb.ExecuteNonQuery(deleteStateVar);
                 return;
@@ -1276,30 +1265,30 @@ namespace invertika_account.Account
             //TODO vereinfachen
 
             // Try to update the variable in the database
-            string updateStateVar = String.Format("UPDATE {0} SET value = '{1}', moddate = '{2}'  WHERE state_name = '{3}'", WORLD_STATES_TBL_NAME, value, DateTime.Now.Ticks, name);
+            string updateStateVar=String.Format("UPDATE {0} SET value = '{1}', moddate = '{2}'  WHERE state_name = '{3}'", WORLD_STATES_TBL_NAME, value, DateTime.Now.Ticks, name);
 
-            if (mapId >= 0)
+            if(mapId>=0)
             {
-                updateStateVar += String.Format(" AND map_id = '{0}'", mapId);
+                updateStateVar+=String.Format(" AND map_id = '{0}'", mapId);
             }
 
-            updateStateVar += ";";
+            updateStateVar+=";";
 
-            int modifiedRows = mDb.ExecuteNonQuery(updateStateVar);
+            int modifiedRows=mDb.ExecuteNonQuery(updateStateVar);
 
             // If we updated a row, were finished here
-            if (modifiedRows > 0)
+            if(modifiedRows>0)
                 return;
 
             // Otherwise we have to add the new variable
-            string insertStateVar = String.Format("INSERT INTO {0}  (state_name, map_id, value , moddate) VALUES ('{1}', ", WORLD_STATES_TBL_NAME, name);
+            string insertStateVar=String.Format("INSERT INTO {0}  (state_name, map_id, value , moddate) VALUES ('{1}', ", WORLD_STATES_TBL_NAME, name);
 
-            if (mapId >= 0)
-                insertStateVar += String.Format("'{0}', ", mapId);
+            if(mapId>=0)
+                insertStateVar+=String.Format("'{0}', ", mapId);
             else
-                insertStateVar += "0 , ";
+                insertStateVar+="0 , ";
 
-            insertStateVar += String.Format("'{0}', '{1}');", value, DateTime.Now.Ticks);
+            insertStateVar+=String.Format("'{0}', '{1}');", value, DateTime.Now.Ticks);
             mDb.ExecuteNonQuery(insertStateVar);
         }
 
@@ -1446,13 +1435,13 @@ namespace invertika_account.Account
 
         public void setAccountLevel(int id, int level)
         {
-            string sql = String.Format("update {0}  set level = {1}  where id =  {3};", ACCOUNTS_TBL_NAME, level, id);
+            string sql=String.Format("update {0}  set level = {1}  where id =  {3};", ACCOUNTS_TBL_NAME, level, id);
             mDb.ExecuteQuery(sql);
         }
 
         public void setPlayerLevel(int id, int level)
         {
-            string sql = String.Format("update {0}  set level = {1}  where id =  {3};", CHARACTERS_TBL_NAME, level, id);
+            string sql=String.Format("update {0}  set level = {1}  where id =  {3};", CHARACTERS_TBL_NAME, level, id);
             mDb.ExecuteQuery(sql);
         }
 
