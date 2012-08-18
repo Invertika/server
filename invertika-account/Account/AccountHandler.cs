@@ -23,7 +23,6 @@
 // 
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,18 +54,15 @@ namespace invertika_account.Account
         uint mMinNameLength;
         uint mMaxNameLength;
         int mMaxCharacters;
-
         bool mRegistrationAllowed;
-
         string mUpdateHost;
         string mDataUrl;
-
-        Dictionary<IPAddress, DateTime> mLastLoginAttemptForIP = new Dictionary<IPAddress, DateTime>();
+        Dictionary<IPAddress, DateTime> mLastLoginAttemptForIP=new Dictionary<IPAddress, DateTime>();
 
         /** List of all accounts which requested a random seed, but are not logged
      *  yet. This list will be regularly remove (after timeout) old accounts
      */
-        List<ISL.Server.Account.Account> mPendingAccounts = new List<ISL.Server.Account.Account>();
+        List<ISL.Server.Account.Account> mPendingAccounts=new List<ISL.Server.Account.Account>();
            
         //Token collector for connecting a client coming from a game server
         //without having to provide username and password a second time.
@@ -74,16 +70,16 @@ namespace invertika_account.Account
 
         public AccountHandler(string attributesFile)
         {
-            mTokenCollector = new TokenCollector<AccountHandler, AccountClient, int>();
-            mNumHairStyles = Configuration.getValue("char_numHairStyles", 17);
-            mNumHairColors = Configuration.getValue("char_numHairColors", 11);
-            mNumGenders = Configuration.getValue("char_numGenders", 2);
-            mMinNameLength = (uint)Configuration.getValue("char_minNameLength", 4);
-            mMaxNameLength = (uint)Configuration.getValue("char_maxNameLength", 25);
-            mMaxCharacters = Configuration.getValue("account_maxCharacters", 3);
-            mRegistrationAllowed = Configuration.getBoolValue("account_allowRegister", true);
-            mUpdateHost = Configuration.getValue("net_defaultUpdateHost", "");
-            mDataUrl = Configuration.getValue("net_clientDataUrl", "");
+            mTokenCollector=new TokenCollector<AccountHandler, AccountClient, int>();
+            mNumHairStyles=Configuration.getValue("char_numHairStyles", 17);
+            mNumHairColors=Configuration.getValue("char_numHairColors", 11);
+            mNumGenders=Configuration.getValue("char_numGenders", 2);
+            mMinNameLength=(uint)Configuration.getValue("char_minNameLength", 4);
+            mMaxNameLength=(uint)Configuration.getValue("char_maxNameLength", 25);
+            mMaxCharacters=Configuration.getValue("account_maxCharacters", 3);
+            mRegistrationAllowed=Configuration.getBoolValue("account_allowRegister", true);
+            mUpdateHost=Configuration.getValue("net_defaultUpdateHost", "");
+            mDataUrl=Configuration.getValue("net_clientDataUrl", "");
 
             //XML::Document doc(attributesFile);
             //xmlNodePtr node = doc.rootNode();
@@ -166,9 +162,9 @@ namespace invertika_account.Account
 
         protected override void computerDisconnected(NetComputer comp)
         {
-            AccountClient client = (AccountClient)(comp);
+            AccountClient client=(AccountClient)(comp);
 
-            if (client.status == AccountClientStatus.CLIENT_QUEUED)
+            if(client.status==AccountClientStatus.CLIENT_QUEUED)
             {
                 // Delete it from the pendingClient list
                 mTokenCollector.deletePendingClient(client);
@@ -179,7 +175,7 @@ namespace invertika_account.Account
 
         void sendCharacterData(AccountClient client, Character ch)
         {
-            MessageOut charInfo = new MessageOut(Protocol.APMSG_CHAR_INFO);
+            MessageOut charInfo=new MessageOut(Protocol.APMSG_CHAR_INFO);
 
             charInfo.writeInt8((int)ch.getCharacterSlot());
             charInfo.writeString(ch.getName());
@@ -190,24 +186,24 @@ namespace invertika_account.Account
             charInfo.writeInt16(ch.getCharacterPoints());
             charInfo.writeInt16(ch.getCorrectionPoints());
 
-            foreach (KeyValuePair<uint, AttributeValue> at in ch.mAttributes)
+            foreach(KeyValuePair<uint, AttributeValue> at in ch.mAttributes)
             {
                 charInfo.writeInt32((int)at.Key);
-                charInfo.writeInt32((int)(at.Value.@base * 256));
-                charInfo.writeInt32((int)(at.Value.modified * 256));
+                charInfo.writeInt32((int)(at.Value.@base*256));
+                charInfo.writeInt32((int)(at.Value.modified*256));
             }
 
             client.send(charInfo);
         }
 
-        Random rnd = new Random();
+        Random rnd=new Random();
 
         string getRandomString(int length)
         {
-            StringBuilder s = new StringBuilder();
+            StringBuilder s=new StringBuilder();
             // No need to care about zeros. They can be handled.
             // But care for endianness
-            for (int i = 0; i < length; ++i)
+            for(int i = 0;i < length;++i)
             {
                 s.Append((char)rnd.Next(256));
             }
@@ -217,37 +213,37 @@ namespace invertika_account.Account
 
         void handleLoginRandTriggerMessage(AccountClient client, MessageIn msg)
         {
-            string salt = getRandomString(4);
-            string username = msg.readString();
+            string salt=getRandomString(4);
+            string username=msg.readString();
 
-            ISL.Server.Account.Account acc = Program.storage.getAccount(username);
+            ISL.Server.Account.Account acc=Program.storage.getAccount(username);
 
-            if (acc != null)
+            if(acc!=null)
             {
                 acc.setRandomSalt(salt);
                 mPendingAccounts.Add(acc);
             }
 
-            MessageOut reply = new MessageOut(Protocol.APMSG_LOGIN_RNDTRGR_RESPONSE);
+            MessageOut reply=new MessageOut(Protocol.APMSG_LOGIN_RNDTRGR_RESPONSE);
             reply.writeString(salt);
             client.send(reply);
         }
 
         void handleLoginMessage(AccountClient client, MessageIn msg)
         {
-            MessageOut reply = new MessageOut(Protocol.APMSG_LOGIN_RESPONSE);
+            MessageOut reply=new MessageOut(Protocol.APMSG_LOGIN_RESPONSE);
 
             //Überprüfung ob es sich um einen Login Request handelt
-            if (client.status != AccountClientStatus.CLIENT_LOGIN)
+            if(client.status!=AccountClientStatus.CLIENT_LOGIN)
             {
                 reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
                 client.send(reply);
                 return;
             }
 
-            int clientVersion = msg.readInt32();
+            int clientVersion=msg.readInt32();
 
-            if (clientVersion < ManaServ.PROTOCOL_VERSION)
+            if(clientVersion<ManaServ.PROTOCOL_VERSION)
             {
                 reply.writeInt8((int)Login.LOGIN_INVALID_VERSION);
                 client.send(reply);
@@ -255,15 +251,15 @@ namespace invertika_account.Account
             }
 
             // Check whether the last login attempt for this IP is still too fresh
-            IPAddress address = client.getIP();
-            DateTime now = DateTime.Now;
+            IPAddress address=client.getIP();
+            DateTime now=DateTime.Now;
 
-            if (mLastLoginAttemptForIP.ContainsKey(address)) //TODO Schauen ob der Vergleich gegen das IPAdress Objekt funktioniert
+            if(mLastLoginAttemptForIP.ContainsKey(address)) //TODO Schauen ob der Vergleich gegen das IPAdress Objekt funktioniert
             {
-                DateTime lastAttempt = mLastLoginAttemptForIP [address];
+                DateTime lastAttempt=mLastLoginAttemptForIP[address];
                 lastAttempt.AddSeconds(1); //TODO schauen ob hier im Original wirklich Sekunden gemeint sind
 
-                if (now < lastAttempt)
+                if(now<lastAttempt)
                 {
                     reply.writeInt8((int)Login.LOGIN_INVALID_TIME);
                     client.send(reply);
@@ -271,21 +267,21 @@ namespace invertika_account.Account
                 }
             }
 
-            mLastLoginAttemptForIP [address] = now;
+            mLastLoginAttemptForIP[address]=now;
 
-            string username = msg.readString();
-            string password = msg.readString();
+            string username=msg.readString();
+            string password=msg.readString();
 
-            if (Program.stringFilter.findDoubleQuotes(username))
+            if(Program.stringFilter.findDoubleQuotes(username))
             {
                 reply.writeInt8((int)ErrorMessage.ERRMSG_INVALID_ARGUMENT);
                 client.send(reply);
                 return;
             }
 
-            uint maxClients = (uint)Configuration.getValue("net_maxClients", 1000);
+            uint maxClients=(uint)Configuration.getValue("net_maxClients", 1000);
 
-            if (getClientCount() >= maxClients)
+            if(getClientCount()>=maxClients)
             {
                 reply.writeInt8((int)ErrorMessage.ERRMSG_SERVER_FULL);
                 client.send(reply);
@@ -293,13 +289,13 @@ namespace invertika_account.Account
             }
 
             // Check if the account exists
-            ISL.Server.Account.Account acc = null;
+            ISL.Server.Account.Account acc=null;
 
-            foreach (ISL.Server.Account.Account tmp in mPendingAccounts)
+            foreach(ISL.Server.Account.Account tmp in mPendingAccounts)
             {
-                if (tmp.getName() == username)
+                if(tmp.getName()==username)
                 {
-                    acc = tmp;
+                    acc=tmp;
                     break;
                 }
             }
@@ -307,9 +303,9 @@ namespace invertika_account.Account
             mPendingAccounts.Remove(acc); 
 
             //TODO Überprüfen ob SHA256 das gewünschte Ergebniss liefert
-            if (acc != null)
+            if(acc!=null)
             {
-                if (SHA256.HashString(acc.getPassword() + acc.getRandomSalt()) != password)
+                if(SHA256.HashString(acc.getPassword()+acc.getRandomSalt())!=password)
                 {
                     reply.writeInt8((int)ErrorMessage.ERRMSG_INVALID_ARGUMENT);
                     client.send(reply);
@@ -318,7 +314,7 @@ namespace invertika_account.Account
                 }
             }
 
-            if (acc.getLevel() == (int)AccessLevel.AL_BANNED)
+            if(acc.getLevel()==(int)AccessLevel.AL_BANNED)
             {
                 reply.writeInt8((int)Login.LOGIN_BANNED);
                 client.send(reply);
@@ -329,23 +325,23 @@ namespace invertika_account.Account
             // The client successfully logged in...
 
             // Set lastLogin date of the account.
-            DateTime login = DateTime.Now;
+            DateTime login=DateTime.Now;
             acc.setLastLogin(login);
             Program.storage.updateLastLogin(acc);  
 
             // Associate account with connection.
             client.setAccount(acc);
-            client.status = AccountClientStatus.CLIENT_CONNECTED;
+            client.status=AccountClientStatus.CLIENT_CONNECTED;
 
             reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
             addServerInfo(reply);
             client.send(reply); // Acknowledge login
 
             // Return information about available characters
-            Dictionary<uint, Character> chars = acc.getCharacters();
+            Dictionary<uint, Character> chars=acc.getCharacters();
 
             // Send characters list
-            foreach (ISL.Server.Account.Character character in chars.Values)
+            foreach(ISL.Server.Account.Character character in chars.Values)
             {
                 sendCharacterData(client, character);
             }
@@ -353,7 +349,7 @@ namespace invertika_account.Account
 
         void handleLogoutMessage(AccountClient client)
         {
-            MessageOut reply = new MessageOut(Protocol.APMSG_LOGOUT_RESPONSE);
+            MessageOut reply=new MessageOut(Protocol.APMSG_LOGOUT_RESPONSE);
 
             //if (client.status == CLIENT_LOGIN)
             //{
@@ -391,43 +387,50 @@ namespace invertika_account.Account
 
         void handleRegisterMessage(AccountClient client, MessageIn msg)
         {
-            int clientVersion = msg.readInt32();
-            string username = msg.readString();
-            string password = msg.readString();
-            string email = msg.readString();
-            string captcha = msg.readString();
+            int clientVersion=msg.readInt32();
+            string username=msg.readString();
+            string password=msg.readString();
+            string email=msg.readString();
+            string captcha=msg.readString();
 
-            MessageOut reply = new MessageOut(Protocol.APMSG_REGISTER_RESPONSE);
+            MessageOut reply=new MessageOut(Protocol.APMSG_REGISTER_RESPONSE);
 
-            if (client.status != AccountClientStatus.CLIENT_LOGIN)
+            if(client.status!=AccountClientStatus.CLIENT_LOGIN)
             {
                 reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
-            } else if (!mRegistrationAllowed)
+            }
+            else if(!mRegistrationAllowed)
             {
                 reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
-            } else if (clientVersion < ManaServ.PROTOCOL_VERSION)
+            }
+            else if(clientVersion<ManaServ.PROTOCOL_VERSION)
             {
                 reply.writeInt8((int)Register.REGISTER_INVALID_VERSION);
-            } else if (Program.stringFilter.findDoubleQuotes(username)
-                || Program.stringFilter.findDoubleQuotes(email)
-                || username.Length < mMinNameLength
-                || username.Length > mMaxNameLength
-                || !Program.stringFilter.isEmailValid(email)
-                || !Program.stringFilter.filterContent(username))
+            }
+            else if(Program.stringFilter.findDoubleQuotes(username)
+                ||Program.stringFilter.findDoubleQuotes(email)
+                ||username.Length<mMinNameLength
+                ||username.Length>mMaxNameLength
+                ||!Program.stringFilter.isEmailValid(email)
+                ||!Program.stringFilter.filterContent(username))
             {
                 reply.writeInt8((int)ErrorMessage.ERRMSG_INVALID_ARGUMENT);
-            } else if (Program.storage.doesUserNameExist(username))
+            }
+            else if(Program.storage.doesUserNameExist(username))
             {
                 reply.writeInt8((int)Register.REGISTER_EXISTS_USERNAME);
-            } else if (Program.storage.doesEmailAddressExist(SHA256.HashString(email)))
+            }
+            else if(Program.storage.doesEmailAddressExist(SHA256.HashString(email)))
             {
                 reply.writeInt8((int)Register.REGISTER_EXISTS_EMAIL);
-            } else if (!checkCaptcha(client, captcha))
+            }
+            else if(!checkCaptcha(client, captcha))
             {
                 reply.writeInt8((int)Register.REGISTER_CAPTCHA_WRONG);
-            } else
+            }
+            else
             {
-                ISL.Server.Account.Account acc = new ISL.Server.Account.Account();
+                ISL.Server.Account.Account acc=new ISL.Server.Account.Account();
                 acc.setName(username);
                 acc.setPassword(SHA256.HashString(password));
 
@@ -438,7 +441,7 @@ namespace invertika_account.Account
                 acc.setLevel((int)AccessLevel.AL_PLAYER);
 
                 // Set the date and time of the account registration, and the last login
-                DateTime regdate = DateTime.Now;
+                DateTime regdate=DateTime.Now;
                 acc.setRegistrationDate(regdate);
                 acc.setLastLogin(regdate);
 
@@ -448,7 +451,7 @@ namespace invertika_account.Account
 
                 // Associate account with connection
                 client.setAccount(acc);
-                client.status = AccountClientStatus.CLIENT_CONNECTED;
+                client.status=AccountClientStatus.CLIENT_CONNECTED;
             }
 
             client.send(reply);
@@ -527,7 +530,7 @@ namespace invertika_account.Account
 
         void handleEmailChangeMessage(AccountClient client, MessageIn msg)
         {
-            MessageOut reply = new MessageOut(Protocol.APMSG_EMAIL_CHANGE_RESPONSE);
+            MessageOut reply=new MessageOut(Protocol.APMSG_EMAIL_CHANGE_RESPONSE);
 
             //Account acc = client.getAccount();
             //if (!acc)
@@ -856,41 +859,41 @@ namespace invertika_account.Account
         }
 
         /**
-		 * Adds server specific info to the current message
-		 *
-		 * The info are made of:
-		 * (String) Update Host URL (or "")
-		 * (String) Client Data URL (or "")
-		 * (Byte)   Number of maximum character slots (empty or not)
-		 */
+         * Adds server specific info to the current message
+         *
+         * The info are made of:
+         * (String) Update Host URL (or "")
+         * (String) Client Data URL (or "")
+         * (Byte)   Number of maximum character slots (empty or not)
+         */
         void addServerInfo(MessageOut msg)
         {
             msg.writeString(mUpdateHost);
             /*
-			 * This is for developing/testing an experimental new resource manager that
-			 * downloads only the files it needs on demand.
-			 */
+             * This is for developing/testing an experimental new resource manager that
+             * downloads only the files it needs on demand.
+             */
             msg.writeString(mDataUrl);
             msg.writeInt8(mMaxCharacters);
         }
 
         void tokenMatched(AccountClient client, int accountID)
         {
-            MessageOut reply = new MessageOut(Protocol.APMSG_RECONNECT_RESPONSE);
+            MessageOut reply=new MessageOut(Protocol.APMSG_RECONNECT_RESPONSE);
 
             //Associate account with connection.
-            ISL.Server.Account.Account acc = Program.storage.getAccount(accountID);
+            ISL.Server.Account.Account acc=Program.storage.getAccount(accountID);
             client.setAccount(acc);
-            client.status = AccountClientStatus.CLIENT_CONNECTED;
+            client.status=AccountClientStatus.CLIENT_CONNECTED;
 
             reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
             client.send(reply);
 
             // Return information about available characters
-            Dictionary<uint, Character> chars = acc.getCharacters();
+            Dictionary<uint, Character> chars=acc.getCharacters();
 
             // Send characters list
-            foreach (Character character in chars.Values)
+            foreach(Character character in chars.Values)
             {
                 sendCharacterData(client, character);
             }
@@ -898,7 +901,7 @@ namespace invertika_account.Account
 
         void deletePendingClient(AccountClient client)
         {
-            MessageOut msg = new MessageOut(Protocol.APMSG_RECONNECT_RESPONSE);
+            MessageOut msg=new MessageOut(Protocol.APMSG_RECONNECT_RESPONSE);
             msg.writeInt8((int)ErrorMessage.ERRMSG_TIME_OUT);
             client.disconnect(msg);
             // The client will be deleted when the disconnect event is processed
@@ -906,9 +909,9 @@ namespace invertika_account.Account
 
         protected override void processMessage(NetComputer comp, MessageIn message)
         {
-            AccountClient client = (AccountClient)(comp);
+            AccountClient client=(AccountClient)(comp);
 
-            switch (message.getId())
+            switch(message.getId())
             {
                 case Protocol.PAMSG_LOGIN_RNDTRGR:
                     {
@@ -985,7 +988,7 @@ namespace invertika_account.Account
                 default:
                     {
                         Logger.Write(LogLevel.Warning, "AccountHandler::processMessage, Invalid message type {0}", message.getId());
-                        MessageOut result = new MessageOut(Protocol.XXMSG_INVALID);
+                        MessageOut result=new MessageOut(Protocol.XXMSG_INVALID);
                         client.send(result);
                         break;
                     }
