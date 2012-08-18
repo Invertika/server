@@ -160,93 +160,76 @@ namespace invertika_account.Account
             return mItemDbVersion; 
         }
 
-        ISL.Server.Account.Account getAccountBySQL()
+        ISL.Server.Account.Account getAccountBySQL(int accountID)
         {
-            //try
-            //{
-            //    const dal::RecordSet &accountInfo = mDb.processSql();
+            string sql = String.Format("SELECT * FROM {0} WHERE id = {1};", ACCOUNTS_TBL_NAME, accountID);
+            DataTable table = mDb.ExecuteQuery(sql);
 
-            //    // If the account is not even in the database then
-            //    // we have no choice but to return nothing.
-            //    if (accountInfo.isEmpty())
-            //        return 0;
+            if (table.Rows.Count == 0)
+                return null;
 
-            //    // Specialize the string_to functor to convert
-            //    // a string to an unsigned int.
-            //    string_to< unsigned > toUint;
-            //    unsigned id = toUint(accountInfo(0, 0));
+            // Create an Account instance
+            // and initialize it with information about the user.
+            ISL.Server.Account.Account account = new ISL.Server.Account.Account(accountID);
+            account.setName(table.Rows[0]["username"].ToString());
+            account.setPassword(table.Rows[0]["password"].ToString());
+            account.setEmail(table.Rows[0]["email"].ToString());
+            account.setRegistrationDate(Convert.ToDateTime(table.Rows[0]["registration"]));
+            account.setLastLogin(Convert.ToDateTime(table.Rows[0]["lastlogin"]));
 
-            //    // Create an Account instance
-            //    // and initialize it with information about the user.
-            //    Account *account = new Account(id);
-            //    account.setName(accountInfo(0, 1));
-            //    account.setPassword(accountInfo(0, 2));
-            //    account.setEmail(accountInfo(0, 3));
-            //    account.setRegistrationDate(toUint(accountInfo(0, 6)));
-            //    account.setLastLogin(toUint(accountInfo(0, 7)));
+            int level = Convert.ToInt32(table.Rows[0]["level"]);
 
-            //    int level = toUint(accountInfo(0, 4));
-            //    // Check if the user is permanently banned, or temporarily banned.
-            //    if (level == AL_BANNED
-            //        || time(0) <= (int) toUint(accountInfo(0, 5)))
-            //    {
-            //        account.setLevel(AL_BANNED);
-            //        // It is, so skip character loading.
-            //        return account;
-            //    }
-            //    account.setLevel(level);
+            // Check if the user is permanently banned, or temporarily banned.
+            if (level == (int)AccessLevel.AL_BANNED || DateTime.Now <= Convert.ToDateTime(table.Rows[0]["banned"]))
+            {
+                account.setLevel((int)AccessLevel.AL_BANNED);
+                // It is, so skip character loading.
+                return account;
+            }
+            account.setLevel(level);
 
-            //    // Correct on-the-fly the old 0 slot characters
-            //    // NOTE: Will be deprecated and removed at some point.
-            //    fixCharactersSlot(id);
+            // Correct on-the-fly the old 0 slot characters
+            // NOTE: Will be deprecated and removed at some point.
+            //fixCharactersSlot(id);
 
-            //    // Load the characters associated with the account.
-            //    std::ostringstream sql;
-            //    sql << "select id from " << CHARACTERS_TBL_NAME << " where user_id = '"
-            //        << id << "';";
-            //    const dal::RecordSet &charInfo = mDb.execSql(sql.str());
+            // Load the characters associated with the account.
+            sql = String.Format("SELECT id FROM {0} WHERE user_id = '{1}';", id);
+            Database charInfo = mDb.ExecuteQuery(sql);
 
-            //    if (!charInfo.isEmpty())
-            //    {
-            //        int size = charInfo.rows();
-            //        Characters characters;
+            if (!charInfo.isEmpty())
+            {
+                int size = charInfo.rows();
+                List<Character> characters = new List<Character>();
 
-            //        LOG_DEBUG("Account "<< id << " has " << size
-            //                  << " character(s) in database.");
+                Logger.Write(LogLevel.Debug, "Account {0} has {1} character(s) in database.", id, size);
 
-            //        // Two steps: it seems like multiple requests cannot be alive
-            //        // at the same time.
-            //        std::vector< unsigned > characterIDs;
-            //        for (int k = 0; k < size; ++k)
-            //            characterIDs.push_back(toUint(charInfo(k, 0)));
 
-            //        for (int k = 0; k < size; ++k)
-            //        {
-            //            if (Character *ptr = getCharacter(characterIDs[k], account))
-            //            {
-            //                characters[ptr.getCharacterSlot()] = ptr;
-            //            }
-            //            else
-            //            {
-            //                LOG_ERROR("Failed to get character " << characterIDs[k]
-            //                          << " for account " << id << '.');
-            //            }
-            //        }
+                // Two steps: it seems like multiple requests cannot be alive
+                // at the same time.
+                List<uint> characterIDs = new List<uint>();
 
-            //        account.setCharacters(characters);
-            //    }
+                for (int k = 0; k < size; ++k)
+                {
+                    characterIDs.Add(Convert.ToInt32(charInfo(k, 0)));
+                }
 
-            //    return account;
-            //}
-            //catch (const dal::DbSqlQueryExecFailure &e)
-            //{
-            //    utils::throwError("(DALStorage::getAccountBySQL) SQL query failure: ",
-            //                      e);
-            //}
+                for (int k = 0; k < size; ++k)
+                {
+                    Character ptr = getCharacter(characterIDs[k], account);
 
-            //return 0;
-            //TODO NUNit Tests
-            return null; //ssk;
+                    if (ptr != null)
+                    {
+                        characters[ptr.getCharacterSlot()] = ptr;
+                    } else
+                    {
+                        Logger.Write(LogLevel.Error, "Failed to get character {0} for account {1}.", characterIDs[k], id);
+                    }
+                }
+
+                account.setCharacters(characters);
+            }
+
+            return account;
         }
 
         void fixCharactersSlot(int accountId)
@@ -587,7 +570,7 @@ namespace invertika_account.Account
             string sql = String.Format("SELECT COUNT(username) AS COUNT FROM {0}  WHERE username = \"{1}\"", ACCOUNTS_TBL_NAME, name);
             DataTable table = mDb.ExecuteQuery(sql);
 
-            if ((long)(table.Rows [0] ["COUNT"]) > 0)
+            if ((long)(table.Rows[0]["COUNT"]) > 0)
                 return true;
             else
                 return false;
@@ -598,7 +581,7 @@ namespace invertika_account.Account
             string sql = String.Format("SELECT COUNT(email) AS COUNT FROM {0}  WHERE UPPER(email) = UPPER(\"{1}\")", ACCOUNTS_TBL_NAME, email);
             DataTable table = mDb.ExecuteQuery(sql);
 
-            if ((long)(table.Rows [0] ["COUNT"]) > 0)
+            if ((long)(table.Rows[0]["COUNT"]) > 0)
                 return true;
             else
                 return false;
@@ -609,7 +592,7 @@ namespace invertika_account.Account
             string sql = String.Format("SELECT COUNT(name) AS COUNT FROM {0}  WHERE name = \"{1}\"", CHARACTERS_TBL_NAME, name);
             DataTable table = mDb.ExecuteQuery(sql);
 
-            if ((long)(table.Rows [0] ["COUNT"]) > 0)
+            if ((long)(table.Rows[0]["COUNT"]) > 0)
                 return true;
             else
                 return false;
@@ -1143,7 +1126,7 @@ namespace invertika_account.Account
             sql = String.Format("SELECT id FROM {0} WHERE name = \"{1}\"", GUILDS_TBL_NAME, guild.getName());
             DataTable table = mDb.ExecuteQuery(sql);
 
-            long id = (long)table.Rows [0] ["id"];
+            long id = (long)table.Rows[0]["id"];
             guild.setId((int)id);
         }
 
@@ -1187,10 +1170,10 @@ namespace invertika_account.Account
 
             foreach (DataRow row in table.Rows)
             {
-                int itemID = Convert.ToInt32(row ["item_id"]);
-                int itemAmount = Convert.ToInt32(row ["amount"]);
-                int posX = Convert.ToInt32(row ["pos_x"]);
-                int posY = Convert.ToInt32(row ["pos_y"]);
+                int itemID = Convert.ToInt32(row["item_id"]);
+                int itemAmount = Convert.ToInt32(row["amount"]);
+                int posX = Convert.ToInt32(row["pos_x"]);
+                int posY = Convert.ToInt32(row["pos_y"]);
 
                 FloorItem fitem = new FloorItem(itemID, itemAmount, posX, posY);
                 floorItems.Add(fitem);
@@ -1274,7 +1257,7 @@ namespace invertika_account.Account
         {
             string query = String.Format("select value from {0}  WHERE owner_id = {1} AND name = {2}", QUESTS_TBL_NAME, id, name);
             DataTable table = mDb.ExecuteQuery(query);
-            return table.Rows [0] ["value"].ToString(); //TODO Testen ob Ergebnis kommt
+            return table.Rows[0]["value"].ToString(); //TODO Testen ob Ergebnis kommt
         }
 
         string getWorldStateVar(string name, int mapId)
@@ -1284,7 +1267,7 @@ namespace invertika_account.Account
                 query += String.Format(" AND map_id = {0}", mapId);
 
             DataTable rs = mDb.ExecuteQuery(query);
-            return (string)rs.Rows [0] [0];
+            return (string)rs.Rows[0][0];
         }
 
         public Dictionary<string, string> getAllWorldStateVars(int mapId)
@@ -1312,8 +1295,8 @@ namespace invertika_account.Account
 
             foreach (DataRow row in table.Rows)
             {
-                string state_name = row ["state_name"].ToString();
-                string state_value = row ["value"].ToString();
+                string state_name = row["state_name"].ToString();
+                string state_value = row["value"].ToString();
                 variables.Add(state_name, state_value);
             }
 
