@@ -330,224 +330,182 @@ namespace invertika_account.Account
 
         Character getCharacterBySQL(ISL.Server.Account.Account owner)
         {
-            //Character *character = 0;
+            Character character = null;
 
-            //// Specialize the string_to functor to convert
-            //// a string to an unsigned int.
-            //string_to< unsigned > toUint;
-            //string_to< int > toInt;
+            string sql = String.Format("SELECT * FROM {0},  WHERE id = {1}", CHARACTERS_TBL_NAME, id);
+            DataTable table= charInfo = mDb.ExecuteQuery(sql);
 
-            //try
-            //{
-            //    const dal::RecordSet &charInfo = mDb.processSql();
+                // If the character is not even in the database then
+                // we have no choice but to return nothing.
+            if(charInfo.Rows.Count==0) return null;
 
-            //    // If the character is not even in the database then
-            //    // we have no choice but to return nothing.
-            //    if (charInfo.isEmpty())
-            //        return 0;
+            character = new Character(charInfo.Rows[0]["name"], charInfo.Rows[0]["id"]);
+                character.setGender(charInfo.Rows[0]["name"]);
+                character.setHairStyle(charInfo.Rows[0]["name"]);
+                character.setHairColor(charInfo.Rows[0]["name"]);
+                character.setLevel(charInfo.Rows[0]["name"]);
+                character.setCharacterPoints(charInfo.Rows[0]["name"]);
+                character.setCorrectionPoints(charInfo.Rows[0]["name"]);
 
-            //    // Specialize the string_to functor to convert
-            //    // a string to an unsigned short.
-            //    string_to< unsigned short > toUshort;
-            //    string_to< double > toDouble;
+            Point pos=new Point(charInfo.Rows[0]["name"], charInfo.Rows[0]["name"]);
+                character.setPosition();
 
-            //    character = new Character(charInfo(0, 2), toUint(charInfo(0, 0)));
-            //    character.setGender(toUshort(charInfo(0, 3)));
-            //    character.setHairStyle(toUshort(charInfo(0, 4)));
-            //    character.setHairColor(toUshort(charInfo(0, 5)));
-            //    character.setLevel(toUshort(charInfo(0, 6)));
-            //    character.setCharacterPoints(toUshort(charInfo(0, 7)));
-            //    character.setCorrectionPoints(toUshort(charInfo(0, 8)));
-            //    Point pos(toInt(charInfo(0, 9)), toInt(charInfo(0, 10)));
-            //    character.setPosition(pos);
+                int mapId = toUint(charInfo(0, 11));
+                if (mapId > 0)
+                {
+                    character.setMapId(mapId);
+                }
+                else
+                {
+                    // Set character to default map and one of the default location
+                    // Default map is to be 1, as not found return value will be 0.
+                    character.setMapId(Configuration::getValue("char_defaultMap", 1));
+                }
 
-            //    int mapId = toUint(charInfo(0, 11));
-            //    if (mapId > 0)
-            //    {
-            //        character.setMapId(mapId);
-            //    }
-            //    else
-            //    {
-            //        // Set character to default map and one of the default location
-            //        // Default map is to be 1, as not found return value will be 0.
-            //        character.setMapId(Configuration::getValue("char_defaultMap", 1));
-            //    }
+                character.setCharacterSlot(toUint(charInfo(0, 12)));
 
-            //    character.setCharacterSlot(toUint(charInfo(0, 12)));
+                // Fill the account-related fields. Last step, as it may require a new
+                // SQL query.
+                if (owner)
+                {
+                    character.setAccount(owner);
+                }
+                else
+                {
+                    int id = toUint(charInfo(0, 1));
+                    character.setAccountID(id);
+                    
+                string s=String.Format("SELECT level FROM {0} WHERE id = '{1}';", ACCOUNTS_TBL_NAME, id);
+                DataTable levelInfo=mDb.ExecuteQuery(s);
 
-            //    // Fill the account-related fields. Last step, as it may require a new
-            //    // SQL query.
-            //    if (owner)
-            //    {
-            //        character.setAccount(owner);
-            //    }
-            //    else
-            //    {
-            //        int id = toUint(charInfo(0, 1));
-            //        character.setAccountID(id);
-            //        std::ostringstream s;
-            //        s << "select level from " << ACCOUNTS_TBL_NAME
-            //          << " where id = '" << id << "';";
-            //        const dal::RecordSet &levelInfo = mDb.execSql(s.str());
-            //        character.setAccountLevel(toUint(levelInfo(0, 0)), true);
-            //    }
+                    character.setAccountLevel(levelInfo[0]["level"], true);
+                }
 
-            //    std::ostringstream s;
 
-            //    // Load attributes.
-            //    s << "SELECT attr_id, attr_base, attr_mod "
-            //      << "FROM " << CHAR_ATTR_TBL_NAME << " "
-            //      << "WHERE char_id = " << character.getDatabaseID();
+                // Load attributes."
+            string s2=String.Format("SELECT attr_id, attr_base, attr_mod FROM {0} WHERE char_id = {1};", CHAR_ATTR_TBL_NAME, character.getDatabaseID());
+            DataTable attrInfo=mDb.ExecuteQuery(s2);
 
-            //    const dal::RecordSet &attrInfo = mDb.execSql(s.str());
-            //    if (!attrInfo.isEmpty())
-            //    {
-            //        const unsigned int nRows = attrInfo.rows();
-            //        for (unsigned int row = 0; row < nRows; ++row)
-            //        {
-            //            unsigned int id = toUint(attrInfo(row, 0));
-            //            character.setAttribute(id,    toDouble(attrInfo(row, 1)));
-            //            character.setModAttribute(id, toDouble(attrInfo(row, 2)));
-            //        }
-            //    }
+                if (attrInfo.Rows.Count>0)
+                {
+                    uint nRows = attrInfo.Rows.Count;
 
-            //    s.clear();
-            //    s.str("");
+                    for (uint row = 0; row < nRows; ++row)
+                    {
+                        uint id = toUint(attrInfo(row, 0));
+                        character.setAttribute(id,    toDouble(attrInfo(row, 1)));
+                        character.setModAttribute(id, toDouble(attrInfo(row, 2)));
+                    }
+                }
 
-            //    // Load the skills of the char from CHAR_SKILLS_TBL_NAME
-            //    s << "select status_id, status_time FROM "
-            //      << CHAR_STATUS_EFFECTS_TBL_NAME
-            //      << " WHERE char_id = " << character.getDatabaseID();
+                // Load the skills of the char from CHAR_SKILLS_TBL_NAME
+            string s3=String.Format("SELECT status_id, status_time FROM {0} WHERE char_id = {1};", CHAR_STATUS_EFFECTS_TBL_NAME, character.getDatabaseID());
+            DataTable skillInfo=mDb.ExecuteQuery(s3);
+                
+                if (skillInfo.Rows.Count>0)
+                {
+                    uint nRows = skillInfo.Rows.Count;
+                    for (uint row = 0; row < nRows; row++)
+                    {
+                        character.setExperience(
+                            toUint(skillInfo(row, 0)),  // Skill Id
+                            toUint(skillInfo(row, 1))); // Experience
+                    }
+                }
 
-            //    const dal::RecordSet &skillInfo = mDb.execSql(s.str());
-            //    if (!skillInfo.isEmpty())
-            //    {
-            //        const unsigned int nRows = skillInfo.rows();
-            //        for (unsigned int row = 0; row < nRows; row++)
-            //        {
-            //            character.setExperience(
-            //                toUint(skillInfo(row, 0)),  // Skill Id
-            //                toUint(skillInfo(row, 1))); // Experience
-            //        }
-            //    }
+                // Load the status effect
+            string s4=String.Format("SELECT status_id, status_time FROM {0} WHERE char_id = {1};", CHAR_STATUS_EFFECTS_TBL_NAME, character.getDatabaseID());
+            DataTable statusInfo = mDb.ExecuteQuery(s4);
 
-            //    // Load the status effect
-            //    s.clear();
-            //    s.str("");
-            //    s << "select status_id, status_time FROM "
-            //      << CHAR_STATUS_EFFECTS_TBL_NAME
-            //      << " WHERE char_id = " << character.getDatabaseID();
-            //    const dal::RecordSet &statusInfo = mDb.execSql(s.str());
-            //    if (!statusInfo.isEmpty())
-            //    {
-            //        const unsigned int nRows = statusInfo.rows();
-            //        for (unsigned int row = 0; row < nRows; row++)
-            //        {
-            //            character.applyStatusEffect(
-            //                toUint(statusInfo(row, 0)), // Status Id
-            //                toUint(statusInfo(row, 1))); // Time
-            //        }
-            //    }
+                if (statusInfo.Rows.Count>0)
+                {
+                uint nRows = statusInfo.Rows.Count;
+                    for (uint row = 0; row < nRows; row++)
+                    {
+                        character.applyStatusEffect(
+                            toUint(statusInfo(row, 0)), // Status Id
+                            toUint(statusInfo(row, 1))); // Time
+                    }
+                }
 
-            //    // Load the kill stats
-            //    s.clear();
-            //    s.str("");
-            //    s << "select monster_id, kills FROM " << CHAR_KILL_COUNT_TBL_NAME
-            //      << " WHERE char_id = " << character.getDatabaseID();
-            //    const dal::RecordSet &killsInfo = mDb.execSql(s.str());
-            //    if (!killsInfo.isEmpty())
-            //    {
-            //        const unsigned int nRows = killsInfo.rows();
-            //        for (unsigned int row = 0; row < nRows; row++)
-            //        {
-            //            character.setKillCount(
-            //                toUint(killsInfo(row, 0)), // MonsterID
-            //                toUint(killsInfo(row, 1))); // Kills
-            //        }
-            //    }
+                // Load the kill stats
+            string s5=String.Format("SELECT monster_id, kills FROM {0} WHERE char_id = {1};", CHAR_KILL_COUNT_TBL_NAME,  character.getDatabaseID());
+            DataTable killsInfo=mDb.ExecuteQuery(s5);
 
-            //    // Load the special status
-            //    s.clear();
-            //    s.str("");
-            //    s << "select special_id FROM " << CHAR_SPECIALS_TBL_NAME
-            //      << " WHERE char_id = " << character.getDatabaseID();
-            //    const dal::RecordSet &specialsInfo = mDb.execSql(s.str());
-            //    if (!specialsInfo.isEmpty())
-            //    {
-            //        const unsigned int nRows = specialsInfo.rows();
-            //        for (unsigned int row = 0; row < nRows; row++)
-            //            character.giveSpecial(toUint(specialsInfo(row, 0)));
-            //    }
-            //}
-            //catch (const dal::DbSqlQueryExecFailure &e)
-            //{
-            //    utils::throwError("DALStorage::getCharacter #1) SQL query failure: ",
-            //                      e);
-            //}
+                if (killsInfo.Rows.Count>0)
+                {
+                uint nRows = killsInfo.Rows.Count;
+                    for (uint row = 0; row < nRows; row++)
+                    {
+                        character.setKillCount(
+                            toUint(killsInfo(row, 0)), // MonsterID
+                            toUint(killsInfo(row, 1))); // Kills
+                    }
+                }
 
-            //Possessions &poss = character.getPossessions();
+                // Load the special status
+            string s6=String.Format("SELECT special_id FROM {0} WHERE char_id = {1};", CHAR_SPECIALS_TBL_NAME, character.getDatabaseID());
+            DataTable specialsInfo=mDb.ExecuteQuery(s6);
 
-            //try
-            //{
-            //    std::ostringstream sql;
-            //    sql << " select slot_type, item_id, item_instance from "
-            //        << CHAR_EQUIPS_TBL_NAME
-            //        << " where owner_id = '"
-            //        << character.getDatabaseID() << "' order by slot_type desc;";
+                if (specialsInfo.Rows.Count>0)
+                {
+                    uint nRows = specialsInfo.Rows.Count;
+                    for (uint row = 0; row < nRows; row++)
+                {
+                        character.giveSpecial(toUint(specialsInfo(row, 0)));
+                }
+                }
+         
 
-            //    EquipData equipData;
-            //    const dal::RecordSet &equipInfo = mDb.execSql(sql.str());
-            //    if (!equipInfo.isEmpty())
-            //    {
-            //        EquipmentItem equipItem;
-            //        for (int k = 0, size = equipInfo.rows(); k < size; ++k)
-            //        {
-            //            equipItem.itemId = toUint(equipInfo(k, 1));
-            //            equipItem.itemInstance = toUint(equipInfo(k, 2));
-            //            equipData.insert(std::pair<unsigned int, EquipmentItem>(
-            //                                 toUint(equipInfo(k, 0)),
-            //                                 equipItem));
-            //        }
-            //    }
-            //    poss.setEquipment(equipData);
-            //}
-            //catch (const dal::DbSqlQueryExecFailure &e)
-            //{
-            //    utils::throwError("DALStorage::getCharacter #2) SQL query failure: ",
-            //                      e);
-            //}
+            Possessions &poss = character.getPossessions();
 
-            //try
-            //{
-            //    std::ostringstream sql;
-            //    sql << " select * from " << INVENTORIES_TBL_NAME
-            //        << " where owner_id = '"
-            //        << character.getDatabaseID() << "' order by slot asc;";
+          
+                std::ostringstream sql;
+                sql << " select slot_type, item_id, item_instance from "
+                    << CHAR_EQUIPS_TBL_NAME
+                    << " where owner_id = '"
+                    << character.getDatabaseID() << "' order by slot_type desc;";
 
-            //    InventoryData inventoryData;
-            //    const dal::RecordSet &itemInfo = mDb.execSql(sql.str());
-            //    if (!itemInfo.isEmpty())
-            //    {
-            //        for (int k = 0, size = itemInfo.rows(); k < size; ++k)
-            //        {
-            //            InventoryItem item;
-            //            unsigned short slot = toUint(itemInfo(k, 2));
-            //            item.itemId   = toUint(itemInfo(k, 3));
-            //            item.amount   = toUint(itemInfo(k, 4));
-            //            inventoryData[slot] = item;
-            //        }
-            //    }
-            //    poss.setInventory(inventoryData);
-            //}
-            //catch (const dal::DbSqlQueryExecFailure &e)
-            //{
-            //    utils::throwError("DALStorage::getCharacter #3) SQL query failure: ",
-            //                      e);
-            //}
+                EquipData equipData;
+                const dal::RecordSet &equipInfo = mDb.execSql(sql.str());
+                if (!equipInfo.isEmpty())
+                {
+                    EquipmentItem equipItem;
+                    for (int k = 0, size = equipInfo.rows(); k < size; ++k)
+                    {
+                        equipItem.itemId = toUint(equipInfo(k, 1));
+                        equipItem.itemInstance = toUint(equipInfo(k, 2));
+                        equipData.insert(std::pair<unsigned int, EquipmentItem>(
+                                             toUint(equipInfo(k, 0)),
+                                             equipItem));
+                    }
+                }
+                poss.setEquipment(equipData);
+     
 
-            //return character;
+         
+                std::ostringstream sql;
+                sql << " select * from " << INVENTORIES_TBL_NAME
+                    << " where owner_id = '"
+                    << character.getDatabaseID() << "' order by slot asc;";
 
-            return null; //ssk
+                InventoryData inventoryData;
+                const dal::RecordSet &itemInfo = mDb.execSql(sql.str());
+                if (!itemInfo.isEmpty())
+                {
+                    for (int k = 0, size = itemInfo.rows(); k < size; ++k)
+                    {
+                        InventoryItem item;
+                        ushort slot = toUint(itemInfo(k, 2));
+                        item.itemId   = toUint(itemInfo(k, 3));
+                        item.amount   = toUint(itemInfo(k, 4));
+                        inventoryData[slot] = item;
+                    }
+                }
+                poss.setInventory(inventoryData);
+        
+
+            return character;
         }
 
         public Character getCharacter(int id, ISL.Server.Account.Account owner)
