@@ -417,7 +417,7 @@ namespace invertika_account.Account
 
             if (statusInfo.Rows.Count > 0)
             {
-                uint nRows = statusInfo.Rows.Count;
+                uint nRows = (uint)statusInfo.Rows.Count;
                 for (uint row = 0; row < nRows; row++)
                 {
                     character.applyStatusEffect(
@@ -432,7 +432,7 @@ namespace invertika_account.Account
 
             if (killsInfo.Rows.Count > 0)
             {
-                uint nRows = killsInfo.Rows.Count;
+                uint nRows = (uint)killsInfo.Rows.Count;
                 for (uint row = 0; row < nRows; row++)
                 {
                     character.setKillCount(
@@ -447,10 +447,11 @@ namespace invertika_account.Account
 
             if (specialsInfo.Rows.Count > 0)
             {
-                uint nRows = specialsInfo.Rows.Count;
+                uint nRows = (uint)specialsInfo.Rows.Count;
                 for (uint row = 0; row < nRows; row++)
                 {
-                    character.giveSpecial(toUint(specialsInfo(row, 0)));
+                    //TODO Überprüfen ob so sinnvoll? (der 0 Paramater?)
+                    character.giveSpecial(Convert.ToInt32(specialsInfo.Rows[0]["special_id"]), 0);
                 }
             }
          
@@ -459,37 +460,35 @@ namespace invertika_account.Account
             string s7 = String.Format("SELECT slot_type, item_id, item_instance FROM {0} WHERE owner_id = '{1}' ORDER BY slot_type desc;", CHAR_EQUIPS_TBL_NAME, character.getDatabaseID());
             DataTable equipInfo = mDb.ExecuteQuery(s7);
 
-            EquipData equipData;
+            Dictionary< uint, EquipmentItem > equipData = new Dictionary<uint, EquipmentItem>();
 
             if (equipInfo.Rows.Count > 0)
             {
-                EquipmentItem equipItem;
+                EquipmentItem equipItem = new EquipmentItem();
 
-                for (int k = 0, size = equipInfo.rows(); k < size; ++k)
+                for (int k = 0, size = equipInfo.Rows.Count; k < size; ++k)
                 {
-                    equipItem.itemId = toUint(equipInfo(k, 1));
-                    equipItem.itemInstance = toUint(equipInfo(k, 2));
-                    equipData.insert(std::pair<uint, EquipmentItem>(
-                                             toUint(equipInfo(k, 0)),
-                                             equipItem)
-                    );
+                    equipItem.itemId = Convert.ToUInt32(equipInfo.Rows[0]["item_id"]);
+                    equipItem.itemInstance = Convert.ToUInt32(equipInfo.Rows[0]["item_instance"]);
+                    equipData.Add(Convert.ToUInt32(equipInfo.Rows[0]["slot_type"]), equipItem);
                 }
             }
+
             poss.setEquipment(equipData);
      
             string s8 = String.Format("SELECT * FROM {0} WHERE owner_id = '{1}' ORDER by slot ASC", INVENTORIES_TBL_NAME, character.getDatabaseID());
             DataTable itemInfo = mDb.ExecuteQuery(s8);
 
-            InventoryData inventoryData;
+            Dictionary<uint, InventoryItem > inventoryData = new Dictionary<uint, InventoryItem>();
        
             if (itemInfo.Rows.Count > 0)
             {
                 for (int k = 0, size = itemInfo.Rows.Count; k < size; ++k)
                 {
-                    InventoryItem item;
-                    ushort slot = toUint(itemInfo(k, 2));
-                    item.itemId = toUint(itemInfo(k, 3));
-                    item.amount = toUint(itemInfo(k, 4));
+                    InventoryItem item = new InventoryItem();
+                    ushort slot = Convert.ToUInt16(itemInfo.Rows[0]["slot"]);
+                    item.itemId = Convert.ToUInt32(itemInfo.Rows[0]["class_id"]); 
+                    item.amount = Convert.ToUInt32(itemInfo.Rows[0]["amount"]);
                     inventoryData[slot] = item;
                 }
             }
