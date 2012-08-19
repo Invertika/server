@@ -174,6 +174,11 @@ namespace invertika_account.Account
             account.setName(table.Rows[0]["username"].ToString());
             account.setPassword(table.Rows[0]["password"].ToString());
             account.setEmail(table.Rows[0]["email"].ToString());
+
+            string reg=table.Rows[0]["registration"].ToString();
+            long regDT=Convert.ToInt64(reg);
+            DateTime regRDT=new DateTime(regDT);
+
             account.setRegistrationDate(Convert.ToDateTime(table.Rows[0]["registration"]));
             account.setLastLogin(Convert.ToDateTime(table.Rows[0]["lastlogin"]));
 
@@ -303,7 +308,7 @@ namespace invertika_account.Account
 
         public ISL.Server.Account.Account getAccount(string userName)
         {
-            string sql=String.Format("SELECT id FROM {0} WHERE username = {1};", ACCOUNTS_TBL_NAME, userName);
+            string sql=String.Format("SELECT id FROM {0} WHERE username = '{1}';", ACCOUNTS_TBL_NAME, userName);
             DataTable tmp=mDb.ExecuteQuery(sql);
 
             int id=Convert.ToInt32(tmp.Rows[0]["id"]);

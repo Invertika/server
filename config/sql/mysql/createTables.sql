@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `mana_accounts` (
     `registration` BigInt       unsigned NOT NULL,
     `lastlogin`    BigInt      unsigned NOT NULL,
     `authorization` text            NULL,
-    `expiration`    int(10)         NULL,
+    `expiration`    BigInt         NULL,
     --
     PRIMARY KEY  (`id`),
     UNIQUE KEY `username` (`username`),
