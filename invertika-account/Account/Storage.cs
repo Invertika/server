@@ -1758,30 +1758,8 @@ namespace invertika_account.Account
 
         public void addTransaction(Transaction trans)
         {
-            //try
-            //{
-            //    std::stringstream sql;
-            //    sql << "INSERT INTO " << TRANSACTION_TBL_NAME
-            //        << " VALUES (NULL, " << trans.mCharacterId << ", "
-            //        << trans.mAction << ", "
-            //        << "?, "
-            //        << time(0) << ")";
-            //    if (mDb.prepareSql(sql.str()))
-            //    {
-            //        mDb.bindValue(1, trans.mMessage);
-            //        mDb.processSql();
-            //    }
-            //    else
-            //    {
-            //        utils::throwError("(DALStorage::SyncDatabase) "
-            //                          "SQL query preparation failure.");
-            //    }
-            //}
-            //catch (const dal::DbSqlQueryExecFailure &e)
-            //{
-            //    utils::throwError("(DALStorage::addTransaction) SQL query failure: ",
-            //                      e);
-            //}
+			string sql=String.Format("INSERT INTO {0} VALUES (NULL, {1}, {2}, {3}, {4});", TRANSACTION_TBL_NAME, trans.mCharacterId, trans.mAction, trans.mMessage);
+			mDb.ExecuteNonQuery(sql);
         }
 
         List<Transaction> getTransactions(uint num)
