@@ -428,7 +428,7 @@ CREATE TABLE IF NOT EXISTS `mana_transactions` (
   `char_id` int(11) NOT NULL,
   `action` int(11) NOT NULL,
   `message` text,
-  `time` int(11) NOT NULL,
+  `time` BigInt NOT NULL,
   PRIMARY KEY  (`id`)
 )
 AUTO_INCREMENT=0 ;
