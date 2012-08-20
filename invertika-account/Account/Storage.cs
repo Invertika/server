@@ -199,7 +199,7 @@ namespace invertika_account.Account
             //fixCharactersSlot(id);
 
             // Load the characters associated with the account.
-            sql=String.Format("SELECT id FROM {0} WHERE user_id = '{1}';", accountID);
+			sql=String.Format("SELECT id FROM {0} WHERE user_id = '{1}';", CHARACTERS_TBL_NAME, accountID);
             DataTable charInfo=mDb.ExecuteQuery(sql);
 
             if(charInfo.Rows.Count>0)
