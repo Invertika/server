@@ -48,6 +48,14 @@ namespace invertika_account.Chat
 		//std::deque<PartyInvite> mInvitations;
 		Dictionary<string, int> mNumInvites;
 
+		public static void registerChatClient(string token, string name, int level)
+		{
+			Pending p=new Pending();
+			p.character=name;
+			p.level=(byte)level;
+			Program.chatHandler.mTokenCollector.addPendingConnect(token, p);
+		}
+
 		public ChatHandler()
 		{
 			mTokenCollector=new TokenCollector<ChatHandler, ChatClient, Pending>();

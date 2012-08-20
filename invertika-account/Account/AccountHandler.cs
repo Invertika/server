@@ -39,6 +39,7 @@ using System.Net;
 using ISL.Server.Account;
 using CSCL;
 using CSCL.Crypto;
+using invertika_account.Chat;
 
 namespace invertika_account.Account
 {
@@ -749,72 +750,70 @@ namespace invertika_account.Account
 
         void handleCharacterSelectMessage(AccountClient client, MessageIn msg)
         {
-            //MessageOut reply(APMSG_CHAR_SELECT_RESPONSE);
+            MessageOut reply=new MessageOut(Protocol.APMSG_CHAR_SELECT_RESPONSE);
 
-            //Account *acc = client.getAccount();
-            //if (!acc)
-            //{
-            //    reply.writeInt8(ERRMSG_NO_LOGIN);
-            //    client.send(reply);
-            //    return; // not logged in
-            //}
+            ISL.Server.Account.Account acc = client.getAccount();
 
-            //int slot = msg.readInt8();
-            //Characters &chars = acc.getCharacters();
+            if (acc==null)
+            {
+                reply.writeInt8((int)ErrorMessage.ERRMSG_NO_LOGIN);
+                client.send(reply);
+                return; // not logged in
+            }
 
-            //if (chars.find(slot) == chars.end())
-            //{
-            //    // Invalid char selection
-            //    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
-            //    client.send(reply);
-            //    return;
-            //}
+            int slot = msg.readInt8();
+            Dictionary<uint, Character> chars = acc.getCharacters();
 
-            //Character *selectedChar = chars[slot];
+			if(chars.ContainsKey((uint)slot)==false)
+            {
+                // Invalid char selection
+                reply.writeInt8((int)ErrorMessage.ERRMSG_INVALID_ARGUMENT);
+                client.send(reply);
+                return;
+            }
 
-            //std::string address;
-            //int port;
-            //if (!GameServerHandler::getGameServerFromMap
-            //        (selectedChar.getMapId(), address, port))
-            //{
-            //    LOG_ERROR("Character Selection: No game server for map #"<<selectedChar.getMapId());
-            //    reply.writeInt8(ERRMSG_FAILURE);
-            //    client.send(reply);
-            //    return;
-            //}
+            Character selectedChar = chars[(uint)slot];
 
-            //reply.writeInt8(ERRMSG_OK);
+            string address;
+            int port;
+			
+            if (!GameServerHandler.getGameServerFromMap(selectedChar.getMapId(), out address, out port))
+            {
+                Logger.Write(LogLevel.Error, "Character Selection: No game server for map #{0}", selectedChar.getMapId());
+                reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
+                client.send(reply);
+                return;
+            }
 
-            //LOG_DEBUG(selectedChar.getName() << " is trying to enter the servers.");
+            reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
 
-            //std::string magic_token(utils::getMagicToken());
-            //reply.writeString(magic_token, MAGIC_TOKEN_LENGTH);
-            //reply.writeString(address);
-            //reply.writeInt16(port);
+			Logger.Write(LogLevel.Debug, "{0} is trying to enter the servers.", selectedChar.getName());
 
-            //// Give address and port for the chat server
-            //reply.writeString(Configuration::getValue("net_chatHost",
-            //                                          "localhost"));
+            string magic_token=Various.GetUniqueID();
+            reply.writeString(magic_token);
+            reply.writeString(address);
+            reply.writeInt16(port);
 
-            //// When the chatListenToClientPort is set, we use it.
-            //// Otherwise, we use the accountListenToClientPort + 2 if the option is set.
-            //// If neither, the DEFAULT_SERVER_PORT + 2 is used.
-            //const int alternativePort =
-            //    Configuration::getValue("net_accountListenToClientPort",
-            //                            DEFAULT_SERVER_PORT) + 2;
-            //reply.writeInt16(Configuration::getValue("net_chatListenToClientPort",
-            //                                         alternativePort));
+            // Give address and port for the chat server
+            reply.writeString(Configuration.getValue("net_chatHost", "localhost"));
 
-            //GameServerHandler::registerClient(magic_token, selectedChar);
-            //registerChatClient(magic_token, selectedChar.getName(), acc.getLevel());
+            // When the chatListenToClientPort is set, we use it.
+            // Otherwise, we use the accountListenToClientPort + 2 if the option is set.
+            // If neither, the DEFAULT_SERVER_PORT + 2 is used.
+            int alternativePort =  Configuration.getValue("net_accountListenToClientPort",  Configuration.DEFAULT_SERVER_PORT) + 2;
+            reply.writeInt16(Configuration.getValue("net_chatListenToClientPort",  alternativePort));
 
-            //client.send(reply);
+            GameServerHandler.registerClient(magic_token, selectedChar);
+            ChatHandler.registerChatClient(magic_token, selectedChar.getName(), acc.getLevel());
 
-            //// log transaction
-            //Transaction trans;
-            //trans.mCharacterId = selectedChar.getDatabaseID();
-            //trans.mAction = TRANS_CHAR_SELECTED;
-            //storage.addTransaction(trans);
+            client.send(reply);
+
+            // log transaction
+			Transaction trans=new Transaction();
+            trans.mCharacterId = (uint)selectedChar.getDatabaseID();
+			trans.mAction=(uint)TransactionMembers.TRANS_CHAR_SELECTED;
+
+            Program.storage.addTransaction(trans);
         }
 
         void handleCharacterDeleteMessage(AccountClient client, MessageIn msg)
