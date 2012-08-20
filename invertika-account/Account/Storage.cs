@@ -160,6 +160,11 @@ namespace invertika_account.Account
             return mItemDbVersion; 
         }
 
+		DateTime ToDateTime(string ticks)
+		{
+			return new DateTime(Convert.ToInt64(ticks));
+		}
+
         ISL.Server.Account.Account getAccountBySQL(int accountID)
         {
             string sql=String.Format("SELECT * FROM {0} WHERE id = {1};", ACCOUNTS_TBL_NAME, accountID);
@@ -175,17 +180,13 @@ namespace invertika_account.Account
             account.setPassword(table.Rows[0]["password"].ToString());
             account.setEmail(table.Rows[0]["email"].ToString());
 
-            string reg=table.Rows[0]["registration"].ToString();
-            long regDT=Convert.ToInt64(reg);
-            DateTime regRDT=new DateTime(regDT);
-
-            account.setRegistrationDate(Convert.ToDateTime(table.Rows[0]["registration"]));
-            account.setLastLogin(Convert.ToDateTime(table.Rows[0]["lastlogin"]));
+			account.setRegistrationDate(ToDateTime(table.Rows[0]["registration"].ToString()));
+            account.setLastLogin(ToDateTime(table.Rows[0]["lastlogin"].ToString()));
 
             int level=Convert.ToInt32(table.Rows[0]["level"]);
 
             // Check if the user is permanently banned, or temporarily banned.
-            if(level==(int)AccessLevel.AL_BANNED||DateTime.Now<=Convert.ToDateTime(table.Rows[0]["banned"]))
+			if(level==(int)AccessLevel.AL_BANNED||DateTime.Now<=ToDateTime(table.Rows[0]["banned"].ToString()))
             {
                 account.setLevel((int)AccessLevel.AL_BANNED);
                 // It is, so skip character loading.
