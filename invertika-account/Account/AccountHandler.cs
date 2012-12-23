@@ -69,6 +69,11 @@ namespace invertika_account.Account
         //without having to provide username and password a second time.
         public TokenCollector<AccountHandler, AccountClient, int> mTokenCollector;
 
+        /** List of attributes that the client can send at account creation. */
+        List<int> mModifiableAttributes=new List<int>();
+
+        Dictionary<uint, Attribute> mDefaultAttributes=new  Dictionary<uint, Attribute>();
+
         public AccountHandler(string attributesFile)
         {
             mTokenCollector=new TokenCollector<AccountHandler, AccountClient, int>();
@@ -607,145 +612,156 @@ namespace invertika_account.Account
             // Avoid creation of character from old clients.
             int slot=-1;
             if(msg.getUnreadLength()>7)
+            {
                 slot=msg.readInt8();
+            }
 
-            //MessageOut reply(APMSG_CHAR_CREATE_RESPONSE);
+            MessageOut reply=new MessageOut(Protocol.APMSG_CHAR_CREATE_RESPONSE);
 
-            //Account *acc = client.getAccount();
-            //if (!acc)
-            //{
-            //    reply.writeInt8(ERRMSG_NO_LOGIN);
-            //}
-            //else if (!stringFilter.filterContent(name))
-            //{
-            //    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
-            //}
-            //else if (stringFilter.findDoubleQuotes(name))
-            //{
-            //    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
-            //}
-            //else if (hairStyle > mNumHairStyles)
-            //{
-            //    reply.writeInt8(CREATE_INVALID_HAIRSTYLE);
-            //}
-            //else if (hairColor > mNumHairColors)
-            //{
-            //    reply.writeInt8(CREATE_INVALID_HAIRCOLOR);
-            //}
-            //else if (gender > mNumGenders)
-            //{
-            //    reply.writeInt8(CREATE_INVALID_GENDER);
-            //}
-            //else if ((name.length() < mMinNameLength) ||
-            //         (name.length() > mMaxNameLength))
-            //{
-            //    reply.writeInt8(ERRMSG_INVALID_ARGUMENT);
-            //}
-            //else
-            //{
-            //    if (storage.doesCharacterNameExist(name))
-            //    {
-            //        reply.writeInt8(CREATE_EXISTS_NAME);
-            //        client.send(reply);
-            //        return;
-            //    }
+            ISL.Server.Account.Account acc=client.getAccount();
 
-            //    // An account shouldn't have more
-            //    // than <account_maxCharacters> characters.
-            //    Characters &chars = acc.getCharacters();
-            //    if (slot < 1 || slot > mMaxCharacters
-            //        || !acc.isSlotEmpty((unsigned int) slot))
-            //    {
-            //        reply.writeInt8(CREATE_INVALID_SLOT);
-            //        client.send(reply);
-            //        return;
-            //    }
+            if(acc==null)
+            {
+                reply.writeInt8((byte)ErrorMessage.ERRMSG_NO_LOGIN);
+            }
+            else if(!Program.stringFilter.filterContent(name))
+            {
+                reply.writeInt8((byte)ErrorMessage.ERRMSG_INVALID_ARGUMENT);
+            }
+            else if(Program.stringFilter.findDoubleQuotes(name))
+            {
+                reply.writeInt8((byte)ErrorMessage.ERRMSG_INVALID_ARGUMENT);
+            }
+            else if(hairStyle>mNumHairStyles)
+            {
+                reply.writeInt8((byte)Create.CREATE_INVALID_HAIRSTYLE);
+            }
+            else if(hairColor>mNumHairColors)
+            {
+                reply.writeInt8((byte)Create.CREATE_INVALID_HAIRCOLOR);
+            }
+            else if(gender>mNumGenders)
+            {
+                reply.writeInt8((byte)Create.CREATE_INVALID_GENDER);
+            }
+            else if((name.Length<mMinNameLength)||
+                (name.Length>mMaxNameLength))
+            {
+                reply.writeInt8((byte)ErrorMessage.ERRMSG_INVALID_ARGUMENT);
+            }
+            else
+            {
+                if(Program.storage.doesCharacterNameExist(name))
+                {
+                    reply.writeInt8((byte)Create.CREATE_EXISTS_NAME);
+                    client.send(reply);
+                    return;
+                }
 
-            //    if ((int)chars.size() >= mMaxCharacters)
-            //    {
-            //        reply.writeInt8(CREATE_TOO_MUCH_CHARACTERS);
-            //        client.send(reply);
-            //        return;
-            //    }
+                // An account shouldn't have more
+                // than <account_maxCharacters> characters.
+                Dictionary<uint, ISL.Server.Account.Character> chars=acc.getCharacters();
 
-            //    // TODO: Add race, face and maybe special attributes.
+                if(slot<1||slot>mMaxCharacters||!acc.isSlotEmpty((uint)slot))
+                {
+                    reply.writeInt8((byte)Create.CREATE_INVALID_SLOT);
+                    client.send(reply);
+                    return;
+                }
 
-            //    // Customization of character's attributes...
-            //    std::vector<int> attributes = std::vector<int>(mModifiableAttributes.size(), 0);
-            //    for (unsigned int i = 0; i < mModifiableAttributes.size(); ++i)
-            //        attributes[i] = msg.readInt16();
+                if((int)chars.Count>=mMaxCharacters)
+                {
+                    reply.writeInt8((byte)Create.CREATE_TOO_MUCH_CHARACTERS);
+                    client.send(reply);
+                    return;
+                }
 
-            //    int totalAttributes = 0;
-            //    for (unsigned int i = 0; i < mModifiableAttributes.size(); ++i)
-            //    {
-            //        // For good total attributes check.
-            //        totalAttributes += attributes.at(i);
+                // TODO: Add race, face and maybe special attributes.
 
-            //        // For checking if all stats are >= min and <= max.
-            //        if (attributes.at(i) < mAttributeMinimum
-            //            || attributes.at(i) > mAttributeMaximum)
-            //        {
-            //            reply.writeInt8(CREATE_ATTRIBUTES_OUT_OF_RANGE);
-            //            client.send(reply);
-            //            return;
-            //        }
-            //    }
+                // Customization of character's attributes...
+                List<int> attributes=new List<int>();
+                //std::vector<int>(mModifiableAttributes.size(), 0);
+                for(uint i = 0;i < mModifiableAttributes.Count;++i)
+                {
+                    attributes.Add(msg.readInt16());
+                }
 
-            //    if (totalAttributes > mStartingPoints)
-            //    {
-            //        reply.writeInt8(CREATE_ATTRIBUTES_TOO_HIGH);
-            //    }
-            //    else if (totalAttributes < mStartingPoints)
-            //    {
-            //        reply.writeInt8(CREATE_ATTRIBUTES_TOO_LOW);
-            //    }
-            //    else
-            //    {
-            //        Character *newCharacter = new Character(name);
+                int totalAttributes=0;
+                for(uint i = 0;i < mModifiableAttributes.Count;++i)
+                {
+                    // For good total attributes check.
+                    totalAttributes+=attributes[(int)i];
 
-            //        // Set the initial attributes provided by the client
-            //        for (unsigned int i = 0; i < mModifiableAttributes.size(); ++i)
-            //        {
-            //            newCharacter.mAttributes.insert(
-            //                        std::make_pair(mModifiableAttributes.at(i), attributes[i]));
-            //        }
+                    // For checking if all stats are >= min and <= max.
+                    if(attributes[(int)i]<mAttributeMinimum
+                        ||attributes[(int)i]>mAttributeMaximum)
+                    {
+                        reply.writeInt8((byte)Create.CREATE_ATTRIBUTES_OUT_OF_RANGE);
+                        client.send(reply);
+                        return;
+                    }
+                }
 
-            //        newCharacter.mAttributes.insert(mDefaultAttributes.begin(),
-            //                                         mDefaultAttributes.end());
-            //        newCharacter.setAccount(acc);
-            //        newCharacter.setCharacterSlot(slot);
-            //        newCharacter.setGender(gender);
-            //        newCharacter.setHairStyle(hairStyle);
-            //        newCharacter.setHairColor(hairColor);
-            //        newCharacter.setMapId(Configuration::getValue("char_startMap", 1));
-            //        Point startingPos(Configuration::getValue("char_startX", 1024),
-            //                          Configuration::getValue("char_startY", 1024));
-            //        newCharacter.setPosition(startingPos);
-            //        acc.addCharacter(newCharacter);
+                if(totalAttributes>mStartingPoints)
+                {
+                    reply.writeInt8((byte)Create.CREATE_ATTRIBUTES_TOO_HIGH);
+                }
+                else if(totalAttributes<mStartingPoints)
+                {
+                    reply.writeInt8((byte)Create.CREATE_ATTRIBUTES_TOO_LOW);
+                }
+                else
+                {
+                    Character newCharacter=new Character(name);
 
-            //        LOG_INFO("Character " << name << " was created for "
-            //                 << acc.getName() << "'s account.");
+                    // Set the initial attributes provided by the client
+                    for(uint i = 0;i < mModifiableAttributes.Count;++i)
+                    {
+                        //TODO schauen was hier genau passieren muss
+                        //newCharacter.mAttributes.Add((uint)(mModifiableAttributes[(int)i]), mModifiableAttributes[i]);
+                        //newCharacter.mAttributes.Add((uint)mModifiableAttributes[(int)i], attributes[(int)i]);
+                    }
 
-            //        storage.flush(acc); // flush changes
 
-            //        // log transaction
-            //        Transaction trans;
-            //        trans.mCharacterId = newCharacter.getDatabaseID();
-            //        trans.mAction = TRANS_CHAR_CREATE;
-            //        trans.mMessage = acc.getName() + " created character ";
-            //        trans.mMessage.append("called " + name);
-            //        storage.addTransaction(trans);
+                    foreach(KeyValuePair<uint, Attribute> defaultAttributePair in mDefaultAttributes)
+                    {
+                        //TODO schauen was hier genau passieren muss
+                        // newCharacter.mAttributes.Add(defaultAttributePair.Key, defaultAttributePair.Value);
+                    }
 
-            //        reply.writeInt8(ERRMSG_OK);
-            //        client.send(reply);
+                    newCharacter.setAccount(acc);
+                    newCharacter.setCharacterSlot((uint)slot);
+                    newCharacter.setGender(gender);
+                    newCharacter.setHairStyle(hairStyle);
+                    newCharacter.setHairColor(hairColor);
+                    newCharacter.setMapId(Configuration.getValue("char_startMap", 1));
+                    Point startingPos=new Point(Configuration.getValue("char_startX", 1024),
+                                      Configuration.getValue("char_startY", 1024));
+                    newCharacter.setPosition(startingPos);
+                    acc.addCharacter(newCharacter);
 
-            //        // Send new characters infos back to client
-            //        sendCharacterData(client, *chars[slot]);
-            //        return;
-            //    }
-            //}
+                    Logger.Write(LogLevel.Information, "Character {0} was created for {1}'s account.", name, acc.getName());
 
-            //client.send(reply);
+                    Program.storage.flush(acc); // flush changes
+
+                    // log transaction
+                    Transaction trans=new Transaction();
+                    trans.mCharacterId=(uint)newCharacter.getDatabaseID();
+                    trans.mAction=(uint)TransactionMembers.TRANS_CHAR_CREATE;
+                    trans.mMessage=acc.getName()+" created character ";
+                    trans.mMessage+="called "+name;
+                    Program.storage.addTransaction(trans);
+
+                    reply.writeInt8((byte)ErrorMessage.ERRMSG_OK);
+                    client.send(reply);
+
+                    // Send new characters infos back to client
+                    sendCharacterData(client, chars[(uint)slot]);
+                    return;
+                }
+            }
+
+            client.send(reply);
         }
 
         void handleCharacterSelectMessage(AccountClient client, MessageIn msg)

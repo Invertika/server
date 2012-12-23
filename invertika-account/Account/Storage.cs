@@ -160,10 +160,10 @@ namespace invertika_account.Account
             return mItemDbVersion; 
         }
 
-		DateTime ToDateTime(string ticks)
-		{
-			return new DateTime(Convert.ToInt64(ticks));
-		}
+        DateTime ToDateTime(string ticks)
+        {
+            return new DateTime(Convert.ToInt64(ticks));
+        }
 
         ISL.Server.Account.Account getAccountBySQL(int accountID)
         {
@@ -180,13 +180,13 @@ namespace invertika_account.Account
             account.setPassword(table.Rows[0]["password"].ToString());
             account.setEmail(table.Rows[0]["email"].ToString());
 
-			account.setRegistrationDate(ToDateTime(table.Rows[0]["registration"].ToString()));
+            account.setRegistrationDate(ToDateTime(table.Rows[0]["registration"].ToString()));
             account.setLastLogin(ToDateTime(table.Rows[0]["lastlogin"].ToString()));
 
             int level=Convert.ToInt32(table.Rows[0]["level"]);
 
             // Check if the user is permanently banned, or temporarily banned.
-			if(level==(int)AccessLevel.AL_BANNED||DateTime.Now<=ToDateTime(table.Rows[0]["banned"].ToString()))
+            if(level==(int)AccessLevel.AL_BANNED||DateTime.Now<=ToDateTime(table.Rows[0]["banned"].ToString()))
             {
                 account.setLevel((int)AccessLevel.AL_BANNED);
                 // It is, so skip character loading.
@@ -199,7 +199,7 @@ namespace invertika_account.Account
             //fixCharactersSlot(id);
 
             // Load the characters associated with the account.
-			sql=String.Format("SELECT id FROM {0} WHERE user_id = '{1}';", CHARACTERS_TBL_NAME, accountID);
+            sql=String.Format("SELECT id FROM {0} WHERE user_id = '{1}';", CHARACTERS_TBL_NAME, accountID);
             DataTable charInfo=mDb.ExecuteQuery(sql);
 
             if(charInfo.Rows.Count>0)
@@ -529,7 +529,7 @@ namespace invertika_account.Account
                 return false;
         }
 
-        bool doesCharacterNameExist(string name)
+        public bool doesCharacterNameExist(string name)
         {
             string sql=String.Format("SELECT COUNT(name) AS COUNT FROM {0}  WHERE name = \"{1}\"", CHARACTERS_TBL_NAME, name);
             DataTable table=mDb.ExecuteQuery(sql);
@@ -771,153 +771,111 @@ namespace invertika_account.Account
             mDb.ExecuteNonQuery(sql);
         }
 
-        void flush(ISL.Server.Account.Account account)
+        public void flush(ISL.Server.Account.Account account)
         {
             //assert(account.getID() >= 0);
 
-            //using namespace dal;
+            try
+            {
+                mDb.StartTransaction();
+                //PerformTransaction transaction(mDb);
 
-            //try
-            //{
-            //    PerformTransaction transaction(mDb);
+                // Update the account
+                string sqlUpdateAccountTable=String.Format("UPDATE {0} SET username=\"{1}\", password=\"{2}\", email=\"{3}\", level=\"{4}\", lastlogin=\"{5}\" WHERE id = {6}",
+                                                            account.getName(), account.getPassword(), account.getEmail(), account.getLevel(), account.getLastLogin(), account.getID());
+                mDb.ExecuteNonQuery(sqlUpdateAccountTable);
+           
+                // Get the list of characters that belong to this account.
+                Dictionary<uint, Character> characters=account.getCharacters();
 
-            //    // Update the account
-            //    std::ostringstream sqlUpdateAccountTable;
-            //    sqlUpdateAccountTable
-            //         << "update " << ACCOUNTS_TBL_NAME
-            //         << " set username = ?, password = ?, email = ?, "
-            //         << "level = ?, lastlogin = ? where id = ?;";
+                // Insert or update the characters.
+                foreach(KeyValuePair<uint, Character> pair in characters)
+                {
+                    Character character=pair.Value;
 
-            //    if (mDb.prepareSql(sqlUpdateAccountTable.str()))
-            //    {
-            //        mDb.bindValue(1, account.getName());
-            //        mDb.bindValue(2, account.getPassword());
-            //        mDb.bindValue(3, account.getEmail());
-            //        mDb.bindValue(4, account.getLevel());
-            //        mDb.bindValue(5, account.getLastLogin());
-            //        mDb.bindValue(6, account.getID());
+                    if(character.getDatabaseID()>=0)
+                    {
+                        updateCharacter(character);
+                    }
+                    else
+                    {
+                        // Insert the character
+                        // This assumes that the characters name has been checked for
+                        // uniqueness
+                        string sqlInsertCharactersTable=String.Format("insert into {0} (user_id, name, gender, hair_style, hair_color, level, char_pts, correct_pts, x, y, map_id, slot) values (", CHARACTERS_TBL_NAME);
+                        sqlInsertCharactersTable+=String.Format("{0}, \"{1}\", {2}, {3}, {4}, ", account.getID(), character.getName(), character.getGender(), (int)character.getHairStyle(), (int)character.getHairColor());
+                        sqlInsertCharactersTable+=String.Format("{0}, {1}, {2}", (int)character.getLevel(), character.getCharacterPoints(), character.getCorrectionPoints());
+                        sqlInsertCharactersTable+=String.Format("{0}, {1}, {2}, {3});", character.getPosition().x, character.getPosition().y, character.getMapId(), character.getCharacterSlot());
+                        
+                        //mDb.ExecuteNonQuery(sqlInsertCharactersTable);
+                        DataTable tmp=mDb.ExecuteQuery(sqlInsertCharactersTable);
 
-            //        mDb.processSql();
-            //    }
-            //    else
-            //    {
-            //        utils::throwError("(DALStorage::flush) "
-            //                          "SQL preparation query failure.");
-            //    }
+                        //schauen ob in der tmp die lastID drin ist
+                        int lastID=-1;
 
-            //    // Get the list of characters that belong to this account.
-            //    Characters &characters = account.getCharacters();
+                        // Update the character ID.
+                        character.setDatabaseID(lastID);
+                        //character.setDatabaseID(mDb.getLastId());
 
-            //    // Insert or update the characters.
-            //    for (Characters::const_iterator it = characters.begin(),
-            //         it_end = characters.end(); it != it_end; ++it)
-            //    {
-            //        Character *character = (*it).second;
-            //        if (character.getDatabaseID() >= 0)
-            //        {
-            //            updateCharacter(character);
-            //        }
-            //        else
-            //        {
-            //            std::ostringstream sqlInsertCharactersTable;
-            //            // Insert the character
-            //            // This assumes that the characters name has been checked for
-            //            // uniqueness
-            //            sqlInsertCharactersTable
-            //                 << "insert into " << CHARACTERS_TBL_NAME
-            //                 << " (user_id, name, gender, hair_style, hair_color,"
-            //                 << " level, char_pts, correct_pts,"
-            //                 << " x, y, map_id, slot) values ("
-            //                 << account.getID() << ", \""
-            //                 << character.getName() << "\", "
-            //                 << character.getGender() << ", "
-            //                 << (int)character.getHairStyle() << ", "
-            //                 << (int)character.getHairColor() << ", "
-            //                 << (int)character.getLevel() << ", "
-            //                 << (int)character.getCharacterPoints() << ", "
-            //                 << (int)character.getCorrectionPoints() << ", "
-            //                 << character.getPosition().x << ", "
-            //                 << character.getPosition().y << ", "
-            //                 << character.getMapId() << ", "
-            //                 << character.getCharacterSlot()
-            //                 << ");";
+                        // Update all attributes.
+                        foreach(KeyValuePair<uint, AttributeValue> attributePair in character.mAttributes)
+                        {
+                            updateAttribute(character.getDatabaseID(), attributePair.Key, attributePair.Value.@base, attributePair.Value.modified);
+                        }
 
-            //            mDb.execSql(sqlInsertCharactersTable.str());
+                        // Update the characters skill
+                        foreach(KeyValuePair<int, int> experiencePair in character.mExperience)
+                        {
+                            updateExperience(character.getDatabaseID(), experiencePair.Key, experiencePair.Value);
+                        }
+                    }
+                }
 
-            //            // Update the character ID.
-            //            character.setDatabaseID(mDb.getLastId());
+                // Existing characters in memory have been inserted
+                // or updated in database.
+                // Now, let's remove those who are no more in memory from database.
+                string sqlSelectNameIdCharactersTable=String.Format("select name, id from {0} where user_id = '{1}';", CHARACTERS_TBL_NAME, account.getID());
+                DataTable charInMemInfo=mDb.ExecuteQuery(sqlSelectNameIdCharactersTable);
 
-            //            // Update all attributes.
-            //            AttributeMap::const_iterator attr_it, attr_end;
-            //            for (attr_it =  character.mAttributes.begin(),
-            //                 attr_end = character.mAttributes.end();
-            //                 attr_it != attr_end; ++attr_it)
-            //            {
-            //                updateAttribute(character.getDatabaseID(), attr_it.first,
-            //                                attr_it.second.base,
-            //                                attr_it.second.modified);
-            //            }
+                // We compare chars from memory and those existing in db,
+                // and delete those not in mem but existing in db.
+                bool charFound;
+                for(uint i = 0;i < charInMemInfo.Rows.Count;++i) // In database
+                {
+                    charFound=false;
 
-            //            // Update the characters skill
-            //            std::map<int, int>::const_iterator skill_it;
-            //            for (skill_it = character.mExperience.begin();
-            //                 skill_it != character.mExperience.end(); skill_it++)
-            //            {
-            //                updateExperience(character.getDatabaseID(),
-            //                                 skill_it.first, skill_it.second);
-            //            }
-            //        }
-            //    }
+                    foreach(Character characterInMemory in characters.Values) // In memory
+                    {
+                        int debug=555;
+                        // if(charInMemInfo(i, 0)==characterInMemory.getName())
 
-            //    // Existing characters in memory have been inserted
-            //    // or updated in database.
-            //    // Now, let's remove those who are no more in memory from database.
+//                        if(charInMemInfo[i][0]==characterInMemory.getName())
+//                        {
+//                            charFound=true;
+//                            break;
+//                        }
+                    }
 
-            //    // Specialize the string_to functor to convert
-            //    // a string to an unsigned int.
-            //    string_to<unsigned short> toUint;
+                    if(!charFound)
+                    {
+                        // The char is in db but not in memory,
+                        // it will be removed from database.
+                        // We store the id of the char to delete,
+                        // because as deleted, the RecordSet is also emptied,
+                        // and that creates an error.
+                        int debug=555;
+                        //uint charId=(uint)(charInMemInfo(i, 1));
+                        //delCharacter(charId);
+                    }
+                }
 
-            //    std::ostringstream sqlSelectNameIdCharactersTable;
-            //    sqlSelectNameIdCharactersTable
-            //        << "select name, id from " << CHARACTERS_TBL_NAME
-            //        << " where user_id = '" << account.getID() << "';";
-
-            //    const RecordSet& charInMemInfo =
-            //        mDb.execSql(sqlSelectNameIdCharactersTable.str());
-
-            //    // We compare chars from memory and those existing in db,
-            //    // and delete those not in mem but existing in db.
-            //    bool charFound;
-            //    for (unsigned int i = 0; i < charInMemInfo.rows(); ++i) // In database
-            //    {
-            //        charFound = false;
-            //        for (Characters::const_iterator it = characters.begin(),
-            //             it_end = characters.end(); it != it_end; ++it) // In memory
-            //        {
-            //            if (charInMemInfo(i, 0) == (*it).second.getName())
-            //            {
-            //                charFound = true;
-            //                break;
-            //            }
-            //        }
-            //        if (!charFound)
-            //        {
-            //            // The char is in db but not in memory,
-            //            // it will be removed from database.
-            //            // We store the id of the char to delete,
-            //            // because as deleted, the RecordSet is also emptied,
-            //            // and that creates an error.
-            //            unsigned int charId = toUint(charInMemInfo(i, 1));
-            //            delCharacter(charId);
-            //        }
-            //    }
-
-            //    transaction.commit();
-            //}
-            //catch (const std::exception &e)
-            //{
-            //    utils::throwError("(DALStorage::flush) SQL query failure: ", e);
-            //}
+                mDb.CommitTransaction();
+                //transaction.commit();
+            }
+            catch(Exception e)
+            {
+                Logger.Write(LogLevel.Error, "SQL query failure: {0}", e);
+            }
         }
 
         void delAccount(ISL.Server.Account.Account account)
@@ -1758,8 +1716,8 @@ namespace invertika_account.Account
 
         public void addTransaction(Transaction trans)
         {
-			string sql=String.Format("INSERT INTO {0} VALUES (NULL, {1}, {2}, {3}, {4});", TRANSACTION_TBL_NAME, trans.mCharacterId, trans.mAction, trans.mMessage);
-			mDb.ExecuteNonQuery(sql);
+            string sql=String.Format("INSERT INTO {0} VALUES (NULL, {1}, {2}, {3}, {4});", TRANSACTION_TBL_NAME, trans.mCharacterId, trans.mAction, trans.mMessage);
+            mDb.ExecuteNonQuery(sql);
         }
 
         List<Transaction> getTransactions(uint num)
