@@ -1716,7 +1716,7 @@ namespace invertika_account.Account
 
         public void addTransaction(Transaction trans)
         {
-            string sql=String.Format("INSERT INTO {0} VALUES (NULL, {1}, {2}, {3}, {4});", TRANSACTION_TBL_NAME, trans.mCharacterId, trans.mAction, trans.mMessage);
+            string sql=String.Format("INSERT INTO {0} VALUES (NULL, {1}, '{2}', '{3}', {4});", TRANSACTION_TBL_NAME, trans.mCharacterId, trans.mAction, trans.mMessage, DateTime.Now.Ticks);
             mDb.ExecuteNonQuery(sql);
         }
 

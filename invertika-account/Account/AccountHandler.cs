@@ -610,11 +610,11 @@ namespace invertika_account.Account
             int gender=msg.readInt8();
 
             // Avoid creation of character from old clients.
-            int slot=-1;
-            if(msg.getUnreadLength()>7)
-            {
-                slot=msg.readInt8();
-            }
+//            int slot=-1;
+//            if(msg.getUnreadLength()>7)
+//            {
+            int slot=msg.readInt8();
+//            }
 
             MessageOut reply=new MessageOut(Protocol.APMSG_CHAR_CREATE_RESPONSE);
 
