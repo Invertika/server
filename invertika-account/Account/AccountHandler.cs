@@ -599,15 +599,15 @@ namespace invertika_account.Account
 
         void handleCharacterCreateMessage(AccountClient client, MessageIn msg)
         {
-            //std::string name = msg.readString();
-            //int hairStyle = msg.readInt8();
-            //int hairColor = msg.readInt8();
-            //int gender = msg.readInt8();
+            string name=msg.readString();
+            int hairStyle=msg.readInt8();
+            int hairColor=msg.readInt8();
+            int gender=msg.readInt8();
 
-            //// Avoid creation of character from old clients.
-            //int slot = -1;
-            //if (msg.getUnreadLength() > 7)
-            //    slot = msg.readInt8();
+            // Avoid creation of character from old clients.
+            int slot=-1;
+            if(msg.getUnreadLength()>7)
+                slot=msg.readInt8();
 
             //MessageOut reply(APMSG_CHAR_CREATE_RESPONSE);
 
@@ -748,73 +748,73 @@ namespace invertika_account.Account
             //client.send(reply);
         }
 
-		void handleCharacterSelectMessage(AccountClient client, MessageIn msg)
-		{
-			MessageOut reply=new MessageOut(Protocol.APMSG_CHAR_SELECT_RESPONSE);
+        void handleCharacterSelectMessage(AccountClient client, MessageIn msg)
+        {
+            MessageOut reply=new MessageOut(Protocol.APMSG_CHAR_SELECT_RESPONSE);
 
-			ISL.Server.Account.Account acc=client.getAccount();
+            ISL.Server.Account.Account acc=client.getAccount();
 
-			if(acc==null)
-			{
-				reply.writeInt8((int)ErrorMessage.ERRMSG_NO_LOGIN);
-				client.send(reply);
-				return; // not logged in
-			}
+            if(acc==null)
+            {
+                reply.writeInt8((int)ErrorMessage.ERRMSG_NO_LOGIN);
+                client.send(reply);
+                return; // not logged in
+            }
 
-			int slot=msg.readInt8();
-			Dictionary<uint, Character> chars=acc.getCharacters();
+            int slot=msg.readInt8();
+            Dictionary<uint, Character> chars=acc.getCharacters();
 
-			if(chars.ContainsKey((uint)slot)==false)
-			{
-				// Invalid char selection
-				reply.writeInt8((int)ErrorMessage.ERRMSG_INVALID_ARGUMENT);
-				client.send(reply);
-				return;
-			}
+            if(chars.ContainsKey((uint)slot)==false)
+            {
+                // Invalid char selection
+                reply.writeInt8((int)ErrorMessage.ERRMSG_INVALID_ARGUMENT);
+                client.send(reply);
+                return;
+            }
 
-			Character selectedChar=chars[(uint)slot];
+            Character selectedChar=chars[(uint)slot];
 
-			string address;
-			int port;
+            string address;
+            int port;
 
-			if(!GameServerHandler.getGameServerFromMap(selectedChar.getMapId(), out address, out port))
-			{
-				Logger.Write(LogLevel.Error, "Character Selection: No game server for map #{0}", selectedChar.getMapId());
-				reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
-				client.send(reply);
-				return;
-			}
+            if(!GameServerHandler.getGameServerFromMap(selectedChar.getMapId(), out address, out port))
+            {
+                Logger.Write(LogLevel.Error, "Character Selection: No game server for map #{0}", selectedChar.getMapId());
+                reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
+                client.send(reply);
+                return;
+            }
 
-			reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
+            reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
 
-			Logger.Write(LogLevel.Debug, "{0} is trying to enter the servers.", selectedChar.getName());
+            Logger.Write(LogLevel.Debug, "{0} is trying to enter the servers.", selectedChar.getName());
 
-			string magic_token=Various.GetUniqueID();
-			reply.writeString(magic_token);
-			reply.writeString(address);
-			reply.writeInt16(port);
+            string magic_token=Various.GetUniqueID();
+            reply.writeString(magic_token);
+            reply.writeString(address);
+            reply.writeInt16(port);
 
-			// Give address and port for the chat server
-			reply.writeString(Configuration.getValue("net_chatHost", "localhost"));
+            // Give address and port for the chat server
+            reply.writeString(Configuration.getValue("net_chatHost", "localhost"));
 
-			// When the chatListenToClientPort is set, we use it.
-			// Otherwise, we use the accountListenToClientPort + 2 if the option is set.
-			// If neither, the DEFAULT_SERVER_PORT + 2 is used.
-			int alternativePort=Configuration.getValue("net_accountListenToClientPort", Configuration.DEFAULT_SERVER_PORT)+2;
-			reply.writeInt16(Configuration.getValue("net_chatListenToClientPort", alternativePort));
+            // When the chatListenToClientPort is set, we use it.
+            // Otherwise, we use the accountListenToClientPort + 2 if the option is set.
+            // If neither, the DEFAULT_SERVER_PORT + 2 is used.
+            int alternativePort=Configuration.getValue("net_accountListenToClientPort", Configuration.DEFAULT_SERVER_PORT)+2;
+            reply.writeInt16(Configuration.getValue("net_chatListenToClientPort", alternativePort));
 
-			GameServerHandler.registerClient(magic_token, selectedChar);
-			ChatHandler.registerChatClient(magic_token, selectedChar.getName(), acc.getLevel());
+            GameServerHandler.registerClient(magic_token, selectedChar);
+            ChatHandler.registerChatClient(magic_token, selectedChar.getName(), acc.getLevel());
 
-			client.send(reply);
+            client.send(reply);
 
-			// log transaction
-			Transaction trans=new Transaction();
-			trans.mCharacterId=(uint)selectedChar.getDatabaseID();
-			trans.mAction=(uint)TransactionMembers.TRANS_CHAR_SELECTED;
+            // log transaction
+            Transaction trans=new Transaction();
+            trans.mCharacterId=(uint)selectedChar.getDatabaseID();
+            trans.mAction=(uint)TransactionMembers.TRANS_CHAR_SELECTED;
 
-			Program.storage.addTransaction(trans);
-		}
+            Program.storage.addTransaction(trans);
+        }
 
         void handleCharacterDeleteMessage(AccountClient client, MessageIn msg)
         {
