@@ -849,14 +849,13 @@ namespace invertika_account.Account
 
                 foreach(Character characterInMemory in characters.Values) // In memory
                 {
-                    int debug=555;
-                    // if(charInMemInfo(i, 0)==characterInMemory.getName())
+                    if(charInMemInfo.Rows[i][0]==characterInMemory.getName())
 
-//                        if(charInMemInfo[i][0]==characterInMemory.getName())
-//                        {
-//                            charFound=true;
-//                            break;
-//                        }
+                    if(charInMemInfo.Rows[i][0]==characterInMemory.getName())
+                    {
+                        charFound=true;
+                        break;
+                    }
                 }
 
                 if(!charFound)
@@ -866,15 +865,13 @@ namespace invertika_account.Account
                     // We store the id of the char to delete,
                     // because as deleted, the RecordSet is also emptied,
                     // and that creates an error.
-                    int debug=555;
-                    //uint charId=(uint)(charInMemInfo(i, 1));
-                    //delCharacter(charId);
+                    uint charId=(uint)(charInMemInfo.Rows[i][1]);
+                    delCharacter(charId);
                 }
             }
 
             mDb.CommitTransaction();
-            //transaction.commit();
-
+             
 #if !DEBUG
             }
             catch(Exception e)
