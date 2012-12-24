@@ -325,7 +325,7 @@ namespace invertika_account.Account
         {
             Character character=null;
 
-            string sql=String.Format("SELECT * FROM {0},  WHERE id = {1}", CHARACTERS_TBL_NAME, owner.getID());
+            string sql=String.Format("SELECT * FROM {0} WHERE id = {1}", CHARACTERS_TBL_NAME, owner.getID());
             DataTable charInfo=mDb.ExecuteQuery(sql);
 
             // If the character is not even in the database then
@@ -775,107 +775,114 @@ namespace invertika_account.Account
         {
             //assert(account.getID() >= 0);
 
+#if !DEBUG
             try
             {
-                mDb.StartTransaction();
-                //PerformTransaction transaction(mDb);
+#endif
+            mDb.StartTransaction();
+            //PerformTransaction transaction(mDb);
 
-                // Update the account
-                string sqlUpdateAccountTable=String.Format("UPDATE {0} SET username=\"{1}\", password=\"{2}\", email=\"{3}\", level=\"{4}\", lastlogin=\"{5}\" WHERE id = {6}",
-                                                            account.getName(), account.getPassword(), account.getEmail(), account.getLevel(), account.getLastLogin(), account.getID());
-                mDb.ExecuteNonQuery(sqlUpdateAccountTable);
+            // Update the account
+            string sqlUpdateAccountTable=String.Format("UPDATE {0} SET username=\"{1}\", password=\"{2}\", email=\"{3}\", level=\"{4}\", lastlogin=\"{5}\" WHERE id = {6}",
+                                                           ACCOUNTS_TBL_NAME, account.getName(), account.getPassword(), account.getEmail(), account.getLevel(), account.getLastLogin(), account.getID());
+            mDb.ExecuteNonQuery(sqlUpdateAccountTable);
            
-                // Get the list of characters that belong to this account.
-                Dictionary<uint, Character> characters=account.getCharacters();
+            // Get the list of characters that belong to this account.
+            Dictionary<uint, Character> characters=account.getCharacters();
 
-                // Insert or update the characters.
-                foreach(KeyValuePair<uint, Character> pair in characters)
+            // Insert or update the characters.
+            foreach(KeyValuePair<uint, Character> pair in characters)
+            {
+                Character character=pair.Value;
+
+                if(character.getDatabaseID()>=0)
                 {
-                    Character character=pair.Value;
-
-                    if(character.getDatabaseID()>=0)
-                    {
-                        updateCharacter(character);
-                    }
-                    else
-                    {
-                        // Insert the character
-                        // This assumes that the characters name has been checked for
-                        // uniqueness
-                        string sqlInsertCharactersTable=String.Format("insert into {0} (user_id, name, gender, hair_style, hair_color, level, char_pts, correct_pts, x, y, map_id, slot) values (", CHARACTERS_TBL_NAME);
-                        sqlInsertCharactersTable+=String.Format("{0}, \"{1}\", {2}, {3}, {4}, ", account.getID(), character.getName(), character.getGender(), (int)character.getHairStyle(), (int)character.getHairColor());
-                        sqlInsertCharactersTable+=String.Format("{0}, {1}, {2}", (int)character.getLevel(), character.getCharacterPoints(), character.getCorrectionPoints());
-                        sqlInsertCharactersTable+=String.Format("{0}, {1}, {2}, {3});", character.getPosition().x, character.getPosition().y, character.getMapId(), character.getCharacterSlot());
+                    updateCharacter(character);
+                }
+                else
+                {
+                    // Insert the character
+                    // This assumes that the characters name has been checked for
+                    // uniqueness
+                    string sqlInsertCharactersTable=String.Format("insert into {0} (user_id, name, gender, hair_style, hair_color, level, char_pts, correct_pts, x, y, map_id, slot) values (", CHARACTERS_TBL_NAME);
+                    sqlInsertCharactersTable+=String.Format("{0}, \"{1}\", {2}, {3}, {4}, ", account.getID(), character.getName(), character.getGender(), (int)character.getHairStyle(), (int)character.getHairColor());
+                    sqlInsertCharactersTable+=String.Format("{0}, {1}, {2}, ", (int)character.getLevel(), character.getCharacterPoints(), character.getCorrectionPoints());
+                    sqlInsertCharactersTable+=String.Format("{0}, {1}, {2}, {3});", character.getPosition().x, character.getPosition().y, character.getMapId(), character.getCharacterSlot());
                         
-                        //mDb.ExecuteNonQuery(sqlInsertCharactersTable);
-                        DataTable tmp=mDb.ExecuteQuery(sqlInsertCharactersTable);
+                    //mDb.ExecuteNonQuery(sqlInsertCharactersTable);
+                    mDb.ExecuteNonQuery(sqlInsertCharactersTable);
 
-                        //schauen ob in der tmp die lastID drin ist
-                        int lastID=-1;
+                    //charID ermitteln
+                    string sqlGetCharId=String.Format("SELECT id FROM {0} WHERE user_id={1} AND name='{2}'", CHARACTERS_TBL_NAME, account.getID(), character.getName());
+                    DataTable tmp=mDb.ExecuteQuery(sqlGetCharId);
+                    int lastID=Convert.ToInt32(tmp.Rows[0]["id"]);
 
-                        // Update the character ID.
-                        character.setDatabaseID(lastID);
-                        //character.setDatabaseID(mDb.getLastId());
+                    // Update the character ID.
+                    character.setDatabaseID(lastID);
+                    //character.setDatabaseID(mDb.getLastId());
 
-                        // Update all attributes.
-                        foreach(KeyValuePair<uint, AttributeValue> attributePair in character.mAttributes)
-                        {
-                            updateAttribute(character.getDatabaseID(), attributePair.Key, attributePair.Value.@base, attributePair.Value.modified);
-                        }
+                    // Update all attributes.
+                    foreach(KeyValuePair<uint, AttributeValue> attributePair in character.mAttributes)
+                    {
+                        updateAttribute(character.getDatabaseID(), attributePair.Key, attributePair.Value.@base, attributePair.Value.modified);
+                    }
 
-                        // Update the characters skill
-                        foreach(KeyValuePair<int, int> experiencePair in character.mExperience)
-                        {
-                            updateExperience(character.getDatabaseID(), experiencePair.Key, experiencePair.Value);
-                        }
+                    // Update the characters skill
+                    foreach(KeyValuePair<int, int> experiencePair in character.mExperience)
+                    {
+                        updateExperience(character.getDatabaseID(), experiencePair.Key, experiencePair.Value);
                     }
                 }
+            }
 
-                // Existing characters in memory have been inserted
-                // or updated in database.
-                // Now, let's remove those who are no more in memory from database.
-                string sqlSelectNameIdCharactersTable=String.Format("select name, id from {0} where user_id = '{1}';", CHARACTERS_TBL_NAME, account.getID());
-                DataTable charInMemInfo=mDb.ExecuteQuery(sqlSelectNameIdCharactersTable);
+            // Existing characters in memory have been inserted
+            // or updated in database.
+            // Now, let's remove those who are no more in memory from database.
+            string sqlSelectNameIdCharactersTable=String.Format("select name, id from {0} where user_id = '{1}';", CHARACTERS_TBL_NAME, account.getID());
+            DataTable charInMemInfo=mDb.ExecuteQuery(sqlSelectNameIdCharactersTable);
 
-                // We compare chars from memory and those existing in db,
-                // and delete those not in mem but existing in db.
-                bool charFound;
-                for(uint i = 0;i < charInMemInfo.Rows.Count;++i) // In database
+            // We compare chars from memory and those existing in db,
+            // and delete those not in mem but existing in db.
+            bool charFound;
+            for(uint i = 0;i < charInMemInfo.Rows.Count;++i) // In database
+            {
+                charFound=false;
+
+                foreach(Character characterInMemory in characters.Values) // In memory
                 {
-                    charFound=false;
-
-                    foreach(Character characterInMemory in characters.Values) // In memory
-                    {
-                        int debug=555;
-                        // if(charInMemInfo(i, 0)==characterInMemory.getName())
+                    int debug=555;
+                    // if(charInMemInfo(i, 0)==characterInMemory.getName())
 
 //                        if(charInMemInfo[i][0]==characterInMemory.getName())
 //                        {
 //                            charFound=true;
 //                            break;
 //                        }
-                    }
-
-                    if(!charFound)
-                    {
-                        // The char is in db but not in memory,
-                        // it will be removed from database.
-                        // We store the id of the char to delete,
-                        // because as deleted, the RecordSet is also emptied,
-                        // and that creates an error.
-                        int debug=555;
-                        //uint charId=(uint)(charInMemInfo(i, 1));
-                        //delCharacter(charId);
-                    }
                 }
 
-                mDb.CommitTransaction();
-                //transaction.commit();
+                if(!charFound)
+                {
+                    // The char is in db but not in memory,
+                    // it will be removed from database.
+                    // We store the id of the char to delete,
+                    // because as deleted, the RecordSet is also emptied,
+                    // and that creates an error.
+                    int debug=555;
+                    //uint charId=(uint)(charInMemInfo(i, 1));
+                    //delCharacter(charId);
+                }
+            }
+
+            mDb.CommitTransaction();
+            //transaction.commit();
+
+#if !DEBUG
             }
             catch(Exception e)
             {
                 Logger.Write(LogLevel.Error, "SQL query failure: {0}", e);
             }
+#endif
         }
 
         void delAccount(ISL.Server.Account.Account account)
