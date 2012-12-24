@@ -819,7 +819,6 @@ namespace invertika_account.Account
 
                     // Update the character ID.
                     character.setDatabaseID(lastID);
-                    //character.setDatabaseID(mDb.getLastId());
 
                     // Update all attributes.
                     foreach(KeyValuePair<uint, AttributeValue> attributePair in character.mAttributes)
