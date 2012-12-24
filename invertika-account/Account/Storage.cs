@@ -850,8 +850,6 @@ namespace invertika_account.Account
                 foreach(Character characterInMemory in characters.Values) // In memory
                 {
                     if(charInMemInfo.Rows[(int)i][0].ToString()==characterInMemory.getName())
-
-                    if(charInMemInfo.Rows[(int)i][0]==characterInMemory.getName())
                     {
                         charFound=true;
                         break;
