@@ -849,9 +849,9 @@ namespace invertika_account.Account
 
                 foreach(Character characterInMemory in characters.Values) // In memory
                 {
-                    if(charInMemInfo.Rows[i][0]==characterInMemory.getName())
+                    if(charInMemInfo.Rows[(int)i][0].ToString()==characterInMemory.getName())
 
-                    if(charInMemInfo.Rows[i][0]==characterInMemory.getName())
+                    if(charInMemInfo.Rows[(int)i][0]==characterInMemory.getName())
                     {
                         charFound=true;
                         break;
@@ -865,8 +865,8 @@ namespace invertika_account.Account
                     // We store the id of the char to delete,
                     // because as deleted, the RecordSet is also emptied,
                     // and that creates an error.
-                    uint charId=(uint)(charInMemInfo.Rows[i][1]);
-                    delCharacter(charId);
+                    uint charId=(uint)(charInMemInfo.Rows[(int)i][1]);
+                    delCharacter((int)charId);
                 }
             }
 
