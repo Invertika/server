@@ -325,7 +325,7 @@ namespace invertika_account.Account
         {
             Character character=null;
 
-            string sql=String.Format("SELECT * FROM {0} WHERE id = {1}", CHARACTERS_TBL_NAME, owner.getID());
+            string sql=String.Format("SELECT * FROM {0} WHERE user_id = {1}", CHARACTERS_TBL_NAME, owner.getID());
             DataTable charInfo=mDb.ExecuteQuery(sql);
 
             // If the character is not even in the database then
@@ -495,15 +495,11 @@ namespace invertika_account.Account
 
         public Character getCharacter(int id, ISL.Server.Account.Account owner)
         {
-            string sql=String.Format("SELECT * FROM {0},  WHERE id = {1}", CHARACTERS_TBL_NAME, id);
-            //TODO Überprüfen was hier genau passiert
             return getCharacterBySQL(owner);
         }
 
         public Character getCharacter(string name)
         {
-            string sql=String.Format("SELECT * FROM {0} WHERE name = {1}", CHARACTERS_TBL_NAME, name);
-            //TODO Überprüfen was hier genau passiert
             return getCharacterBySQL(null);
         }
 
