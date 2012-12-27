@@ -36,6 +36,11 @@ using ISL.Server.Utilities;
 namespace invertika_game.Network
 {
     //TODO Connection zu Netcomputer zusammenfassen? - bzw das ganze für Connection und COnnectionHandler
+
+    /// <summary>
+    ///  point-to-point connection to a remote host. The remote host can use a
+    /// ConnectionHandler to handle this incoming connection.
+    /// </summary>
     public class Connection
     {
         TcpClient mRemote;
@@ -77,7 +82,7 @@ namespace invertika_game.Network
             return mRemote.Connected;
         }
 
-        public void send(MessageOut msg)//, bool reliable, uint channel)
+        public void send(MessageOut msg)
         {
             NetworkStream stream=mRemote.GetStream();
        
@@ -91,36 +96,25 @@ namespace invertika_game.Network
                 return;
             }
 
-            Program.gBandwidth.increaseInterServerOutput(msg.getLength());
+            Program.gBandwidth.increaseInterServerOutput((int)msg.getLength());
         }
 
         public void process()
         {
-            //ENetEvent event;
-            //// Process Enet events and do not block.
-            //while (enet_host_service(mLocal, &event, 0) > 0)
-            //{
-            //    switch (event.type)
-            //    {
-            //        case ENET_EVENT_TYPE_RECEIVE:
-            //            if (event.packet.dataLength >= 2)
-            //            {
-            //                MessageIn msg((char *)event.packet.data,
-            //                              event.packet.dataLength);
-            //                gBandwidth.increaseInterServerInput(event.packet.dataLength);
-            //                processMessage(msg);
-            //            }
-            //            else
-            //            {
-            //                LOG_WARN("Message too short.");
-            //            }
-            //            // Clean up the packet now that we are done using it.
-            //            enet_packet_destroy(event.packet);
-            //            break;
+            NetComputer comp=new NetComputer(mRemote);
 
-            //        default:
-            //            break;
-            //    }
+            NetworkStream stream=mRemote.GetStream();
+            WebSocketReader reader=new WebSocketReader(stream);
+
+            while(true) //TODO Abbruchkriterium definieren, evt den Close Opcode im Websocket beachten?
+            {
+                MessageIn msg=reader.ReadMessage();
+                Program.gBandwidth.increaseInterServerOutput((int)msg.getLength());
+                              
+                Logger.Write(LogLevel.Debug, "Received message {0} from {1}", msg.getId(), mRemote);
+
+                Program.gameHandler.processMessage(comp, msg);
+            }
         }
     }
 }
