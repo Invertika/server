@@ -254,7 +254,7 @@ namespace invertika_game
             // General initialization
             initializeServer();
 
-            Logger.Write(LogLevel.Information, "The Mana Account+Chat Server v{0}", Various.AssemblyVersion);
+            Logger.Write(LogLevel.Information, "The Mana Game Server v{0}", Various.AssemblyVersion);
             Logger.Write(LogLevel.Information, "Manaserv Protocol version {0}, Database version {1}", ManaServ.PROTOCOL_VERSION, ManaServ.SUPPORTED_DB_VERSION);
 
             if(!options.verbosityChanged)
