@@ -30,10 +30,12 @@ using System.Linq;
 using System.Text;
 using ISL.Server.Network;
 using System.Net.Sockets;
+using ISL.Server;
+using ISL.Server.Utilities;
 
 namespace invertika_game.Network
 {
-    //TODO Connection zu Netcomputer zusammenfassen?
+    //TODO Connection zu Netcomputer zusammenfassen? - bzw das ganze für Connection und COnnectionHandler
     public class Connection
     {
         TcpClient mRemote;
@@ -48,45 +50,15 @@ namespace invertika_game.Network
 
         public bool start(string address, int port)
         {
-            mRemote=new TcpClient(address, port);
-
-            //    ENetAddress enetAddress;
-            //    enet_address_set_host(&enetAddress, address.c_str());
-            //    enetAddress.port = port;
-
-            //#if defined(ENET_VERSION) && ENET_VERSION >= ENET_CUTOFF
-            //    mLocal = enet_host_create(NULL /* create a client host */,
-            //                              1 /* allow one outgoing connection */,
-            //                              0           /* unlimited channel count */,
-            //                              0 /* assume any amount of incoming bandwidth */,
-            //                              0 /* assume any amount of outgoing bandwidth */);
-            //#else
-            //    mLocal = enet_host_create(NULL /* create a client host */,
-            //                              1 /* allow one outgoing connection */,
-            //                              0 /* assume any amount of incoming bandwidth */,
-            //                              0 /* assume any amount of outgoing bandwidth */);
-            //#endif
-
-            //    if (!mLocal)
-            //        return false;
-
-            //    // Initiate the connection, allocating channel 0.
-            //#if defined(ENET_VERSION) && ENET_VERSION >= ENET_CUTOFF
-            //    mRemote = enet_host_connect(mLocal, &enetAddress, 1, 0);
-            //#else
-            //    mRemote = enet_host_connect(mLocal, &enetAddress, 1);
-            //#endif
-
-            //    ENetEvent event;
-            //    if (enet_host_service(mLocal, &event, 10000) <= 0 ||
-            //        event.type != ENET_EVENT_TYPE_CONNECT)
-            //    {
-            //        stop();
-            //        return false;
-            //    }
-            //    return mRemote;
-
-            return true; //ssk
+            try
+            {
+                mRemote=new TcpClient(address, port);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public void stop()
@@ -95,15 +67,6 @@ namespace invertika_game.Network
             {
                 mRemote.Close();
             }
-
-            //if (mRemote)
-            //    enet_peer_disconnect(mRemote, 0);
-            //if (mLocal)
-            //    enet_host_flush(mLocal);
-            //if (mRemote)
-            //    enet_peer_reset(mRemote);
-            //if (mLocal)
-            //    enet_host_destroy(mLocal);
 
             mRemote=null;
             //mLocal = 0;
@@ -114,35 +77,21 @@ namespace invertika_game.Network
             return mRemote.Connected;
         }
 
-
-
         public void send(MessageOut msg)//, bool reliable, uint channel)
         {
             NetworkStream stream=mRemote.GetStream();
+       
+            //In Websocketpaket packen
+            byte[] wsMsg=Websocket.GetWebsocketDataFrame(msg.getData());
+            stream.Write(wsMsg); 
 
-            //Länge senden
-            ushort lengthPackage=(ushort)msg.getLength();
-            byte[] lengthAsByteArray=BitConverter.GetBytes(lengthPackage);
-            stream.Write(lengthAsByteArray, 0, (int)lengthAsByteArray.Length); 
+            if(mRemote==null)
+            {
+                Logger.Write(LogLevel.Warning, "Can't send message to unconnected host! ({0})", msg);
+                return;
+            }
 
-            stream.Write(msg.getData(), 0, (int)msg.getLength()); 
-
-            //if (!mRemote) {
-            //    LOG_WARN("Can't send message to unconnected host! (" << msg << ")");
-            //    return;
-            //}
-
-            //gBandwidth.increaseInterServerOutput(msg.getLength());
-
-            //ENetPacket *packet;
-            //packet = enet_packet_create(msg.getData(),
-            //                            msg.getLength(),
-            //                            reliable ? ENET_PACKET_FLAG_RELIABLE : 0);
-
-            //if (packet)
-            //    enet_peer_send(mRemote, channel, packet);
-            //else
-            //    LOG_ERROR("Failure to create packet!");
+            Program.gBandwidth.increaseInterServerOutput(msg.getLength());
         }
 
         public void process()

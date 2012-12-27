@@ -78,7 +78,7 @@ namespace invertika_game
         public static PostMan postMan;
 
         ///** Bandwidth Monitor */
-        static BandwidthMonitor gBandwidth;
+        public static BandwidthMonitor gBandwidth;
 
         /** Callback used when SIGQUIT signal is received. */
         static void closeGracefully(int sig)
