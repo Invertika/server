@@ -173,6 +173,7 @@ namespace invertika_game.Game
 
         public void processMessage(NetComputer computer, MessageIn message)
         {
+            int debug=555;
             //GameClient &client = *static_cast<GameClient *>(computer);
 
             //if (client.status == CLIENT_LOGIN)

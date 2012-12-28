@@ -101,7 +101,7 @@ namespace invertika_game.Network
 
         public void process()
         {
-            NetComputer comp=new NetComputer(mRemote);
+            //NetComputer comp=new NetComputer(mRemote);
 
             NetworkStream stream=mRemote.GetStream();
             WebSocketReader reader=new WebSocketReader(stream);
@@ -113,8 +113,13 @@ namespace invertika_game.Network
                               
                 Logger.Write(LogLevel.Debug, "Received message {0} from {1}", msg, mRemote);
 
-                Program.gameHandler.processMessage(comp, msg);
+                processMessage(msg);
             }
+        }
+
+        protected virtual void processMessage(MessageIn msg)
+        {
+            throw new NotImplementedException("These function must be overloaded from derived class.");
         }
     }
 }
