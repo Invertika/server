@@ -279,7 +279,7 @@ namespace invertika_game
             // Make an initial attempt to connect to the account server
             // Try again after longer and longer intervals when connection fails.
             bool isConnected=false;
-            int waittime=0;
+            int waittime=1;
 
             while(!isConnected&&running)
             {
@@ -290,6 +290,7 @@ namespace invertika_game
                 {
                     Logger.Write(LogLevel.Information, "Retrying in {0} seconds", waittime);
                     Thread.Sleep(waittime*1000);
+                    waittime*=2;
                 }
             }
 
