@@ -30,6 +30,7 @@ using System.Text;
 using ISL.Server.Network;
 using System.Net.Sockets;
 using ISL.Server.Common;
+using ISL.Server.Utilities;
 
 namespace invertika_game.Game
 {
@@ -52,10 +53,8 @@ namespace invertika_game.Game
 
         public bool startListen(ushort port)
         {
-            //LOG_INFO("Game handler started:");
-            //return ConnectionHandler::startListen(port);
-
-            return true; //ssk
+            Logger.Write(LogLevel.Information, "Game handler started:");
+            return base.startListen(port);
         }
 
         NetComputer computerConnected(TcpClient peer)

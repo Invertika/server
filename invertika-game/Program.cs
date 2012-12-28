@@ -179,9 +179,15 @@ namespace invertika_game
             System.Environment.Exit((int)ExitValue.EXIT_NORMAL);
         }
 
-        /**
-		 * Parse the command line arguments
-		 */
+        /// <summary>
+        /// Parses the options.
+        /// </summary>
+        /// <param name='args'>
+        /// Arguments.
+        /// </param>
+        /// <param name='options'>
+        /// Options.
+        /// </param>
         static void parseOptions(string[] args, out CommandLineOptions options)
         {
             Parameters param=Parameters.InterpretCommandLine(args);
@@ -328,7 +334,6 @@ namespace invertika_game
                     if(worldTime%100==0)
                     {
                         Logger.Write(LogLevel.Information, "World time: {0}", worldTime);
-
                     }
 
                     if(accountHandler.isConnected())
