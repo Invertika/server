@@ -99,6 +99,13 @@ namespace invertika_game.Network
             Program.gBandwidth.increaseInterServerOutput((int)msg.getLength());
         }
 
+        public string GetWebsocketPackageAsString()
+        {
+            NetworkStream stream=mRemote.GetStream();
+            WebSocketReader reader=new WebSocketReader(stream);
+            return reader.ReadWebsocketHandshake();
+        }
+
         public void process()
         {
             //NetComputer comp=new NetComputer(mRemote);

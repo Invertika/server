@@ -32,6 +32,8 @@ using invertika_game.Network;
 using ISL.Server.Common;
 using ISL.Server.Utilities;
 using ISL.Server.Enums;
+using ISL.Server;
+using System.Net.Sockets;
 
 namespace invertika_game.Game
 {
@@ -91,6 +93,10 @@ namespace invertika_game.Game
             }
 
             send(msg);
+
+            //Websocket Response empfangen
+            string response=GetWebsocketPackageAsString();
+            string response2=GetWebsocketPackageAsString();
 
             // initialize sync buffer
             if(mSyncBuffer==null)
