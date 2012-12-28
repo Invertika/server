@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using ISL.Server.Network;
 using System.Net.Sockets;
+using ISL.Server.Common;
 
 namespace invertika_game.Game
 {
@@ -894,10 +895,10 @@ namespace invertika_game.Game
 
         void sendNpcError(GameClient client, int id, string errorMsg)
         {
-            //MessageOut msg(GPMSG_NPC_ERROR);
-            //msg.writeInt16(id);
-            //msg.writeString(errorMsg, errorMsg.size());
-            //client.send(msg);
+            MessageOut msg=new MessageOut(Protocol.GPMSG_NPC_ERROR);
+            msg.writeInt16(id);
+            msg.writeString(errorMsg);
+            client.send(msg);
         }
     }
 }
