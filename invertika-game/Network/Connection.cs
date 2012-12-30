@@ -85,7 +85,7 @@ namespace invertika_game.Network
         public void send(MessageOut msg)
         {
             NetworkStream stream=mRemote.GetStream();
-       
+
             //In Websocketpaket packen
             byte[] wsMsg=Websocket.GetWebsocketDataFrame(msg.getData());
             stream.Write(wsMsg); 
@@ -95,7 +95,11 @@ namespace invertika_game.Network
                 Logger.Write(LogLevel.Warning, "Can't send message to unconnected host! ({0})", msg);
                 return;
             }
-
+            else
+            {
+                Logger.Write(LogLevel.Debug, "Sending message {0} to {1}", msg, mRemote.Client.LocalEndPoint);
+            }
+            
             Program.gBandwidth.increaseInterServerOutput((int)msg.getLength());
         }
 

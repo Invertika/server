@@ -120,7 +120,7 @@ namespace invertika_game
             string mainScriptFile=Configuration.getValue("script_mainFile", DEFAULT_GLOBAL_EVENT_SCRIPT_FILE);
             Script.loadGlobalEventScript(mainScriptFile);
 
-            // --- Initialize the global handlers
+            // Initialize the global handlers
             // FIXME: Make the global handlers global vars or part of a bigger
             // singleton or a local variable in the event-loop
             gameHandler=new GameHandler();
