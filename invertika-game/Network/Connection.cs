@@ -144,7 +144,7 @@ namespace invertika_game.Network
                 MessageIn msg=reader.ReadMessage();
                 Program.gBandwidth.increaseInterServerOutput((int)msg.getLength());
                               
-                Logger.Write(LogLevel.Debug, "Received message {0} from {1}", msg, mRemote);
+                Logger.Write(LogLevel.Debug, "Received message {0} from {1}", msg, mRemote.Client.RemoteEndPoint);
 
                 processMessage(msg);
             }
