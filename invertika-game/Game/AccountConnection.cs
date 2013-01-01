@@ -94,10 +94,6 @@ namespace invertika_game.Game
 
             send(msg);
 
-            //Websocket Response empfangen
-            string response=GetWebsocketPackageAsString();
-            string response2=GetWebsocketPackageAsString();
-
             // initialize sync buffer
             if(mSyncBuffer==null)
                 mSyncBuffer=new MessageOut(Protocol.GAMSG_PLAYER_SYNC);

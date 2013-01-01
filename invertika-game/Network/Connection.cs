@@ -58,6 +58,28 @@ namespace invertika_game.Network
             try
             {
                 mRemote=new TcpClient(address, port);
+
+                NetworkStream stream=mRemote.GetStream();
+
+                //Header
+                string clientAcc="GET /chat HTTP/1.1";
+                clientAcc+="Host: invertika.org";
+                clientAcc+="Upgrade: websocket";
+                clientAcc+="Connection: Upgrade";
+                clientAcc+="Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==";
+
+                UTF8Encoding encoding=new UTF8Encoding();
+                //encoding.GetBytes(clientAcc);
+
+                //In Websocketpaket packen
+                byte[] wsMsg=Websocket.GetWebsocketDataFrame(encoding.GetBytes(clientAcc));
+                //byte[] wsMsg=Websocket.GetWebsocketDataFrame(new byte[]{});
+                stream.Write(wsMsg); 
+
+                //Websocket Response empfangen
+                string response=GetWebsocketPackageAsString();
+                string response2=GetWebsocketPackageAsString();
+
                 return true;
             }
             catch
