@@ -97,7 +97,7 @@ namespace invertika_game.Network
             }
             else
             {
-                Logger.Write(LogLevel.Debug, "Sending message {0} to {1}", msg, mRemote.Client.LocalEndPoint);
+                Logger.Write(LogLevel.Debug, "Sending message {0} to {1}", msg, mRemote.Client.RemoteEndPoint);
             }
             
             Program.gBandwidth.increaseInterServerOutput((int)msg.getLength());
