@@ -153,9 +153,9 @@ namespace invertika_account.Account
                                 }
 
                                 computer.send(tmpOutMsg);
-                                //MapStatistics m=server.maps[(ushort)id]; //Auskommentiert da nicht klar ist wo dieser Wert gesetzt wird
-                                //m.nbThings=0;
-                                //m.nbMonsters=0;
+
+                                //Map hinzufügen
+                                server.maps.Add((ushort)id, new MapStatistics());
                             }
                         }
                     }

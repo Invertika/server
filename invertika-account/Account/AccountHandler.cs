@@ -793,7 +793,10 @@ namespace invertika_account.Account
             string address;
             int port;
 
-            if(!GameServerHandler.getGameServerFromMap(selectedChar.getMapId(), out address, out port))
+            int charMapId=selectedChar.getMapId();
+            bool gameServerHasMap=GameServerHandler.getGameServerFromMap(charMapId, out address, out port);
+
+            if(!gameServerHasMap)
             {
                 Logger.Write(LogLevel.Error, "Character Selection: No game server for map #{0}", selectedChar.getMapId());
                 reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
