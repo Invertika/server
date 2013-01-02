@@ -139,10 +139,14 @@ namespace invertika_game.Game
 
         string getTag(ModifierLocation location)
         {
-            //for (TagMap::const_iterator it = mTagMap.begin(),
-            //     it_end = mTagMap.end(); it != it_end; ++it)
-            //    if (it.second == location)
-            //        return &it.first;
+            foreach(KeyValuePair<string, ModifierLocation> pair in mTagMap)
+            {
+                if(pair.Value==location)
+                {
+                    return pair.Key;
+                }
+            }
+
             return null;
         }
 
