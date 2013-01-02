@@ -34,6 +34,9 @@ namespace invertika_game.Game
 {
     public class AttributeManager
     {
+        /** Maps tag names to specific modifiers. */
+        Dictionary<string, ModifierLocation> mTagMap=new Dictionary<string, ModifierLocation>();
+
         //typedef std::map<int, std::vector<struct AttributeInfoType> *> AttributeScope;
         //typedef std::pair<bool, std::vector<struct AttributeInfoType> > AttributeInfoMap;
         Dictionary<int, List<AttributeInfoType>> mAttributeScopes=new Dictionary<int, List<AttributeInfoType>>((int)ScopeType.MaxScope);
@@ -124,12 +127,14 @@ namespace invertika_game.Game
 
         ModifierLocation getLocation(string tag)
         {
-            //if (mTagMap.find(tag) != mTagMap.end())
-            //    return mTagMap.at(tag);
-            //else
-            //    return ModifierLocation(0, 0);
-
-            return null; //ssk
+            if(mTagMap.ContainsKey(tag))
+            {
+                return mTagMap[tag];
+            }
+            else
+            {
+                return new ModifierLocation();
+            }
         }
 
         string getTag(ModifierLocation location)
