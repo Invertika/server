@@ -38,7 +38,7 @@ namespace invertika_game.Game
         //typedef std::pair<bool, std::vector<struct AttributeInfoType> > AttributeInfoMap;
         Dictionary<int, List<AttributeInfoType>> mAttributeScopes=new Dictionary<int, List<AttributeInfoType>>((int)ScopeType.MaxScope);
         string mAttributeReferenceFile;
-        Dictionary<int, KeyValuePair<bool, List<AttributeInfoType>>> mAttributeMap=new KeyValuePair<bool, List<AttributeInfoType>>();
+        Dictionary<int, KeyValuePair<bool, List<AttributeInfoType>>> mAttributeMap=new Dictionary<int, KeyValuePair<bool, List<AttributeInfoType>>>();
 
         public AttributeManager(string file)
         {
@@ -97,27 +97,27 @@ namespace invertika_game.Game
 
         List<AttributeInfoType> getAttributeInfo(int id)
         {
-            if(mAttributeMap.Contains(id))
+            if(mAttributeMap.ContainsKey(id))
             {
-                return mAttributeMap[id];
+                return mAttributeMap[id].Value;
             }
             else
                 return null;
         }
 
-        public Dictionary<int, List<AttributeInfoType>> getAttributeScope(ScopeType type)
+        public KeyValuePair<int, List<AttributeInfoType>> getAttributeScope(ScopeType type)
         {
-            return mAttributeScopes[type];
+            return mAttributeScopes[(int)type];
         }
 
         bool isAttributeDirectlyModifiable(int id)
         {
-            //AttributeMap::const_iterator ret = mAttributeMap.find(id);
-            //if (ret == mAttributeMap.end())
-            //    return false;
-            //return ret.second.first;
-
-            return true; //ssk
+            if(mAttributeMap.ContainsKey(id))
+            {
+                return mAttributeMap[id].Key;
+            }
+            else
+                return false;
         }
 
         ModifierLocation getLocation(string tag)
