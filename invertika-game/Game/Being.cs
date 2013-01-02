@@ -55,7 +55,7 @@ namespace invertika_game.Game
             mGender=BeingGender.GENDER_UNSPECIFIED;
             mDirection=BeingDirection.DOWN;
 			
-            KeyValuePair<int, List<AttributeInfoType>> attr=Program.attributeManager.getAttributeScope(ScopeType.BeingScope);
+            Dictionary<int, List<AttributeInfoType>> attr=Program.attributeManager.getAttributeScope(ScopeType.BeingScope);
             Logger.Write(LogLevel.Debug, "Being creation: initialisation of {0} attributes.", attr.Count);
 
             foreach(KeyValuePair<int, List<AttributeInfoType>> pair in attr)

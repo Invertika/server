@@ -105,9 +105,11 @@ namespace invertika_game.Game
                 return null;
         }
 
-        public KeyValuePair<int, List<AttributeInfoType>> getAttributeScope(ScopeType type)
+        public Dictionary<int, List<AttributeInfoType>> getAttributeScope(ScopeType type)
         {
-            return mAttributeScopes[(int)type];
+            Dictionary<int, List<AttributeInfoType>> ret=new Dictionary<int, List<AttributeInfoType>>();
+            ret.Add((int)type, mAttributeScopes[(int)type]);
+            return ret;
         }
 
         bool isAttributeDirectlyModifiable(int id)
