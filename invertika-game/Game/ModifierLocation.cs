@@ -31,22 +31,22 @@ using System.Text;
 
 namespace invertika_game.Game
 {
-	/**
- * Identifies a modifier by the attribute id that it applies to and its layer
- * index in the stack of modifiers for that attribute.
- */
-	public class ModifierLocation
-	{
-		int attributeId;
-		int layer;
+    /// <summary>
+    /// Identifies a modifier by the attribute id that it applies to and its layer
+    /// index in the stack of modifiers for that attribute.
+    /// </summary>
+    public class ModifierLocation
+    {
+        int attributeId;
+        int layer;
 
-		ModifierLocation(int attributeId, int layer)
-		{
-			//: attributeId(attributeId)
-			//   , layer(layer)
-		}
+        public ModifierLocation(int attributeId, int layer)
+        {
+            this.attributeId=attributeId;
+            this.layer=layer;
+        }
 
-		//bool operator==(const ModifierLocation &other) const
-		//{ return attributeId == other.attributeId && layer == other.layer; }
-	}
+        //bool operator==(const ModifierLocation &other) const
+        //{ return attributeId == other.attributeId && layer == other.layer; }
+    }
 }

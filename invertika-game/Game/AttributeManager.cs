@@ -133,7 +133,7 @@ namespace invertika_game.Game
             }
             else
             {
-                return new ModifierLocation();
+                return new ModifierLocation(0, 0);
             }
         }
 
