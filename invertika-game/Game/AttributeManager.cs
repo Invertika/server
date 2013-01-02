@@ -111,7 +111,11 @@ namespace invertika_game.Game
         public Dictionary<int, List<AttributeInfoType>> getAttributeScope(ScopeType type)
         {
             Dictionary<int, List<AttributeInfoType>> ret=new Dictionary<int, List<AttributeInfoType>>();
-            ret.Add((int)type, mAttributeScopes[(int)type]);
+
+            if(mAttributeScopes.ContainsKey((int)type))
+            {
+                ret.Add((int)type, mAttributeScopes[(int)type]);
+            }
             return ret;
         }
 
