@@ -69,8 +69,8 @@ namespace invertika_game.Game
                 //LOG_DEBUG("Attempting to create attribute '" << it1.first << "'.");
                 //mAttributes.insert(std::make_pair(it1.first,
                 //                                  Attribute(*it1.second)));
-
             }
+
             // TODO: Way to define default base values?
             // Should this be handled by the virtual modifiedAttribute?
             // URGENT either way
