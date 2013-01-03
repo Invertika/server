@@ -69,16 +69,10 @@ namespace invertika_game.Network
                 clientAcc+="Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==";
 
                 UTF8Encoding encoding=new UTF8Encoding();
-                //encoding.GetBytes(clientAcc);
-
-                //In Websocketpaket packen
-                byte[] wsMsg=Websocket.GetWebsocketDataFrame(encoding.GetBytes(clientAcc));
-                //byte[] wsMsg=Websocket.GetWebsocketDataFrame(new byte[]{});
-                stream.Write(wsMsg); 
+                stream.Write(encoding.GetBytes(clientAcc)); 
 
                 //Websocket Response empfangen
                 string response=GetWebsocketPackageAsString();
-                string response2=GetWebsocketPackageAsString();
 
                 return true;
             }
