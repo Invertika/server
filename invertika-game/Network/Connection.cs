@@ -139,14 +139,18 @@ namespace invertika_game.Network
             NetworkStream stream=mRemote.GetStream();
             WebSocketReader reader=new WebSocketReader(stream);
 
-            while(true) //TODO Abbruchkriterium definieren, evt den Close Opcode im Websocket beachten?
-            {
-                MessageIn msg=reader.ReadMessage();
-                Program.gBandwidth.increaseInterServerOutput((int)msg.getLength());
-                              
-                Logger.Write(LogLevel.Debug, "Received message {0} from {1}", msg, mRemote.Client.RemoteEndPoint);
+            bool websocketClosed=false;
 
-                processMessage(msg);
+            while(websocketClosed==false)
+            {
+                MessageIn msg=reader.ReadMessage(out websocketClosed);
+
+                if(!websocketClosed)
+                {
+                    Program.gBandwidth.increaseInterServerOutput((int)msg.getLength());
+                    Logger.Write(LogLevel.Debug, "Received message {0} from {1}", msg, mRemote.Client.RemoteEndPoint);
+                    processMessage(msg);
+                }
             }
         }
 
