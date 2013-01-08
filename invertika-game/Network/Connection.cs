@@ -137,13 +137,16 @@ namespace invertika_game.Network
 
             while(websocketClosed==false)
             {
-                MessageIn msg=reader.ReadMessage(out websocketClosed);
-
-                if(!websocketClosed)
+                if(reader.IsDataAvailabe)
                 {
-                    Program.gBandwidth.increaseInterServerOutput((int)msg.getLength());
-                    Logger.Write(LogLevel.Debug, "Received message {0} from {1}", msg, mRemote.Client.RemoteEndPoint);
-                    processMessage(msg);
+                    MessageIn msg=reader.ReadMessage(out websocketClosed);
+
+                    if(!websocketClosed)
+                    {
+                        Program.gBandwidth.increaseInterServerOutput((int)msg.getLength());
+                        Logger.Write(LogLevel.Debug, "Received message {0} from {1}", msg, mRemote.Client.RemoteEndPoint);
+                        processMessage(msg);
+                    }
                 }
             }
         }

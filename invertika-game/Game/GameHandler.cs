@@ -57,11 +57,9 @@ namespace invertika_game.Game
             return base.startListen(port);
         }
 
-        NetComputer computerConnected(TcpClient peer)
+        protected override NetComputer computerConnected(TcpClient peer)
         {
-            //return new GameClient(peer);
-
-            return null; //ssk
+            return new GameClient(peer);
         }
 
         void computerDisconnected(NetComputer comp)

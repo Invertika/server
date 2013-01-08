@@ -222,6 +222,16 @@ namespace invertika_game
             }
         }
 
+        static void gameHandlerProcess()
+        {
+            gameHandler.process();
+        }
+
+        static void accountHandlerProcess()
+        {
+            accountHandler.process();
+        }
+
         /**
 		 * Main function, initializes and runs server.
 		 */
@@ -313,6 +323,25 @@ namespace invertika_game
             bool accountServerLost=false;
             int elapsedWorldTicks=0;
 
+            if(running)
+            {
+                //TODO hier den gamehandler im Thread starten, (da er die Verbindungen entgegennimmt)
+                Thread gameHandlerThread;    // Der Thread in dem die Process Funktion läuft
+                
+                gameHandlerThread=new Thread(gameHandlerProcess); //TODO in extra thread?);
+                gameHandlerThread.Name="Game Handler Thread";
+                gameHandlerThread.Start();
+                
+                if(accountHandler.isConnected())
+                {
+                    Thread accountHandlerThread;    // Der Thread in dem die Process Funktion läuft
+                    
+                    accountHandlerThread=new Thread(accountHandlerProcess); //TODO in extra thread?);
+                    accountHandlerThread.Name="Account Handler Thread";
+                    accountHandlerThread.Start();
+                }
+            }
+
             while(running)
             {
                 elapsedWorldTicks=worldTimer.poll();
@@ -341,7 +370,7 @@ namespace invertika_game
                         accountServerLost=false;
 
                         // Handle all messages that are in the message queues
-                        accountHandler.process();
+
 
                         if(worldTime%100==0)
                         {
@@ -375,13 +404,8 @@ namespace invertika_game
                         }
                     }
 
-                    gameHandler.process();
-
                     // Update all active objects/beings
                     GameState.update(worldTime);
-
-                    // Send potentially urgent outgoing messages
-                    gameHandler.flush();
                 }
             }
 
