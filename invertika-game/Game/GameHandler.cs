@@ -169,7 +169,7 @@ namespace invertika_game.Game
             return null; //ssk
         }
 
-        public void processMessage(NetComputer computer, MessageIn message)
+        protected override void processMessage(NetComputer computer, MessageIn message)
         {
             int debug=555;
             //GameClient &client = *static_cast<GameClient *>(computer);

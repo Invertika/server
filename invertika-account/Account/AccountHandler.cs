@@ -822,7 +822,7 @@ namespace invertika_account.Account
             int alternativePort=Configuration.getValue("net_accountListenToClientPort", Configuration.DEFAULT_SERVER_PORT)+2;
             reply.writeInt16(Configuration.getValue("net_chatListenToClientPort", alternativePort));
 
-            GameServerHandler.registerClient(magic_token, selectedChar);
+            GameServerHandler.registerClient(magic_token, selectedChar); //TODO Überprüfen ob diese beiden Funktionen funktionieren
             ChatHandler.registerChatClient(magic_token, selectedChar.getName(), acc.getLevel());
 
             client.send(reply);
