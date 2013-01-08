@@ -31,24 +31,23 @@ using ISL.Server.Network;
 using System.Net.Sockets;
 using ISL.Server.Common;
 using ISL.Server.Utilities;
+using ISL.Server.Enums;
 
 namespace invertika_game.Game
 {
     public class GameHandler : ConnectionHandler
     {
-        //NetComputer computerConnected(ENetPeer *);
-        //void computerDisconnected(NetComputer *);
-
-        ///**
-        // * Processes messages related to core game events.
-        // */
-        //void processMessage(NetComputer *computer, MessageIn &message);
+        /**
+         * Container for pending clients and pending connections.
+         */
+        TokenCollector<GameHandler, GameClient, Character> mTokenCollector;
+        AccountConnection accountHandler;
 
         const uint TILES_TO_BE_NEAR=7;
 
         public GameHandler()
         {
-            //mTokenCollector(this)
+            mTokenCollector=new TokenCollector<GameHandler, GameClient, Character>();
         }
 
         public bool startListen(ushort port)
@@ -62,22 +61,23 @@ namespace invertika_game.Game
             return new GameClient(peer);
         }
 
-        void computerDisconnected(NetComputer comp)
+        protected override void computerDisconnected(NetComputer comp)
         {
-            //GameClient &computer = *static_cast< GameClient * >(comp);
+            GameClient computer=(GameClient)comp;
 
-            //if (computer.status == CLIENT_QUEUED)
-            //{
-            //    mTokenCollector.deletePendingClient(&computer);
-            //}
-            //else if (Character *ch = computer.character)
-            //{
-            //    accountHandler.sendCharacterData(ch);
-            //    GameState::remove(ch);
-            //    ch.disconnected();
-            //    delete ch;
-            //}
-            //delete &computer;
+            if(computer.status==(int)AccountClientStatus.CLIENT_QUEUED)
+            {
+                mTokenCollector.deletePendingClient(computer);
+            }
+            else
+            {
+                accountHandler.sendCharacterData(computer.character);
+                GameState.remove(computer.character);
+                computer.character.disconnected();
+                computer.character=null; //TODO eigentlich unnötig
+            }
+
+            computer=null; //TODO eigentlich unnötig
         }
 
         void kill(Character ch)
@@ -171,128 +171,151 @@ namespace invertika_game.Game
 
         protected override void processMessage(NetComputer computer, MessageIn message)
         {
-            int debug=555;
-            //GameClient &client = *static_cast<GameClient *>(computer);
+            GameClient client=(GameClient)computer;
 
-            //if (client.status == CLIENT_LOGIN)
-            //{
-            //    if (message.getId() != PGMSG_CONNECT)
-            //        return;
+            if(client.status==(int)AccountClientStatus.CLIENT_LOGIN)
+            {
+                if(message.getId()!=Protocol.PGMSG_CONNECT)
+                    return;
 
-            //    std::string magic_token = message.readString(MAGIC_TOKEN_LENGTH);
-            //    client.status = CLIENT_QUEUED; // Before the addPendingClient
-            //    mTokenCollector.addPendingClient(magic_token, &client);
-            //    return;
-            //}
-            //else if (client.status != CLIENT_CONNECTED)
-            //{
-            //    return;
-            //}
+                string magic_token=message.readString();
+                client.status=(int)AccountClientStatus.CLIENT_QUEUED; // Before the addPendingClient
+                mTokenCollector.addPendingClient(magic_token, client);
+                return;
+            }
+            else if(client.status!=(int)AccountClientStatus.CLIENT_CONNECTED)
+            {
+                return;
+            }
 
-            //switch (message.getId())
-            //{
-            //    case PGMSG_SAY:
-            //        handleSay(client, message);
-            //        break;
-
-            //    case PGMSG_NPC_TALK:
-            //    case PGMSG_NPC_TALK_NEXT:
-            //    case PGMSG_NPC_SELECT:
-            //    case PGMSG_NPC_NUMBER:
-            //    case PGMSG_NPC_STRING:
-            //        handleNpc(client, message);
-            //        break;
-
-            //    case PGMSG_PICKUP:
-            //        handlePickup(client, message);
-            //        break;
-
-            //    case PGMSG_USE_ITEM:
-            //        handleUseItem(client, message);
-            //        break;
-
-            //    case PGMSG_DROP:
-            //        handleDrop(client, message);
-            //        break;
-
-            //    case PGMSG_WALK:
-            //        handleWalk(client, message);
-            //        break;
-
-            //    case PGMSG_EQUIP:
-            //        handleEquip(client, message);
-            //        break;
-
-            //    case PGMSG_UNEQUIP:
-            //        handleUnequip(client, message);
-            //        break;
-
-            //    case PGMSG_MOVE_ITEM:
-            //        handleMoveItem(client, message);
-            //        break;
-
-            //    case PGMSG_ATTACK:
-            //        handleAttack(client, message);
-            //        break;
-
-            //    case PGMSG_USE_SPECIAL:
-            //        handleUseSpecial(client, message);
-            //        break;
-
-            //    case PGMSG_ACTION_CHANGE:
-            //        handleActionChange(client, message);
-            //        break;
-
-            //    case PGMSG_DIRECTION_CHANGE:
-            //        handleDirectionChange(client, message);
-            //        break;
-
-            //    case PGMSG_DISCONNECT:
-            //        handleDisconnect(client, message);
-            //        break;
-
-            //    case PGMSG_TRADE_REQUEST:
-            //        handleTradeRequest(client, message);
-            //        break;
-
-            //    case PGMSG_TRADE_CANCEL:
-            //    case PGMSG_TRADE_AGREED:
-            //    case PGMSG_TRADE_CONFIRM:
-            //    case PGMSG_TRADE_ADD_ITEM:
-            //    case PGMSG_TRADE_SET_MONEY:
-            //        handleTrade(client, message);
-            //        break;
-
-            //    case PGMSG_NPC_BUYSELL:
-            //        handleNpcBuySell(client, message);
-            //        break;
-
-            //    case PGMSG_RAISE_ATTRIBUTE:
-            //        handleRaiseAttribute(client, message);
-            //        break;
-
-            //    case PGMSG_LOWER_ATTRIBUTE:
-            //        handleLowerAttribute(client, message);
-            //        break;
-
-            //    case PGMSG_RESPAWN:
-            //        // plausibility check is done by character class
-            //        client.character.respawn();
-            //        break;
-
-            //    case PGMSG_NPC_POST_SEND:
-            //        handleNpcPostSend(client, message);
-            //        break;
-
-            //    case PGMSG_PARTY_INVITE:
-            //        handlePartyInvite(client, message);
-            //        break;
-
-            //    default:
-            //        LOG_WARN("Invalid message type");
-            //        client.send(MessageOut(XXMSG_INVALID));
-            //        break;
-            //}
+            switch(message.getId())
+            {
+                case Protocol.PGMSG_SAY:
+                    {
+                        handleSay(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_NPC_TALK:
+                case Protocol.PGMSG_NPC_TALK_NEXT:
+                case Protocol.PGMSG_NPC_SELECT:
+                case Protocol.PGMSG_NPC_NUMBER:
+                case Protocol.PGMSG_NPC_STRING:
+                    {
+                        handleNpc(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_PICKUP:
+                    {
+                        handlePickup(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_USE_ITEM:
+                    {
+                        handleUseItem(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_DROP:
+                    {
+                        handleDrop(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_WALK:
+                    {
+                        handleWalk(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_EQUIP:
+                    {
+                        handleEquip(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_UNEQUIP:
+                    {
+                        handleUnequip(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_MOVE_ITEM:
+                    {
+                        handleMoveItem(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_ATTACK:
+                    {
+                        handleAttack(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_USE_SPECIAL:
+                    {
+                        handleUseSpecial(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_ACTION_CHANGE:
+                    {
+                        handleActionChange(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_DIRECTION_CHANGE:
+                    {
+                        handleDirectionChange(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_DISCONNECT:
+                    {
+                        handleDisconnect(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_TRADE_REQUEST:
+                    {
+                        handleTradeRequest(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_TRADE_CANCEL:
+                case Protocol.PGMSG_TRADE_AGREED:
+                case Protocol.PGMSG_TRADE_CONFIRM:
+                case Protocol.PGMSG_TRADE_ADD_ITEM:
+                case Protocol.PGMSG_TRADE_SET_MONEY:
+                    {
+                        handleTrade(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_NPC_BUYSELL:
+                    {
+                        handleNpcBuySell(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_RAISE_ATTRIBUTE:
+                    {
+                        handleRaiseAttribute(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_LOWER_ATTRIBUTE:
+                    {
+                        handleLowerAttribute(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_RESPAWN:
+                    {
+                        // plausibility check is done by character class
+                        client.character.respawn();
+                        break;
+                    }
+                case Protocol.PGMSG_NPC_POST_SEND:
+                    {
+                        handleNpcPostSend(client, message);
+                        break;
+                    }
+                case Protocol.PGMSG_PARTY_INVITE:
+                    {
+                        handlePartyInvite(client, message);
+                        break;
+                    }
+                default:
+                    {
+                        Logger.Write(LogLevel.Warning, "Invalid message type");
+                        client.send(new MessageOut(Protocol.XXMSG_INVALID));
+                        break;
+                    }
+            }
         }
 
         void sendTo(Character beingPtr, MessageOut msg)

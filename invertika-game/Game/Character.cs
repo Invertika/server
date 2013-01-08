@@ -37,15 +37,15 @@ namespace invertika_game.Game
     public class Character : Being
     {
         //static const float LEVEL_SKILL_PRECEDENCE_FACTOR; // I am taking suggestions for a better name
-        const int CHARPOINTS_PER_LEVELUP = 5;
-        const int CORRECTIONPOINTS_PER_LEVELUP = 2;
-        const int CORRECTIONPOINTS_MAX = 10;
+        const int CHARPOINTS_PER_LEVELUP=5;
+        const int CORRECTIONPOINTS_PER_LEVELUP=2;
+        const int CORRECTIONPOINTS_MAX=10;
 
         // Experience curve related values
-        const float EXPCURVE_EXPONENT = 3.0f;
-        const float EXPCURVE_FACTOR = 10.0f;
-        const float LEVEL_SKILL_PRECEDENCE_FACTOR = 0.75f;
-        const float EXP_LEVEL_FLEXIBILITY = 1.0f;
+        const float EXPCURVE_EXPONENT=3.0f;
+        const float EXPCURVE_FACTOR=10.0f;
+        const float LEVEL_SKILL_PRECEDENCE_FACTOR=0.75f;
+        const float EXP_LEVEL_FLEXIBILITY=1.0f;
         GameClient mClient;   /**< Client computer. */
         /** Handler of the transaction the character is involved in. */
         //void *mTransactionHandler;
@@ -220,8 +220,10 @@ namespace invertika_game.Game
             //Script::executeGlobalEventFunction("on_chr_death", this);
         }
 
-        void respawn()
+        public void respawn()
         {
+            int debug=555;
+
             //if (mAction != DEAD)
             //{
             //    LOG_WARN("Character \"" << getName()
@@ -700,7 +702,7 @@ namespace invertika_game.Game
             return AttribmodResponseCode.ATTRIBMOD_OK; //ssk
         }
 
-        void disconnected()
+        public void disconnected()
         {
             //for (Listeners::iterator i = mListeners.begin(),
             //     i_end = mListeners.end(); i != i_end;)

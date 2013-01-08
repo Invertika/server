@@ -33,14 +33,14 @@ using System.Net.Sockets;
 
 namespace invertika_game.Game
 {
-	public class GameClient : NetComputer
-	{
-		public GameClient(TcpClient peer): base(peer)
-		{
-			//character(NULL), status(CLIENT_LOGIN) {}
-		}
+    public class GameClient : NetComputer
+    {
+        public GameClient(TcpClient peer): base(peer)
+        {
+            //character(NULL), status(CLIENT_LOGIN) {}
+        }
 
-		Character character;
-		int status;
-	}
+        public Character character;
+        public int status;
+    }
 }

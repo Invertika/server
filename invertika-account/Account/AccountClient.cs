@@ -31,43 +31,46 @@ using System.Text;
 using System.Net.Sockets;
 using ISL.Server.Network;
 using ISL.Server.Account;
+using ISL.Server.Enums;
 
 namespace invertika_account.Account
 {
-	public class AccountClient : NetComputer
-	{
-		/** Account associated with connection */
-		ISL.Server.Account.Account mAccount;
+    public class AccountClient : NetComputer
+    {
+        /** Account associated with connection */
+        ISL.Server.Account.Account mAccount;
 
-		public AccountClientStatus status;
+        public AccountClientStatus status;
 
-		public AccountClient(TcpClient peer)
+        public AccountClient(TcpClient peer)
 			: base(peer)
-		{
-			status=AccountClientStatus.CLIENT_LOGIN;
-			mAccount=null;
-		}
+        {
+            status=AccountClientStatus.CLIENT_LOGIN;
+            mAccount=null;
+        }
 
-		~AccountClient()
-		{
-			unsetAccount();
-		}
+        ~AccountClient()
+        {
+            unsetAccount();
+        }
 
-		public void setAccount(ISL.Server.Account.Account acc)
-		{
-			unsetAccount();
-			mAccount=acc;
-		}
+        public void setAccount(ISL.Server.Account.Account acc)
+        {
+            unsetAccount();
+            mAccount=acc;
+        }
 
-		void unsetAccount()
-		{
-			mAccount=null;
-		}
+        void unsetAccount()
+        {
+            mAccount=null;
+        }
 
-		/**
+        /**
  * Get account associated with the connection.
  */
-		public ISL.Server.Account.Account getAccount()
-		{ return mAccount; }
-	}
+        public ISL.Server.Account.Account getAccount()
+        {
+            return mAccount;
+        }
+    }
 }
