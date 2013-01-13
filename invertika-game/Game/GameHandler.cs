@@ -41,7 +41,7 @@ namespace invertika_game.Game
          * Container for pending clients and pending connections.
          */
         TokenCollector<GameHandler, GameClient, Character> mTokenCollector;
-        AccountConnection accountHandler;
+        static AccountConnection accountHandler;
 
         const uint TILES_TO_BE_NEAR=7;
 
