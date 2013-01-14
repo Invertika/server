@@ -56,7 +56,7 @@ namespace invertika_game.Game
         //std::set<size_t> mModifiedAttributes;
         //std::set<size_t> mModifiedExperience;
 
-        Dictionary<int, int> mExperience; /**< experience collected for each skill.*/
+        public Dictionary<int, int> mExperience; /**< experience collected for each skill.*/
 
         Dictionary<int, Special> mSpecials;
         Dictionary<int, int> mStatusEffects; /**< only used by select functions
@@ -117,6 +117,11 @@ namespace invertika_game.Game
             //giveSpecial(1);
             //giveSpecial(2);
             //giveSpecial(3);
+        }
+
+        public void setClient(GameClient c)
+        {
+            mClient=c;
         }
 
         void update()
@@ -406,7 +411,7 @@ namespace invertika_game.Game
             //}
         }
 
-        void modifiedAllAttribute()
+        public void modifiedAllAttribute()
         {
             //LOG_DEBUG("Marking all attributes as changed, requiring recalculation.");
             //for (AttributeMap::iterator it = mAttributes.begin(),
@@ -469,7 +474,7 @@ namespace invertika_game.Game
             return false;
         }
 
-        void updateDerivedAttributes(uint attr)
+        public void updateDerivedAttributes(uint attr)
         {
             ///*
             // * `attr' has changed, perform updates accordingly.

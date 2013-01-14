@@ -32,22 +32,85 @@ using System.Net.Sockets;
 using ISL.Server.Common;
 using ISL.Server.Utilities;
 using ISL.Server.Enums;
+using ISL.Server;
 
 namespace invertika_game.Game
 {
-    public class GameHandler : ConnectionHandler
+    public class GameHandler : ConnectionHandler, ITokenCollectorHandler
     {
+        #region ITokenCollectorHandler implementation
+
+        public void deletePendingClient(NetComputer client)
+        {
+            GameClient computer=(GameClient)client;
+
+            // Something might have changed since it was inserted
+            if(computer.status!=(int)AccountClientStatus.CLIENT_QUEUED)
+                return;
+            
+            MessageOut msg=new MessageOut(Protocol.GPMSG_CONNECT_RESPONSE);
+            msg.writeInt8((int)ErrorMessage.ERRMSG_TIME_OUT);
+            
+            // The computer will be deleted when the disconnect event is processed
+            computer.disconnect(msg);
+        }
+
+        public void deletePendingConnect(object data)
+        {
+            //void GameHandler::deletePendingConnect(Character *character)
+//            {
+//                delete character;
+//            }
+        }
+
+        public void tokenMatched(NetComputer client, object data)
+        {
+            GameClient computer=(GameClient)client;
+            Character character=(Character)data;
+
+            computer.character=character;
+            computer.status=(int)AccountClientStatus.CLIENT_CONNECTED;
+
+            character.setClient(computer);
+            
+            MessageOut result=new MessageOut(Protocol.GPMSG_CONNECT_RESPONSE);
+
+            if(!GameState.insert(character))
+            {
+                result.writeInt8((int)ErrorMessage.ERRMSG_SERVER_FULL);
+                kill(character);
+                //delete character;
+                computer.disconnect(result);
+                return;
+            }
+
+            result.writeInt8((int)ErrorMessage.ERRMSG_OK);
+            computer.send(result);
+            
+            // Force sending the whole character to the client.
+            Inventory inv=new Inventory(character);
+            inv.sendFull();
+            character.modifiedAllAttribute();
+
+            foreach(KeyValuePair<int, int> pair in character.mExperience)
+            {
+                character.updateDerivedAttributes((uint)pair.Key);
+            }
+        }
+
+        #endregion
+
         /**
          * Container for pending clients and pending connections.
          */
-        TokenCollector<GameHandler, GameClient, Character> mTokenCollector;
+        TokenCollector mTokenCollector;
         static AccountConnection accountHandler;
 
         const uint TILES_TO_BE_NEAR=7;
 
         public GameHandler()
         {
-            mTokenCollector=new TokenCollector<GameHandler, GameClient, Character>();
+            mTokenCollector=new TokenCollector(this);
         }
 
         public bool startListen(ushort port)

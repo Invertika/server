@@ -40,10 +40,11 @@ using ISL.Server.Account;
 using CSCL;
 using CSCL.Crypto;
 using invertika_account.Chat;
+using ISL.Server;
 
 namespace invertika_account.Account
 {
-    public class AccountHandler : ConnectionHandler
+    public class AccountHandler : ConnectionHandler, ITokenCollectorHandler
     {
         int mStartingPoints;   /**< Character's starting points. */
         int mAttributeMinimum; /**< Minimum value for customized attributes. */
@@ -67,16 +68,62 @@ namespace invertika_account.Account
            
         //Token collector for connecting a client coming from a game server
         //without having to provide username and password a second time.
-        public TokenCollector<AccountHandler, AccountClient, int> mTokenCollector;
+        public TokenCollector mTokenCollector;
 
         /** List of attributes that the client can send at account creation. */
         List<int> mModifiableAttributes=new List<int>();
 
         Dictionary<uint, Attribute> mDefaultAttributes=new  Dictionary<uint, Attribute>();
 
+        #region ITokenCollectorHandler implementation
+        public void deletePendingClient(NetComputer client)
+        {
+            MessageOut msg=new MessageOut(Protocol.APMSG_RECONNECT_RESPONSE);
+            msg.writeInt8((int)ErrorMessage.ERRMSG_TIME_OUT);
+            client.disconnect(msg);
+            // The client will be deleted when the disconnect event is processed
+        }
+        
+        public void deletePendingConnect(object data)
+        {
+            /**
+     * Called by the token collector.
+     */
+            //void deletePendingConnect(int) {}
+        }
+        
+        public void tokenMatched(NetComputer computer, object data)
+        {
+            int accountID=(int)data;
+            AccountClient client=(AccountClient)computer;
+            
+            MessageOut reply=new MessageOut(Protocol.APMSG_RECONNECT_RESPONSE);
+            
+            // Associate account with connection.
+            ISL.Server.Account.Account acc=Program.storage.getAccount(accountID);
+            client.setAccount(acc);
+            client.status=AccountClientStatus.CLIENT_CONNECTED;
+            
+            reply.writeInt8((int)ErrorMessage.ERRMSG_OK);
+            client.send(reply);
+            
+            // Return information about available characters
+            Dictionary<uint, Character> chars=acc.getCharacters();
+            
+            // Send characters list
+            foreach(KeyValuePair<uint, Character> pair in chars)
+            {
+                sendCharacterData(client, pair.Value);
+            }
+        }
+        
+#endregion
+
+
         public AccountHandler(string attributesFile)
         {
-            mTokenCollector=new TokenCollector<AccountHandler, AccountClient, int>();
+            mTokenCollector=new TokenCollector(this);
+
             mNumHairStyles=Configuration.getValue("char_numHairStyles", 17);
             mNumHairColors=Configuration.getValue("char_numHairColors", 11);
             mNumGenders=Configuration.getValue("char_numGenders", 2);

@@ -513,7 +513,7 @@ namespace invertika_game.Game
             //    delayedEvents.clear();
         }
 
-        static bool insert(Thing ptr)
+        public static bool insert(Thing ptr)
         {
             //assert(!dbgLockObjects);
             //MapComposite *map = ptr.getMap();
