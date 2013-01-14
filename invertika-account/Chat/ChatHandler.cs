@@ -120,48 +120,6 @@ namespace invertika_account.Chat
             return base.startListen(port, host);
         }
 
-        void deletePendingClient(ChatClient c)
-        {
-            MessageOut msg=new MessageOut(Protocol.CPMSG_CONNECT_RESPONSE);
-            msg.writeInt8((int)ErrorMessage.ERRMSG_TIME_OUT);
-
-            // The computer will be deleted when the disconnect event is processed
-            c.disconnect(msg);
-        }
-
-        void deletePendingConnect(Pending p)
-        {
-            //delete p;
-        }
-
-        void tokenMatched(ChatClient client, Pending p)
-        {
-            MessageOut msg=new MessageOut(Protocol.CPMSG_CONNECT_RESPONSE);
-
-            client.characterName=p.character;
-            client.accountLevel=p.level;
-
-            Character c=Program.storage.getCharacter(p.character);
-
-            if(c!=null)
-            {
-                // character wasnt found
-                msg.writeInt8((int)ErrorMessage.ERRMSG_FAILURE); //TODO In Protocol?
-            }
-            else
-            {
-                client.characterId=(uint)c.getDatabaseID();
-                //delete p;
-
-                msg.writeInt8((int)ErrorMessage.ERRMSG_OK);
-
-                // Add chat client to player map
-                mPlayerMap.Add(client.characterName, client);
-            }
-
-            client.send(msg);
-        }
-
         protected override NetComputer computerConnected(TcpClient peer)
         {
             return new ChatClient(peer);

@@ -426,55 +426,6 @@ namespace invertika_game.Game
             //mTokenCollector.addPendingConnect(token, ch);
         }
 
-        void tokenMatched(GameClient computer, Character character)
-        {
-            //computer.character = character;
-            //computer.status = CLIENT_CONNECTED;
-
-            //character.setClient(computer);
-
-            //MessageOut result(GPMSG_CONNECT_RESPONSE);
-
-            //if (!GameState::insert(character))
-            //{
-            //    result.writeInt8(ERRMSG_SERVER_FULL);
-            //    kill(character);
-            //    delete character;
-            //    computer.disconnect(result);
-            //    return;
-            //}
-
-            //result.writeInt8(ERRMSG_OK);
-            //computer.send(result);
-
-            //// Force sending the whole character to the client.
-            //Inventory(character).sendFull();
-            //character.modifiedAllAttribute();
-            //std::map<int, int>::const_iterator skill_it;
-            //for (skill_it = character.getSkillBegin(); skill_it != character.getSkillEnd(); skill_it++)
-            //{
-            //    character.updateDerivedAttributes(skill_it.first);
-            //}
-        }
-
-        void deletePendingClient(GameClient computer)
-        {
-            //// Something might have changed since it was inserted
-            //if (computer.status != CLIENT_QUEUED)
-            //    return;
-
-            //MessageOut msg(GPMSG_CONNECT_RESPONSE);
-            //msg.writeInt8(ERRMSG_TIME_OUT);
-
-            //// The computer will be deleted when the disconnect event is processed
-            //computer.disconnect(msg);
-        }
-
-        void deletePendingConnect(Character character)
-        {
-            //delete character;
-        }
-
         GameClient getClientByNameSlow(string name)
         {
             //for (NetComputers::const_iterator i = clients.begin(),
