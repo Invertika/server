@@ -95,6 +95,8 @@ namespace invertika_game.Game
 		//mParty(0),
 		//mTransaction(TRANS_NONE)
         {
+            mExperience=new Dictionary<int, int>();
+
             //const AttributeScope &attr =
             //                       attributeManager.getAttributeScope(CharacterScope);
             //LOG_DEBUG("Character creation: initialisation of "
