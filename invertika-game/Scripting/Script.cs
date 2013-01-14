@@ -73,7 +73,7 @@ namespace invertika_game.Scripting
             return null;
         }
 
-        void update()
+        public void update()
         {
             //prepare("update");
             //execute();
@@ -128,7 +128,7 @@ namespace invertika_game.Scripting
 
         bool executeGlobalEventFunction(string function, Being obj)
         {
-            bool isScriptHandled = false;
+            bool isScriptHandled=false;
             //if (Script *script = globalEventScript)
             //{
             //    script.setMap(obj.getMap());

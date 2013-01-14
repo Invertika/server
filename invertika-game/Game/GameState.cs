@@ -28,20 +28,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ISL.Server.Network;
+using invertika_game.Scripting;
 
 namespace invertika_game.Game
 {
     public static class GameState
     {
-        //enum
-        //{
-        //    EVENT_REMOVE = 0,
-        //    EVENT_INSERT,
-        //    EVENT_WARP
-        //};
-
-        //typedef std::map< Actor *, DelayedEvent > DelayedEvents;
-
         /**
 		 * List of delayed events.
 		 */
@@ -58,32 +50,35 @@ namespace invertika_game.Game
 		 */
         static void updateMap(MapComposite map)
         {
-            //// 1. update object status.
-            //const std::vector< Thing * > &things = map.getEverything();
-            //for (std::vector< Thing * >::const_iterator i = things.begin(),
-            //     i_end = things.end(); i != i_end; ++i)
-            //{
-            //    (*i).update();
-            //}
+            // 1. update object status.
+            List< Thing  > things=map.getEverything();
 
-            //// 2. run scripts.
-            //if (Script *s = map.getScript())
-            //{
-            //    s.update();
-            //}
+            foreach(Thing thing in things)
+            {
+                thing.update();
+            }
 
-            //// 3. perform actions.
-            //for (BeingIterator i(map.getWholeMapIterator()); i; ++i)
-            //{
-            //    (*i).perform();
-            //}
+            // 2. run scripts.
+            Script s=map.getScript();
+            if(s!=null)
+            {
+                s.update();
+            }
 
-            //// 4. move objects around and update zones.
-            //for (BeingIterator i(map.getWholeMapIterator()); i; ++i)
-            //{
-            //    (*i).move();
-            //}
-            //map.update();
+            // 3. perform actions.
+            //TODO Implementieren
+//            for (BeingIterator i(map.getWholeMapIterator()); i; ++i)
+//            {
+//                (*i).perform();
+//            }
+
+            // 4. move objects around and update zones.
+//            for (BeingIterator i(map.getWholeMapIterator()); i; ++i)
+//            {
+//                (*i).move();
+//            }
+
+            map.update();
         }
 
         /**

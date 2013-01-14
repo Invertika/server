@@ -31,27 +31,35 @@ using ISL.Server.Common;
 
 namespace invertika_game.Game
 {
-	public class Thing
-	{
-		protected List<EventListener> mListeners;   /**< List of event listeners. */
+    public class Thing
+    {
+        protected List<EventListener> mListeners;   /**< List of event listeners. */
 
-		MapComposite mMap;     /**< Map the thing is on */
-		ThingType mType;        /**< Type of this thing. */
+        MapComposite mMap;     /**< Map the thing is on */
+        ThingType mType;        /**< Type of this thing. */
 		
-		public  Thing(ThingType type)//, MapComposite *map = 0)
-		{
-           mMap=null;
-		   mType=type;
-		}
+        public  Thing(ThingType type)//, MapComposite *map = 0)
+        {
+            mMap=null;
+            mType=type;
+        }
 
-		public Thing(ThingType type, MapComposite map)
-		{
-			mMap=map;
-			mType=type;
-		}
+        public Thing(ThingType type, MapComposite map)
+        {
+            mMap=map;
+            mType=type;
+        }
 
-		~Thing()
-		{
+        /**
+         * Updates the internal status.
+         */
+        public virtual void update()
+        {
+            throw new NotImplementedException("These function must be overloaded from derived class.");
+        }
+
+        ~Thing()
+        {
 //    /* As another object will stop listening and call removeListener when it is
 //       deleted, the following assertion ensures that all the calls to
 //       removeListener have been performed will this object was still alive. It
@@ -59,20 +67,20 @@ namespace invertika_game.Game
 //       performed (e.g. ~SpawnArea). But this is rather exceptional, so keep the
 //       assertion to catch all the other forgotten calls to removeListener. */
 //    assert(mListeners.empty());
-		}
+        }
 
-		void addListener(EventListener one)
-		{
-			mListeners.Add(one);
-		}
+        void addListener(EventListener one)
+        {
+            mListeners.Add(one);
+        }
 
-		void removeListener(EventListener one)
-		{
-			mListeners.Remove(one);
-		}
+        void removeListener(EventListener one)
+        {
+            mListeners.Remove(one);
+        }
 
-		void inserted()
-		{
+        void inserted()
+        {
 //    for (Listeners::iterator i = mListeners.begin(),
 //         i_end = mListeners.end(); i != i_end;)
 //    {
@@ -80,10 +88,10 @@ namespace invertika_game.Game
 //        ++i; // In case the listener removes itself from the list on the fly.
 //        if (l.dispatch->inserted) l.dispatch->inserted(&l, this);
 //    }
-		}
+        }
 
-		void removed()
-		{
+        void removed()
+        {
 //    for (Listeners::iterator i = mListeners.begin(),
 //         i_end = mListeners.end(); i != i_end;)
 //    {
@@ -91,22 +99,22 @@ namespace invertika_game.Game
 //        ++i; // In case the listener removes itself from the list on the fly.
 //        if (l.dispatch->removed) l.dispatch->removed(&l, this);
 //    }
-		}
+        }
 		
-		/**
+        /**
          * Gets the map this thing is located on.
          */
-		public MapComposite getMap()
-		{
-			return mMap;
-		}
+        public MapComposite getMap()
+        {
+            return mMap;
+        }
 		
-		/**
+        /**
          * Sets the map this thing is located on.
          */
-		public virtual void setMap(MapComposite map)
-		{
-			mMap=map;
-		}
-	}
+        public virtual void setMap(MapComposite map)
+        {
+            mMap=map;
+        }
+    }
 }
