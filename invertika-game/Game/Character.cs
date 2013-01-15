@@ -530,6 +530,11 @@ namespace invertika_game.Game
             return 0; //ssk
         }
 
+        public int getDatabaseID()
+        {
+            return mDatabaseID;
+        }
+
         int levelForExp(int exp)
         {
             //return int(pow(float(exp) / EXPCURVE_FACTOR, 1.0f / EXPCURVE_EXPONENT));
@@ -751,11 +756,6 @@ namespace invertika_game.Game
             //    delete i.second;
             //}
             //mSpecials.clear();
-        }
-		
-        public int getDatabaseID()
-        { 
-            return mDatabaseID;
         }
     }
 }

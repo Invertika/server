@@ -97,7 +97,6 @@ namespace invertika_game.Game
                 character.updateDerivedAttributes((uint)pair.Key);
             }
         }
-
         #endregion
 
         /**
@@ -380,8 +379,10 @@ namespace invertika_game.Game
             }
         }
 
-        void sendTo(Character beingPtr, MessageOut msg)
+        public void sendTo(Character beingPtr, MessageOut msg)
         {
+            int debug=555;
+
             //GameClient *client = beingPtr.getClient();
             //assert(client && client.status == CLIENT_CONNECTED);
             //client.send(msg);

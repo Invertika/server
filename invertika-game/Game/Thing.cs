@@ -58,6 +58,14 @@ namespace invertika_game.Game
             throw new NotImplementedException("These function must be overloaded from derived class.");
         }
 
+        /**
+         * Returns whether this thing is visible on the map or not. (Actor)
+         */
+        public bool isVisible()
+        {
+            return mType!=ThingType.OBJECT_OTHER;
+        }
+
         ~Thing()
         {
 //    /* As another object will stop listening and call removeListener when it is
@@ -79,8 +87,9 @@ namespace invertika_game.Game
             mListeners.Remove(one);
         }
 
-        void inserted()
+        public void inserted()
         {
+            int debug=555;
 //    for (Listeners::iterator i = mListeners.begin(),
 //         i_end = mListeners.end(); i != i_end;)
 //    {
@@ -115,6 +124,16 @@ namespace invertika_game.Game
         public virtual void setMap(MapComposite map)
         {
             mMap=map;
+        }
+
+        /**
+         * Gets type of this thing.
+         *
+         * @return the type of this thing.
+         */
+        public ThingType getType()
+        {
+            return mType;
         }
     }
 }

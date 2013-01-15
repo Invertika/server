@@ -29,6 +29,8 @@ using System.Linq;
 using System.Text;
 using ISL.Server.Network;
 using invertika_game.Scripting;
+using ISL.Server.Common;
+using ISL.Server.Utilities;
 
 namespace invertika_game.Game
 {
@@ -511,90 +513,91 @@ namespace invertika_game.Game
         public static bool insert(Thing ptr)
         {
             //assert(!dbgLockObjects);
-            //MapComposite *map = ptr.getMap();
+
+            MapComposite map=ptr.getMap();
             //assert(map && map.isActive());
 
-            ///* Non-visible objects have neither position nor public ID, so their
-            //   insertion cannot fail. Take care of them first. */
-            //if (!ptr.isVisible())
-            //{
-            //    map.insert(ptr);
-            //    ptr.inserted();
-            //    return true;
-            //}
+            /* Non-visible objects have neither position nor public ID, so their
+               insertion cannot fail. Take care of them first. */
+            if(!ptr.isVisible())
+            {
+                map.insert(ptr);
+                ptr.inserted();
+                return true;
+            }
 
-            //// Check that coordinates are actually valid.
-            //Actor *obj = static_cast< Actor * >(ptr);
-            //Map *mp = map.getMap();
-            //Point pos = obj.getPosition();
-            //if ((int)pos.x / mp.getTileWidth() >= mp.getWidth() ||
-            //    (int)pos.y / mp.getTileHeight() >= mp.getHeight())
-            //{
-            //    LOG_ERROR("Tried to insert an actor at position " << pos.x << ','
-            //              << pos.y << " outside map " << map.getID() << '.');
-            //    // Set an arbitrary small position.
-            //    pos = Point(100, 100);
-            //    obj.setPosition(pos);
-            //}
+            // Check that coordinates are actually valid.
+            Actor obj=(Actor)ptr;
+            Map mp=map.getMap();
+           
+            Point pos=obj.getPosition();
+            if((int)pos.x/mp.getTileWidth()>=mp.getWidth()||
+                (int)pos.y/mp.getTileHeight()>=mp.getHeight())
+            {
+                Logger.Write(LogLevel.Error, "Tried to insert an actor at position {0}, {1} outside map {2}.", pos.x, pos.y, map.getID());
 
-            //if (!map.insert(obj))
-            //{
-            //    // The map is overloaded, no room to add a new actor
-            //    LOG_ERROR("Too many actors on map " << map.getID() << '.');
-            //    return false;
-            //}
+                // Set an arbitrary small position.
+                pos=new Point(100, 100);
+                obj.setPosition(pos);
+            }
 
-            //obj.inserted();
+            if(!map.insert(obj))
+            {
+                // The map is overloaded, no room to add a new actor
+                Logger.Write(LogLevel.Error, "Too many actors on map {0}.", map.getID());
+                return false;
+            }
 
-            //// DEBUG INFO
-            //switch (obj.getType())
-            //{
-            //    case OBJECT_ITEM:
-            //        LOG_DEBUG("Item inserted: "
-            //               << static_cast<Item*>(obj).getItemClass().getDatabaseID());
-            //        break;
+            obj.inserted();
 
-            //    case OBJECT_NPC:
-            //        LOG_DEBUG("NPC inserted: " << static_cast<NPC*>(obj).getNPC());
-            //        break;
+            // DEBUG INFO //TODO Implementieren
+//            switch(obj.getType())
+//            {
+//                case ThingType.OBJECT_ITEM:
+//                    Logger.Write(LogLevel.Debug, "Item inserted: "
+//                       (Item)(obj).getItemClass().getDatabaseID());
+//                    break;
+//
+//                case ThingType.OBJECT_NPC:
+//                    Logger.Write(LogLevel.Debug, "NPC inserted: "<<static_cast<NPC*>(obj).getNPC());
+//                    break;
+//
+//                case ThingType.OBJECT_CHARACTER:
+//                    Logger.Write(LogLevel.Debug, "Player inserted: "
+//                        <<static_cast<Being*>(obj).getName());
+//                    break;
+//
+//                case ThingType.OBJECT_EFFECT:
+//                    Logger.Write(LogLevel.Debug, "Effect inserted: "
+//                        <<static_cast<Effect*>(obj).getEffectId());
+//                    break;
+//
+//                case ThingType.OBJECT_MONSTER:
+//                    Logger.Write(LogLevel.Debug, "Monster inserted: "
+//                        <<static_cast<Monster*>(obj).getSpecy().getId());
+//                    break;
+//
+//                case ThingType.OBJECT_ACTOR:
+//                case ThingType.OBJECT_OTHER:
+//                default:
+//                    Logger.Write(LogLevel.Debug, "Thing inserted: "<<obj.getType());
+//            }
 
-            //    case OBJECT_CHARACTER:
-            //        LOG_DEBUG("Player inserted: "
-            //                  << static_cast<Being*>(obj).getName());
-            //        break;
+            obj.raiseUpdateFlags((byte)UpdateFlag.UPDATEFLAG_NEW_ON_MAP);
+            if(obj.getType()!=ThingType.OBJECT_CHARACTER)
+                return true;
 
-            //    case OBJECT_EFFECT:
-            //        LOG_DEBUG("Effect inserted: "
-            //                  << static_cast<Effect*>(obj).getEffectId());
-            //        break;
+            /* Since the player does not know yet where in the world its character is,
+               we send a map-change message, even if it is the first time it
+               connects to this server. */
+            MessageOut mapChangeMessage=new MessageOut(Protocol.GPMSG_PLAYER_MAP_CHANGE);
+            mapChangeMessage.writeString(map.getName());
+            mapChangeMessage.writeInt16(pos.x);
+            mapChangeMessage.writeInt16(pos.y);
+            Program.gameHandler.sendTo((Character)(obj), mapChangeMessage);
 
-            //    case OBJECT_MONSTER:
-            //        LOG_DEBUG("Monster inserted: "
-            //                  << static_cast<Monster*>(obj).getSpecy().getId());
-            //        break;
-
-            //    case OBJECT_ACTOR:
-            //    case OBJECT_OTHER:
-            //    default:
-            //        LOG_DEBUG("Thing inserted: " << obj.getType());
-            //}
-
-            //obj.raiseUpdateFlags(UPDATEFLAG_NEW_ON_MAP);
-            //if (obj.getType() != OBJECT_CHARACTER)
-            //    return true;
-
-            ///* Since the player does not know yet where in the world its character is,
-            //   we send a map-change message, even if it is the first time it
-            //   connects to this server. */
-            //MessageOut mapChangeMessage(GPMSG_PLAYER_MAP_CHANGE);
-            //mapChangeMessage.writeString(map.getName());
-            //mapChangeMessage.writeInt16(pos.x);
-            //mapChangeMessage.writeInt16(pos.y);
-            //gameHandler.sendTo(static_cast< Character * >(obj), mapChangeMessage);
-
-            //// update the online state of the character
-            //accountHandler.updateOnlineStatus(
-            //    static_cast< Character * >(obj).getDatabaseID(), true);
+            // update the online state of the character
+            Program.accountHandler.updateOnlineStatus(((Character)obj).getDatabaseID(), true);
 
             return true;
         }

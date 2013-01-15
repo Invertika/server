@@ -103,6 +103,7 @@
     <Compile Include="Game\Map.cs" />
     <Compile Include="Game\MetaTile.cs" />
     <Compile Include="Game\MapObject.cs" />
+    <Compile Include="Enums\UpdateFlag.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -179,8 +179,10 @@ namespace invertika_game.Game
             return null; //ssk
         }
 
-        bool insert(Thing ptr)
+        public bool insert(Thing ptr)
         {
+            int debug=555;
+
             //if (ptr.isVisible())
             //{
             //    if (ptr.canMove() && !mContent.allocate(static_cast< Being * >(ptr)))
@@ -450,6 +452,14 @@ namespace invertika_game.Game
         public Map getMap()
         {
             return mMap;
+        }
+
+        /**
+         * Gets the name of this map.
+         */
+        public string getName()
+        {
+            return mName;
         }
     }
 }

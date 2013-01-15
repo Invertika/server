@@ -24,48 +24,64 @@ using invertika_game.Enums;
 
 namespace invertika_game.Game
 {
-	public class Map
-	{
-		/**
+    public class Map
+    {
+        /**
          * Blockmasks for different entities
          */
-		const byte BLOCKMASK_WALL=0x80;     // = bin 1000 0000
-		const byte BLOCKMASK_CHARACTER=0x01;// = bin 0000 0001
-		const byte BLOCKMASK_MONSTER=0x02;  // = bin 0000 0010
+        const byte BLOCKMASK_WALL=0x80;     // = bin 1000 0000
+        const byte BLOCKMASK_CHARACTER=0x01;// = bin 0000 0001
+        const byte BLOCKMASK_MONSTER=0x02;  // = bin 0000 0010
 
-		// map properties
-		int mWidth,mHeight;
-		int mTileWidth,mTileHeight;
-		Dictionary<string, string> mProperties;
-		List<MetaTile> mMetaTiles;
-		List<MapObject> mMapObjects;
+        // map properties
+        int mWidth, mHeight;
+        int mTileWidth, mTileHeight;
+        Dictionary<string, string> mProperties;
+        List<MetaTile> mMetaTiles;
+        List<MapObject> mMapObjects;
 			
-		Map(int width, int height, int tileWidth, int tileHeight)
-		{
+        Map(int width, int height, int tileWidth, int tileHeight)
+        {
 //			    mWidth(width), mHeight(height),
 //    mTileWidth(tileWidth), mTileHeight(tileHeight),
 //    mMetaTiles(width * height)	
-		}
+        }
 
-		~Map()
-		{
+        ~Map()
+        {
 //    for (std::vector<MapObject*>::iterator it = mMapObjects.begin();
 //         it != mMapObjects.end(); ++it)
 //    {
 //        delete *it;
 //    }
-		}
+        }
 
-		void setSize(int width, int height)
-		{
-			mWidth=width;
-			mHeight=height;
+        /**
+         * Returns the width of this map.
+         */
+        public int getWidth()
+        {
+            return mWidth;
+        }
 
-			//mMetaTiles.resize(width*height);
-		}
+        /**
+         * Returns the height of this map.
+         */
+        public int getHeight()
+        {
+            return mHeight;
+        }
 
-		string getProperty(string key)
-		{
+        void setSize(int width, int height)
+        {
+            mWidth=width;
+            mHeight=height;
+
+            //mMetaTiles.resize(width*height);
+        }
+
+        string getProperty(string key)
+        {
 //    static std::string empty;
 //    std::map<std::string, std::string>::const_iterator i;
 //    i = mProperties.find(key);
@@ -73,11 +89,11 @@ namespace invertika_game.Game
 //        return empty;
 //    return i->second;
 			
-			return ""; //ssk
-		}
+            return ""; //ssk
+        }
 
-		public void blockTile(int x, int y, BlockType type)
-		{
+        public void blockTile(int x, int y, BlockType type)
+        {
 //    if (type == BLOCKTYPE_NONE || !contains(x, y))
 //        return;
 //
@@ -102,10 +118,10 @@ namespace invertika_game.Game
 //                break;
 //        }
 //    }
-		}
+        }
 
-		public void freeTile(int x, int y, BlockType type)
-		{
+        public void freeTile(int x, int y, BlockType type)
+        {
 //    if (type == BLOCKTYPE_NONE || !contains(x, y))
 //        return;
 //
@@ -130,10 +146,10 @@ namespace invertika_game.Game
 //                break;
 //        }
 //    }
-		}
+        }
 
-		bool getWalk(int x, int y, char walkmask)
-		{
+        bool getWalk(int x, int y, char walkmask)
+        {
 //			// You can't walk outside of the map
 //			if(!contains(x, y))
 //				return false;
@@ -141,8 +157,8 @@ namespace invertika_game.Game
 //			// Check if the tile is walkable
 //			return !(mMetaTiles[x+y*mWidth].blockmask&walkmask);
 		
-			return true; //ssk
-		}
+            return true; //ssk
+        }
 
 //		Path findPath(int startX, int startY, int destX, int destY, byte walkmask, int maxCost)
 //		{
@@ -154,21 +170,21 @@ namespace invertika_game.Game
 //			return null;
 //		}
 		
-		/**
+        /**
          * Returns the tile width of this map.
          */
-		public  int getTileWidth()
-		{
-			return mTileWidth;
-		}
+        public  int getTileWidth()
+        {
+            return mTileWidth;
+        }
 
-		/**
+        /**
          * Returns the tile height used by this map.
          */
-		public  int getTileHeight()
-		{
-			return mTileHeight;
-		}
-	}
+        public  int getTileHeight()
+        {
+            return mTileHeight;
+        }
+    }
 }
 

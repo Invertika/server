@@ -504,7 +504,7 @@ namespace invertika_game.Game
             syncChanges();
         }
 
-        void updateOnlineStatus(int charId, bool online)
+        public void updateOnlineStatus(int charId, bool online)
         {
             ++mSyncMessages;
             mSyncBuffer.writeInt8((int)Sync.SYNC_ONLINE_STATUS);
