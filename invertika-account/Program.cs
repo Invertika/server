@@ -45,14 +45,14 @@ namespace invertika_account
     class Program
     {
         // Default options that automake should be able to override.
-        const string DEFAULT_LOG_FILE = "manaserv-account.log";
-        const string DEFAULT_STATS_FILE = "manaserv.stats";
-        const string DEFAULT_ATTRIBUTEDB_FILE = "attributes.xml";
-        static bool running = true;        /**< Determines if server keeps running */
+        const string DEFAULT_LOG_FILE="manaserv-account.log";
+        const string DEFAULT_STATS_FILE="manaserv.stats";
+        const string DEFAULT_ATTRIBUTEDB_FILE="attributes.xml";
+        static bool running=true;        /**< Determines if server keeps running */
 
         public static StringFilter stringFilter; /**< Slang's Filter */
 
-        static string statisticsFile = "";
+        static string statisticsFile="";
 
         /** Database handler. */
         public static Storage storage;
@@ -69,7 +69,7 @@ namespace invertika_account
         /** Callback used when SIGQUIT signal is received. */
         static void closeGracefully(int val)
         {
-            running = false;
+            running=false;
         }
 
         /**
@@ -93,7 +93,7 @@ namespace invertika_account
             //Logger.Init(logFile);
 
             // Indicate in which file the statistics are put.
-            statisticsFile = Configuration.getValue("log_statisticsFile", DEFAULT_STATS_FILE);
+            statisticsFile=Configuration.getValue("log_statisticsFile", DEFAULT_STATS_FILE);
             Logger.Write(LogLevel.Information, "Using statistics file: {0}", statisticsFile);
 
             //ResourceManager::initialize(); //TODO Check
@@ -103,7 +103,7 @@ namespace invertika_account
 //			try
 //			{
 //#endif
-            storage = new Storage();
+            storage=new Storage();
             storage.open();
 //#if! DEBUG
 //			}
@@ -115,16 +115,16 @@ namespace invertika_account
 //#endif
 
             // --- Initialize the managers
-            stringFilter = new StringFilter();  // The slang's and double quotes filter.
-            chatChannelManager = new ChatChannelManager();
-            guildManager = new GuildManager();
-            postalManager = new PostManager();
-            gBandwidth = new BandwidthMonitor();
+            stringFilter=new StringFilter();  // The slang's and double quotes filter.
+            chatChannelManager=new ChatChannelManager();
+            guildManager=new GuildManager();
+            postalManager=new PostManager();
+            gBandwidth=new BandwidthMonitor();
 
             // --- Initialize the global handlers
             // FIXME: Make the global handlers global vars or part of a bigger
             // singleton or a local variable in the event-loop
-            chatHandler = new ChatHandler();
+            chatHandler=new ChatHandler();
 
             // Initialize the processor utility functions
             //utils::processor::init(); //TODO Überprüfen
@@ -169,7 +169,7 @@ namespace invertika_account
 		 */
         static void dumpStatistics(string accountAddress, int accountClientPort, int accountGamePort, int chatClientPort)
         {
-            StreamWriter sw = new StreamWriter(statisticsFile);
+            StreamWriter sw=new StreamWriter(statisticsFile);
 
             sw.WriteLine("<statistics>");
 
@@ -212,46 +212,47 @@ namespace invertika_account
 		 */
         static void parseOptions(string[] args, out CommandLineOptions options)
         {
-            Parameters param = Parameters.InterpretCommandLine(args);
+            Parameters param=Parameters.InterpretCommandLine(args);
 
-            options = new CommandLineOptions();
+            options=new CommandLineOptions();
 
-            if (param.GetBool("help"))
+            if(param.GetBool("help"))
             {
                 //Print help.
                 printHelp();
-            } else
+            }
+            else
             {
                 //TODO überprüfen ob getBool auch funktioniert wenn danach ein Doppelpunkt kommt
-                if (param.GetBool("config")) //-config:invertika.xml
+                if(param.GetBool("config")) //-config:invertika.xml
                 {
-                    options.configPath = param.GetString("config", "");
+                    options.configPath=param.GetString("config", "");
                 }
 
-                if (param.GetBool("verbosity")) //-verbosity:3
+                if(param.GetBool("verbosity")) //-verbosity:3
                 {
-                    options.verbosity = (LogLevel)(param.GetInt32("verbosity", 1));
-                    options.verbosityChanged = true; //TODO richtig so?
+                    options.verbosity=(LogLevel)(param.GetInt32("verbosity", 1));
+                    options.verbosityChanged=true; //TODO richtig so?
                     Logger.Write(LogLevel.Information, "Using log verbosity level {0}", options.verbosity);
                 }
 
-                if (param.GetBool("port")) //-port:1234
+                if(param.GetBool("port")) //-port:1234
                 {
-                    options.port = param.GetInt32("verbosity", 1);
-                    options.portChanged = true;
+                    options.port=param.GetInt32("verbosity", 1);
+                    options.portChanged=true;
                 }
             }
         }
 
         public static void statTimerEvent(object sender, ElapsedEventArgs e)
         {
-            object obj = ((AdvancedTimer)(sender)).Parameter;
-            List<object> parameters = (List<object>)obj;
+            object obj=((AdvancedTimer)(sender)).Parameter;
+            List<object> parameters=(List<object>)obj;
 
-            string accountHost = parameters [0].ToString();
-            int port = (int)parameters [1];
-            int accountGamePort = (int)parameters [2];
-            int chatClientPort = (int)(ushort)parameters [3];
+            string accountHost=parameters[0].ToString();
+            int port=(int)parameters[1];
+            int accountGamePort=(int)parameters[2];
+            int chatClientPort=(int)(ushort)parameters[3];
 
             dumpStatistics(accountHost, port, accountGamePort, chatClientPort);
         }
@@ -275,25 +276,26 @@ namespace invertika_account
 
             try
             {
-                if (options.configPath == null)
+                if(options.configPath==null)
                 {
-                    options.configPath = Configuration.DEFAULT_CONFIG_FILE;
+                    options.configPath=Configuration.DEFAULT_CONFIG_FILE;
                 }
 				
-                options.configPath = FileSystem.ApplicationPath + Configuration.DEFAULT_CONFIG_FILE;
+                options.configPath=FileSystem.ApplicationPath+Configuration.DEFAULT_CONFIG_FILE;
                 Configuration.Init(options.configPath);
-            } catch (Exception ex)
+            }
+            catch(Exception ex)
             {
                 Logger.Write(LogLevel.Error, "Refusing to run without configuration!");
                 System.Environment.Exit((int)ExitValue.EXIT_CONFIG_NOT_FOUND);
             }
 
-            string logFile = Configuration.getValue("log_accountServerFile", DEFAULT_LOG_FILE);
+            string logFile=Configuration.getValue("log_accountServerFile", DEFAULT_LOG_FILE);
             Logger.Init(logFile);
             Logger.ChangeLogMode(LogMode.Debug); //TODO hier könnte auf File gestellt werden
 
             // Check inter-server password.
-            if (Configuration.getValue("net_password", "") == "")
+            if(Configuration.getValue("net_password", "")=="")
             {
                 Logger.Write(LogLevel.Error, "SECURITY WARNING: 'net_password' not set!");
                 System.Environment.Exit((int)ExitValue.EXIT_BAD_CONFIG_PARAMETER);
@@ -305,69 +307,69 @@ namespace invertika_account
             Logger.Write(LogLevel.Information, "The Mana Account+Chat Server v{0}", Various.AssemblyVersion);
             Logger.Write(LogLevel.Information, "Manaserv Protocol version {0}, Database version {1}", ManaServ.PROTOCOL_VERSION, ManaServ.SUPPORTED_DB_VERSION);
 
-            if (!options.verbosityChanged)
+            if(!options.verbosityChanged)
             {
-                options.verbosity = (LogLevel)Configuration.getValue("log_accountServerLogLevel", (int)options.verbosity);
+                options.verbosity=(LogLevel)Configuration.getValue("log_accountServerLogLevel", (int)options.verbosity);
             }
             //Logger::setVerbosity(options.verbosity); //TODO wird das überhaupt benutzt? //es müssten wohl nicht dem Ding entsprehcende Level entfern werden
 
-            string accountHost = Configuration.getValue("net_accountHost", "localhost");
+            string accountHost=Configuration.getValue("net_accountHost", "localhost");
 
             // We separate the chat host as the chat server will be separated out
             // from the account server.
-            string chatHost = Configuration.getValue("net_chatHost", "localhost");
+            string chatHost=Configuration.getValue("net_chatHost", "localhost");
 
             // Setting the listen ports
             // Note: The accountToGame and chatToClient listen ports auto offset
             // to accountToClient listen port when they're not set,
             // or to DEFAULT_SERVER_PORT otherwise.
-            if (!options.portChanged)
+            if(!options.portChanged)
             {
-                options.port = Configuration.getValue("net_accountListenToClientPort", options.port);
+                options.port=Configuration.getValue("net_accountListenToClientPort", options.port);
             }
 
-            int accountGamePort = Configuration.getValue("net_accountListenToGamePort", options.port + 1);
-            ushort chatClientPort = (ushort)Configuration.getValue("net_chatListenToClientPort", options.port + 2);
+            int accountGamePort=Configuration.getValue("net_accountListenToGamePort", options.port+1);
+            ushort chatClientPort=(ushort)Configuration.getValue("net_chatListenToClientPort", options.port+2);
 
-            if (!AccountClientHandler.initialize(DEFAULT_ATTRIBUTEDB_FILE, options.port, accountHost) ||
-                !GameServerHandler.initialize(accountGamePort, accountHost) ||
+            if(!AccountClientHandler.initialize(DEFAULT_ATTRIBUTEDB_FILE, options.port, accountHost)||
+                !GameServerHandler.initialize(accountGamePort, accountHost)||
                 !chatHandler.startListen(chatClientPort, chatHost))
             {
-                Logger.Write(LogLevel.Error, "Unable to create an ENet server host.");
+                Logger.Write(LogLevel.Error, "Unable to create an server host.");
                 System.Environment.Exit((int)ExitValue.EXIT_NET_EXCEPTION);
             }
 
             // Dump statistics every 10 seconds.
-            AdvancedTimer statTimer = new AdvancedTimer();
+            AdvancedTimer statTimer=new AdvancedTimer();
 
-            List<object> paramsStatTimer = new List<object>();
+            List<object> paramsStatTimer=new List<object>();
             paramsStatTimer.Add(accountHost);
             paramsStatTimer.Add(options.port);
             paramsStatTimer.Add(accountGamePort);
             paramsStatTimer.Add(chatClientPort);
 
-            statTimer.Parameter = paramsStatTimer;
+            statTimer.Parameter=paramsStatTimer;
 
-            statTimer.Elapsed += new ElapsedEventHandler(statTimerEvent);
-            statTimer.Interval = 10000;
-            statTimer.AutoReset = true;
+            statTimer.Elapsed+=new ElapsedEventHandler(statTimerEvent);
+            statTimer.Interval=10000;
+            statTimer.AutoReset=true;
             statTimer.Start();
 
             // Check for expired bans every 30 seconds
-            AdvancedTimer banTimer = new AdvancedTimer();
+            AdvancedTimer banTimer=new AdvancedTimer();
 
-            banTimer.Elapsed += new ElapsedEventHandler(banTimerEvent);
-            banTimer.Interval = 30000;
-            banTimer.AutoReset = true;
+            banTimer.Elapsed+=new ElapsedEventHandler(banTimerEvent);
+            banTimer.Interval=30000;
+            banTimer.AutoReset=true;
             banTimer.Start();
 
             // -------------------------------------------------------------------------
             // FIXME: for testing purposes only...
             // writing accountserver startup time and svn revision to database as global
             // world state variable
-            DateTime startup = DateTime.Now;
+            DateTime startup=DateTime.Now;
             storage.setWorldStateVar("accountserver_startup", startup.ToString());
-            const string revision = "$Revision$";
+            const string revision="$Revision$";
             storage.setWorldStateVar("accountserver_version", revision);
             // -------------------------------------------------------------------------
 
@@ -377,23 +379,23 @@ namespace invertika_account
 
             //AccountClientHandler
             Thread accountServerThread;	// Der Thread in dem die Process Funktion läuft
-            accountServerThread = new Thread(AccountClientHandler.process);
-            accountServerThread.Name = "AccountClientHandler Thread";
+            accountServerThread=new Thread(AccountClientHandler.process);
+            accountServerThread.Name="AccountClientHandler Thread";
             accountServerThread.Start();
 
             //GameServerHandler
             Thread gameServerThread;	// Der Thread in dem die Process Funktion läuft
-            gameServerThread = new Thread(GameServerHandler.process);
-            gameServerThread.Name = "GameServerHandler Thread";
+            gameServerThread=new Thread(GameServerHandler.process);
+            gameServerThread.Name="GameServerHandler Thread";
             gameServerThread.Start();
 
             //chatHandler
             Thread chatServerThread;	// Der Thread in dem die Process Funktion läuft
-            chatServerThread = new Thread(chatHandler.process);
-            chatServerThread.Name = "Chathandler Thread";
+            chatServerThread=new Thread(chatHandler.process);
+            chatServerThread.Name="Chathandler Thread";
             chatServerThread.Start();
 
-            while (running)
+            while(running)
             {
                 //AccountClientHandler.process();
                 //GameServerHandler.process();
