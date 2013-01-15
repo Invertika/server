@@ -72,7 +72,7 @@ namespace invertika_game
         public static GameHandler gameHandler;
 
         ///** Account server message handler */
-        static AccountConnection accountHandler;
+        public static AccountConnection accountHandler;
 
         ///** Post Man **/
         public static PostMan postMan;

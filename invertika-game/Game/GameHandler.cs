@@ -104,7 +104,6 @@ namespace invertika_game.Game
          * Container for pending clients and pending connections.
          */
         TokenCollector mTokenCollector;
-        static AccountConnection accountHandler;
 
         const uint TILES_TO_BE_NEAR=7;
 
@@ -134,7 +133,7 @@ namespace invertika_game.Game
             }
             else
             {
-                accountHandler.sendCharacterData(computer.character);
+                Program.accountHandler.sendCharacterData(computer.character);
                 GameState.remove(computer.character);
                 computer.character.disconnected();
                 computer.character=null; //TODO eigentlich unnötig
