@@ -80,16 +80,14 @@ namespace invertika_game.Game
             //mMetaTiles.resize(width*height);
         }
 
-        string getProperty(string key)
+        public string getProperty(string key)
         {
-//    static std::string empty;
-//    std::map<std::string, std::string>::const_iterator i;
-//    i = mProperties.find(key);
-//    if (i == mProperties.end())
-//        return empty;
-//    return i->second;
-			
-            return ""; //ssk
+            if(mProperties.ContainsKey(key))
+            {
+                return mProperties[key];
+            }
+
+            return "";
         }
 
         public void blockTile(int x, int y, BlockType type)

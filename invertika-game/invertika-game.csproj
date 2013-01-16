@@ -104,6 +104,8 @@
     <Compile Include="Game\MetaTile.cs" />
     <Compile Include="Game\MapObject.cs" />
     <Compile Include="Enums\UpdateFlag.cs" />
+    <Compile Include="Enums\PvPRules.cs" />
+    <Compile Include="Game\MapReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

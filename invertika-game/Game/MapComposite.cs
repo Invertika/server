@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using ISL.Server.Utilities;
 using invertika_game.Scripting;
+using ISL.Server.Common;
 
 namespace invertika_game.Game
 {
@@ -54,7 +55,7 @@ namespace invertika_game.Game
         ushort mID;   /**< ID of the map. */
         /** Cached persistent variables */
         Dictionary<string, string> mScriptVariables;
-        //PvPRules mPvPRules;
+        PvPRules mPvPRules;
 
         static void addZone(List<uint> r, uint z)
         {
@@ -95,31 +96,33 @@ namespace invertika_game.Game
         {
             //assert(!isActive());
 
-            //std::string file = "maps/" + mName + ".tmx";
-            //if (!ResourceManager::exists(file))
-            //    file += ".gz";
+            string file="maps/"+mName+".tmx";
+            if(!ResourceManager.exists(file))
+                file+=".gz";
 
-            //mMap = MapReader::readMap(file);
-            //if (!mMap)
-            //    return false;
+            mMap=MapReader.readMap(file);
+            if(mMap==null)
+                return false;
 
-            //initializeContent();
+            initializeContent();
 
-            //std::string sPvP = mMap.getProperty("pvp");
-            //if (sPvP.empty())
-            //    sPvP = Configuration::getValue("game_defaultPvp", std::string());
+            string sPvP=mMap.getProperty("pvp");
+            if(sPvP=="")
+                sPvP=Configuration.getValue("game_defaultPvp", "");
 
-            //if (sPvP == "free")
-            //    mPvPRules = PVP_FREE;
-            //else
-            //    mPvPRules = PVP_NONE;
+            if(sPvP=="free")
+                mPvPRules=PvPRules.PVP_FREE;
+            else
+                mPvPRules=PvPRules.PVP_NONE;
 
-            //if (Script *s = getScript())
-            //{
-            //    s.setMap(this);
-            //    s.prepare("initialize");
-            //    s.execute();
-            //}
+            Script s=getScript();
+            if(s!=null)
+            {
+                //TODO Skript implementieren
+                //s.setMap(this);
+                //s.prepare("initialize");
+                //s.execute();
+            }
 
             return true;
         }

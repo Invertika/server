@@ -37,6 +37,7 @@ namespace invertika_game.Scripting
     public class Script
     {
         //typedef std::map< std::string, Script::Factory > Engines;
+        MapComposite mMap;
 
         //static Engines *engines = NULL;
         //Script *Script::globalEventScript = NULL;
@@ -139,6 +140,20 @@ namespace invertika_game.Scripting
             //    isScriptHandled = true; // TODO: don't set to true when execution failed
             //}
             return isScriptHandled;
+        }
+
+        /**
+         * Prepares a call to the given function.
+         * Only one function can be prepared at once.
+         */
+        //virtual void prepare(const std::string &name) = 0;
+
+        /**
+         * Sets associated map.
+         */
+        public void setMap(MapComposite m)
+        {
+            mMap=m;
         }
 
         void addDataToSpecial(int id, Special special)
