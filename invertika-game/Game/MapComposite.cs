@@ -83,7 +83,15 @@ namespace invertika_game.Game
             //delete mScript;
         }
 
-        bool activate()
+        /**
+         * Returns whether the map is active on this server or not.
+         */
+        public bool isActive()
+        {
+            return mMap!=null?true:false;
+        }
+
+        public bool activate()
         {
             //assert(!isActive());
 
