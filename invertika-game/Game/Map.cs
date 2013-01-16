@@ -40,11 +40,28 @@ namespace invertika_game.Game
         List<MetaTile> mMetaTiles;
         List<MapObject> mMapObjects;
 			
-        Map(int width, int height, int tileWidth, int tileHeight)
+        public Map(int width, int height, int tileWidth, int tileHeight)
         {
-//			    mWidth(width), mHeight(height),
-//    mTileWidth(tileWidth), mTileHeight(tileHeight),
-//    mMetaTiles(width * height)	
+            mWidth=width;
+            mHeight=height;
+            mTileWidth=tileWidth;
+            mTileHeight=tileHeight;
+            mMetaTiles=new List<MetaTile>(); //    mMetaTiles(width * height)   
+        }
+
+        /**
+        * Sets a map property
+        */
+        public void setProperty(string key, string val)
+        { 
+            if(mProperties.ContainsKey(key))
+            {
+                mProperties[key]=val; 
+            }
+            else
+            {
+                mProperties.Add(key, val);
+            }
         }
 
         ~Map()
