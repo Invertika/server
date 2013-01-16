@@ -68,13 +68,9 @@ namespace invertika_game.Game
         }
 
         public MapComposite(int id, string name)
-		//    :
-		//mMap(NULL),
-		//mContent(NULL),
-		//mScript(NULL),
-		//mName(name),
-		//mID(id)
         {
+            mID=(ushort)id;
+            mName=name;
         }
 
         ~MapComposite()
