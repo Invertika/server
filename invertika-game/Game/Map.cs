@@ -47,6 +47,8 @@ namespace invertika_game.Game
             mTileWidth=tileWidth;
             mTileHeight=tileHeight;
             mMetaTiles=new List<MetaTile>(); //    mMetaTiles(width * height)   
+
+            mProperties=new Dictionary<string, string>();
         }
 
         /**
