@@ -34,6 +34,7 @@ using ISL.Server.Utilities;
 using ISL.Server.Enums;
 using ISL.Server;
 using System.Net.Sockets;
+using ISL.Server.Serialize;
 
 namespace invertika_game.Game
 {
@@ -105,7 +106,7 @@ namespace invertika_game.Game
         {
             MessageOut msg=new MessageOut(Protocol.GAMSG_PLAYER_DATA);
             msg.writeInt32(p.getDatabaseID());
-            //serializeCharacterData(p, msg); //TODO noch einbauen
+            CharacterData.serializeCharacterData(p, msg);
             send(msg);
         }
 
