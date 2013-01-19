@@ -170,7 +170,7 @@ namespace invertika_account.Account
                         {
                             Character ptr=Program.storage.getCharacter(id, null);
 
-                            CharacterData.deserializeCharacterData(ptr, message);
+                            ptr.characterData.deserializeCharacterData(message);
                             if(!Program.storage.updateCharacter(ptr))
                             {
                                 Logger.Write(LogLevel.Error, "Failed to update character {0}.", id);

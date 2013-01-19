@@ -736,15 +736,5 @@ namespace invertika_game.Game
             //    mSpecialUpdateNeeded = true;
             //}
         }
-
-        void clearSpecials()
-        {
-            //for (std::map<int, Special*>::iterator i = mSpecials.begin();
-            //     i != mSpecials.end(); i++)
-            //{
-            //    delete i.second;
-            //}
-            //mSpecials.clear();
-        }
     }
 }
