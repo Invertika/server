@@ -67,22 +67,23 @@ namespace invertika_game.Game
         TransactionType mTransaction; /**< Trade/buy/sell action the character is involved in. */
 
         public Character(MessageIn msg) : base(ThingType.OBJECT_CHARACTER)
-		//:
-		//Being(OBJECT_CHARACTER),
-		//mClient(NULL),
-		//mTransactionHandler(NULL),
-		//mRechargePerSpecial(0),
-		//mSpecialUpdateNeeded(false),
-		//mDatabaseID(-1),
-		//mHairStyle(0),
-		//mHairColor(0),
-		//mLevel(1),
-		//mLevelProgress(0),
-		//mUpdateLevelProgress(false),
-		//mRecalculateLevel(true),
-		//mParty(0),
-		//mTransaction(TRANS_NONE)
         {
+            //:
+            //Being(OBJECT_CHARACTER),
+            //mClient(NULL),
+            //mTransactionHandler(NULL),
+            //mRechargePerSpecial(0),
+            //mSpecialUpdateNeeded(false),
+            //mDatabaseID(-1),
+            //mHairStyle(0),
+            //mHairColor(0),
+            //mLevel(1),
+            //mLevelProgress(0),
+            //mUpdateLevelProgress(false),
+            //mRecalculateLevel(true),
+            //mParty(0),
+            //mTransaction(TRANS_NONE)
+
             characterData.mExperience=new Dictionary<int, int>();
 
             //const AttributeScope &attr =
