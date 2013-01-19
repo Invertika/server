@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ISL.Server.Utilities;
 
 namespace invertika_game.Game
 {
@@ -36,6 +37,8 @@ namespace invertika_game.Game
  */
     public class MapContent
     {
+        const int zoneDiam=256;
+
         //MapContent(Map *);
         //~MapContent();
 
@@ -60,11 +63,6 @@ namespace invertika_game.Game
         //void fillRegion(MapRegion &, const Rectangle &) const;
 
         ///**
-        // * Gets zone at given position.
-        // */
-        //MapZone &getZone(const Point &pos) const;
-
-        ///**
         // * Things (items, characters, monsters, etc) located on the map.
         // */
         public List< Thing  > things;
@@ -79,10 +77,10 @@ namespace invertika_game.Game
         ///**
         // * Partition of the Objects, depending on their position on the map.
         // */
-        //MapZone *zones;
+        MapZone zones;
 
-        //unsigned short mapWidth;  /**< Width with respect to zones. */
-        //unsigned short mapHeight; /**< Height with respect to zones. */
+        ushort mapWidth;  /**< Width with respect to zones. */
+        ushort mapHeight; /**< Height with respect to zones. */
 
 
         //MapContent::MapContent(Map *map)
@@ -187,9 +185,11 @@ namespace invertika_game.Game
         //    }
         //}
 
-        //MapZone& MapContent::getZone(const Point &pos) const
-        //{
-        //    return zones[(pos.x / zoneDiam) + (pos.y / zoneDiam) * mapWidth];
-        //}
+        public MapZone getZone(Point pos)
+        {
+            int debug=555;
+            return null; //ssk
+            //return zones[(pos.x/zoneDiam)+(pos.y/zoneDiam)*mapWidth];
+        }
     }
 }

@@ -28,117 +28,132 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ISL.Server.Common;
 
 namespace invertika_game.Game
 {
-	/**
+    /**
 * Part of a map.
 */
-	public class MapZone
-	{
-		ushort nbCharacters, nbMovingObjects;
-		/**
+    public class MapZone
+    {
+        ushort nbCharacters, nbMovingObjects;
+        /**
 		 * Objects present in this zone.
 		 * Characters are stored first, then the remaining MovingObjects, then the
 		 * remaining Objects.
 		 */
-		List<Actor> objects;
+        List<Actor> objects;
 
-		/**
+        /**
 		 * Destinations of the objects that left this zone.
 		 * This is necessary in order to have an accurate iterator around moving
 		 * objects.
 		 */
-		List<uint> destinations;
+        List<uint> destinations;
 
-		MapZone()
-		{
-		}
+        MapZone()
+        {
+        }
 
-		void insert(Actor obj)
-		{
-			//int type = obj.getType();
-			//switch (type)
-			//{
-			//    case OBJECT_CHARACTER:
-			//    {
-			//        if (nbCharacters != nbMovingObjects)
-			//        {
-			//            if (nbMovingObjects != objects.size())
-			//            {
-			//                objects.push_back(objects[nbMovingObjects]);
-			//                objects[nbMovingObjects] = objects[nbCharacters];
-			//            }
-			//            else
-			//            {
-			//                objects.push_back(objects[nbCharacters]);
-			//            }
-			//            objects[nbCharacters] = obj;
-			//            ++nbCharacters;
-			//            ++nbMovingObjects;
-			//            break;
-			//        }
-			//        ++nbCharacters;
-			//    } // no break!
-			//    case OBJECT_MONSTER:
-			//    case OBJECT_NPC:
-			//    {
-			//        if (nbMovingObjects != objects.size())
-			//        {
-			//            objects.push_back(objects[nbMovingObjects]);
-			//            objects[nbMovingObjects] = obj;
-			//            ++nbMovingObjects;
-			//            break;
-			//        }
-			//        ++nbMovingObjects;
-			//    } // no break!
-			//    default:
-			//    {
-			//        objects.push_back(obj);
-			//    }
-			//}
-		}
+        public void insert(Actor obj)
+        {
+            ThingType type=obj.getType();
 
-		void remove(Actor obj)
-		{
-			//std::vector< Actor * >::iterator i_beg = objects.begin(), i, i_end;
-			//int type = obj.getType();
-			//switch (type)
-			//{
-			//    case OBJECT_CHARACTER:
-			//    {
-			//        i = i_beg;
-			//        i_end = objects.begin() + nbCharacters;
-			//    } break;
-			//    case OBJECT_MONSTER:
-			//    case OBJECT_NPC:
-			//    {
-			//        i = objects.begin() + nbCharacters;
-			//        i_end = objects.begin() + nbMovingObjects;
-			//    } break;
-			//    default:
-			//    {
-			//        i = objects.begin() + nbMovingObjects;
-			//        i_end = objects.end();
-			//    }
-			//}
-			//i = std::find(i, i_end, obj);
-			//assert(i != i_end);
-			//unsigned pos = i - i_beg;
-			//if (pos < nbCharacters)
-			//{
-			//    objects[pos] = objects[nbCharacters - 1];
-			//    pos = nbCharacters - 1;
-			//    --nbCharacters;
-			//}
-			//if (pos < nbMovingObjects)
-			//{
-			//    objects[pos] = objects[nbMovingObjects - 1];
-			//    pos = nbMovingObjects - 1;
-			//    --nbMovingObjects;
-			//}
-			//objects[pos] = objects[objects.size() - 1];
-			//objects.pop_back();
-		}
-	}
+            if(type==ThingType.OBJECT_CHARACTER)
+            {
+                if(nbCharacters!=nbMovingObjects)
+                {
+                    if(nbMovingObjects!=objects.Count)
+                    {
+                        objects.Add(objects[nbMovingObjects]);
+                        objects[nbMovingObjects]=objects[nbCharacters];
+                    }
+                    else
+                    {
+                        objects.Add(objects[nbCharacters]);
+                    }
+                    
+                    objects[nbCharacters]=obj;
+                    ++nbCharacters;
+                    ++nbMovingObjects;
+                    //break;
+                }
+                ++nbCharacters;
+            }
+
+            if(type==ThingType.OBJECT_CHARACTER||type==ThingType.OBJECT_MONSTER||type==ThingType.OBJECT_NPC)
+            {
+                if(nbMovingObjects!=objects.Count)
+                {
+                    objects.Add(objects[nbMovingObjects]);
+                    objects[nbMovingObjects]=obj;
+                    ++nbMovingObjects;
+                    //break;
+                }
+                ++nbMovingObjects;
+            }
+
+            objects.Add(obj);
+
+//            //Original ohne code
+//            switch(type)
+//            {
+//                case ThingType.OBJECT_CHARACTER:
+//                    {
+//                       
+//                    } // no break!
+//                case ThingType.OBJECT_MONSTER:
+//                case ThingType.OBJECT_NPC:
+//                    {
+//              
+//                    } // no break!
+//                default:
+//                    {
+//                    }
+//            }
+        }
+
+        void remove(Actor obj)
+        {
+            //std::vector< Actor * >::iterator i_beg = objects.begin(), i, i_end;
+            //int type = obj.getType();
+            //switch (type)
+            //{
+            //    case OBJECT_CHARACTER:
+            //    {
+            //        i = i_beg;
+            //        i_end = objects.begin() + nbCharacters;
+            //    } break;
+            //    case OBJECT_MONSTER:
+            //    case OBJECT_NPC:
+            //    {
+            //        i = objects.begin() + nbCharacters;
+            //        i_end = objects.begin() + nbMovingObjects;
+            //    } break;
+            //    default:
+            //    {
+            //        i = objects.begin() + nbMovingObjects;
+            //        i_end = objects.end();
+            //    }
+            //}
+            //i = std::find(i, i_end, obj);
+            //assert(i != i_end);
+            //unsigned pos = i - i_beg;
+            //if (pos < nbCharacters)
+            //{
+            //    objects[pos] = objects[nbCharacters - 1];
+            //    pos = nbCharacters - 1;
+            //    --nbCharacters;
+            //}
+            //if (pos < nbMovingObjects)
+            //{
+            //    objects[pos] = objects[nbMovingObjects - 1];
+            //    pos = nbMovingObjects - 1;
+            //    --nbMovingObjects;
+            //}
+            //objects[pos] = objects[objects.size() - 1];
+            //objects.pop_back();
+        }
+    }
 }

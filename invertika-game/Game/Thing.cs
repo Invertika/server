@@ -51,6 +51,15 @@ namespace invertika_game.Game
         }
 
         /**
+         * Returns whether this thing can move on the map or not. (Actor)
+         */
+        public bool canMove()
+        {
+            return mType==ThingType.OBJECT_CHARACTER||mType==ThingType.OBJECT_MONSTER||
+                mType==ThingType.OBJECT_NPC;
+        }
+
+        /**
          * Updates the internal status.
          */
         public virtual void update()

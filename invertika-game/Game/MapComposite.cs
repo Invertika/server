@@ -190,19 +190,25 @@ namespace invertika_game.Game
         {
             int debug=555;
 
-            //if (ptr.isVisible())
-            //{
-            //    if (ptr.canMove() && !mContent.allocate(static_cast< Being * >(ptr)))
-            //    {
-            //        return false;
-            //    }
+            if(ptr.isVisible())
+            {
+                //    if (ptr.canMove() && !mContent.allocate(static_cast< Being * >(ptr)))
+                //    {
+                //        return false;
+                //    }
 
-            //    Actor *obj = static_cast< Actor * >(ptr);
-            //    mContent.getZone(obj.getPosition()).insert(obj);
-            //}
+                if(ptr.canMove())
+                {
+                    return false;
+                }
 
-            //ptr.setMap(this);
-            //mContent.things.push_back(ptr);
+                Actor obj=(Actor)ptr;
+                mContent.getZone(obj.getPosition()).insert(obj);
+            }
+
+
+            ptr.setMap(this);
+            mContent.things.Add(ptr);
             return true;
         }
 
