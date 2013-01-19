@@ -201,7 +201,7 @@ namespace invertika_account.Account
                         {
                             Character ptr=Program.storage.getCharacter(id, null);
 
-                            int mapId=ptr.getMapId();
+                            int mapId=ptr.characterData.getMapId();
 
                             try
                             {

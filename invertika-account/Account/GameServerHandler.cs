@@ -66,7 +66,7 @@ namespace invertika_account.Account
             msg.writeString(token);
             msg.writeInt32(ptr.getDatabaseID());
             msg.writeString(ptr.getName());
-            CharacterData.serializeCharacterData(ptr, msg);
+            ptr.characterData.serializeCharacterData(msg);
             s.send(msg);
         }
 
@@ -104,13 +104,13 @@ namespace invertika_account.Account
 
         public static void registerClient(string token, Character ptr)
         {
-            GameServer s=getGameServerFromMap(ptr.getMapId());
+            GameServer s=getGameServerFromMap(ptr.characterData.getMapId());
             registerGameClient(s, token, ptr);
         }
 
         public static void sendPartyChange(Character ptr, int partyId)
         {
-            GameServer s=getGameServerFromMap(ptr.getMapId());
+            GameServer s=getGameServerFromMap(ptr.characterData.getMapId());
 
             if(s!=null)
             {

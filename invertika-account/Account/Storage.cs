@@ -334,26 +334,26 @@ namespace invertika_account.Account
                 return null;
 
             character=new Character(charInfo.Rows[0]["name"].ToString(), Convert.ToInt32(charInfo.Rows[0]["id"]));
-            character.setGender(Convert.ToInt32(charInfo.Rows[0]["gender"]));
-            character.setHairStyle(Convert.ToInt32(charInfo.Rows[0]["hair_style"]));
-            character.setHairColor(Convert.ToInt32(charInfo.Rows[0]["hair_color"]));
-            character.setLevel(Convert.ToInt32(charInfo.Rows[0]["level"]));
-            character.setCharacterPoints(Convert.ToInt32(charInfo.Rows[0]["char_pts"]));
-            character.setCorrectionPoints(Convert.ToInt32(charInfo.Rows[0]["correct_pts"]));
+            character.characterData.setGender(Convert.ToInt32(charInfo.Rows[0]["gender"]));
+            character.characterData.setHairStyle(Convert.ToInt32(charInfo.Rows[0]["hair_style"]));
+            character.characterData.setHairColor(Convert.ToInt32(charInfo.Rows[0]["hair_color"]));
+            character.characterData.setLevel(Convert.ToInt32(charInfo.Rows[0]["level"]));
+            character.characterData.setCharacterPoints(Convert.ToInt32(charInfo.Rows[0]["char_pts"]));
+            character.characterData.setCorrectionPoints(Convert.ToInt32(charInfo.Rows[0]["correct_pts"]));
 
             Point pos=new Point(Convert.ToInt32(charInfo.Rows[0]["x"]), Convert.ToInt32(charInfo.Rows[0]["y"]));
-            character.setPosition(pos);
+            character.characterData.setPosition(pos);
 
             int mapId=Convert.ToInt32(charInfo.Rows[0]["map_id"]);
             if(mapId>0)
             {
-                character.setMapId(mapId);
+                character.characterData.setMapId(mapId);
             }
             else
             {
                 // Set character to default map and one of the default location
                 // Default map is to be 1, as not found return value will be 0.
-                character.setMapId(Configuration.getValue("char_defaultMap", 1));
+                character.characterData.setMapId(Configuration.getValue("char_defaultMap", 1));
             }
 
             character.setCharacterSlot(Convert.ToUInt32(charInfo.Rows[0]["slot"]));
@@ -372,7 +372,7 @@ namespace invertika_account.Account
                 string s=String.Format("SELECT level FROM {0} WHERE id = '{1}';", ACCOUNTS_TBL_NAME, id);
                 DataTable levelInfo=mDb.ExecuteQuery(s);
 
-                character.setAccountLevel(Convert.ToInt32(levelInfo.Rows[0]["level"]), true);
+                character.characterData.setAccountLevel(Convert.ToInt32(levelInfo.Rows[0]["level"]), true);
             }
 
             // Load attributes."
@@ -386,8 +386,8 @@ namespace invertika_account.Account
                 for(uint row = 0;row < nRows;++row)
                 {
                     uint id=Convert.ToUInt32(charInfo.Rows[0]["attr_id"]);
-                    character.setAttribute(id, Convert.ToDouble(charInfo.Rows[0]["attr_base"]));
-                    character.setModAttribute(id, Convert.ToDouble(charInfo.Rows[0]["attr_mod"]));
+                    character.characterData.setAttribute(id, Convert.ToDouble(charInfo.Rows[0]["attr_base"]));
+                    character.characterData.setModAttribute(id, Convert.ToDouble(charInfo.Rows[0]["attr_mod"]));
                 }
             }
 
@@ -400,7 +400,7 @@ namespace invertika_account.Account
                 uint nRows=(uint)skillInfo.Rows.Count;
                 for(uint row = 0;row < nRows;row++)
                 {
-                    character.setExperience(
+                    character.characterData.setExperience(
                             Convert.ToInt32(skillInfo.Rows[0]["status_id"]),  // Skill Id
                             Convert.ToInt32(skillInfo.Rows[0]["status_time"])); // Experience
                 }
@@ -415,7 +415,7 @@ namespace invertika_account.Account
                 uint nRows=(uint)statusInfo.Rows.Count;
                 for(uint row = 0;row < nRows;row++)
                 {
-                    character.applyStatusEffect(
+                    character.characterData.applyStatusEffect(
                             Convert.ToInt32(statusInfo.Rows[0]["status_id"]), // Status Id
                             Convert.ToInt32(statusInfo.Rows[0]["status_time"])); // Time
                 }
@@ -430,7 +430,7 @@ namespace invertika_account.Account
                 uint nRows=(uint)killsInfo.Rows.Count;
                 for(uint row = 0;row < nRows;row++)
                 {
-                    character.setKillCount(
+                    character.characterData.setKillCount(
                             Convert.ToInt32(killsInfo.Rows[0]["monster_id"]), // MonsterID
                             Convert.ToInt32(killsInfo.Rows[0]["kills"])); // Kills
                 }
@@ -446,11 +446,11 @@ namespace invertika_account.Account
                 for(uint row = 0;row < nRows;row++)
                 {
                     //TODO Überprüfen ob so sinnvoll? (der 0 Paramater?)
-                    character.giveSpecial(Convert.ToInt32(specialsInfo.Rows[0]["special_id"]), 0);
+                    character.characterData.giveSpecial(Convert.ToInt32(specialsInfo.Rows[0]["special_id"]), 0);
                 }
             }
          
-            Possessions poss=character.getPossessions();
+            Possessions poss=character.characterData.getPossessions();
 
             string s7=String.Format("SELECT slot_type, item_id, item_instance FROM {0} WHERE owner_id = '{1}' ORDER BY slot_type desc;", CHAR_EQUIPS_TBL_NAME, character.getDatabaseID());
             DataTable equipInfo=mDb.ExecuteQuery(s7);
@@ -801,9 +801,9 @@ namespace invertika_account.Account
                     // This assumes that the characters name has been checked for
                     // uniqueness
                     string sqlInsertCharactersTable=String.Format("insert into {0} (user_id, name, gender, hair_style, hair_color, level, char_pts, correct_pts, x, y, map_id, slot) values (", CHARACTERS_TBL_NAME);
-                    sqlInsertCharactersTable+=String.Format("{0}, \"{1}\", {2}, {3}, {4}, ", account.getID(), character.getName(), character.getGender(), (int)character.getHairStyle(), (int)character.getHairColor());
-                    sqlInsertCharactersTable+=String.Format("{0}, {1}, {2}, ", (int)character.getLevel(), character.getCharacterPoints(), character.getCorrectionPoints());
-                    sqlInsertCharactersTable+=String.Format("{0}, {1}, {2}, {3});", character.getPosition().x, character.getPosition().y, character.getMapId(), character.getCharacterSlot());
+                    sqlInsertCharactersTable+=String.Format("{0}, \"{1}\", {2}, {3}, {4}, ", account.getID(), character.getName(), character.characterData.getGender(), (int)character.characterData.getHairStyle(), (int)character.characterData.getHairColor());
+                    sqlInsertCharactersTable+=String.Format("{0}, {1}, {2}, ", (int)character.characterData.getLevel(), character.characterData.getCharacterPoints(), character.characterData.getCorrectionPoints());
+                    sqlInsertCharactersTable+=String.Format("{0}, {1}, {2}, {3});", character.characterData.getPosition().x, character.characterData.getPosition().y, character.characterData.getMapId(), character.getCharacterSlot());
                         
                     //mDb.ExecuteNonQuery(sqlInsertCharactersTable);
                     mDb.ExecuteNonQuery(sqlInsertCharactersTable);
@@ -817,13 +817,13 @@ namespace invertika_account.Account
                     character.setDatabaseID(lastID);
 
                     // Update all attributes.
-                    foreach(KeyValuePair<uint, AttributeValue> attributePair in character.mAttributes)
+                    foreach(KeyValuePair<uint, AttributeValue> attributePair in character.characterData.mAttributes)
                     {
                         updateAttribute(character.getDatabaseID(), attributePair.Key, attributePair.Value.@base, attributePair.Value.modified);
                     }
 
                     // Update the characters skill
-                    foreach(KeyValuePair<int, int> experiencePair in character.mExperience)
+                    foreach(KeyValuePair<int, int> experiencePair in character.characterData.mExperience)
                     {
                         updateExperience(character.getDatabaseID(), experiencePair.Key, experiencePair.Value);
                     }

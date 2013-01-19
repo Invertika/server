@@ -31,11 +31,14 @@ using ISL.Server.Network;
 using ISL.Server.Common;
 using invertika_game.Enums;
 using ISL.Server.Game;
+using ISL.Server.Serialize;
 
 namespace invertika_game.Game
 {
     public class Character : Being
     {
+        public CharacterData characterData;
+
         //static const float LEVEL_SKILL_PRECEDENCE_FACTOR; // I am taking suggestions for a better name
         const int CHARPOINTS_PER_LEVELUP=5;
         const int CORRECTIONPOINTS_PER_LEVELUP=2;
@@ -50,33 +53,18 @@ namespace invertika_game.Game
         /** Handler of the transaction the character is involved in. */
         //void *mTransactionHandler;
 
-        //Possessions mPossessions;    /**< Possesssions of the character. */
-
         /** Attributes modified since last update. */
         //std::set<size_t> mModifiedAttributes;
         //std::set<size_t> mModifiedExperience;
 
-        public Dictionary<int, int> mExperience; /**< experience collected for each skill.*/
-
-        Dictionary<int, Special> mSpecials;
-        Dictionary<int, int> mStatusEffects; /**< only used by select functions
-                                                to make it easier to make the accountserver
-                                                do not modify or use anywhere else*/
         int mRechargePerSpecial;
         bool mSpecialUpdateNeeded;
         int mDatabaseID;             /**< Character's database ID. */
-        byte mHairStyle;    /**< Hair Style of the character. */
-        byte mHairColor;    /**< Hair Color of the character. */
-        int mLevel;                  /**< Level of the character. */
         int mLevelProgress;          /**< progress to next level in percent */
-        int mCharacterPoints;        /**< Unused attribute points that can be distributed */
-        int mCorrectionPoints;       /**< Unused attribute correction points */
         bool mUpdateLevelProgress;   /**< Flag raised when percent to next level changed */
         bool mRecalculateLevel;      /**< Flag raised when the character level might have increased */
-        byte mAccountLevel; /**< Account level of the user. */
         int mParty;                  /**< Party id of the character */
         TransactionType mTransaction; /**< Trade/buy/sell action the character is involved in. */
-        Dictionary<int, int> mKillCount;  /**< How many monsters the character has slain of each type */
 
         public Character(MessageIn msg) : base(ThingType.OBJECT_CHARACTER)
 		//:
@@ -95,7 +83,7 @@ namespace invertika_game.Game
 		//mParty(0),
 		//mTransaction(TRANS_NONE)
         {
-            mExperience=new Dictionary<int, int>();
+            characterData.mExperience=new Dictionary<int, int>();
 
             //const AttributeScope &attr =
             //                       attributeManager.getAttributeScope(CharacterScope);

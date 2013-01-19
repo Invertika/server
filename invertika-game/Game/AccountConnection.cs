@@ -106,7 +106,7 @@ namespace invertika_game.Game
         {
             MessageOut msg=new MessageOut(Protocol.GAMSG_PLAYER_DATA);
             msg.writeInt32(p.getDatabaseID());
-            CharacterData.serializeCharacterData(p, msg);
+            p.characterData.serializeCharacterData(msg);
             send(msg);
         }
 
