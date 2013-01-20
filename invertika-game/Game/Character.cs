@@ -84,6 +84,7 @@ namespace invertika_game.Game
             //mParty(0),
             //mTransaction(TRANS_NONE)
 
+            characterData=new CharacterData();
             characterData.mExperience=new Dictionary<int, int>();
 
             //const AttributeScope &attr =
