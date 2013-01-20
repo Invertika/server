@@ -302,7 +302,7 @@ namespace invertika_game.Game
 
         void setMapId(int id)
         {
-            //setMap(MapManager::getMap(id));
+            setMap(MapManager.getMap(id));
         }
 
         void cancelTransaction()

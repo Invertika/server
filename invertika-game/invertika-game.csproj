@@ -11,9 +11,9 @@
     <RootNamespace>invertika_game</RootNamespace>
     <AssemblyName>invertika-game</AssemblyName>
     <FileAlignment>512</FileAlignment>
+    <StartupObject>invertika_game.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <OutputPath>bin\Debug\</OutputPath>
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>

@@ -699,6 +699,8 @@ namespace invertika_game.Game
 
         static void warp(Character ptr, MapComposite map, int x, int y)
         {
+            int debug=555;
+
             //remove(ptr);
             //ptr.setMap(map);
             //ptr.setPosition(Point(x, y));
