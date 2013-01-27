@@ -102,10 +102,6 @@ namespace invertika_game.Game
                 mAttributes.Add((uint)pair.Key, new Attribute(pair.Value));
             }
 
-//            for(AttributeScope::const_iterator it1 = attr.begin(),
-//                 it1_end = attr.end();it1 != it1_end;++it1)
-//                mAttributes.insert(std::make_pair(it1.first, Attribute(*it1.second)));
-
             // Get character data.
             mDatabaseID=msg.readInt32();
             setName(msg.readString());
