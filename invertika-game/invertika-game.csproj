@@ -106,6 +106,8 @@
     <Compile Include="Enums\UpdateFlag.cs" />
     <Compile Include="Enums\PvPRules.cs" />
     <Compile Include="Game\MapReader.cs" />
+    <Compile Include="Game\Attribute.cs" />
+    <Compile Include="Game\AttributeModifiersEffect.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

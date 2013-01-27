@@ -47,6 +47,7 @@ namespace invertika_game.Game
         protected Point mDst;                 /**< Target coordinates. */
         protected BeingGender mGender;        /**< Gender of the being. */
         BeingDirection mDirection;
+        string mName;
 
         public Being(ThingType type) : base(type)
         {
@@ -496,7 +497,7 @@ namespace invertika_game.Game
             return true;
         }
 
-        void setAttribute(uint id, double value)
+        public void setAttribute(uint id, double value)
         {
             //AttributeMap::iterator ret = mAttributes.find(id);
             //if (ret == mAttributes.end())
@@ -545,7 +546,7 @@ namespace invertika_game.Game
             return 0; //ssk
         }
 
-        void setModAttribute(uint a, double b)
+        public void setModAttribute(uint a, double b)
         {
             // No-op to satisfy shared structure.
             // The game-server calculates this manually.
@@ -666,6 +667,12 @@ namespace invertika_game.Game
             //else return 0;
 
             return 0; //ssk
+        }
+
+        /** Sets the name of the being. */
+        public void setName(string name)
+        {
+            mName=name;
         }
 
         void setStatusEffectTime(int id, int time)

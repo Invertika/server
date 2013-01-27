@@ -46,7 +46,7 @@ namespace invertika_game.Game
         short mLevel;             //!< Level of the being.
         short mCharacterPoints;   //!< Unused character points.
         short mCorrectionPoints;  //!< Unused correction points.
-        public Dictionary<uint, AttributeValue> mAttributes=new Dictionary<uint, AttributeValue>(); //!< Attributes.
+        public Dictionary<uint, Attribute> mAttributes=new Dictionary<uint, Attribute>(); //!< Attributes.
         public Dictionary<int, int> mExperience=new Dictionary<int, int>(); //!< Skill Experience.
         public Dictionary<int, int> mStatusEffects=new Dictionary<int, int>(); //!< Status Effects
         ushort mMapId;    //!< Map the being is on.
@@ -82,48 +82,55 @@ namespace invertika_game.Game
         int mParty;                  /**< Party id of the character */
         TransactionType mTransaction; /**< Trade/buy/sell action the character is involved in. */
 
+        byte mSize;        /**< Radius of bounding circle. */
+
         public Character(MessageIn msg) : base(ThingType.OBJECT_CHARACTER)
         {
-            //:
-            //Being(OBJECT_CHARACTER),
-            //mClient(NULL),
             //mTransactionHandler(NULL),
-            //mRechargePerSpecial(0),
-            //mSpecialUpdateNeeded(false),
-            //mDatabaseID(-1),
-            //mHairStyle(0),
-            //mHairColor(0),
-            //mLevel(1),
-            //mLevelProgress(0),
-            //mUpdateLevelProgress(false),
-            //mRecalculateLevel(true),
-            //mParty(0),
-            //mTransaction(TRANS_NONE)
+            mDatabaseID=-1;
+            mLevel=1;
+            mRecalculateLevel=true;
+            mTransaction=TransactionType.TRANS_NONE;
 
             mExperience=new Dictionary<int, int>();
 
-            //const AttributeScope &attr =
-            //                       attributeManager.getAttributeScope(CharacterScope);
-            //LOG_DEBUG("Character creation: initialisation of "
-            //          << attr.size() << " attributes.");
-            //for (AttributeScope::const_iterator it1 = attr.begin(),
-            //     it1_end = attr.end(); it1 != it1_end; ++it1)
-            //    mAttributes.insert(std::make_pair(it1.first, Attribute(*it1.second)));
+            Dictionary<int, List<AttributeInfoType>> attr=Program.attributeManager.getAttributeScope(ScopeType.CharacterScope);
 
-            //// Get character data.
-            //mDatabaseID = msg.readInt32();
-            //setName(msg.readString());
-            //deserializeCharacterData(*this, msg);
-            //mOld = getPosition();
+            Logger.Write(LogLevel.Debug, "Character creation: initialisation of {0}  attributes.", attr.Count);
+            foreach(KeyValuePair<int, List<AttributeInfoType>> pair in attr)
+            {
+                mAttributes.Add((uint)pair.Key, new Attribute(pair.Value));
+            }
+
+//            for(AttributeScope::const_iterator it1 = attr.begin(),
+//                 it1_end = attr.end();it1 != it1_end;++it1)
+//                mAttributes.insert(std::make_pair(it1.first, Attribute(*it1.second)));
+
+            // Get character data.
+            mDatabaseID=msg.readInt32();
+            setName(msg.readString());
+            deserializeCharacterData(msg);
+            mOld=getPosition();
+
+            //TODO Ermitteln was hier eigentlich passieren sollte
             //Inventory(this).initialize();
-            //modifiedAllAttribute();
-            //setSize(16);
 
-            //// Give the character some specials for testing.
-            ////TODO: Get from quest vars and equipment
-            //giveSpecial(1);
-            //giveSpecial(2);
-            //giveSpecial(3);
+            modifiedAllAttribute();
+            setSize(16);
+
+            // Give the character some specials for testing.
+            //TODO: Get from quest vars and equipment
+            giveSpecial(1);
+            giveSpecial(2);
+            giveSpecial(3);
+        }
+
+        /**
+         * Sets actor bounding circle radius.
+         */
+        void setSize(int s)
+        {
+            mSize=(byte)s;
         }
 
         public void setClient(GameClient c)
@@ -825,14 +832,21 @@ namespace invertika_game.Game
             
             msg.writeInt16(mAttributes.Count);
             
-            foreach(KeyValuePair<uint, AttributeValue> pair in mAttributes)
+//            foreach(KeyValuePair<uint, AttributeValue> pair in mAttributes)
+//            {
+//                msg.writeInt16((Int16)pair.Key);
+//                
+//                msg.writeDouble(pair.Value.@base);
+//                msg.writeDouble(pair.Value.modified);
+//            }
+
+            foreach(KeyValuePair<uint, Attribute> pair in mAttributes)
             {
-                msg.writeInt16((Int16)pair.Key);
-                
-                msg.writeDouble(pair.Value.@base);
-                msg.writeDouble(pair.Value.modified);
+                msg.writeInt16((int)pair.Key);
+                msg.writeDouble(pair.Value.getBase());
+                msg.writeDouble(pair.Value.getModifiedAttribute());
             }
-            
+
             // character skills
             msg.writeInt16(getSkillSize());
             
@@ -926,17 +940,6 @@ namespace invertika_game.Game
             mCorrectionPoints=(short)points;
         }
 
-        /** Sets the value of a base attribute of the character. */
-        void setAttribute(uint id, double value)
-        {
-            mAttributes[id].@base=value;
-        }
-
-        void setModAttribute(uint id, double value)
-        {
-            mAttributes[id].modified=value;
-        }
-
         /**
          * Sets total accumulated exp for skill.
          */
@@ -961,7 +964,14 @@ namespace invertika_game.Game
             mSpecials.Clear();
         }
 
-        public void deserializeCharacterData(object obj, MessageIn msg)
+//        /** Sets the value of a base attribute of the character. */
+//        void setAttribute(unsigned int id, double value)
+//        { mAttributes[id].base = value; }
+//        
+//        void setModAttribute(unsigned int id, double value)
+//        { mAttributes[id].modified = value; }
+
+        public void deserializeCharacterData(MessageIn msg)
         {
             // general character properties
             setAccountLevel(msg.readInt8());
