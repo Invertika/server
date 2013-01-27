@@ -114,10 +114,14 @@ namespace invertika_game.Game
 
         public static MapComposite getMap(int mapId)
         {
-            //Maps::const_iterator i = maps.find(mapId);
-            //return (i != maps.end()) ? i.second : NULL;
-
-            return null; //ssk
+            if(maps.ContainsKey(mapId))
+            {
+                return maps[mapId];
+            }
+            else
+            {
+                return null;
+            }
         }
 
         static MapComposite getMap(string mapName)
