@@ -31,6 +31,7 @@ using System.Text;
 using invertika_game.Game;
 using invertika_game.Common;
 using ISL.Server.Game;
+using ISL.Server.Common;
 
 namespace invertika_game.Scripting
 {

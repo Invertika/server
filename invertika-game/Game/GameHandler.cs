@@ -92,7 +92,7 @@ namespace invertika_game.Game
             inv.sendFull();
             character.modifiedAllAttribute();
 
-            foreach(KeyValuePair<int, int> pair in character.characterData.mExperience)
+            foreach(KeyValuePair<int, int> pair in character.mExperience)
             {
                 character.updateDerivedAttributes((uint)pair.Key);
             }

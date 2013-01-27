@@ -33,7 +33,6 @@ using System.IO;
 using ISL.Server.Network;
 using ISL.Server.Common;
 using System.Diagnostics;
-using ISL.Server.Serialize;
 using ISL.Server.Account;
 using ISL.Server.Enums;
 
@@ -66,7 +65,7 @@ namespace invertika_account.Account
             msg.writeString(token);
             msg.writeInt32(ptr.getDatabaseID());
             msg.writeString(ptr.getName());
-            ptr.characterData.serializeCharacterData(msg);
+            ptr.serializeCharacterData(msg);
             s.send(msg);
         }
 
@@ -104,13 +103,13 @@ namespace invertika_account.Account
 
         public static void registerClient(string token, Character ptr)
         {
-            GameServer s=getGameServerFromMap(ptr.characterData.getMapId());
+            GameServer s=getGameServerFromMap(ptr.getMapId());
             registerGameClient(s, token, ptr);
         }
 
         public static void sendPartyChange(Character ptr, int partyId)
         {
-            GameServer s=getGameServerFromMap(ptr.characterData.getMapId());
+            GameServer s=getGameServerFromMap(ptr.getMapId());
 
             if(s!=null)
             {

@@ -35,7 +35,6 @@ using ISL.Server.Common;
 using invertika_account.Chat;
 using CSCL;
 using invertika_account.Common;
-using ISL.Server.Serialize;
 using ISL.Server.Account;
 using ISL.Server.Enums;
 
@@ -170,7 +169,7 @@ namespace invertika_account.Account
                         {
                             Character ptr=Program.storage.getCharacter(id, null);
 
-                            ptr.characterData.deserializeCharacterData(message);
+                            ptr.deserializeCharacterData(message);
                             if(!Program.storage.updateCharacter(ptr))
                             {
                                 Logger.Write(LogLevel.Error, "Failed to update character {0}.", id);
@@ -201,7 +200,7 @@ namespace invertika_account.Account
                         {
                             Character ptr=Program.storage.getCharacter(id, null);
 
-                            int mapId=ptr.characterData.getMapId();
+                            int mapId=ptr.getMapId();
 
                             try
                             {

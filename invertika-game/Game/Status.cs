@@ -31,9 +31,9 @@ using System.Text;
 
 namespace invertika_game.Game
 {
-	public class Status
-	{
-		StatusEffect status;
-		uint time;  // Number of ticks
-	}
+    public class Status
+    {
+        public StatusEffect status;
+        public uint time;  // Number of ticks
+    }
 }

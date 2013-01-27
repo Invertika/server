@@ -19,6 +19,7 @@
     <DebugSymbols>True</DebugSymbols>
     <WarningLevel>4</WarningLevel>
     <Optimize>False</Optimize>
+    <DefineConstants>DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -42,7 +43,6 @@
     <Compile Include="Common\BeingDirection.cs" />
     <Compile Include="Common\BeingGender.cs" />
     <Compile Include="Common\DamageType.cs" />
-    <Compile Include="Common\InventoryItem.cs" />
     <Compile Include="Common\PermissionManager.cs" />
     <Compile Include="Common\Result.cs" />
     <Compile Include="Enums\ScopeType.cs" />

@@ -232,14 +232,14 @@ namespace invertika_account.Account
 
             charInfo.writeInt8((int)ch.getCharacterSlot());
             charInfo.writeString(ch.getName());
-            charInfo.writeInt8(ch.characterData.getGender());
-            charInfo.writeInt8(ch.characterData.getHairStyle());
-            charInfo.writeInt8(ch.characterData.getHairColor());
-            charInfo.writeInt16(ch.characterData.getLevel());
-            charInfo.writeInt16(ch.characterData.getCharacterPoints());
-            charInfo.writeInt16(ch.characterData.getCorrectionPoints());
+            charInfo.writeInt8(ch.getGender());
+            charInfo.writeInt8(ch.getHairStyle());
+            charInfo.writeInt8(ch.getHairColor());
+            charInfo.writeInt16(ch.getLevel());
+            charInfo.writeInt16(ch.getCharacterPoints());
+            charInfo.writeInt16(ch.getCorrectionPoints());
 
-            foreach(KeyValuePair<uint, AttributeValue> at in ch.characterData.mAttributes)
+            foreach(KeyValuePair<uint, AttributeValue> at in ch.mAttributes)
             {
                 charInfo.writeInt32((int)at.Key);
                 charInfo.writeInt32((int)(at.Value.@base*256));
@@ -778,13 +778,13 @@ namespace invertika_account.Account
 
                     newCharacter.setAccount(acc);
                     newCharacter.setCharacterSlot((uint)slot);
-                    newCharacter.characterData.setGender(gender);
-                    newCharacter.characterData.setHairStyle(hairStyle);
-                    newCharacter.characterData.setHairColor(hairColor);
-                    newCharacter.characterData.setMapId(Configuration.getValue("char_startMap", 1));
+                    newCharacter.setGender(gender);
+                    newCharacter.setHairStyle(hairStyle);
+                    newCharacter.setHairColor(hairColor);
+                    newCharacter.setMapId(Configuration.getValue("char_startMap", 1));
                     Point startingPos=new Point(Configuration.getValue("char_startX", 1024),
                                       Configuration.getValue("char_startY", 1024));
-                    newCharacter.characterData.setPosition(startingPos);
+                    newCharacter.setPosition(startingPos);
                     acc.addCharacter(newCharacter);
 
                     Logger.Write(LogLevel.Information, "Character {0} was created for {1}'s account.", name, acc.getName());
@@ -840,12 +840,12 @@ namespace invertika_account.Account
             string address;
             int port;
 
-            int charMapId=selectedChar.characterData.getMapId();
+            int charMapId=selectedChar.getMapId();
             bool gameServerHasMap=GameServerHandler.getGameServerFromMap(charMapId, out address, out port);
 
             if(!gameServerHasMap)
             {
-                Logger.Write(LogLevel.Error, "Character Selection: No game server for map #{0}", selectedChar.characterData.getMapId());
+                Logger.Write(LogLevel.Error, "Character Selection: No game server for map #{0}", selectedChar.getMapId());
                 reply.writeInt8((int)ErrorMessage.ERRMSG_FAILURE);
                 client.send(reply);
                 return;

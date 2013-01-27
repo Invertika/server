@@ -85,6 +85,18 @@ namespace invertika_game.Game
             //#endif
         }
 
+        /** Gets the gender of the being (male or female). */
+        public BeingGender getGender()
+        {
+            return mGender;
+        }
+
+        /** Sets the gender of the being (male or female). */
+        public void setGender(BeingGender gender)
+        {
+            mGender=gender;
+        }
+
         int damage(Actor source, Damage damage)
         {
             //    if (mAction == DEAD)
@@ -611,22 +623,23 @@ namespace invertika_game.Game
             //}
         }
 
-        void applyStatusEffect(int id, int timer)
+        public void applyStatusEffect(int id, int timer)
         {
-            //if (mAction == DEAD)
-            //    return;
+            if(mAction==BeingAction.DEAD)
+                return;
 
-            //if (StatusEffect *statusEffect = StatusManager::getStatus(id))
-            //{
-            //    Status newStatus;
-            //    newStatus.status = statusEffect;
-            //    newStatus.time = timer;
-            //    mStatus[id] = newStatus;
-            //}
-            //else
-            //{
-            //    LOG_ERROR("No status effect with ID " << id);
-            //}
+            StatusEffect statusEffect=StatusManager.getStatus(id);
+            if(statusEffect!=null)
+            {
+                Status newStatus=new Status();
+                newStatus.status=statusEffect;
+                newStatus.time=(uint)timer;
+                mStatus[id]=newStatus;
+            }
+            else
+            {
+                Logger.Write(LogLevel.Error, "No status effect with ID {0}", id);
+            }
         }
 
         void removeStatusEffect(int id)
@@ -767,11 +780,6 @@ namespace invertika_game.Game
 
             //TODO Funktion mit Original vergleichen
             return true; //ssk
-        }
-
-        void setGender(BeingGender gender)
-        {
-            mGender=gender;
         }
     }
 }
