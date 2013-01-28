@@ -122,6 +122,22 @@ namespace invertika_game.Game
         }
 
         /**
+         * Gets the way the actor is blocked by other things on the map
+         */
+        public virtual byte getWalkMask()
+        {
+            return 0x82;
+        } // blocked by walls and monsters ( bin 1000 0010)
+
+        /**
+         * Gets client computer.
+         */
+        public GameClient getClient()
+        {
+            return mClient;
+        }
+
+        /**
          * Sets actor bounding circle radius.
          */
         void setSize(int s)

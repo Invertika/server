@@ -141,20 +141,20 @@ namespace invertika_game.Game
             computer=null; //TODO eigentlich unnötig
         }
 
-        void kill(Character ch)
+        public void kill(Character ch)
         {
-            //GameClient *client = ch.getClient();
+            GameClient client=ch.getClient();
             //assert(client);
-            //client.character = NULL;
-            //client.status = CLIENT_LOGIN;
-            //ch.setClient(0);
+            client.character=null;
+            client.status=(int)ClientStatus.CLIENT_LOGIN;
+            ch.setClient(null);
         }
 
-        void prepareServerChange(Character ch)
+        public void prepareServerChange(Character ch)
         {
-            //GameClient *client = ch.getClient();
+            GameClient client=ch.getClient();
             //assert(client);
-            //client.status = CLIENT_CHANGE_SERVER;
+            client.status=(int)ClientStatus.CLIENT_CHANGE_SERVER;
         }
 
         public void completeServerChange(int id, string token, string address, int port)

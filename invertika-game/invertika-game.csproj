@@ -108,6 +108,9 @@
     <Compile Include="Game\MapReader.cs" />
     <Compile Include="Game\Attribute.cs" />
     <Compile Include="Game\AttributeModifiersEffect.cs" />
+    <Compile Include="Game\Monster.cs" />
+    <Compile Include="Game\NPC.cs" />
+    <Compile Include="Enums\ClientStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

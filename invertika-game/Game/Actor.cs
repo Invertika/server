@@ -77,6 +77,14 @@ namespace invertika_game.Game
             }
         }
 
+        /**
+         * Gets the way the actor blocks pathfinding for other actors.
+         */
+        public virtual byte getWalkMask()
+        {
+            return 0x00;
+        } //can walk through everything
+
         public void setPosition(Point p)
         {
             // Update blockmap

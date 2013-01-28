@@ -165,7 +165,7 @@ namespace invertika_game.Game
 //    }
         }
 
-        bool getWalk(int x, int y, char walkmask)
+        public bool getWalk(int x, int y, byte walkmask)
         {
 //			// You can't walk outside of the map
 //			if(!contains(x, y))

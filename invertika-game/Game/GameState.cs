@@ -699,33 +699,33 @@ namespace invertika_game.Game
 
         static void warp(Character ptr, MapComposite map, int x, int y)
         {
+            //TODO DEBUG555 entfernen
             int debug=555;
 
-            //remove(ptr);
-            //ptr.setMap(map);
-            //ptr.setPosition(Point(x, y));
-            //ptr.clearDestination();
-            ///* Force update of persistent data on map change, so that
-            //   characters can respawn at the start of the map after a death or
-            //   a disconnection. */
-            //accountHandler.sendCharacterData(ptr);
+            remove(ptr);
+            ptr.setMap(map);
+            ptr.setPosition(new Point(x, y));
+            ptr.clearDestination();
+            /* Force update of persistent data on map change, so that
+               characters can respawn at the start of the map after a death or
+               a disconnection. */
+            Program.accountHandler.sendCharacterData(ptr);
 
-            //if (map.isActive())
-            //{
-            //    if (!insert(ptr))
-            //    {
-            //        ptr.disconnected();
-            //        gameHandler.kill(ptr);
-            //        delete ptr;
-            //    }
-            //}
-            //else
-            //{
-            //    MessageOut msg(GAMSG_REDIRECT);
-            //    msg.writeInt32(ptr.getDatabaseID());
-            //    accountHandler.send(msg);
-            //    gameHandler.prepareServerChange(ptr);
-            //}
+            if(map.isActive())
+            {
+                if(!insert(ptr))
+                {
+                    ptr.disconnected();
+                    Program.gameHandler.kill(ptr);
+                }
+            }
+            else
+            {
+                MessageOut msg=new MessageOut(Protocol.GAMSG_REDIRECT);
+                msg.writeInt32(ptr.getDatabaseID());
+                Program.accountHandler.send(msg);
+                Program.gameHandler.prepareServerChange(ptr);
+            }
         }
 
         /**

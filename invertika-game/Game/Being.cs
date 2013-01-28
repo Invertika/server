@@ -49,6 +49,11 @@ namespace invertika_game.Game
         BeingDirection mDirection;
         string mName;
 
+        /** Delay until move to next tile in miliseconds. */
+        protected ushort mMoveTime;
+
+        List<Point> mPath;
+
         public Being(ThingType type) : base(type)
         {
             mAction=BeingAction.STAND;
@@ -84,6 +89,15 @@ namespace invertika_game.Game
             //        mAttributes[i].setBase(100);
             //    }
             //#endif
+        }
+
+        /**
+         * Checks whether or not an attribute exists in this being.
+         * @returns True if the attribute is present in the being, false otherwise.
+         */
+        bool checkAttributeExists(uint id)
+        {
+            return mAttributes.ContainsKey(id);
         }
 
         /** Gets the gender of the being (male or female). */
@@ -321,108 +335,116 @@ namespace invertika_game.Game
 
         void move()
         {
-            //// Immobile beings cannot move.
-            //if (!checkAttributeExists(ATTR_MOVE_SPEED_RAW)
-            //    || !getModifiedAttribute(ATTR_MOVE_SPEED_RAW))
-            //      return;
+            // Immobile beings cannot move.
+            if(!checkAttributeExists((int)Attributes.ATTR_MOVE_SPEED_RAW)
+                ||getModifiedAttribute((int)Attributes.ATTR_MOVE_SPEED_RAW)==0)
+                return;
 
-            //// Remember the current position before moving. This is used by
-            //// MapComposite::update() to determine whether a being has moved from one
-            //// zone to another.
-            //mOld = getPosition();
+            // Remember the current position before moving. This is used by
+            // MapComposite::update() to determine whether a being has moved from one
+            // zone to another.
+            mOld=getPosition();
 
-            //if (mMoveTime > WORLD_TICK_MS)
-            //{
-            //    // Current move has not yet ended
-            //    mMoveTime -= WORLD_TICK_MS;
-            //    return;
-            //}
+            if(mMoveTime>ManaServ.WORLD_TICK_MS)
+            {
+                // Current move has not yet ended
+                mMoveTime-=ManaServ.WORLD_TICK_MS;
+                return;
+            }
 
-            //Map *map = getMap().getMap();
-            //int tileWidth = map.getTileWidth();
-            //int tileHeight = map.getTileHeight();
-            //int tileSX = getPosition().x / tileWidth;
-            //int tileSY = getPosition().y / tileHeight;
-            //int tileDX = mDst.x / tileWidth;
-            //int tileDY = mDst.y / tileHeight;
+            Map map=getMap().getMap();
+            int tileWidth=map.getTileWidth();
+            int tileHeight=map.getTileHeight();
+            int tileSX=getPosition().x/tileWidth;
+            int tileSY=getPosition().y/tileHeight;
+            int tileDX=mDst.x/tileWidth;
+            int tileDY=mDst.y/tileHeight;
 
-            //if (tileSX == tileDX && tileSY == tileDY)
-            //{
-            //    if (mAction == WALK)
-            //        setAction(STAND);
-            //    // Moving while staying on the same tile is free
-            //    // We only update the direction in that case.
-            //    updateDirection(getPosition(), mDst);
-            //    setPosition(mDst);
-            //    mMoveTime = 0;
-            //    return;
-            //}
+            if(tileSX==tileDX&&tileSY==tileDY)
+            {
+                if(mAction==BeingAction.WALK)
+                    setAction(BeingAction.STAND);
+                // Moving while staying on the same tile is free
+                // We only update the direction in that case.
+                updateDirection(getPosition(), mDst);
+                setPosition(mDst);
+                mMoveTime=0;
+                return;
+            }
 
-            ///* If no path exists, the for-loop won't be entered. Else a path for the
-            // * current destination has already been calculated.
-            // * The tiles in this path have to be checked for walkability,
-            // * in case there have been changes. The 'getWalk' method of the Map
-            // * class has been used, because that seems to be the most logical
-            // * place extra functionality will be added.
-            // */
-            //for (PathIterator pathIterator = mPath.begin();
-            //        pathIterator != mPath.end(); pathIterator++)
-            //{
-            //    if (!map.getWalk(pathIterator.x, pathIterator.y, getWalkMask()))
-            //    {
-            //        mPath.clear();
-            //        break;
-            //    }
-            //}
+            /* If no path exists, the for-loop won't be entered. Else a path for the
+             * current destination has already been calculated.
+             * The tiles in this path have to be checked for walkability,
+             * in case there have been changes. The 'getWalk' method of the Map
+             * class has been used, because that seems to be the most logical
+             * place extra functionality will be added.
+             */
+            foreach(Point point in mPath)
+            {
+                if(!map.getWalk(point.x, point.y, getWalkMask()))
+                {
+                    mPath.Clear();
+                    break;
+                }
+            }
 
-            //if (mPath.empty())
-            //{
-            //    // No path exists: the walkability of cached path has changed, the
-            //    // destination has changed, or a path was never set.
-            //    mPath = findPath();
-            //}
+            if(mPath.Count==0)
+            {
+                // No path exists: the walkability of cached path has changed, the
+                // destination has changed, or a path was never set.
+                mPath=findPath();
+            }
 
-            //if (mPath.empty())
-            //{
-            //    if (mAction == WALK)
-            //        setAction(STAND);
-            //    // no path was found
-            //    mDst = mOld;
-            //    mMoveTime = 0;
-            //    return;
-            //}
+            if(mPath.Count==0)
+            {
+                if(mAction==BeingAction.WALK)
+                    setAction(BeingAction.STAND);
+                // no path was found
+                mDst=mOld;
+                mMoveTime=0;
+                return;
+            }
 
-            //setAction(WALK);
+            setAction(BeingAction.WALK);
 
-            //Point prev(tileSX, tileSY);
-            //Point pos;
-            //do
-            //{
-            //    Point next = mPath.front();
-            //    mPath.pop_front();
-            //    // SQRT2 is used for diagonal movement.
-            //    mMoveTime += (prev.x == next.x || prev.y == next.y) ?
-            //                   getModifiedAttribute(ATTR_MOVE_SPEED_RAW) :
-            //                   getModifiedAttribute(ATTR_MOVE_SPEED_RAW) * SQRT2;
+            Point prev=new Point(tileSX, tileSY);
+            Point pos=new Point();
+            do
+            {
+                Point next=mPath[0];
+                mPath.RemoveAt(0);
+                // SQRT2 is used for diagonal movement.
+                mMoveTime+=(ushort)((prev.x==next.x||prev.y==next.y)?
+                    getModifiedAttribute((int)Attributes.ATTR_MOVE_SPEED_RAW):
+                        getModifiedAttribute((int)Attributes.ATTR_MOVE_SPEED_RAW)*Math.Sqrt(2));
 
-            //    if (mPath.empty())
-            //    {
-            //        // skip last tile center
-            //        pos = mDst;
-            //        break;
-            //    }
+                if(mPath.Count==0)
+                {
+                    // skip last tile center
+                    pos=mDst;
+                    break;
+                }
 
-            //    // Position the actor in the middle of the tile for pathfinding purposes
-            //    pos.x = next.x * tileWidth + (tileWidth / 2);
-            //    pos.y = next.y * tileHeight + (tileHeight / 2);
-            //}
-            //while (mMoveTime < WORLD_TICK_MS);
-            //setPosition(pos);
+                // Position the actor in the middle of the tile for pathfinding purposes
+                pos.x=next.x*tileWidth+(tileWidth/2);
+                pos.y=next.y*tileHeight+(tileHeight/2);
+            }
+            while (mMoveTime < ManaServ.WORLD_TICK_MS);
+            setPosition(pos);
 
-            //mMoveTime = mMoveTime > WORLD_TICK_MS ? mMoveTime - WORLD_TICK_MS : 0;
+            mMoveTime=(ushort)(mMoveTime>ManaServ.WORLD_TICK_MS?mMoveTime-ManaServ.WORLD_TICK_MS:0);
 
-            //// Update the being direction also
-            //updateDirection(mOld, pos);
+            // Update the being direction also
+            updateDirection(mOld, pos);
+        }
+
+        /**
+         * Sets the destination coordinates of the being to the current
+         * position.
+         */
+        public void clearDestination()
+        {
+            setDestination(getPosition());
         }
 
         int directionToAngle(int direction)
@@ -534,16 +556,15 @@ namespace invertika_game.Game
 
         double getModifiedAttribute(uint id)
         {
-            //AttributeMap::const_iterator ret = mAttributes.find(id);
-            //if (ret == mAttributes.end())
-            //{
-            //    LOG_DEBUG("Being::getModifiedAttribute: Attribute "
-            //              << id << " not found! Returning 0.");
-            //    return 0;
-            //}
-            //return ret.second.getModifiedAttribute();
-
-            return 0; //ssk
+            if(mAttributes.ContainsKey(id))
+            {
+                return mAttributes[id].getModifiedAttribute();
+            }
+            else
+            {
+                Logger.Write(LogLevel.Debug, "Being::getModifiedAttribute: Attribute {0} not found! Returning 0.", id);
+                return 0;
+            }
         }
 
         public void setModAttribute(uint a, double b)
