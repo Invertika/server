@@ -49,7 +49,7 @@ namespace invertika_game.Game
 		   in dealing with zone changes. */
         const int zoneDiam=256;
         Map mMap;            /**< Actual map. */
-        MapContent mContent; /**< Entities on the map. */
+        public MapContent mContent; /**< Entities on the map. */
         Script mScript;      /**< Script associated to this map. */
         string mName;    /**< Name of the map. */
         ushort mID;   /**< ID of the map. */

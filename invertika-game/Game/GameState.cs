@@ -53,7 +53,7 @@ namespace invertika_game.Game
         static void updateMap(MapComposite map)
         {
             // 1. update object status.
-            List< Thing  > things=map.getEverything();
+            List< Thing  > things=map.getEverything(); //TODO das könnte man auch weiter unten benutzen?
 
             foreach(Thing thing in things)
             {
@@ -68,17 +68,36 @@ namespace invertika_game.Game
             }
 
             // 3. perform actions.
-            //TODO Implementieren
-//            for (BeingIterator i(map.getWholeMapIterator()); i; ++i)
-//            {
-//                (*i).perform();
-//            }
+            foreach(Thing thing in map.mContent.things)
+            {
+                if(thing is Being)
+                {
+                    Being being=(Being)thing;
+                    being.perform();
+                }
+            }
+
+            //Alter Code
+            // for (BeingIterator i(map.getWholeMapIterator()); i; ++i)
+            // {
+            //     (*i).perform();
+            // }
 
             // 4. move objects around and update zones.
-//            for (BeingIterator i(map.getWholeMapIterator()); i; ++i)
-//            {
-//                (*i).move();
-//            }
+            foreach(Thing thing in map.mContent.things)
+            {
+                if(thing is Being)
+                {
+                    Being being=(Being)thing;
+                    being.move();
+                }
+            }
+
+            // Alter Code
+            //for (BeingIterator i(map.getWholeMapIterator()); i; ++i)
+            //{
+            //    (*i).move();
+            //}
 
             map.update();
         }

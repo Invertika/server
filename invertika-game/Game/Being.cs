@@ -92,6 +92,14 @@ namespace invertika_game.Game
         }
 
         /**
+         * Performs actions scheduled by the being.
+         */
+        public virtual void perform()
+        {
+            throw new NotImplementedException("These function must be overloaded from derived class.");
+        }
+
+        /**
          * Checks whether or not an attribute exists in this being.
          * @returns True if the attribute is present in the being, false otherwise.
          */
@@ -333,7 +341,7 @@ namespace invertika_game.Game
             //}
         }
 
-        void move()
+        public void move()
         {
             // Immobile beings cannot move.
             if(!checkAttributeExists((int)Attributes.ATTR_MOVE_SPEED_RAW)
