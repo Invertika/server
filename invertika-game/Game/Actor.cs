@@ -40,7 +40,7 @@ namespace invertika_game.Game
 
         /** Actor ID sent to clients (unique with respect to the map). */
         ushort mPublicID;
-        Point mPos;                 /**< Coordinates. */
+        Point mPos=new Point();                 /**< Coordinates. */
         byte mSize;        /**< Radius of bounding circle. */
 
         //protected
