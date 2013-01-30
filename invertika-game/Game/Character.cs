@@ -1027,7 +1027,7 @@ namespace invertika_game.Game
             
             // location
             setMapId(msg.readInt16());
-            
+
             Point temporaryPoint=new Point();
             temporaryPoint.x=msg.readInt16();
             temporaryPoint.y=msg.readInt16();
