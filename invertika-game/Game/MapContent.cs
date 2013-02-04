@@ -39,29 +39,6 @@ namespace invertika_game.Game
     {
         const int zoneDiam=256;
 
-        //MapContent(Map *);
-        //~MapContent();
-
-        ///**
-        // * Allocates a unique ID for an actor on this map.
-        // */
-        //bool allocate(Actor *);
-
-        ///**
-        // * Deallocates an ID.
-        // */
-        //void deallocate(Actor *);
-
-        ///**
-        // * Fills a region of zones within the range of a point.
-        // */
-        //void fillRegion(MapRegion &, const Point &, int) const;
-
-        ///**
-        // * Fills a region of zones inside a rectangle.
-        // */
-        //void fillRegion(MapRegion &, const Rectangle &) const;
-
         ///**
         // * Things (items, characters, monsters, etc) located on the map.
         // */
@@ -77,27 +54,30 @@ namespace invertika_game.Game
         ///**
         // * Partition of the Objects, depending on their position on the map.
         // */
-        MapZone zones;
+        MapZone[] zones;
 
         ushort mapWidth;  /**< Width with respect to zones. */
         ushort mapHeight; /**< Height with respect to zones. */
 
 
-        //MapContent::MapContent(Map *map)
-        //  : last_bucket(0), zones(NULL)
-        //{
-        //    buckets[0] = new ObjectBucket;
-        //    buckets[0].allocate(); // Skip ID 0
-        //    for (int i = 1; i < 256; ++i)
-        //    {
-        //        buckets[i] = NULL;
-        //    }
-        //    mapWidth = (map.getWidth() * map.getTileWidth() + zoneDiam - 1)
-        //               / zoneDiam;
-        //    mapHeight = (map.getHeight() * map.getTileHeight() + zoneDiam - 1)
-        //                / zoneDiam;
-        //    zones = new MapZone[mapWidth * mapHeight];
-        //}
+        public MapContent(Map map)
+        {
+            last_bucket=0;
+            zones=null;
+
+            buckets[0]=new ObjectBucket();
+            buckets[0].allocate(); // Skip ID 0
+            for(int i = 1;i < 256;++i) //TODO Unötig in C#?
+            {
+                buckets[i]=null;
+            }
+
+            mapWidth=(ushort)((map.getWidth()*map.getTileWidth()+zoneDiam-1)
+                /zoneDiam);
+            mapHeight=(ushort)((map.getHeight()*map.getTileHeight()+zoneDiam-1)
+                /zoneDiam);
+            zones=new MapZone[mapWidth*mapHeight];
+        }
 
         //MapContent::~MapContent()
         //{
