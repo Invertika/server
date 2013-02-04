@@ -70,9 +70,9 @@ namespace invertika_game.Game
         ///**
         // * Buckets of MovingObjects located on the map, referenced by ID.
         // */
-        //ObjectBucket *buckets[256];
+        ObjectBucket[] buckets=new ObjectBucket[256];
 
-        //int last_bucket; /**< Last bucket acted upon. */
+        int last_bucket; /**< Last bucket acted upon. */
 
         ///**
         // * Partition of the Objects, depending on their position on the map.
@@ -108,46 +108,46 @@ namespace invertika_game.Game
         //    delete[] zones;
         //}
 
-        //bool MapContent::allocate(Actor *obj)
-        //{
-        //    // First, try allocating from the last used bucket.
-        //    ObjectBucket *b = buckets[last_bucket];
-        //    int i = b.allocate();
-        //    if (i >= 0)
-        //    {
-        //        b.objects[i] = obj;
-        //        obj.setPublicID(last_bucket * 256 + i);
-        //        return true;
-        //    }
+        public bool allocate(Actor obj)
+        {
+            // First, try allocating from the last used bucket.
+            ObjectBucket b=buckets[last_bucket];
+            int i=b.allocate();
+            if(i>=0)
+            {
+                b.objects[i]=obj;
+                obj.setPublicID(last_bucket*256+i);
+                return true;
+            }
 
-        //    /* If the last used bucket is already full, scan all the buckets for an
-        //       empty place. If none is available, create a new bucket. */
-        //    for (i = 0; i < 256; ++i)
-        //    {
-        //        b = buckets[i];
-        //        if (!b)
-        //        {
-        //            /* Buckets are created in order. If there is nothing at position i,
-        //               there will not be anything in the next positions. So create a
-        //               new bucket. */
-        //            b = new ObjectBucket;
-        //            buckets[i] = b;
-        //            LOG_DEBUG("New bucket created");
-        //        }
-        //        int j = b.allocate();
-        //        if (j >= 0)
-        //        {
-        //            last_bucket = i;
-        //            b.objects[j] = obj;
-        //            obj.setPublicID(last_bucket * 256 + j);
-        //            return true;
-        //        }
-        //    }
+            /* If the last used bucket is already full, scan all the buckets for an
+               empty place. If none is available, create a new bucket. */
+            for(i = 0;i < 256;++i)
+            {
+                b=buckets[i];
+                if(b!=null)
+                {
+                    /* Buckets are created in order. If there is nothing at position i,
+                       there will not be anything in the next positions. So create a
+                       new bucket. */
+                    b=new ObjectBucket();
+                    buckets[i]=b;
+                    Logger.Write(LogLevel.Debug, "New bucket created");
+                }
+                int j=b.allocate();
+                if(j>=0)
+                {
+                    last_bucket=i;
+                    b.objects[j]=obj;
+                    obj.setPublicID(last_bucket*256+j);
+                    return true;
+                }
+            }
 
-        //    // All the IDs are currently used, fail.
-        //    LOG_ERROR("unable to allocate id");
-        //    return false;
-        //}
+            // All the IDs are currently used, fail.
+            Logger.Write(LogLevel.Error, "unable to allocate id");
+            return false;
+        }
 
         //void MapContent::deallocate(Actor *obj)
         //{

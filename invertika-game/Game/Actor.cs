@@ -78,6 +78,14 @@ namespace invertika_game.Game
         }
 
         /**
+         * Set public ID. The actor shall not have any public ID yet.
+         */
+        public void setPublicID(int id)
+        {
+            mPublicID=(ushort)id;
+        }
+
+        /**
          * Gets the way the actor blocks pathfinding for other actors.
          */
         public virtual byte getWalkMask()

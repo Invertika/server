@@ -188,16 +188,9 @@ namespace invertika_game.Game
 
         public bool insert(Thing ptr)
         {
-            int debug=555;
-
             if(ptr.isVisible())
             {
-                //    if (ptr.canMove() && !mContent.allocate(static_cast< Being * >(ptr)))
-                //    {
-                //        return false;
-                //    }
-
-                if(ptr.canMove())
+                if(ptr.canMove()&&!mContent.allocate((Being)ptr))
                 {
                     return false;
                 }
