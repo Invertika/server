@@ -111,6 +111,10 @@
     <Compile Include="Game\Monster.cs" />
     <Compile Include="Game\NPC.cs" />
     <Compile Include="Enums\ClientStatus.cs" />
+    <Compile Include="Game\TriggerAction.cs" />
+    <Compile Include="Game\WarpAction.cs" />
+    <Compile Include="Game\TriggerArea.cs" />
+    <Compile Include="Game\SpawnArea.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

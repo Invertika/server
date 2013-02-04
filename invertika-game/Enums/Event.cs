@@ -1,6 +1,6 @@
 using System;
 
-namespace invertika_game
+namespace invertika_game.Enums
 {
     public enum Event
     {

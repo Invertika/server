@@ -301,137 +301,137 @@ namespace invertika_game.Game
 		 */
         void initializeContent()
         {
-            //mContent = new MapContent(mMap);
+            mContent=new MapContent(mMap);
 
-            //const std::vector<MapObject*> &objects = mMap.getObjects();
+            List<MapObject> objects=mMap.getObjects();
 
-            //for (size_t i = 0; i < objects.size(); ++i)
-            //{
-            //    const MapObject *object = objects.at(i);
-            //    const std::string &type = object.getType();
+            for(int i = 0;i < objects.Count;++i)
+            {
+                MapObject obj=objects[i];
+                string type=obj.getType();
 
-            //    if (utils::compareStrI(type, "WARP") == 0)
-            //    {
-            //        std::string destMapName = object.getProperty("DEST_MAP");
-            //        int destX = utils::stringToInt(object.getProperty("DEST_X"));
-            //        int destY = utils::stringToInt(object.getProperty("DEST_Y"));
+                if(type=="WARP")
+                {
+                    string destMapName=obj.getProperty("DEST_MAP");
+                    int destX=Convert.ToInt32(obj.getProperty("DEST_X"));
+                    int destY=Convert.ToInt32(obj.getProperty("DEST_Y"));
 
-            //        if (!destMapName.empty() && destX && destY)
-            //        {
-            //            if (MapComposite *destMap = MapManager::getMap(destMapName))
-            //            {
-            //                WarpAction *action = new WarpAction(destMap, destX, destY);
-            //                insert(new TriggerArea(this, object.getBounds(),
-            //                                       action, false));
-            //            }
-            //        }
-            //        else
-            //        {
-            //            LOG_WARN("Unrecognized warp format");
-            //        }
-            //    }
-            //    else if (utils::compareStrI(type, "SPAWN") == 0)
-            //    {
-            //        MonsterClass *monster = 0;
-            //        int maxBeings = utils::stringToInt(object.getProperty("MAX_BEINGS"));
-            //        int spawnRate = utils::stringToInt(object.getProperty("SPAWN_RATE"));
-            //        std::string monsterName = object.getProperty("MONSTER_ID");
-            //        int monsterId = utils::stringToInt(monsterName);
+                    //if(destMapName!=""&&destX&&destY) //TODO Check
+                    if(destMapName!="")
+                    {
+                        MapComposite destMap=MapManager.getMap(destMapName);
+                        if(destMap!=null)
+                        {
+                            WarpAction action=new WarpAction(destMap, destX, destY);
+                            insert(new TriggerArea(this, obj.getBounds(),
+                                                   action, false));
+                        }
+                    }
+                    else
+                    {
+                        Logger.Write(LogLevel.Warning, "Unrecognized warp format");
+                    }
+                }
+                else if(type=="SPAWN")
+                {
+                    MonsterClass monster=null;
+                    int maxBeings=Convert.ToInt32(obj.getProperty("MAX_BEINGS"));
+                    int spawnRate=Convert.ToInt32(obj.getProperty("SPAWN_RATE"));
+                    string monsterName=obj.getProperty("MONSTER_ID");
+                    int monsterId=Convert.ToInt32(monsterName);
 
-            //        if (monsterId)
-            //        {
-            //            monster = monsterManager.getMonster(monsterId);
-            //            if (!monster)
-            //            {
-            //                LOG_WARN("Couldn't find monster ID " << monsterId <<
-            //                         " for spawn area");
-            //            }
-            //        }
-            //        else
-            //        {
-            //            monster = monsterManager.getMonsterByName(monsterName);
-            //            if (!monster)
-            //            {
-            //                LOG_WARN("Couldn't find monster " << monsterName <<
-            //                         " for spawn area");
-            //            }
-            //        }
+                    if(monsterId>0)
+                    {
+                        monster=Program.monsterManager.getMonster(monsterId);
+                        if(monster==null)
+                        {
+                            Logger.Write(LogLevel.Warning, "Couldn't find monster ID {0} for spawn area", monsterId);
+                        }
+                    }
+                    else
+                    {
+                        monster=Program.monsterManager.getMonsterByName(monsterName);
+                        if(monster==null)
+                        {
+                            Logger.Write(LogLevel.Warning, "Couldn't find monster {0} for spawn area", monsterName);
+                        }
+                    }
 
-            //        if (monster && maxBeings && spawnRate)
-            //        {
-            //            insert(new SpawnArea(this, monster, object.getBounds(),
-            //                                 maxBeings, spawnRate));
-            //        }
-            //    }
-            //    else if (utils::compareStrI(type, "NPC") == 0)
-            //    {
-            //        int npcId = utils::stringToInt(object.getProperty("NPC_ID"));
-            //        std::string scriptText = object.getProperty("SCRIPT");
+                    if(monster!=null&&maxBeings>0&&spawnRate>0)
+                    {
+                        insert(new SpawnArea(this, monster, obj.getBounds(),
+                                             maxBeings, spawnRate));
+                    }
+                }
+                else if(type=="NPC")
+                {
+                    int npcId=Convert.ToInt32(obj.getProperty("NPC_ID"));
+                    string scriptText=obj.getProperty("SCRIPT");
 
-            //        if (!mScript)
-            //        {
-            //            // Determine script engine by xml property
-            //            std::string scriptEngineName = object.getProperty("ENGINE");
-            //            if (scriptEngineName.empty())
-            //            {
-            //                // Set engine to default value and print warning
-            //                scriptEngineName = Configuration::getValue("script_defaultEngine", "lua");
-            //                LOG_WARN("No script engine specified for map script \""
-            //                        + mName + "\", falling back to default");
-            //            }
-            //            mScript = Script::create(scriptEngineName);
-            //        }
+                    if(mScript!=null)
+                    {
+                        // Determine script engine by xml property
+                        string scriptEngineName=obj.getProperty("ENGINE");
+                        if(scriptEngineName=="")
+                        {
+                            // Set engine to default value and print warning
+                            scriptEngineName=Configuration.getValue("script_defaultEngine", "lua");
+                            Logger.Write(LogLevel.Warning, "No script engine specified for map script {0} falling back to default", mName);
+                        }
+                        mScript=Script.create(scriptEngineName);
+                    }
 
-            //        if (npcId && !scriptText.empty())
-            //        {
-            //            mScript.loadNPC(object.getName(), npcId,
-            //                             object.getX(), object.getY(),
-            //                             scriptText.c_str());
-            //        }
-            //        else
-            //        {
-            //            LOG_WARN("Unrecognized format for npc");
-            //        }
-            //    }
-            //    else if (utils::compareStrI(type, "SCRIPT") == 0)
-            //    {
-            //        std::string scriptFilename = object.getProperty("FILENAME");
-            //        std::string scriptText = object.getProperty("TEXT");
+                    if(npcId>0&&scriptText!="")
+                    {
+                        //TODO Implementieren
+//                        mScript.loadNPC(obj.getName(), npcId,
+//                                        obj.getX(), obj.getY(),
+//                                         scriptText);
+                    }
+                    else
+                    {
+                        Logger.Write(LogLevel.Warning, "Unrecognized format for npc");
+                    }
+                }
+                else if(type=="SCRIPT")
+                {
+                    string scriptFilename=obj.getProperty("FILENAME");
+                    string scriptText=obj.getProperty("TEXT");
 
-            //        if (!mScript)
-            //        {
-            //            // Determine script engine by xml property
-            //            std::string scriptEngineName = object.getProperty("ENGINE");
-            //            if (!scriptFilename.empty() && scriptEngineName.empty())
-            //            {
-            //                // Engine property is empty - determine by filename
-            //                scriptEngineName = Script::determineEngineByFilename(scriptFilename);
-            //            }
-            //            else if (scriptEngineName.empty())
-            //            {
-            //                // Set engine to default value and print warning
-            //                scriptEngineName = Configuration::getValue("script_defaultEngine", "lua");
-            //                LOG_WARN("No script engine specified for map script \""
-            //                        + mName + "\", falling back to default");
-            //            }
-            //            mScript = Script::create(scriptEngineName);
-            //        }
+                    if(mScript!=null)
+                    {
+                        // Determine script engine by xml property
+                        string scriptEngineName=obj.getProperty("ENGINE");
+                        if(scriptFilename!=""&&scriptEngineName=="")
+                        {
+                            // Engine property is empty - determine by filename
+                            scriptEngineName=Script.determineEngineByFilename(scriptFilename);
+                        }
+                        else if(scriptEngineName=="")
+                        {
+                            // Set engine to default value and print warning
+                            scriptEngineName=Configuration.getValue("script_defaultEngine", "lua");
+                            Logger.Write(LogLevel.Warning, "No script engine specified for map script {0}, falling back to default", mName);
+                        }
+                        mScript=Script.create(scriptEngineName);
+                    }
 
-            //        if (!scriptFilename.empty())
-            //        {
-            //            mScript.loadFile(scriptFilename);
-            //        }
-            //        else if (!scriptText.empty())
-            //        {
-            //            std::string name = "'" + object.getName() + "'' in " + mName;
-            //            mScript.load(scriptText.c_str(), name.c_str());
-            //        }
-            //        else
-            //        {
-            //            LOG_WARN("Unrecognized format for script");
-            //        }
-            //    }
-            //}
+                    if(scriptFilename!="")
+                    {
+                        mScript.loadFile(scriptFilename);
+                    }
+                    else if(scriptText!=null)
+                    {
+                        //TODO Implementieren
+//                        string name="'"+obj.getName()+"'' in "+mName;
+//                        mScript.load(scriptText, name);
+                    }
+                    else
+                    {
+                        Logger.Write(LogLevel.Warning, "Unrecognized format for script");
+                    }
+                }
+            }
         }
 		
 		

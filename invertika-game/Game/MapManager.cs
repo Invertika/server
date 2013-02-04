@@ -124,11 +124,15 @@ namespace invertika_game.Game
             }
         }
 
-        static MapComposite getMap(string mapName)
+        public static MapComposite getMap(string mapName)
         {
-            //for (Maps::const_iterator i = maps.begin(); i != maps.end(); ++i)
-            //    if (i.second.getName() == mapName)
-            //        return i.second;
+            foreach(KeyValuePair<int, MapComposite> pair in maps)
+            {
+                if(pair.Value.getName()==mapName)
+                {
+                    return pair.Value;
+                }
+            }
 
             return null;
         }

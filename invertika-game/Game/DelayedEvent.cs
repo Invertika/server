@@ -31,12 +31,21 @@ using System.Text;
 
 namespace invertika_game.Game
 {
-	/**
+    /**
  * Event expected to happen at next update.
  */
-	public class DelayedEvent
-	{
-		ushort type, x, y;
-		MapComposite map;
-	}
+    public class DelayedEvent
+    {
+        public ushort type;
+        ushort  x, y;
+        MapComposite map;
+
+        public DelayedEvent(ushort itype, ushort ix, ushort iy, MapComposite im)
+        {
+            type=itype;
+            x=ix;
+            y=iy;
+            map=im;
+        }
+    }
 }

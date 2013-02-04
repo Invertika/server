@@ -61,7 +61,7 @@ namespace invertika_game.Scripting
         //    //(*engines)[name] = f;
         //}
 
-        Script create(string engine)
+        public static Script create(string engine)
         {
             //if (engines)
             //{
@@ -89,7 +89,7 @@ namespace invertika_game.Scripting
         //    return (strncmp(text, utf8Bom, bomLength) == 0) ? text + bomLength : text;
         //}
 
-        bool loadFile(string name)
+        public bool loadFile(string name)
         {
             //int size;
             //char *buffer = ResourceManager::loadFile(name, size);
@@ -106,7 +106,7 @@ namespace invertika_game.Scripting
             return true; //ssk
         }
 
-        void loadNPC(string name, int id, int x, int y, char prog)
+        public void loadNPC(string name, int id, int x, int y, char prog)
         {
             //load(prog, name.c_str());
             //prepare("create_npc_delayed");
@@ -201,21 +201,23 @@ namespace invertika_game.Scripting
             return true;
         }
 
-        //string determineEngineByFilename(string filename)
-        //{
-        //    //std::string ext = filename.substr(filename.find_last_of(".") + 1);
+        public static string determineEngineByFilename(string filename)
+        {
+            //std::string ext = filename.substr(filename.find_last_of(".") + 1);
 
-        //    //if (ext == "lua")
-        //    //{
-        //    //    return "lua";
-        //    //}
-        //    //else
-        //    //{
-        //    //    // Set to default engine and print warning
-        //    //    LOG_WARN("Unknown file extension for script \""
-        //    //            + filename + "\", falling back to default script engine");
-        //    //    return Configuration::getValue("script_defaultEngine", "lua");
-        //    //}
-        //}
+            //if (ext == "lua")
+            //{
+            //    return "lua";
+            //}
+            //else
+            //{
+            //    // Set to default engine and print warning
+            //    LOG_WARN("Unknown file extension for script \""
+            //            + filename + "\", falling back to default script engine");
+            //    return Configuration::getValue("script_defaultEngine", "lua");
+            //}
+
+            return ""; //ssk
+        }
     }
 }

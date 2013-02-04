@@ -31,6 +31,7 @@ using ISL.Server.Network;
 using invertika_game.Scripting;
 using ISL.Server.Common;
 using ISL.Server.Utilities;
+using  invertika_game.Enums;
 
 namespace invertika_game.Game
 {
@@ -752,13 +753,14 @@ namespace invertika_game.Game
 		 */
         static void enqueueEvent(Actor ptr, DelayedEvent e)
         {
-            //std::pair< DelayedEvents::iterator, bool > p =
-            //    delayedEvents.insert(std::make_pair(ptr, e));
-            //// Delete events take precedence over other events.
-            //if (!p.second && e.type == EVENT_REMOVE)
-            //{
-            //    p.first.second.type = EVENT_REMOVE;
-            //}
+            delayedEvents.Add(ptr, e);
+
+            //TODO Implementieren und in Originalimplementation schauen
+//            // Delete events take precedence over other events.
+//            if(e!=null&&e.type==Event.EVENT_REMOVE)
+//            {
+//                p.first.second.type=Event.EVENT_REMOVE;
+//            }
         }
 
         static void enqueueInsert(Actor ptr)
@@ -773,10 +775,11 @@ namespace invertika_game.Game
             //enqueueEvent(ptr, e);
         }
 
-        static void enqueueWarp(Character ptr, MapComposite m, int x, int y)
+        public static void enqueueWarp(Character ptr, MapComposite m, int x, int y)
         {
-            //DelayedEvent e = { EVENT_WARP, x, y, m };
-            //enqueueEvent(ptr, e);
+            //TODO Implementieren
+//            DelayedEvent e=new DelayedEvent(Event.EVENT_WARP, x, y, m);
+//            enqueueEvent(ptr, e);
         }
 
         static void sayAround(Actor obj, string text)

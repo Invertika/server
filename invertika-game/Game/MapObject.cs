@@ -1,47 +1,69 @@
 using System;
+using ISL.Server.Utilities;
+using System.Collections.Generic;
 
 namespace invertika_game
 {
-	public class MapObject
-	{
-//    public:
-//        MapObject(const Rectangle &bounds,
-//                  const std::string &name,
-//                  const std::string &type)
-//            : mBounds(bounds),
-//              mName(name),
-//              mType(type)
-//        { }
-//
-//        void addProperty(const std::string &key, const std::string &value)
-//        {   
-//            if (mProperties.contains(key))
-//                LOG_WARN("Duplicate property " << key <<
-//                         " of object " << mName);
-//            else
-//                mProperties.insert(key, value);
-//        }
-//
-//        const std::string &getProperty(const std::string &key) const
-//        { return mProperties.value(key); }
-//
-//        const std::string &getName() const
-//        { return mName; }
-//
-//        const std::string &getType() const
-//        { return mType; }
-//
-//        const Rectangle &getBounds() const
-//        { return mBounds; }
-//
-//        int getX() const { return mBounds.x; }
-//        int getY() const { return mBounds.y; }
-//
-//    private:
-//        Rectangle mBounds;
-//        std::string mName;
-//        std::string mType;
-//        utils::NameMap<std::string> mProperties;
-	}
+    public class MapObject
+    {
+        Rectangle mBounds;
+        string mName;
+        string mType;
+        Dictionary<string, string> mProperties;
+
+        private MapObject()
+        {
+        }
+
+        MapObject(Rectangle bounds,
+                  string name,
+                 string type)
+        { 
+            mBounds=bounds;
+            mName=name;
+            mType=type;
+        }
+
+        public void addProperty(string key, string value)
+        {   
+            if(mProperties.ContainsKey(key))
+            {
+                Logger.Write(LogLevel.Warning, "Duplicate property {0} of object {1}", key, mName);
+            }
+            else
+            {
+                mProperties.Add(key, value);
+            }
+        }
+
+        public string getProperty(string key)
+        {
+            return mProperties[key];
+        }
+
+        public string getName()
+        {
+            return mName;
+        }
+
+        public string getType()
+        {
+            return mType;
+        }
+
+        public Rectangle getBounds()
+        {
+            return mBounds;
+        }
+
+        public  int getX()
+        {
+            return mBounds.x;
+        }
+        public  int getY()
+        {
+            return mBounds.y;
+        }
+    }
 }
 

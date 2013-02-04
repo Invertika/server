@@ -66,6 +66,14 @@ namespace invertika_game.Game
             }
         }
 
+        /**
+         * Returns the objects of the map.
+         */
+        public List<MapObject> getObjects()
+        {
+            return mMapObjects;
+        }
+
         ~Map()
         {
 //    for (std::vector<MapObject*>::iterator it = mMapObjects.begin();
