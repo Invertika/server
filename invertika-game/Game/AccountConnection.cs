@@ -204,9 +204,9 @@ namespace invertika_game.Game
                                 }
                             }
                         }
-                    }
-                    break;
 
+                        break;
+                    }
                 case Protocol.AGMSG_SET_VAR_WORLD:
                     {
                         string key=msg.readString();

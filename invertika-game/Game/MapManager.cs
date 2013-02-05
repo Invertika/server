@@ -142,7 +142,9 @@ namespace invertika_game.Game
             MapComposite composite=maps[mapId];
 
             if(composite.isActive())
+            {
                 return true;
+            }
 
             if(composite.activate())
             {
