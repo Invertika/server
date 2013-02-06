@@ -199,7 +199,6 @@ namespace invertika_game.Game
                 mContent.getZone(obj.getPosition()).insert(obj);
             }
 
-
             ptr.setMap(this);
             mContent.things.Add(ptr);
             return true;

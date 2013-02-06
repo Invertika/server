@@ -32,141 +32,149 @@ using ISL.Server.Utilities;
 
 namespace invertika_game.Game
 {
-    /**
+	/**
  * Entities on a map.
  */
-    public class MapContent
-    {
-        const int zoneDiam=256;
+	public class MapContent
+	{
+		const int zoneDiam=256;
 
-        ///**
-        // * Things (items, characters, monsters, etc) located on the map.
-        // */
-        public List< Thing  > things;
+		///**
+		// * Things (items, characters, monsters, etc) located on the map.
+		// */
+		public List<Thing> things;
 
-        ///**
-        // * Buckets of MovingObjects located on the map, referenced by ID.
-        // */
-        ObjectBucket[] buckets=new ObjectBucket[256];
+		///**
+		// * Buckets of MovingObjects located on the map, referenced by ID.
+		// */
+		ObjectBucket[] buckets=new ObjectBucket[256];
 
-        int last_bucket; /**< Last bucket acted upon. */
+		int last_bucket; /**< Last bucket acted upon. */
 
-        ///**
-        // * Partition of the Objects, depending on their position on the map.
-        // */
-        public MapZone[] zones;
+		///**
+		// * Partition of the Objects, depending on their position on the map.
+		// */
+		public MapZone[] zones;
 
-        public ushort mapWidth;  /**< Width with respect to zones. */
-        public ushort mapHeight; /**< Height with respect to zones. */
+		public ushort mapWidth;  /**< Width with respect to zones. */
+		public ushort mapHeight; /**< Height with respect to zones. */
 
-        public MapContent(Map map)
-        {
-            last_bucket=0;
-            zones=null;
+		public MapContent(Map map)
+		{
+			last_bucket=0;
+			zones=null;
 
-            buckets[0]=new ObjectBucket();
-            buckets[0].allocate(); // Skip ID 0
-            for(int i = 1;i < 256;++i) //TODO Unötig in C#?
-            {
-                buckets[i]=null;
-            }
+			buckets[0]=new ObjectBucket();
+			buckets[0].allocate(); // Skip ID 0
+			for(int i=1; i<256; ++i) //TODO Unötig in C#?
+			{
+				buckets[i]=null;
+			}
 
-            mapWidth=(ushort)((map.getWidth()*map.getTileWidth()+zoneDiam-1)
-                /zoneDiam);
-            mapHeight=(ushort)((map.getHeight()*map.getTileHeight()+zoneDiam-1)
-                /zoneDiam);
-            zones=new MapZone[mapWidth*mapHeight];
-        }
+			mapWidth=(ushort)((map.getWidth()*map.getTileWidth()+zoneDiam-1)
+				/zoneDiam);
+			mapHeight=(ushort)((map.getHeight()*map.getTileHeight()+zoneDiam-1)
+				/zoneDiam);
+			zones=new MapZone[mapWidth*mapHeight];
 
-        //MapContent::~MapContent()
-        //{
-        //    for (int i = 0; i < 256; ++i)
-        //    {
-        //        delete buckets[i];
-        //    }
-        //    delete[] zones;
-        //}
+			//ZOnen initialisieren //TODO wird das an anderer Stelle getan?
+			for(int i=0; i<zones.Length; i++)
+			{
+				zones[i]=new MapZone();
+			}
 
-        public bool allocate(Actor obj)
-        {
-            // First, try allocating from the last used bucket.
-            ObjectBucket b=buckets[last_bucket];
-            int i=b.allocate();
-            if(i>=0)
-            {
-                b.objects[i]=obj;
-                obj.setPublicID(last_bucket*256+i);
-                return true;
-            }
+			things=new List<Thing>();
+		}
 
-            /* If the last used bucket is already full, scan all the buckets for an
-               empty place. If none is available, create a new bucket. */
-            for(i = 0;i < 256;++i)
-            {
-                b=buckets[i];
-                if(b!=null)
-                {
-                    /* Buckets are created in order. If there is nothing at position i,
-                       there will not be anything in the next positions. So create a
-                       new bucket. */
-                    b=new ObjectBucket();
-                    buckets[i]=b;
-                    Logger.Write(LogLevel.Debug, "New bucket created");
-                }
-                int j=b.allocate();
-                if(j>=0)
-                {
-                    last_bucket=i;
-                    b.objects[j]=obj;
-                    obj.setPublicID(last_bucket*256+j);
-                    return true;
-                }
-            }
+		//MapContent::~MapContent()
+		//{
+		//    for (int i = 0; i < 256; ++i)
+		//    {
+		//        delete buckets[i];
+		//    }
+		//    delete[] zones;
+		//}
 
-            // All the IDs are currently used, fail.
-            Logger.Write(LogLevel.Error, "unable to allocate id");
-            return false;
-        }
+		public bool allocate(Actor obj)
+		{
+			// First, try allocating from the last used bucket.
+			ObjectBucket b=buckets[last_bucket];
+			int i=b.allocate();
+			if(i>=0)
+			{
+				b.objects[i]=obj;
+				obj.setPublicID(last_bucket*256+i);
+				return true;
+			}
 
-        //void MapContent::deallocate(Actor *obj)
-        //{
-        //    unsigned short id = obj.getPublicID();
-        //    buckets[id / 256].deallocate(id % 256);
-        //}
+			/* If the last used bucket is already full, scan all the buckets for an
+			   empty place. If none is available, create a new bucket. */
+			for(i=0; i<256; ++i)
+			{
+				b=buckets[i];
+				if(b!=null)
+				{
+					/* Buckets are created in order. If there is nothing at position i,
+					   there will not be anything in the next positions. So create a
+					   new bucket. */
+					b=new ObjectBucket();
+					buckets[i]=b;
+					Logger.Write(LogLevel.Debug, "New bucket created");
+				}
+				int j=b.allocate();
+				if(j>=0)
+				{
+					last_bucket=i;
+					b.objects[j]=obj;
+					obj.setPublicID(last_bucket*256+j);
+					return true;
+				}
+			}
 
-        //void MapContent::fillRegion(MapRegion &r, const Point &p, int radius) const
-        //{
-        //    int ax = p.x > radius ? (p.x - radius) / zoneDiam : 0,
-        //        ay = p.y > radius ? (p.y - radius) / zoneDiam : 0,
-        //        bx = std::min((p.x + radius) / zoneDiam, mapWidth - 1),
-        //        by = std::min((p.y + radius) / zoneDiam, mapHeight - 1);
-        //    for (int y = ay; y <= by; ++y)
-        //    {
-        //        for (int x = ax; x <= bx; ++x)
-        //        {
-        //            addZone(r, x + y * mapWidth);
-        //        }
-        //    }
-        //}
+			// All the IDs are currently used, fail.
+			Logger.Write(LogLevel.Error, "unable to allocate id");
+			return false;
+		}
 
-        //void MapContent::fillRegion(MapRegion &r, const Rectangle &p) const
-        //{
-        //    int ax = p.x / zoneDiam,
-        //        ay = p.y / zoneDiam,
-        //        bx = std::min((p.x + p.w) / zoneDiam, mapWidth - 1),
-        //        by = std::min((p.y + p.h) / zoneDiam, mapHeight - 1);
-        //    for (int y = ay; y <= by; ++y)
-        //    {
-        //        for (int x = ax; x <= bx; ++x)
-        //        {
-        //            addZone(r, x + y * mapWidth);
-        //        }
-        //    }
-        //}
+		//void MapContent::deallocate(Actor *obj)
+		//{
+		//    unsigned short id = obj.getPublicID();
+		//    buckets[id / 256].deallocate(id % 256);
+		//}
 
-        public MapZone getZone(Point pos)
-        {
-            return zones[(pos.x/zoneDiam)+(pos.y/zoneDiam)*mapWidth];
-        }
-    }
+		//void MapContent::fillRegion(MapRegion &r, const Point &p, int radius) const
+		//{
+		//    int ax = p.x > radius ? (p.x - radius) / zoneDiam : 0,
+		//        ay = p.y > radius ? (p.y - radius) / zoneDiam : 0,
+		//        bx = std::min((p.x + radius) / zoneDiam, mapWidth - 1),
+		//        by = std::min((p.y + radius) / zoneDiam, mapHeight - 1);
+		//    for (int y = ay; y <= by; ++y)
+		//    {
+		//        for (int x = ax; x <= bx; ++x)
+		//        {
+		//            addZone(r, x + y * mapWidth);
+		//        }
+		//    }
+		//}
+
+		//void MapContent::fillRegion(MapRegion &r, const Rectangle &p) const
+		//{
+		//    int ax = p.x / zoneDiam,
+		//        ay = p.y / zoneDiam,
+		//        bx = std::min((p.x + p.w) / zoneDiam, mapWidth - 1),
+		//        by = std::min((p.y + p.h) / zoneDiam, mapHeight - 1);
+		//    for (int y = ay; y <= by; ++y)
+		//    {
+		//        for (int x = ax; x <= bx; ++x)
+		//        {
+		//            addZone(r, x + y * mapWidth);
+		//        }
+		//    }
+		//}
+
+		public MapZone getZone(Point pos)
+		{
+			return zones[(pos.x/zoneDiam)+(pos.y/zoneDiam)*mapWidth];
+		}
+	}
 }

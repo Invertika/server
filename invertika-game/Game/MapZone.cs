@@ -52,8 +52,9 @@ namespace invertika_game.Game
 		 */
         public List<uint> destinations;
 
-        MapZone()
+        public MapZone()
         {
+			objects=new List<Actor>();
         }
 
         public void insert(Actor obj)
