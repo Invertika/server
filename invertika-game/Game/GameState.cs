@@ -568,7 +568,7 @@ namespace invertika_game.Game
                 return false;
             }
 
-            -obj.inserted();
+            obj.inserted();
 
             // DEBUG INFO //TODO Implementieren
 //            switch(obj.getType())
