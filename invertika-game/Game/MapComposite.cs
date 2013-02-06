@@ -236,35 +236,38 @@ namespace invertika_game.Game
             //}
         }
 
-        public void update()
-        {
-            //for (int i = 0; i < mContent.mapHeight * mContent.mapWidth; ++i)
-            //{
-            //    mContent.zones[i].destinations.clear();
-            //}
+		public void update()
+		{
+			for(int i=0; i<mContent.mapHeight*mContent.mapWidth; ++i)
+			{
+				mContent.zones[i].destinations.Clear();
+			}
 
-            //// Cannot use a WholeMap iterator as objects will change zones under its feet.
-            //for (std::vector< Thing * >::iterator i = mContent.things.begin(),
-            //     i_end = mContent.things.end(); i != i_end; ++i)
-            //{
-            //    if (!(*i).canMove())
-            //        continue;
+			// Cannot use a WholeMap iterator as objects will change zones under its feet.
+			foreach(Thing i in mContent.things)
+			{
+				if(!(i).canMove())
+				{
+					continue;
+				}
 
-            //    Being *obj = static_cast< Being * >(*i);
+				Being obj=(Being)(i);
 
-            //    const Point &pos1 = obj.getOldPosition(),
-            //                &pos2 = obj.getPosition();
+				Point pos1=obj.getOldPosition();
+				Point pos2=obj.getPosition();
 
-            //    MapZone &src = mContent.getZone(pos1),
-            //            &dst = mContent.getZone(pos2);
-            //    if (&src != &dst)
-            //    {
-            //        addZone(src.destinations, &dst - mContent.zones);
-            //        src.remove(obj);
-            //        dst.insert(obj);
-            //    }
-            //}
-        }
+				MapZone src=mContent.getZone(pos1),
+						dst=mContent.getZone(pos2);
+
+				if(src!=dst) //TODO Überladener Operator nötig?
+				{
+					//TODO implementieren
+					//addZone(src.destinations, dst-mContent.zones);
+					src.remove(obj);
+					dst.insert(obj);
+				}
+			}
+		}
 
         public List<Thing> getEverything()
         {

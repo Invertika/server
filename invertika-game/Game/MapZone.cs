@@ -50,7 +50,7 @@ namespace invertika_game.Game
 		 * This is necessary in order to have an accurate iterator around moving
 		 * objects.
 		 */
-        List<uint> destinations;
+        public List<uint> destinations;
 
         MapZone()
         {
@@ -114,46 +114,52 @@ namespace invertika_game.Game
 //            }
         }
 
-        void remove(Actor obj)
+        public void remove(Actor obj)
         {
-            //std::vector< Actor * >::iterator i_beg = objects.begin(), i, i_end;
-            //int type = obj.getType();
-            //switch (type)
-            //{
-            //    case OBJECT_CHARACTER:
-            //    {
-            //        i = i_beg;
-            //        i_end = objects.begin() + nbCharacters;
-            //    } break;
-            //    case OBJECT_MONSTER:
-            //    case OBJECT_NPC:
-            //    {
-            //        i = objects.begin() + nbCharacters;
-            //        i_end = objects.begin() + nbMovingObjects;
-            //    } break;
-            //    default:
-            //    {
-            //        i = objects.begin() + nbMovingObjects;
-            //        i_end = objects.end();
-            //    }
-            //}
-            //i = std::find(i, i_end, obj);
-            //assert(i != i_end);
-            //unsigned pos = i - i_beg;
-            //if (pos < nbCharacters)
-            //{
-            //    objects[pos] = objects[nbCharacters - 1];
-            //    pos = nbCharacters - 1;
-            //    --nbCharacters;
-            //}
-            //if (pos < nbMovingObjects)
-            //{
-            //    objects[pos] = objects[nbMovingObjects - 1];
-            //    pos = nbMovingObjects - 1;
-            //    --nbMovingObjects;
-            //}
-            //objects[pos] = objects[objects.size() - 1];
-            //objects.pop_back();
+			////List< Actor >::iterator i_beg = objects.begin(), i, i_end;
+
+			//ThingType type = obj.getType();
+
+			//switch (type)
+			//{
+			//    case ThingType.OBJECT_CHARACTER:
+			//    {
+			//        i = i_beg;
+			//        i_end = objects.begin() + nbCharacters;
+			//    } break;
+			//    case ThingType.OBJECT_MONSTER:
+			//    case ThingType.OBJECT_NPC:
+			//    {
+			//        i = objects.begin() + nbCharacters;
+			//        i_end = objects.begin() + nbMovingObjects;
+			//    } break;
+			//    default:
+			//    {
+			//        i = objects.begin() + nbMovingObjects;
+			//        i_end = objects.end();
+			//    }
+			//}
+
+			//i = std::find(i, i_end, obj);
+			////assert(i != i_end);
+			//uint pos = i - i_beg;
+
+			//if (pos < nbCharacters)
+			//{
+			//    objects[pos] = objects[nbCharacters - 1];
+			//    pos = nbCharacters - 1;
+			//    --nbCharacters;
+			//}
+
+			//if (pos < nbMovingObjects)
+			//{
+			//    objects[pos] = objects[nbMovingObjects - 1];
+			//    pos = nbMovingObjects - 1;
+			//    --nbMovingObjects;
+			//}
+
+			//objects[pos] = objects[objects.size() - 1];
+			//objects.pop_back();
         }
     }
 }

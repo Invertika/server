@@ -54,11 +54,10 @@ namespace invertika_game.Game
         ///**
         // * Partition of the Objects, depending on their position on the map.
         // */
-        MapZone[] zones;
+        public MapZone[] zones;
 
-        ushort mapWidth;  /**< Width with respect to zones. */
-        ushort mapHeight; /**< Height with respect to zones. */
-
+        public ushort mapWidth;  /**< Width with respect to zones. */
+        public ushort mapHeight; /**< Height with respect to zones. */
 
         public MapContent(Map map)
         {
@@ -167,9 +166,7 @@ namespace invertika_game.Game
 
         public MapZone getZone(Point pos)
         {
-            int debug=555;
-            return null; //ssk
-            //return zones[(pos.x/zoneDiam)+(pos.y/zoneDiam)*mapWidth];
+            return zones[(pos.x/zoneDiam)+(pos.y/zoneDiam)*mapWidth];
         }
     }
 }

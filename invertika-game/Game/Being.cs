@@ -99,6 +99,13 @@ namespace invertika_game.Game
             throw new NotImplementedException("These function must be overloaded from derived class.");
         }
 
+		        /**
+         * Gets the old coordinates of the being.
+         */
+        public Point getOldPosition()
+        { return mOld; }
+
+
         /**
          * Checks whether or not an attribute exists in this being.
          * @returns True if the attribute is present in the being, false otherwise.
