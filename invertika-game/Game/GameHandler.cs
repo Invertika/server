@@ -381,11 +381,9 @@ namespace invertika_game.Game
 
         public void sendTo(Character beingPtr, MessageOut msg)
         {
-            int debug=555;
-
-            //GameClient *client = beingPtr.getClient();
-            //assert(client && client.status == CLIENT_CONNECTED);
-            //client.send(msg);
+			GameClient client=beingPtr.getClient();
+			//assert(client&&client.status==CLIENT_CONNECTED);
+			client.send(msg);
         }
 
         public void addPendingCharacter(string token, Character ch)
