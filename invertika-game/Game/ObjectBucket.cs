@@ -93,12 +93,12 @@ namespace invertika_game.Game
             int b=(int)bitmap[freeBucket];
             int j=0;
 
-            while(0!=(b & 1))
-            //while(!(b & 1)) //TODO Check ob Implementation richtig ist
+            while((b&1)==0)
             {
                 b>>=1;
-                ++j;
+                j++;
             }
+
             // Flip that bit to on, and return the value
             bitmap[freeBucket]&=~(uint)(1<<j);
             j+=freeBucket*int_bitsize;
