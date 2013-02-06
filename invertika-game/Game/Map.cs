@@ -49,6 +49,7 @@ namespace invertika_game.Game
             mMetaTiles=new List<MetaTile>(); //    mMetaTiles(width * height)   
 
             mProperties=new Dictionary<string, string>();
+			mMapObjects=new List<MapObject>();
         }
 
         /**
