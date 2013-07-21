@@ -52,6 +52,14 @@ namespace invertika_game.Game
 			mMapObjects=new List<MapObject>();
         }
 
+		/** 
+         * Adds an object.
+         */
+		public void addObject(MapObject obj)
+		{
+			mMapObjects.Add(obj); 
+		}
+
         /**
         * Sets a map property
         */

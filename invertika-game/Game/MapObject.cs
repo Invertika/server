@@ -15,7 +15,7 @@ namespace invertika_game
         {
         }
 
-        MapObject(Rectangle bounds,
+        public MapObject(Rectangle bounds,
                   string name,
                  string type)
         { 

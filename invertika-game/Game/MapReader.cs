@@ -197,54 +197,28 @@ namespace invertika_game
 
             foreach(Objectgroup oGroup in tmx.ObjectLayers)
             {
-                //TODO Objectgroup implementieren
-                //                    //readObjectGroup(node, map);
-                //                    for_each_xml_child_node(objectNode, node)
-                //                    {
-                //                        if (!xmlStrEqual(objectNode->name, BAD_CAST "object"))
-                //                        {
-                //                            continue;
-                //                        }
-                //                        
-                //                        std::string objName = XML::getProperty(objectNode, "name",
-                //                                                               std::string());
-                //                        std::string objType = XML::getProperty(objectNode, "type",
-                //                                                               std::string());
-                //                        objType = utils::toUpper(objType);
-                //                        int objX = XML::getProperty(objectNode, "x", 0);
-                //                        int objY = XML::getProperty(objectNode, "y", 0);
-                //                        int objW = XML::getProperty(objectNode, "width", 0);
-                //                        int objH = XML::getProperty(objectNode, "height", 0);
-                //                        Rectangle rect = { objX, objY, objW, objH };
-                //                        
-                //                        MapObject *newObject = new MapObject(rect, objName, objType);
-                //                        
-                //                        for_each_xml_child_node(propertiesNode, objectNode)
-                //                        {
-                //                            if (!xmlStrEqual(propertiesNode->name, BAD_CAST "properties"))
-                //                            {
-                //                                continue;
-                //                            }
-                //                            
-                //                            for_each_xml_child_node(propertyNode, propertiesNode)
-                //                            {
-                //                                if (xmlStrEqual(propertyNode->name, BAD_CAST "property"))
-                //                                {
-                //                                    std::string key = XML::getProperty(
-                //                                        propertyNode, "name", std::string());
-                //                                    std::string value = getObjectProperty(propertyNode,
-                //                                                                          std::string());
-                //                                    newObject->addProperty(key, value);
-                //                                }
-                //                            }
-                //                        }
-                //                        
-                //                        map->addObject(newObject);
-                //                    }
+				if(oGroup.Name.ToLower() != "object")
+					continue;
+
+				foreach(CSCL.FileFormats.TMX.Object obj in oGroup.Objects)
+				{
+					string objName = obj.Name;
+					string objType = obj.Type.ToUpper();
+
+					Rectangle rect = new Rectangle(obj.X, obj.Y, obj.Width, obj.Height);
+					MapObject newObject = new MapObject(rect, objName, objType);
+
+					foreach(Property prop in obj.Properties)
+					{
+						newObject.addProperty(prop.Name, prop.Value);
+					}
+
+					map.addObject(newObject);
+				}
             }
 
             return map;
-        }
+		}
 
 //        std::string MapReader::getObjectProperty(xmlNodePtr node,
 //                                                 const std::string &def)
