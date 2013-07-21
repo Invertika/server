@@ -610,11 +610,11 @@ namespace invertika_game.Game
 
         void handleWalk(GameClient client, MessageIn message)
         {
-            //const int x = message.readInt16();
-            //const int y = message.readInt16();
+            int x = message.readInt16();
+            int y = message.readInt16();
 
-            //Point dst(x, y);
-            //client.character.setDestination(dst);
+			Point dst = new Point(x, y);
+            client.character.setDestination(dst);
         }
 
         void handleEquip(GameClient client, MessageIn message)

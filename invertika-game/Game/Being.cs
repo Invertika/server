@@ -244,11 +244,11 @@ namespace invertika_game.Game
             //}
         }
 
-        void setDestination(Point dst)
+        public void setDestination(Point dst)
         {
-            //mDst = dst;
-            //raiseUpdateFlags(UPDATEFLAG_NEW_DESTINATION);
-            //mPath.clear();
+            mDst = dst;
+            raiseUpdateFlags((byte)UpdateFlag.UPDATEFLAG_NEW_DESTINATION);
+            mPath.Clear();
         }
 
         List<Point> findPath()
