@@ -50,7 +50,7 @@ namespace invertika_game.Game
 		 * This is necessary in order to have an accurate iterator around moving
 		 * objects.
 		 */
-        public List<uint> destinations;
+        public List<uint> destinations=new List<uint>();
 
         public MapZone()
         {

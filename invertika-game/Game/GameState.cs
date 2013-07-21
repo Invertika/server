@@ -41,7 +41,7 @@ namespace invertika_game.Game
         /**
 		 * List of delayed events.
 		 */
-        static Dictionary<Actor, DelayedEvent> delayedEvents;
+        static Dictionary<Actor, DelayedEvent> delayedEvents=new Dictionary<Actor, DelayedEvent>();
 
         /**
 		 * Cached persistent script variables
@@ -53,56 +53,56 @@ namespace invertika_game.Game
 		 * Updates object states on the map.
 		 */
         static void updateMap(MapComposite map)
-        {
-            // 1. update object status.
-            List< Thing  > things=map.getEverything(); //TODO das könnte man auch weiter unten benutzen?
+		{
+			// 1. update object status.
+			List< Thing  > things = map.getEverything(); //TODO das könnte man auch weiter unten benutzen?
 
-            foreach(Thing thing in things)
-            {
-                thing.update();
-            }
+			foreach(Thing thing in things)
+			{
+				thing.update();
+			}
 
-            // 2. run scripts.
-            Script s=map.getScript();
-            if(s!=null)
-            {
-                s.update();
-            }
+			// 2. run scripts.
+			Script s = map.getScript();
+			if(s != null)
+			{
+				s.update();
+			}
 
-            // 3. perform actions.
-            foreach(Thing thing in map.mContent.things)
-            {
-                if(thing is Being)
-                {
-                    Being being=(Being)thing;
-                    being.perform();
-                }
-            }
+			// 3. perform actions.
+			foreach(Thing thing in map.mContent.things)
+			{
+				if(thing is Being)
+				{
+					Being being = (Being)thing;
+					being.perform();
+				}
+			}
 
-            //Alter Code
-            // for (BeingIterator i(map.getWholeMapIterator()); i; ++i)
-            // {
-            //     (*i).perform();
-            // }
+			//Alter Code
+			// for (BeingIterator i(map.getWholeMapIterator()); i; ++i)
+			// {
+			//     (*i).perform();
+			// }
 
-            // 4. move objects around and update zones.
-            foreach(Thing thing in map.mContent.things)
-            {
-                if(thing is Being)
-                {
-                    Being being=(Being)thing;
-                    being.move();
-                }
-            }
+			// 4. move objects around and update zones.
+			foreach(Thing thing in map.mContent.things)
+			{
+				if(thing is Being)
+				{
+					Being being = (Being)thing;
+					being.move();
+				}
+			}
 
-            // Alter Code
-            //for (BeingIterator i(map.getWholeMapIterator()); i; ++i)
-            //{
-            //    (*i).move();
-            //}
+			// Alter Code
+			//for (BeingIterator i(map.getWholeMapIterator()); i; ++i)
+			//{
+			//    (*i).move();
+			//}
 
-            map.update();
-        }
+			map.update();
+		}
 
         /**
 		 * Sets message fields describing character look.
@@ -452,19 +452,19 @@ namespace invertika_game.Game
         //#endif
 
         public static void update(int worldTime)
-        {
+		{
 //            #   ifndef NDEBUG
 //                dbgLockObjects = true;
 //            #   endif
 
-                // Update game state (update AI, etc.)
-			Dictionary<int, MapComposite> maps=	MapManager.getMaps();
+			// Update game state (update AI, etc.)
+			Dictionary<int, MapComposite> maps = MapManager.getMaps();
 
 			foreach(KeyValuePair<int, MapComposite> pair in maps)
 			{
 				MapComposite map = pair.Value;
 
-				if (!map.isActive())
+				if(!map.isActive())
 				{
 					continue;
 				}
@@ -502,38 +502,38 @@ namespace invertika_game.Game
 //                dbgLockObjects = false;
 //            #   endif
 
-                // Take care of events that were delayed because of their side effects.
+			// Take care of events that were delayed because of their side effects.
 			foreach(KeyValuePair<Actor, DelayedEvent> pair in delayedEvents)
 			{
 				DelayedEvent e = pair.Value;
 				Actor o = pair.Key;
 
-				switch ((Event)e.type)
-                    {
-					case Event.EVENT_REMOVE:
-                            remove(o);
-                            if (o.getType() == ThingType.OBJECT_CHARACTER)
-                            {
+				switch((Event)e.type)
+				{
+				case Event.EVENT_REMOVE:
+					remove(o);
+					if(o.getType() == ThingType.OBJECT_CHARACTER)
+					{
 						Character ch = (Character)o;
-                                ch.disconnected();
+						ch.disconnected();
 						Program.gameHandler.kill(ch);
-                            }
+					}
                             //delete o;
-                            break;
+					break;
 
-                        case Event.EVENT_INSERT:
-                            insertOrDelete(o);
-                            break;
+				case Event.EVENT_INSERT:
+					insertOrDelete(o);
+					break;
 
 				case Event.EVENT_WARP:
 					Debug.Assert(o.getType() == ThingType.OBJECT_CHARACTER);
 					warp((Character)o, e.map, e.x, e.y);
-                            break;
-                    }
-                }
+					break;
+				}
+			}
 
-                delayedEvents.Clear();
-        }
+			delayedEvents.Clear();
+		}
 
         public static bool insert(Thing ptr)
         {
