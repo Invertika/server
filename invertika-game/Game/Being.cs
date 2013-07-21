@@ -52,7 +52,7 @@ namespace invertika_game.Game
         /** Delay until move to next tile in miliseconds. */
         protected ushort mMoveTime;
 
-        List<Point> mPath;
+		List<Point> mPath=new List<Point>();
 
         public Being(ThingType type) : base(type)
         {
