@@ -38,6 +38,20 @@ namespace invertika_game
 
             foreach(TMX.LayerData layer in tmx.Layers)
             {
+				if(layer.name.ToLower() == "collision")
+				{
+					for(int y=0; y<layer.height; y++)
+					{
+						for(int x=0; x<layer.width; x++)
+						{
+							if(layer.data[x, y] != 0)
+							{
+								map.blockTile(x, y, invertika_game.Enums.BlockType.BLOCKTYPE_WALL);
+							}
+						}
+					}
+				}
+
                 //TODO Layer lesen implementieren
                 //            node = node->xmlChildrenNode;
                 //            int h = map->getHeight();
