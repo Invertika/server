@@ -31,7 +31,8 @@ using ISL.Server.Network;
 using invertika_game.Scripting;
 using ISL.Server.Common;
 using ISL.Server.Utilities;
-using  invertika_game.Enums;
+using invertika_game.Enums;
+using System.Diagnostics;
 
 namespace invertika_game.Game
 {
@@ -452,82 +453,86 @@ namespace invertika_game.Game
 
         public static void update(int worldTime)
         {
-            //#   ifndef NDEBUG
-            //    dbgLockObjects = true;
-            //#   endif
+//            #   ifndef NDEBUG
+//                dbgLockObjects = true;
+//            #   endif
 
-            //    // Update game state (update AI, etc.)
-            //    const MapManager::Maps &maps = MapManager::getMaps();
-            //    for (MapManager::Maps::const_iterator m = maps.begin(), m_end = maps.end(); m != m_end; ++m)
-            //    {
-            //        MapComposite *map = m.second;
-            //        if (!map.isActive())
-            //        {
-            //            continue;
-            //        }
+                // Update game state (update AI, etc.)
+			Dictionary<int, MapComposite> maps=	MapManager.getMaps();
 
-            //        updateMap(map);
+			foreach(KeyValuePair<int, MapComposite> pair in maps)
+			{
+				MapComposite map = pair.Value;
 
-            //        for (CharacterIterator p(map.getWholeMapIterator()); p; ++p)
-            //        {
-            //            informPlayer(map, *p, worldTime);
-            //            /*
-            //             sending the whole character is overhead for the database, it should
-            //             be replaced by a syncbuffer. see: game-server/accountconnection:
-            //             AccountConnection::syncChanges()
+				if (!map.isActive())
+				{
+					continue;
+				}
 
-            //            if (worldTime % 2000 == 0)
-            //            {
-            //                accountHandler.sendCharacterData(*p);
-            //            }
-            //            */
-            //        }
+				updateMap(map);
 
-            //        for (ActorIterator i(map.getWholeMapIterator()); i; ++i)
-            //        {
-            //            Actor *a = *i;
-            //            a.clearUpdateFlags();
-            //            if (a.canFight())
-            //            {
-            //                static_cast< Being * >(a).clearHitsTaken();
-            //            }
-            //        }
-            //    }
+//				for (CharacterIterator p(map.getWholeMapIterator()); p; ++p)
+//				{
+//					informPlayer(map, *p, worldTime);
+//					/*
+//                         sending the whole character is overhead for the database, it should
+//                         be replaced by a syncbuffer. see: game-server/accountconnection:
+//                         AccountConnection::syncChanges()
+//
+//                        if (worldTime % 2000 == 0)
+//                        {
+//                            accountHandler.sendCharacterData(*p);
+//                        }
+//                        */
+//				}
+//
+//				for (ActorIterator i(map.getWholeMapIterator()); i; ++i)
+//				{
+//					Actor *a = *i;
+//					a.clearUpdateFlags();
+//					if (a.canFight())
+//					{
+//						static_cast< Being * >(a).clearHitsTaken();
+//					}
+//				}
+			}
 
-            //#   ifndef NDEBUG
-            //    dbgLockObjects = false;
-            //#   endif
 
-            //    // Take care of events that were delayed because of their side effects.
-            //    for (DelayedEvents::iterator i = delayedEvents.begin(),
-            //         i_end = delayedEvents.end(); i != i_end; ++i)
-            //    {
-            //        const DelayedEvent &e = i.second;
-            //        Actor *o = i.first;
-            //        switch (e.type)
-            //        {
-            //            case EVENT_REMOVE:
-            //                remove(o);
-            //                if (o.getType() == OBJECT_CHARACTER)
-            //                {
-            //                    Character *ch = static_cast< Character * >(o);
-            //                    ch.disconnected();
-            //                    gameHandler.kill(ch);
-            //                }
-            //                delete o;
-            //                break;
+//            #   ifndef NDEBUG
+//                dbgLockObjects = false;
+//            #   endif
 
-            //            case EVENT_INSERT:
-            //                insertOrDelete(o);
-            //                break;
+                // Take care of events that were delayed because of their side effects.
+			foreach(KeyValuePair<Actor, DelayedEvent> pair in delayedEvents)
+			{
+				DelayedEvent e = pair.Value;
+				Actor o = pair.Key;
 
-            //            case EVENT_WARP:
-            //                assert(o.getType() == OBJECT_CHARACTER);
-            //                warp(static_cast< Character * >(o), e.map, e.x, e.y);
-            //                break;
-            //        }
-            //    }
-            //    delayedEvents.clear();
+				switch ((Event)e.type)
+                    {
+					case Event.EVENT_REMOVE:
+                            remove(o);
+                            if (o.getType() == ThingType.OBJECT_CHARACTER)
+                            {
+						Character ch = (Character)o;
+                                ch.disconnected();
+						Program.gameHandler.kill(ch);
+                            }
+                            //delete o;
+                            break;
+
+                        case Event.EVENT_INSERT:
+                            insertOrDelete(o);
+                            break;
+
+				case Event.EVENT_WARP:
+					Debug.Assert(o.getType() == ThingType.OBJECT_CHARACTER);
+					warp((Character)o, e.map, e.x, e.y);
+                            break;
+                    }
+                }
+
+                delayedEvents.Clear();
         }
 
         public static bool insert(Thing ptr)

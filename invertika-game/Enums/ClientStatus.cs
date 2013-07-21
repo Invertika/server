@@ -9,6 +9,5 @@ namespace invertika_game
         CLIENT_CHANGE_SERVER,
         CLIENT_QUEUED
     }
-    ;
 }
 

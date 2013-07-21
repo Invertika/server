@@ -37,8 +37,8 @@ namespace invertika_game.Game
     public class DelayedEvent
     {
         public ushort type;
-        ushort  x, y;
-        MapComposite map;
+        public ushort  x, y;
+        public MapComposite map;
 
         public DelayedEvent(ushort itype, ushort ix, ushort iy, MapComposite im)
         {
