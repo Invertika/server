@@ -270,6 +270,11 @@ namespace invertika_game.Game
 
         public List<Thing> getEverything()
         {
+			if(mContent == null)
+			{
+				return new List<Thing>();
+			}
+
             return mContent.things;
         }
 

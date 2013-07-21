@@ -42,7 +42,7 @@ namespace invertika_game.Game
 		///**
 		// * Things (items, characters, monsters, etc) located on the map.
 		// */
-		public List<Thing> things;
+		public List<Thing> things=new List<Thing>();
 
 		///**
 		// * Buckets of MovingObjects located on the map, referenced by ID.

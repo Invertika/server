@@ -70,6 +70,8 @@ namespace invertika_game.Game
 			}
 
 			// 3. perform actions.
+			if(map.mContent!=null)
+			{
 			foreach(Thing thing in map.mContent.things)
 			{
 				if(thing is Being)
@@ -77,6 +79,7 @@ namespace invertika_game.Game
 					Being being = (Being)thing;
 					being.perform();
 				}
+			}
 			}
 
 			//Alter Code
