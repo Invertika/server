@@ -50,7 +50,7 @@ namespace invertika_game.Game
         const int zoneDiam=256;
         Map mMap;            /**< Actual map. */
         public MapContent mContent; /**< Entities on the map. */
-        Script mScript;      /**< Script associated to this map. */
+        Script mScript=new Script();      /**< Script associated to this map. */
         string mName;    /**< Name of the map. */
         ushort mID;   /**< ID of the map. */
         /** Cached persistent variables */
@@ -403,12 +403,12 @@ namespace invertika_game.Game
                 else if(type=="SCRIPT")
                 {
                     string scriptFilename=obj.getProperty("FILENAME");
-                    string scriptText=obj.getProperty("TEXT");
+                    string scriptText=obj.getProperty("TEXT", "");
 
                     if(mScript!=null)
                     {
                         // Determine script engine by xml property
-                        string scriptEngineName=obj.getProperty("ENGINE");
+                        string scriptEngineName=obj.getProperty("ENGINE", "");
                         if(scriptFilename!=""&&scriptEngineName=="")
                         {
                             // Engine property is empty - determine by filename
@@ -425,7 +425,14 @@ namespace invertika_game.Game
 
                     if(scriptFilename!="")
                     {
-                        mScript.loadFile(scriptFilename);
+						if(mScript != null)
+						{
+							mScript.loadFile(scriptFilename);
+						}
+						else
+						{
+							Logger.Write(LogLevel.Warning, "No script engine can't bet initialized", mName);
+						}
                     }
                     else if(scriptText!=null)
                     {

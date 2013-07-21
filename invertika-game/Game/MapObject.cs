@@ -9,7 +9,7 @@ namespace invertika_game
         Rectangle mBounds;
         string mName;
         string mType;
-        Dictionary<string, string> mProperties;
+        Dictionary<string, string> mProperties=new Dictionary<string, string>();
 
         private MapObject()
         {
@@ -40,6 +40,16 @@ namespace invertika_game
         {
             return mProperties[key];
         }
+
+		public string getProperty(string key, string std)
+		{
+			if(mProperties.ContainsKey(key))
+			{
+				return mProperties[key];
+			}
+			else
+				return std;
+		}
 
         public string getName()
         {
