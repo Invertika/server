@@ -44,7 +44,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\libraries\External\NUnit\src\NUnitFramework\framework\nunit.framework.dll.csproj">
+    <ProjectReference Include="..\..\libraries\External\NUnit\NUnitFramework\framework\nunit.framework.dll.csproj">
       <Project>{83DD7E12-A705-4DBA-9D71-09C8973D9382}</Project>
       <Name>nunit.framework.dll</Name>
     </ProjectReference>
