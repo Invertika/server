@@ -39,6 +39,7 @@ using ISL.Server.Utilities;
 using CSCL.Crypto;
 using System.Security.Cryptography;
 using System.Text;
+using CSCL.Helpers;
 
 namespace invertika_account
 {
@@ -212,11 +213,11 @@ namespace invertika_account
 		 */
         static void parseOptions(string[] args, out CommandLineOptions options)
         {
-            Parameters param=Parameters.InterpretCommandLine(args);
+			Dictionary<string, string> param=CommandLineHelpers.GetCommandLine(args);
 
             options=new CommandLineOptions();
 
-            if(param.GetBool("help"))
+            if(param.ContainsKey("help"))
             {
                 //Print help.
                 printHelp();
@@ -224,21 +225,21 @@ namespace invertika_account
             else
             {
                 //TODO überprüfen ob getBool auch funktioniert wenn danach ein Doppelpunkt kommt
-                if(param.GetBool("config")) //-config:invertika.xml
+				if(param.ContainsKey("config")) //-config:invertika.xml
                 {
-                    options.configPath=param.GetString("config", "");
+					options.configPath=param["config"];
                 }
 
-                if(param.GetBool("verbosity")) //-verbosity:3
+				if(param.ContainsKey("verbosity")) //-verbosity:3
                 {
-                    options.verbosity=(LogLevel)(param.GetInt32("verbosity", 1));
+                    options.verbosity=(LogLevel)(Convert.ToInt32(param["verbosity"]));
                     options.verbosityChanged=true; //TODO richtig so?
                     Logger.Write(LogLevel.Information, "Using log verbosity level {0}", options.verbosity);
                 }
 
-                if(param.GetBool("port")) //-port:1234
+				if(param.ContainsKey("port")) //-port:1234
                 {
-                    options.port=param.GetInt32("verbosity", 1);
+                    options.port=Convert.ToInt32(param["verbosity"]);
                     options.portChanged=true;
                 }
             }

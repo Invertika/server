@@ -11,6 +11,8 @@
     <RootNamespace>invertika_account</RootNamespace>
     <AssemblyName>invertika-account</AssemblyName>
     <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <StartupObject>invertika_account.Program</StartupObject>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -23,10 +25,8 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <StartupObject>invertika_account.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <OutputPath>bin\Debug\</OutputPath>
@@ -91,15 +91,15 @@
       <Project>{BD80B35E-0FA9-4599-A932-4012F9534A9C}</Project>
       <Name>ISL.Server</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\CSCL\CSCL\CSCL.csproj">
+    <ProjectReference Include="..\..\..\CSCL\CSCL\CSCL.csproj">
       <Project>{0E720343-5366-4C3A-BC59-7B7FD2C311B5}</Project>
       <Name>CSCL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\CSCL\CSCL.Database\CSCL.Database.csproj">
+    <ProjectReference Include="..\..\..\CSCL\CSCL.Database\CSCL.Database.csproj">
       <Project>{9E75C324-52EC-4C26-B307-523082BE43EE}</Project>
       <Name>CSCL.Database</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\CSCL\CSCL.Database.MySQL\CSCL.Database.MySQL.csproj">
+    <ProjectReference Include="..\..\..\CSCL\CSCL.Database.MySQL\CSCL.Database.MySQL.csproj">
       <Project>{A197DEFF-3450-4F52-8C74-5AFCB78E0031}</Project>
       <Name>CSCL.Database.MySQL</Name>
     </ProjectReference>
