@@ -166,13 +166,6 @@
   </Target>
   -->
   <ItemGroup>
-<<<<<<< HEAD
-=======
-    <ProjectReference Include="..\..\..\CSCL\CSCL\CSCL.csproj">
-      <Project>{0E720343-5366-4C3A-BC59-7B7FD2C311B5}</Project>
-      <Name>CSCL</Name>
-    </ProjectReference>
->>>>>>> 76241ba41ee9635be3407c5ddd138354c0f37dbb
     <ProjectReference Include="..\..\libraries\ISL.Server\ISL.Server.csproj">
       <Project>{BD80B35E-0FA9-4599-A932-4012F9534A9C}</Project>
       <Name>ISL.Server</Name>
