@@ -3,8 +3,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{22998F26-5122-4577-A0F7-54150A26C5F4}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -166,13 +164,13 @@
   </Target>
   -->
   <ItemGroup>
-    <ProjectReference Include="..\..\libraries\ISL.Server\ISL.Server.csproj">
-      <Project>{BD80B35E-0FA9-4599-A932-4012F9534A9C}</Project>
-      <Name>ISL.Server</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\CSCL\CSCL\CSCL.csproj">
       <Project>{0E720343-5366-4C3A-BC59-7B7FD2C311B5}</Project>
       <Name>CSCL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\libraries\ISL.Server\ISL.Server.csproj">
+      <Project>{BD80B35E-0FA9-4599-A932-4012F9534A9C}</Project>
+      <Name>ISL.Server</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

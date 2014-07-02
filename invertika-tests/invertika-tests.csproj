@@ -3,8 +3,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D820AA5E-135B-414C-9571-9514CF3D36A3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -44,17 +42,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\libraries\External\NUnit\NUnitFramework\framework\nunit.framework.dll.csproj">
-      <Project>{83DD7E12-A705-4DBA-9D71-09C8973D9382}</Project>
-      <Name>nunit.framework.dll</Name>
+    <ProjectReference Include="..\invertika-account\invertika-account.csproj">
+      <Project>{2C2FEB66-F7DB-4EB0-A65E-15478AB982C5}</Project>
+      <Name>invertika-account</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\libraries\ISL.Server\ISL.Server.csproj">
       <Project>{BD80B35E-0FA9-4599-A932-4012F9534A9C}</Project>
       <Name>ISL.Server</Name>
     </ProjectReference>
-    <ProjectReference Include="..\invertika-account\invertika-account.csproj">
-      <Project>{2C2FEB66-F7DB-4EB0-A65E-15478AB982C5}</Project>
-      <Name>invertika-account</Name>
+    <ProjectReference Include="..\..\libraries\Externals\NUnit\NUnitFramework\framework\nunit.framework.dll.csproj">
+      <Project>{83DD7E12-A705-4DBA-9D71-09C8973D9382}</Project>
+      <Name>nunit.framework.dll</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

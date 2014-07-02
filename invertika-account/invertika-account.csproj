@@ -3,8 +3,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2C2FEB66-F7DB-4EB0-A65E-15478AB982C5}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -87,10 +85,6 @@
     <Compile Include="Utilities\StringFilter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\libraries\ISL.Server\ISL.Server.csproj">
-      <Project>{BD80B35E-0FA9-4599-A932-4012F9534A9C}</Project>
-      <Name>ISL.Server</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\CSCL\CSCL\CSCL.csproj">
       <Project>{0E720343-5366-4C3A-BC59-7B7FD2C311B5}</Project>
       <Name>CSCL</Name>
@@ -102,6 +96,10 @@
     <ProjectReference Include="..\..\..\CSCL\CSCL.Database.MySQL\CSCL.Database.MySQL.csproj">
       <Project>{A197DEFF-3450-4F52-8C74-5AFCB78E0031}</Project>
       <Name>CSCL.Database.MySQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\libraries\ISL.Server\ISL.Server.csproj">
+      <Project>{BD80B35E-0FA9-4599-A932-4012F9534A9C}</Project>
+      <Name>ISL.Server</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
